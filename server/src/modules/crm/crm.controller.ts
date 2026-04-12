@@ -76,3 +76,15 @@ export class CrmController {
     return this.crmService.executeCampaign(tenantId, id);
   }
 }
+
+  @Post('campaigns/estimate')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Estimate campaign audience size' })
+  async estimateCampaign(
+    @CurrentTenant() tenantId: string,
+    @Body() body: { filters: Record<string, any> },
+  ) {
+    const count = await this.crmService.estimateCampaignReach(tenantId, body.filters);
+    return { count };
+  }
