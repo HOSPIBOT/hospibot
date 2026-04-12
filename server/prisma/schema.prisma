@@ -931,3 +931,71 @@ model PlatformAsset {
 
   @@map("platform_assets")
 }
+
+// ==============================================
+// WHATSAPP TEMPLATES
+// ==============================================
+
+model WhatsappTemplate {
+  id            String    @id @default(uuid())
+  tenantId      String?   @map("tenant_id")      // null = platform default
+  name          String                            // template_name in Meta
+  displayName   String    @map("display_name")   // human-readable
+  category      String    // APPOINTMENT | LAB | BILLING | FOLLOWUP | GENERAL
+  language      String    @default("en")
+  status        String    @default("PENDING")     // PENDING | APPROVED | REJECTED
+  headerText    String?   @map("header_text")
+  bodyText      String    @map("body_text")       // with {{variables}}
+  footerText    String?   @map("footer_text")
+  buttons       Json      @default("[]")          // CTA / quick-reply buttons
+  variables     String[]  @default([])            // variable names list
+  metaTemplateId String?  @map("meta_template_id")
+  rejectionReason String? @map("rejection_reason")
+  usageCount    Int       @default(0)             @map("usage_count")
+  isDefault     Boolean   @default(false)         @map("is_default")
+  createdAt     DateTime  @default(now())         @map("created_at")
+  updatedAt     DateTime  @updatedAt              @map("updated_at")
+
+  @@unique([name, tenantId])
+  @@map("whatsapp_templates")
+}
+
+// ==============================================
+// CHATBOT STATE (tracks multi-step conversations)
+// ==============================================
+
+model ChatbotState {
+  id             String    @id @default(uuid())
+  conversationId String    @unique @map("conversation_id")
+  tenantId       String    @map("tenant_id")
+  flow           String?                          // BOOKING | REPORT | BILLING | FAQ | GENERAL
+  step           String?                          // current step in flow
+  data           Json      @default("{}")         // accumulated data (dept, doctor, slot chosen)
+  expiresAt      DateTime  @map("expires_at")     // state expires after 30 min inactivity
+  createdAt      DateTime  @default(now())        @map("created_at")
+  updatedAt      DateTime  @updatedAt             @map("updated_at")
+
+  @@map("chatbot_states")
+}
+
+// ==============================================
+// AUTOMATION JOBS (scheduled message queue)
+// ==============================================
+
+model AutomationJob {
+  id          String    @id @default(uuid())
+  tenantId    String    @map("tenant_id")
+  ruleId      String    @map("rule_id")
+  patientId   String    @map("patient_id")
+  scheduledAt DateTime  @map("scheduled_at")
+  status      String    @default("PENDING")  // PENDING | SENT | FAILED | CANCELLED
+  action      Json                           // the action to execute
+  attempts    Int       @default(0)
+  lastError   String?   @map("last_error")
+  executedAt  DateTime? @map("executed_at")
+  createdAt   DateTime  @default(now())      @map("created_at")
+
+  @@index([scheduledAt, status])
+  @@index([tenantId, patientId])
+  @@map("automation_jobs")
+}

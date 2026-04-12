@@ -231,7 +231,7 @@ export class AppointmentService {
       updateData.cancelReason = dto.cancelReason;
     }
 
-    return this.prisma.appointment.update({
+    const updated = await this.prisma.appointment.update({
       where: { id },
       data: updateData,
       include: {
@@ -239,6 +239,53 @@ export class AppointmentService {
         doctor: { include: { user: { select: { firstName: true, lastName: true } } } },
       },
     });
+
+    // Fire automation triggers
+    if (dto.status === 'COMPLETED') {
+      setImmediate(() => {
+        this.triggerAutomation(tenantId, 'VISIT_COMPLETED', appointment.patientId, {
+          doctorName: `${updated.doctor?.user?.firstName || ''} ${updated.doctor?.user?.lastName || ''}`.trim(),
+        });
+      });
+    }
+    if (dto.status === 'NO_SHOW') {
+      setImmediate(() => {
+        this.triggerAutomation(tenantId, 'NO_SHOW', appointment.patientId, {});
+      });
+    }
+    if (dto.status === 'CANCELLED') {
+      setImmediate(() => {
+        this.triggerAutomation(tenantId, 'APPOINTMENT_CANCELLED', appointment.patientId, {});
+      });
+    }
+
+    return updated;
+  }
+
+  private async triggerAutomation(tenantId: string, event: string, patientId: string, metadata: any) {
+    try {
+      // Dynamically get scheduler to avoid circular dependency
+      const { SchedulerService } = await import('../scheduler/scheduler.service');
+      // Note: In production, inject SchedulerService properly via constructor
+      // For now, fire via direct DB job creation
+      const rules = await this.prisma.automationRule.findMany({
+        where: { tenantId, isActive: true, trigger: event as any },
+      });
+      for (const rule of rules) {
+        const actions = rule.actions as any[];
+        for (const action of actions) {
+          await this.prisma.automationJob.create({
+            data: {
+              tenantId,
+              ruleId: rule.id,
+              patientId,
+              scheduledAt: new Date(Date.now() + rule.waitDays * 24 * 60 * 60 * 1000),
+              action: { ...action, ...metadata },
+            },
+          }).catch(() => {});
+        }
+      }
+    } catch { /* non-blocking */ }
   }
 
   async reschedule(tenantId: string, id: string, dto: RescheduleDto) {

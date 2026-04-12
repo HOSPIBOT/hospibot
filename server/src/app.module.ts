@@ -16,6 +16,8 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { HealthController } from './health.controller';
 import { SuperAdminModule } from './modules/super-admin/super-admin.module';
 import { PortalModule } from './modules/portal/portal.module';
+import { ChatbotModule } from './modules/chatbot/chatbot.module';
+import { SchedulerModule } from './modules/scheduler/scheduler.module';
 
 @Module({
   imports: [
@@ -48,6 +50,8 @@ import { PortalModule } from './modules/portal/portal.module';
     AnalyticsModule,
     SuperAdminModule,
     PortalModule,
+    ChatbotModule,
+    SchedulerModule,
   ],
   controllers: [HealthController],
 })

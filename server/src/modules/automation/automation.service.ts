@@ -376,3 +376,26 @@ export class AutomationService {
     };
   }
 }
+
+  // ==========================================
+  // LOGS
+  // ==========================================
+
+  async getLogs(tenantId: string, limit = 50) {
+    const logs = await this.prisma.automationLog.findMany({
+      where: { tenantId },
+      orderBy: { executedAt: 'desc' },
+      take: limit,
+      include: { rule: { select: { name: true } } },
+    });
+    return { data: logs };
+  }
+
+  async deleteRule(tenantId: string, id: string) {
+    await this.prisma.automationJob.updateMany({
+      where: { tenantId, ruleId: id, status: 'PENDING' },
+      data: { status: 'CANCELLED' },
+    });
+    await this.prisma.automationRule.delete({ where: { id } });
+    return { deleted: true };
+  }

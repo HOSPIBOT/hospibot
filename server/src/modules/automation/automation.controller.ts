@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Body, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AutomationService } from './automation.service';
 import { CreateRuleDto, UpdateRuleDto, ListRulesDto } from './dto/automation.dto';
@@ -73,3 +73,22 @@ export class AutomationController {
     return this.automationService.getStats(tenantId);
   }
 }
+
+  @Get('logs')
+  @ApiOperation({ summary: 'Get automation activity logs' })
+  getLogs(
+    @CurrentTenant() tenantId: string,
+    @Query('limit') limit = 50,
+  ) {
+    return this.automationService.getLogs(tenantId, +limit);
+  }
+
+  @Delete('rules/:id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Delete an automation rule' })
+  deleteRule(
+    @CurrentTenant() tenantId: string,
+    @Param('id') id: string,
+  ) {
+    return this.automationService.deleteRule(tenantId, id);
+  }

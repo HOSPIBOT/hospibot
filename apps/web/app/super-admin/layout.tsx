@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import {
   LayoutDashboard, Building2, CreditCard, Users, Activity,
   Megaphone, Settings, LogOut, ChevronRight, Shield,
-  Bell, HelpCircle, Globe,
+  Bell, HelpCircle, Globe, MessageSquare,
 } from 'lucide-react';
 
 const navSections = [
@@ -31,6 +31,7 @@ const navSections = [
     items: [
       { href: '/super-admin/system', label: 'System Health', icon: Activity },
       { href: '/super-admin/announcements', label: 'Announcements', icon: Megaphone },
+      { href: '/super-admin/templates', label: 'WA Templates', icon: MessageSquare },
     ],
   },
   {

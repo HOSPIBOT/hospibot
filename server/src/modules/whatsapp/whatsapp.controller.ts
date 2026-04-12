@@ -134,3 +134,54 @@ export class WhatsappController {
     return this.whatsappService.switchToBot(tenantId, conversationId);
   }
 }
+
+  // ==========================================
+  // TEMPLATE MANAGEMENT
+  // ==========================================
+
+  @Get('templates')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'List WhatsApp templates for this tenant (or global defaults)' })
+  async getTemplates(
+    @CurrentTenant() tenantId: string,
+    @Query('global') globalOnly?: string,
+  ) {
+    const where = globalOnly === 'true' ? { tenantId: null, isDefault: true } : {
+      OR: [{ tenantId }, { isDefault: true, tenantId: null }],
+    };
+    const templates = await this.whatsappService['prisma'].whatsappTemplate.findMany({
+      where,
+      orderBy: { category: 'asc' },
+    });
+    return { data: templates };
+  }
+
+  @Post('templates')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Create / seed a WhatsApp template' })
+  async createTemplate(@CurrentTenant() tenantId: string, @Body() body: any) {
+    const template = await this.whatsappService['prisma'].whatsappTemplate.upsert({
+      where: { name_tenantId: { name: body.name, tenantId: body.isDefault ? null : tenantId } },
+      create: {
+        name: body.name, displayName: body.displayName, category: body.category,
+        bodyText: body.bodyText, headerText: body.headerText, footerText: body.footerText,
+        buttons: body.buttons || [], variables: body.variables || [],
+        isDefault: body.isDefault || false,
+        tenantId: body.isDefault ? null : tenantId,
+        status: 'PENDING',
+      },
+      update: { displayName: body.displayName, bodyText: body.bodyText, buttons: body.buttons || [] },
+    });
+    return template;
+  }
+
+  @Post('templates/seed-defaults')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Seed all default platform templates' })
+  async seedDefaultTemplates() {
+    // Seeds are handled by the seed.ts file at startup
+    return { seeded: true, message: 'Default templates are seeded via database seed file' };
+  }

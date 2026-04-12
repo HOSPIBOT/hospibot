@@ -500,8 +500,66 @@ async function migrateExistingTenants() {
 async function runAll() {
   await main();
   await migrateExistingTenants();
+  await seedWATemplates();
 }
 
 runAll()
   .catch((e) => { console.error('❌ Seed failed:', e); process.exit(1); })
   .finally(async () => { await prisma.$disconnect(); });
+
+// ── WhatsApp Templates seed ─────────────────────────────────────────────────
+const WA_TEMPLATES = [
+  { name: 'appointment_confirmation', displayName: 'Appointment Confirmation', category: 'APPOINTMENT',
+    bodyText: 'Your appointment with Dr. {{doctor_name}} at {{facility_name}} is confirmed for {{date}} at {{time}}. Your token number is {{token}}. Reply RESCHEDULE to change the time.',
+    buttons: [{ type: 'QUICK_REPLY', text: 'Reschedule' }, { type: 'QUICK_REPLY', text: 'Cancel' }],
+    variables: ['doctor_name', 'facility_name', 'date', 'time', 'token'] },
+  { name: 'appointment_reminder_24h', displayName: 'Appointment Reminder (24 Hours)', category: 'APPOINTMENT',
+    bodyText: 'Reminder: You have an appointment tomorrow, {{date}} at {{time}} with Dr. {{doctor_name}} at {{facility_name}}.',
+    buttons: [{ type: 'QUICK_REPLY', text: 'Confirm' }, { type: 'QUICK_REPLY', text: 'Reschedule' }],
+    variables: ['date', 'time', 'doctor_name', 'facility_name'] },
+  { name: 'appointment_reminder_2h', displayName: 'Appointment Reminder (2 Hours)', category: 'APPOINTMENT',
+    bodyText: 'Your appointment with Dr. {{doctor_name}} is in 2 hours at {{time}}. Please arrive 10 minutes early. Token: {{token}}.',
+    buttons: [], variables: ['doctor_name', 'time', 'token'] },
+  { name: 'lab_report_ready', displayName: 'Lab Report Ready', category: 'LAB',
+    bodyText: 'Your {{test_name}} report from {{facility_name}} is ready.',
+    buttons: [{ type: 'URL', text: 'Download Report', url: '{{report_url}}' }],
+    variables: ['test_name', 'facility_name', 'report_url'] },
+  { name: 'payment_request', displayName: 'Payment Request', category: 'BILLING',
+    bodyText: 'Your invoice from {{facility_name}} for ₹{{amount}} (Invoice: {{invoice_number}}) is ready. Tap below to pay securely.',
+    buttons: [{ type: 'URL', text: 'Pay Now', url: '{{payment_url}}' }],
+    variables: ['facility_name', 'amount', 'invoice_number', 'payment_url'] },
+  { name: 'payment_receipt', displayName: 'Payment Receipt', category: 'BILLING',
+    bodyText: 'Payment received! ₹{{amount}} paid to {{facility_name}}. Invoice: {{invoice_number}}. Thank you.',
+    buttons: [], variables: ['amount', 'facility_name', 'invoice_number'] },
+  { name: 'followup_reminder', displayName: 'Follow-Up Reminder', category: 'FOLLOWUP',
+    bodyText: 'Hi {{name}}, Dr. {{doctor_name}} at {{facility_name}} recommends a follow-up. It has been {{days}} days since your last visit.',
+    buttons: [{ type: 'QUICK_REPLY', text: 'Book Now' }, { type: 'QUICK_REPLY', text: 'Remind Later' }, { type: 'QUICK_REPLY', text: 'Not Needed' }],
+    variables: ['name', 'doctor_name', 'facility_name', 'days'] },
+  { name: 'medicine_refill_reminder', displayName: 'Medicine Refill Reminder', category: 'FOLLOWUP',
+    bodyText: 'Hi {{name}}, your prescription for {{medicine_name}} from {{facility_name}} is due for refill in {{days}} days.',
+    buttons: [{ type: 'QUICK_REPLY', text: 'Request Refill' }, { type: 'QUICK_REPLY', text: 'I Have Enough' }],
+    variables: ['name', 'medicine_name', 'facility_name', 'days'] },
+  { name: 'lab_test_reminder', displayName: 'Lab Test Reminder', category: 'FOLLOWUP',
+    bodyText: 'Hi {{name}}, Dr. {{doctor_name}} recommends your {{test_name}} test. It has been {{period}} since your last test.',
+    buttons: [{ type: 'QUICK_REPLY', text: 'Book Test' }, { type: 'QUICK_REPLY', text: 'Remind Later' }],
+    variables: ['name', 'doctor_name', 'test_name', 'period'] },
+  { name: 'chronic_care_check', displayName: 'Chronic Care Check-In', category: 'FOLLOWUP',
+    bodyText: 'Hi {{name}}, checking in on your {{condition}} management. How are you feeling today?',
+    buttons: [{ type: 'QUICK_REPLY', text: 'Doing Well' }, { type: 'QUICK_REPLY', text: 'Need Appointment' }, { type: 'QUICK_REPLY', text: 'Call Me' }],
+    variables: ['name', 'condition'] },
+  { name: 'discharge_followup', displayName: 'Post-Discharge Follow-Up', category: 'FOLLOWUP',
+    bodyText: 'Hi {{name}}, you were discharged from {{facility_name}} {{days}} days ago. Hope you are recovering well.',
+    buttons: [{ type: 'QUICK_REPLY', text: 'Book Follow-up' }, { type: 'QUICK_REPLY', text: 'I Am Fine' }],
+    variables: ['name', 'facility_name', 'days'] },
+];
+
+async function seedWATemplates() {
+  for (const tmpl of WA_TEMPLATES) {
+    await prisma.whatsappTemplate.upsert({
+      where: { name_tenantId: { name: tmpl.name, tenantId: null } },
+      create: { ...tmpl, tenantId: null, isDefault: true, status: 'APPROVED' } as any,
+      update: { status: 'APPROVED' },
+    });
+  }
+  console.log(`✅ ${WA_TEMPLATES.length} WhatsApp templates seeded`);
+}

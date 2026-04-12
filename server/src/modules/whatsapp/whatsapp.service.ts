@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../database/prisma.service';
+import { ChatbotService } from '../chatbot/chatbot.service';
 import axios from 'axios';
 
 @Injectable()
@@ -11,6 +12,7 @@ export class WhatsappService {
   constructor(
     private prisma: PrismaService,
     private config: ConfigService,
+    private chatbotService: ChatbotService,
   ) {
     this.apiUrl = config.get('WHATSAPP_API_URL', 'https://graph.facebook.com/v19.0');
   }
@@ -286,7 +288,19 @@ export class WhatsappService {
 
     this.logger.log(`Incoming message from ${from} to tenant ${tenantId}: ${content.substring(0, 50)}`);
 
-    // TODO: Route to chatbot service for automated response
+    // Route to chatbot if bot mode is ON for this conversation
+    if (conversation.isBot && content && messageType === 'text' || messageType === 'interactive') {
+      setImmediate(() => {
+        this.chatbotService.handleMessage(
+          tenantId,
+          conversation.id,
+          from,
+          content,
+          patient?.id,
+        ).catch(err => this.logger.error(`Chatbot error: ${err.message}`));
+      });
+    }
+
     return { conversationId: conversation.id, content };
   }
 
