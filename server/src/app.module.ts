@@ -22,6 +22,7 @@ import { VaultModule } from './modules/vault/vault.module';
 import { LabModule } from './modules/lab/lab.module';
 import { PharmacyModule } from './modules/pharmacy/pharmacy.module';
 import { MarketplaceModule } from './modules/marketplace/marketplace.module';
+import { SecurityModule } from './modules/security/security.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { MarketplaceModule } from './modules/marketplace/marketplace.module';
     LabModule,
     PharmacyModule,
     MarketplaceModule,
+    SecurityModule,
   ],
   controllers: [HealthController],
 })

@@ -32,6 +32,7 @@ const navSections = [
       { href: '/super-admin/system', label: 'System Health', icon: Activity },
       { href: '/super-admin/announcements', label: 'Announcements', icon: Megaphone },
       { href: '/super-admin/templates', label: 'WA Templates', icon: MessageSquare },
+      { href: '/super-admin/audit', label: 'Audit Log', icon: Activity },
     ],
   },
   {

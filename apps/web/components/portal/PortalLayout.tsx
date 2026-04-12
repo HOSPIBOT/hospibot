@@ -12,7 +12,7 @@ import {
   Stethoscope, BarChart3, Zap, Settings, LogOut, Bell, Search,
   FlaskConical, Package, ShoppingCart, Home, Truck, Heart,
   Briefcase, ClipboardList, FileText, Pill, Dumbbell,
-  ChevronRight, Building2, TrendingUp, Shield, Globe, Star,
+  ChevronRight, Building2, TrendingUp, Shield, Globe, Star, Lock,
 } from 'lucide-react';
 
 // ── Feature-flag → nav item map ───────────────────────────────────────────────
@@ -36,6 +36,7 @@ const NAV_BY_PORTAL: Record<string, NavItem[]> = {
     { href: 'vault',        label: 'Health Vault',   icon: Shield,          always: true },
     { href: 'crm',          label: 'CRM / Leads',    icon: TrendingUp,      flag: 'crm', always: true },
     { href: 'automation',   label: 'Revenue Engine', icon: Zap,             flag: 'whatsapp' },
+    { href: 'security',     label: 'Security',       icon: Lock,            always: true },
     { href: 'analytics',    label: 'Analytics',      icon: BarChart3,       always: true },
     { href: 'settings',     label: 'Settings',       icon: Settings,        always: true },
   ],
