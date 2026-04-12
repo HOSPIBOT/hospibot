@@ -5,7 +5,7 @@ import { api } from '@/lib/api';
 import { formatDate, formatINR } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import {
-  Plus, Search, Download, RefreshCw, X, Loader2, ChevronLeft, ChevronRight,
+  Plus, Search, Download, RefreshCw, X, Loader2, ChevronLeft, ChevronRight, Printer,
   TrendingUp, CreditCard, AlertCircle, CheckCircle2, FileText, Trash2,
   Send, IndianRupee, Percent,
 } from 'lucide-react';
@@ -255,6 +255,10 @@ export default function BillingPage() {
                 </td>
                 <td className="px-4 py-3.5">
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                    <a href={`/clinical/billing/${inv.id}`} target="_blank" rel="noreferrer"
+                      className="text-[11px] font-semibold text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-1.5 rounded-lg hover:bg-slate-200 transition-colors flex items-center gap-1">
+                      <Printer className="w-3 h-3" /> Print
+                    </a>
                     {inv.status !== 'PAID' && (
                       <button onClick={() => sendPaymentLink(inv.id)}
                         className="text-[11px] font-semibold text-white bg-[#25D366] px-2.5 py-1.5 rounded-lg hover:opacity-90 transition-opacity flex items-center gap-1">

@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import {
   Calendar, Plus, Search, Clock, User, CheckCircle2, XCircle,
   RefreshCw, ChevronLeft, ChevronRight, X, Loader2, Filter,
-  ArrowRight, Phone, Hash, Stethoscope, AlertCircle,
+  ArrowRight, Phone, Hash, Stethoscope, AlertCircle, Activity,
 } from 'lucide-react';
 
 const STATUS_COLORS: Record<string, string> = {
@@ -203,6 +203,10 @@ export default function AppointmentsPage() {
           <button onClick={() => load(meta.page)} className="p-2 border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50 transition-colors">
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
+          <a href="/clinical/appointments/queue"
+            className="flex items-center gap-2 border border-[#0D7C66] text-[#0D7C66] text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-[#E8F5F0] transition-colors">
+            <Activity className="w-4 h-4" /> Live Queue
+          </a>
           <button onClick={() => setShowBook(true)}
             className="flex items-center gap-2 bg-[#0D7C66] hover:bg-[#0A5E4F] text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors shadow-sm">
             <Plus className="w-4 h-4" /> Book Appointment

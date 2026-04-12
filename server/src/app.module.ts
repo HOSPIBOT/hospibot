@@ -24,6 +24,7 @@ import { PharmacyModule } from './modules/pharmacy/pharmacy.module';
 import { MarketplaceModule } from './modules/marketplace/marketplace.module';
 import { SecurityModule } from './modules/security/security.module';
 import { PrescriptionModule } from './modules/prescription/prescription.module';
+import { VisitModule } from './modules/visit/visit.module';
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { PrescriptionModule } from './modules/prescription/prescription.module';
     MarketplaceModule,
     SecurityModule,
     PrescriptionModule,
+    VisitModule,
   ],
   controllers: [HealthController],
 })

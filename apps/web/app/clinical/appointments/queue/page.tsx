@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { formatTime } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import {
   Users, Clock, Activity, CheckCircle2, RefreshCw, ArrowLeft,
-  Play, UserCheck, ChevronRight, Maximize2, Monitor, AlertCircle,
+  Play, UserCheck, ChevronRight, Maximize2, Monitor, AlertCircle, Stethoscope,
 } from 'lucide-react';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; ring: string }> = {
@@ -79,18 +80,24 @@ function QueueCard({ apt, position, onStatusChange }: {
           </button>
         )}
         {apt.status === 'CHECKED_IN' && (
-          <button onClick={() => onStatusChange(apt.id, 'IN_PROGRESS')}
+          <button onClick={() => { onStatusChange(apt.id, 'IN_PROGRESS'); }}
             className="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold text-white py-2 rounded-xl transition-all hover:opacity-90"
             style={{ background: '#0D7C66' }}>
             <Play className="w-3.5 h-3.5" /> Start Consultation
           </button>
         )}
         {apt.status === 'IN_PROGRESS' && (
-          <button onClick={() => onStatusChange(apt.id, 'COMPLETED')}
-            className="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold text-white py-2 rounded-xl transition-all hover:opacity-90"
-            style={{ background: '#10B981' }}>
-            <CheckCircle2 className="w-3.5 h-3.5" /> Complete
-          </button>
+          <>
+            <a href={`/clinical/visits/${apt.id}`}
+              className="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold text-white py-2 rounded-xl transition-all hover:opacity-90"
+              style={{ background: '#0D7C66' }}>
+              <Stethoscope className="w-3.5 h-3.5" /> Open Console
+            </a>
+            <button onClick={() => onStatusChange(apt.id, 'COMPLETED')}
+              className="flex items-center justify-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-xl hover:bg-emerald-100 transition-colors">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+            </button>
+          </>
         )}
         <a href={`/clinical/patients/${apt.patientId}`}
           className="flex items-center justify-center gap-1 text-xs font-medium text-slate-600 border border-slate-200 px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors">
@@ -122,6 +129,7 @@ function KioskCard({ apt, position }: { apt: any; position: number }) {
 }
 
 export default function AppointmentQueuePage() {
+  const router = useRouter();
   const [queue, setQueue]         = useState<any[]>([]);
   const [summary, setSummary]     = useState<any>(null);
   const [loading, setLoading]     = useState(true);
