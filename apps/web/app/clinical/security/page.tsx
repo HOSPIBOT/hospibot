@@ -143,6 +143,9 @@ export default function SecurityPage() {
   const [permissions, setPermissions] = useState<any[]>([]);
   const [loading, setLoading]   = useState(true);
   const [editUser, setEditUser] = useState<any>(null);
+  const [showInvite, setShowInvite] = useState(false);
+  const [inviteForm, setInviteForm] = useState({ firstName: '', lastName: '', email: '', phone: '', role: 'RECEPTIONIST', password: '' });
+  const [inviting, setInviting] = useState(false);
   const [auditFilters, setAuditFilters] = useState({ entity: '', action: '' });
   const [auditMeta, setAuditMeta] = useState({ page: 1, total: 0, totalPages: 1 });
 
@@ -174,6 +177,22 @@ export default function SecurityPage() {
 
   useEffect(() => { load(); }, [load]);
   useEffect(() => { if (tab === 'audit') loadAudit(1); }, [tab, loadAudit]);
+
+  const inviteUser = async () => {
+    if (!inviteForm.firstName || !inviteForm.email || !inviteForm.password) {
+      toast.error('Name, email and password required'); return;
+    }
+    setInviting(true);
+    try {
+      await api.post('/auth/users', inviteForm);
+      toast.success(`${inviteForm.firstName} added to team! They can now login.`);
+      setShowInvite(false);
+      setInviteForm({ firstName: '', lastName: '', email: '', phone: '', role: 'RECEPTIONIST', password: '' });
+      load();
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Failed to add user');
+    } finally { setInviting(false); }
+  };
 
   const deactivateUser = async (userId: string, name: string) => {
     if (!window.confirm(`Deactivate ${name}? They will lose access immediately.`)) return;
@@ -291,6 +310,10 @@ export default function SecurityPage() {
           <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
             <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
               <h3 className="font-semibold text-slate-900">Team Members ({users.length})</h3>
+              <button onClick={() => setShowInvite(true)}
+                className="flex items-center gap-1.5 text-xs font-semibold text-[#0D7C66] bg-[#E8F5F0] border border-[#0D7C66]/20 px-3 py-1.5 rounded-xl hover:bg-[#0D7C66]/10 transition-colors">
+                <Plus className="w-3.5 h-3.5" /> Invite Member
+              </button>
               <button onClick={load} className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
                 <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
               </button>
