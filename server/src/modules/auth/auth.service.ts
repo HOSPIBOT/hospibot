@@ -48,7 +48,7 @@ export class AuthService {
         data: {
           name: dto.name,
           slug: dto.slug,
-          type: dto.type,
+          type: dto.type as any,
           email: dto.adminEmail,
           phone: dto.phone,
           city: dto.city,
@@ -214,7 +214,7 @@ export class AuthService {
         passwordHash,
         firstName: dto.firstName,
         lastName: dto.lastName,
-        role: dto.role,
+        role: dto.role as any,
       },
       select: {
         id: true,
