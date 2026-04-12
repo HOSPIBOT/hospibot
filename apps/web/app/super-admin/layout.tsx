@@ -36,6 +36,7 @@ const navSections = [
   {
     label: 'CONFIGURATION',
     items: [
+      { href: '/super-admin/platform', label: 'Logo & Assets', icon: Globe },
       { href: '/super-admin/settings', label: 'Platform Settings', icon: Settings },
     ],
   },

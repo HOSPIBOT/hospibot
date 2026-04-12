@@ -463,6 +463,45 @@ async function main() {
   console.log(`\n🎉 Seed complete! 7 portal families, ${totalSubTypes} sub-types seeded.`);
 }
 
-main()
+// ── Auto-migrate existing tenants to portalFamilyId ─────────────────────────
+async function migrateExistingTenants() {
+  const TYPE_TO_PORTAL: Record<string, string> = {
+    HOSPITAL: 'clinical',    CLINIC: 'clinical',
+    DOCTOR: 'clinical',      IVF_CENTER: 'clinical',
+    DIAGNOSTIC_CENTER: 'diagnostic',
+    PHARMACY: 'pharmacy',    HOME_HEALTHCARE: 'homecare',
+    EQUIPMENT_VENDOR: 'equipment',
+  };
+
+  const families = await prisma.portalFamily.findMany({ select: { id: true, slug: true } });
+  const slugToId = Object.fromEntries(families.map(f => [f.slug, f.id]));
+
+  const tenantsToMigrate = await prisma.tenant.findMany({
+    where: { portalFamilyId: null },
+    select: { id: true, type: true },
+  });
+
+  let migrated = 0;
+  for (const t of tenantsToMigrate) {
+    const portalSlug = TYPE_TO_PORTAL[t.type as string] ?? 'clinical';
+    const portalFamilyId = slugToId[portalSlug];
+    if (portalFamilyId) {
+      await prisma.tenant.update({
+        where: { id: t.id },
+        data: { portalFamilyId },
+      });
+      migrated++;
+    }
+  }
+  if (migrated > 0) console.log(`✅ Migrated ${migrated} existing tenants to portal families`);
+  else console.log('ℹ️  No existing tenants needed migration');
+}
+
+async function runAll() {
+  await main();
+  await migrateExistingTenants();
+}
+
+runAll()
   .catch((e) => { console.error('❌ Seed failed:', e); process.exit(1); })
   .finally(async () => { await prisma.$disconnect(); });

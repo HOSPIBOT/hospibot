@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-interface User {
+export interface User {
   id: string;
   email: string;
   firstName: string;
@@ -9,65 +9,87 @@ interface User {
   branchId?: string;
 }
 
-interface Tenant {
+export interface PortalFamily {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+export interface SubType {
+  id: string;
+  name: string;
+  slug: string;
+  featureFlags: Record<string, boolean>;
+}
+
+export interface Tenant {
   id: string;
   name: string;
   slug: string;
   type: string;
   status?: string;
   plan?: string;
+  logoUrl?: string;
+  portalFamily?: PortalFamily | null;
+  subType?: SubType | null;
+  featureFlags?: Record<string, boolean>;
 }
 
 interface AuthState {
   user: User | null;
   tenant: Tenant | null;
   isAuthenticated: boolean;
+  featureFlags: Record<string, boolean>;
+  portalSlug: string;          // e.g. "clinical", "pharmacy"
   setAuth: (user: User, tenant: Tenant, accessToken: string, refreshToken: string) => void;
   logout: () => void;
   loadFromStorage: () => void;
+  hasFlag: (flag: string) => boolean;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   tenant: null,
   isAuthenticated: false,
+  featureFlags: {},
+  portalSlug: 'clinical',
 
   setAuth: (user, tenant, accessToken, refreshToken) => {
+    const flags = tenant.featureFlags ?? tenant.subType?.featureFlags ?? {};
+    const portalSlug = tenant.portalFamily?.slug ?? 'clinical';
+
     localStorage.setItem('hospibot_access_token', accessToken);
     localStorage.setItem('hospibot_refresh_token', refreshToken);
     localStorage.setItem('hospibot_user', JSON.stringify(user));
     localStorage.setItem('hospibot_tenant', JSON.stringify(tenant));
-    set({ user, tenant, isAuthenticated: true });
+
+    set({ user, tenant, isAuthenticated: true, featureFlags: flags, portalSlug });
   },
 
   logout: () => {
-    localStorage.removeItem('hospibot_access_token');
-    localStorage.removeItem('hospibot_refresh_token');
-    localStorage.removeItem('hospibot_user');
-    localStorage.removeItem('hospibot_tenant');
-    set({ user: null, tenant: null, isAuthenticated: false });
+    ['hospibot_access_token','hospibot_refresh_token','hospibot_user','hospibot_tenant'].forEach(k => localStorage.removeItem(k));
+    set({ user: null, tenant: null, isAuthenticated: false, featureFlags: {}, portalSlug: 'clinical' });
     window.location.href = '/auth/login';
   },
 
   loadFromStorage: () => {
     try {
-      const token = localStorage.getItem('hospibot_access_token');
+      const token   = localStorage.getItem('hospibot_access_token');
       const userStr = localStorage.getItem('hospibot_user');
       const tenantStr = localStorage.getItem('hospibot_tenant');
-
       if (token && userStr && tenantStr) {
-        set({
-          user: JSON.parse(userStr),
-          tenant: JSON.parse(tenantStr),
-          isAuthenticated: true,
-        });
+        const tenant = JSON.parse(tenantStr) as Tenant;
+        const flags  = tenant.featureFlags ?? tenant.subType?.featureFlags ?? {};
+        const slug   = tenant.portalFamily?.slug ?? 'clinical';
+        set({ user: JSON.parse(userStr), tenant, isAuthenticated: true, featureFlags: flags, portalSlug: slug });
       }
     } catch {
-      // Corrupted storage - clear everything
-      localStorage.removeItem('hospibot_access_token');
-      localStorage.removeItem('hospibot_refresh_token');
-      localStorage.removeItem('hospibot_user');
-      localStorage.removeItem('hospibot_tenant');
+      ['hospibot_access_token','hospibot_refresh_token','hospibot_user','hospibot_tenant'].forEach(k => localStorage.removeItem(k));
     }
+  },
+
+  hasFlag: (flag: string) => {
+    const flags = get().featureFlags;
+    return flags[flag] === true;
   },
 }));
