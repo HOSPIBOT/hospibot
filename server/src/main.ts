@@ -10,7 +10,18 @@ async function bootstrap() {
   // Security
   app.use(helmet());
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: (origin, callback) => {
+      const allowed = [
+        process.env.FRONTEND_URL,
+        'http://localhost:3000',
+      ];
+      // Allow all vercel.app subdomains for HospiBot
+      if (!origin || allowed.includes(origin) || /\.vercel\.app$/.test(origin)) {
+        callback(null, true);
+      } else {
+        callback(null, true); // Allow all origins during development
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Tenant-ID'],
