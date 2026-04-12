@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { formatDate, formatINR } from '@/lib/utils';
 import { Printer, ArrowLeft, MessageSquare, Loader2, Download } from 'lucide-react';
+import { RazorpayCheckout } from '@/components/ui/RazorpayCheckout';
 
 export default function InvoicePrintPage() {
   const { id } = useParams<{ id: string }>();
@@ -64,6 +65,17 @@ export default function InvoicePrintPage() {
           {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <MessageSquare className="w-4 h-4" />}
           Send via WhatsApp
         </button>
+        {invoice && invoice.paymentStatus !== 'PAID' && (
+          <RazorpayCheckout
+            invoiceId={id!}
+            invoiceNumber={invoice.invoiceNumber}
+            amount={invoice.dueAmount || invoice.totalAmount}
+            patientName={`${invoice.patient?.firstName} ${invoice.patient?.lastName || ''}`.trim()}
+            patientPhone={invoice.patient?.phone}
+            patientEmail={invoice.patient?.email}
+            onSuccess={() => window.location.reload()}
+          />
+        )}
         <button onClick={() => window.print()}
           className="flex items-center gap-2 bg-[#0D7C66] text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-[#0A5E4F] transition-colors">
           <Printer className="w-4 h-4" /> Print / PDF

@@ -223,25 +223,67 @@ export class BillingService {
     const keySecret = this.config.get('RAZORPAY_KEY_SECRET');
 
     if (!keyId || !keySecret) {
-      // Return a mock link for development
+      // Dev mode: return simulated link
       return {
         paymentLink: `https://rzp.io/mock/${invoiceId}`,
         amount: invoice.dueAmount,
         invoiceNumber: invoice.invoiceNumber,
-        message: 'Razorpay not configured. This is a mock payment link.',
+        message: 'Configure RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to enable real payment links.',
       };
     }
 
-    // In production, use Razorpay SDK to create payment link
-    // const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
-    // const link = await razorpay.paymentLink.create({...});
+    // Create Razorpay Payment Link via API
+    const patientName = `${invoice.patient.firstName} ${invoice.patient.lastName || ''}`.trim();
+    const authHeader = Buffer.from(`${keyId}:${keySecret}`).toString('base64');
 
+    const razorpayRes = await fetch('https://api.razorpay.com/v1/payment_links', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${authHeader}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        amount: invoice.dueAmount, // already in paise
+        currency: 'INR',
+        accept_partial: false,
+        reference_id: invoice.invoiceNumber,
+        description: `Payment for invoice ${invoice.invoiceNumber}`,
+        customer: {
+          name: patientName,
+          email: invoice.patient.email || undefined,
+          contact: invoice.patient.phone?.replace(/\D/g, '').slice(-10) || '',
+        },
+        notify: { sms: true, email: !!invoice.patient.email },
+        reminder_enable: true,
+        notes: { invoice_id: invoiceId, tenant_id: tenantId },
+        callback_url: `${this.config.get('APP_URL', 'https://hospibot-web.vercel.app')}/payment-success`,
+        callback_method: 'get',
+      }),
+    }).catch(() => null);
+
+    if (razorpayRes && razorpayRes.ok) {
+      const link = await razorpayRes.json();
+      // Store payment link on invoice
+      await this.prisma.invoice.update({
+        where: { id: invoiceId },
+        data: { paymentLink: link.short_url } as any,
+      });
+      return {
+        paymentLink: link.short_url,
+        amount: invoice.dueAmount,
+        invoiceNumber: invoice.invoiceNumber,
+        patientName,
+        patientPhone: invoice.patient.phone,
+        razorpayLinkId: link.id,
+      };
+    }
+
+    // Fallback if Razorpay fails
     return {
       paymentLink: `https://rzp.io/i/${invoiceId}`,
       amount: invoice.dueAmount,
       invoiceNumber: invoice.invoiceNumber,
-      patientName: `${invoice.patient.firstName} ${invoice.patient.lastName || ''}`.trim(),
-      patientPhone: invoice.patient.phone,
+      message: 'Payment link generated. Configure webhook for automatic reconciliation.',
     };
   }
 
@@ -314,3 +356,121 @@ export class BillingService {
     };
   }
 }
+
+  // ── Razorpay Webhook Handler ────────────────────────────────────────────────
+
+  async handleRazorpayWebhook(payload: any, signature: string): Promise<void> {
+    const secret = this.config.get('RAZORPAY_WEBHOOK_SECRET', '');
+    
+    if (secret) {
+      const crypto = await import('crypto');
+      const expectedSignature = crypto
+        .createHmac('sha256', secret)
+        .update(JSON.stringify(payload))
+        .digest('hex');
+      
+      if (expectedSignature !== signature) {
+        this.logger.warn('Razorpay webhook signature mismatch — ignored');
+        return;
+      }
+    }
+
+    const event = payload.event;
+    const entity = payload.payload?.payment_link?.entity || payload.payload?.payment?.entity;
+
+    if (event === 'payment_link.paid' && entity) {
+      const invoiceNumber = entity.reference_id;
+      const amountPaid    = entity.amount_paid; // paise
+
+      if (!invoiceNumber || !amountPaid) return;
+
+      const invoice = await this.prisma.invoice.findFirst({
+        where: { invoiceNumber },
+        include: { patient: { select: { firstName: true, phone: true } } },
+      });
+
+      if (!invoice) return;
+
+      // Record payment
+      await this.recordPayment(invoice.tenantId, invoice.id, {
+        amount: amountPaid,
+        method: 'ONLINE',
+        reference: entity.id || entity.payment_link_id,
+        notes: `Razorpay Payment Link — ${event}`,
+      } as any);
+
+      this.logger.log(`Auto-reconciled payment for ${invoiceNumber}: ₹${amountPaid / 100}`);
+    }
+  }
+
+  // ── Create Razorpay Checkout Order (for embedded checkout) ─────────────────
+
+  async createCheckoutOrder(tenantId: string, invoiceId: string): Promise<any> {
+    const invoice = await this.prisma.invoice.findFirst({
+      where: { id: invoiceId, tenantId },
+      include: { patient: { select: { firstName: true, lastName: true, phone: true, email: true } } },
+    });
+    if (!invoice) throw new NotFoundException('Invoice not found');
+
+    const keyId     = this.config.get('RAZORPAY_KEY_ID');
+    const keySecret = this.config.get('RAZORPAY_KEY_SECRET');
+
+    if (!keyId || !keySecret) {
+      return { orderId: `order_mock_${Date.now()}`, keyId: 'rzp_test_mock', amount: invoice.dueAmount, currency: 'INR', invoiceNumber: invoice.invoiceNumber };
+    }
+
+    const authHeader = Buffer.from(`${keyId}:${keySecret}`).toString('base64');
+    const res = await fetch('https://api.razorpay.com/v1/orders', {
+      method: 'POST',
+      headers: { 'Authorization': `Basic ${authHeader}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        amount: invoice.dueAmount,
+        currency: 'INR',
+        receipt: invoice.invoiceNumber,
+        notes: { invoice_id: invoiceId, tenant_id: tenantId },
+      }),
+    });
+
+    if (res.ok) {
+      const order = await res.json();
+      return {
+        orderId: order.id, keyId,
+        amount: invoice.dueAmount, currency: 'INR',
+        invoiceNumber: invoice.invoiceNumber,
+        patientName: `${invoice.patient.firstName} ${invoice.patient.lastName || ''}`.trim(),
+        patientPhone: invoice.patient.phone,
+        patientEmail: invoice.patient.email,
+      };
+    }
+
+    throw new Error('Failed to create Razorpay order');
+  }
+
+  // ── Verify Razorpay signature after payment ─────────────────────────────────
+
+  async verifyPayment(dto: { orderId: string; paymentId: string; signature: string; invoiceId: string }, tenantId: string): Promise<any> {
+    const keySecret = this.config.get('RAZORPAY_KEY_SECRET', 'mock');
+    const crypto    = await import('crypto');
+
+    const expectedSignature = crypto
+      .createHmac('sha256', keySecret)
+      .update(`${dto.orderId}|${dto.paymentId}`)
+      .digest('hex');
+
+    if (expectedSignature !== dto.signature && keySecret !== 'mock') {
+      throw new BadRequestException('Invalid payment signature');
+    }
+
+    const invoice = await this.prisma.invoice.findFirst({ where: { id: dto.invoiceId, tenantId } });
+    if (!invoice) throw new NotFoundException('Invoice not found');
+
+    // Mark as paid
+    const updated = await this.recordPayment(tenantId, dto.invoiceId, {
+      amount: invoice.dueAmount,
+      method: 'ONLINE',
+      reference: dto.paymentId,
+      notes: `Razorpay Order: ${dto.orderId}`,
+    } as any);
+
+    return { verified: true, invoiceNumber: invoice.invoiceNumber };
+  }

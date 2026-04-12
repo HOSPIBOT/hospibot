@@ -8,8 +8,9 @@ import toast from 'react-hot-toast';
 import {
   Activity, Heart, Thermometer, Wind, Ruler, Weight,
   Stethoscope, Pill, CreditCard, CheckCircle2, ArrowLeft,
-  Loader2, Plus, X, Save, Send, Clock, AlertTriangle, User,
+  Loader2, Plus, X, Save, Send, Clock, AlertTriangle, Mic,
 } from 'lucide-react';
+import { DictationTextarea } from '@/components/ui/DictationButton';
 
 const inputCls = 'w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-white focus:border-[#0D7C66] focus:ring-2 focus:ring-[#0D7C66]/10 outline-none transition-all placeholder:text-slate-400';
 const sectionCls = 'bg-white rounded-2xl border border-slate-100 p-5 space-y-4';
@@ -346,10 +347,10 @@ export default function VisitConsolePage() {
             </h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Chief Complaints</label>
-                <textarea className={`${inputCls} resize-none`} rows={2}
+                <DictationTextarea
+                  label="Chief Complaints"
                   placeholder="Fever for 3 days, headache, sore throat…"
-                  value={chiefComplaint} onChange={e => setChiefComplaint(e.target.value)} />
+                  rows={2} value={chiefComplaint} onChange={setChiefComplaint} />
               </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Diagnosis / Impression</label>
@@ -367,16 +368,16 @@ export default function VisitConsolePage() {
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Clinical Notes / Examination</label>
-                <textarea className={`${inputCls} resize-none`} rows={3}
+                <DictationTextarea
+                  label="Clinical Notes / Examination"
                   placeholder="Throat congested, bilateral rhonchi, mild dehydration…"
-                  value={clinicalNotes} onChange={e => setClinicalNotes(e.target.value)} />
+                  rows={3} value={clinicalNotes} onChange={setClinicalNotes} />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Treatment Plan / Advice</label>
-                <textarea className={`${inputCls} resize-none`} rows={3}
+                <DictationTextarea
+                  label="Treatment Plan / Advice"
                   placeholder="Rest for 3 days, drink ORS, steam inhalation TDS…"
-                  value={treatmentPlan} onChange={e => setTreatmentPlan(e.target.value)} />
+                  rows={3} value={treatmentPlan} onChange={setTreatmentPlan} />
               </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Follow-Up (days)</label>
