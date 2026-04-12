@@ -1,1 +1,1 @@
-register-tenant.dto.ts
+export { CreateUserDto } from './register-tenant.dto';

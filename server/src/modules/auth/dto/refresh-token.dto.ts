@@ -1,1 +1,1 @@
-register-tenant.dto.ts
+export { RefreshTokenDto } from './register-tenant.dto';
