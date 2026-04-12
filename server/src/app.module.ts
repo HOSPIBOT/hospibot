@@ -18,6 +18,7 @@ import { SuperAdminModule } from './modules/super-admin/super-admin.module';
 import { PortalModule } from './modules/portal/portal.module';
 import { ChatbotModule } from './modules/chatbot/chatbot.module';
 import { SchedulerModule } from './modules/scheduler/scheduler.module';
+import { VaultModule } from './modules/vault/vault.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { SchedulerModule } from './modules/scheduler/scheduler.module';
     PortalModule,
     ChatbotModule,
     SchedulerModule,
+    VaultModule,
   ],
   controllers: [HealthController],
 })

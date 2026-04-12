@@ -28,7 +28,7 @@ export class PatientService {
       healthId = this.generateHealthId();
     }
 
-    return this.prisma.patient.create({
+    const patient = await this.prisma.patient.create({
       data: {
         tenantId,
         healthId,
@@ -52,6 +52,39 @@ export class PatientService {
         notes: dto.notes,
       },
     });
+
+    // Auto-link to Universal Health Vault (non-blocking)
+    setImmediate(async () => {
+      try {
+        const { VaultService } = await import('../vault/vault.service');
+        // Trigger via direct DB operation to avoid circular deps
+        const normalized = dto.phone.replace(/\D/g, '').slice(-10);
+        const fullNumber = `+91${normalized}`;
+        const existingUhr = await this.prisma.universalHealthRecord.findFirst({
+          where: { OR: [{ mobileNumber: fullNumber }, { mobileNumber: dto.phone }] },
+        });
+        if (!existingUhr) {
+          const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+          let uhId = 'HB-';
+          for (let i = 0; i < 8; i++) uhId += chars[Math.floor(Math.random() * chars.length)];
+          await this.prisma.universalHealthRecord.create({
+            data: {
+              mobileNumber: fullNumber,
+              hospibot_health_id: uhId,
+              firstName: dto.firstName,
+              lastName: dto.lastName,
+              dateOfBirth: dto.dateOfBirth ? new Date(dto.dateOfBirth) : undefined,
+              gender: dto.gender,
+              bloodGroup: dto.bloodGroup,
+              allergies: dto.allergies || [],
+              chronicConditions: dto.chronicConditions || [],
+            },
+          });
+        }
+      } catch { /* non-blocking */ }
+    });
+
+    return patient;
   }
 
   async findById(tenantId: string, id: string) {

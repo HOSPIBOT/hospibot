@@ -33,6 +33,7 @@ const NAV_BY_PORTAL: Record<string, NavItem[]> = {
     { href: 'patients',     label: 'Patients',       icon: Users,           flag: 'patients' },
     { href: 'doctors',      label: 'Doctors',        icon: Stethoscope,     flag: 'doctors' },
     { href: 'billing',      label: 'Billing',        icon: CreditCard,      flag: 'billing' },
+    { href: 'vault',        label: 'Health Vault',   icon: Shield,          always: true },
     { href: 'crm',          label: 'CRM / Leads',    icon: TrendingUp,      flag: 'crm', always: true },
     { href: 'automation',   label: 'Revenue Engine', icon: Zap,             flag: 'whatsapp' },
     { href: 'analytics',    label: 'Analytics',      icon: BarChart3,       always: true },
