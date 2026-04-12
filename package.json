@@ -1,0 +1,29 @@
+{
+  "name": "hospibot",
+  "version": "0.1.0",
+  "private": true,
+  "description": "HospiBot - Global WhatsApp-Driven Healthcare Operating System",
+  "workspaces": [
+    "apps/*",
+    "server",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "dev:web": "cd apps/web && npm run dev",
+    "dev:server": "cd server && npm run start:dev",
+    "db:generate": "cd server && npx prisma generate",
+    "db:migrate": "cd server && npx prisma migrate dev",
+    "db:push": "cd server && npx prisma db push",
+    "db:seed": "cd server && npx prisma db seed",
+    "db:studio": "cd server && npx prisma studio"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

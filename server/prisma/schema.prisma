@@ -1,0 +1,815 @@
+// ==============================================
+// HOSPIBOT DATABASE SCHEMA
+// Multi-tenant healthcare SaaS platform
+// ==============================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==============================================
+// ENUMS
+// ==============================================
+
+enum TenantType {
+  HOSPITAL
+  CLINIC
+  DOCTOR
+  DIAGNOSTIC_CENTER
+  IVF_CENTER
+  PHARMACY
+  HOME_HEALTHCARE
+  EQUIPMENT_VENDOR
+}
+
+enum TenantStatus {
+  ACTIVE
+  TRIAL
+  SUSPENDED
+  CANCELLED
+}
+
+enum PlanType {
+  STARTER
+  GROWTH
+  ENTERPRISE
+}
+
+enum UserRole {
+  SUPER_ADMIN     // Platform-level admin
+  TENANT_ADMIN    // Hospital/clinic admin
+  BRANCH_ADMIN    // Branch-level admin
+  DOCTOR
+  RECEPTIONIST
+  BILLING_STAFF
+  MARKETING_USER
+  LAB_TECHNICIAN
+  PHARMACIST
+  NURSE
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum AppointmentType {
+  SCHEDULED
+  WALK_IN
+  EMERGENCY
+  TELECONSULT
+  FOLLOW_UP
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CHECKED_IN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+  RESCHEDULED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  PARTIALLY_PAID
+  OVERDUE
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  UPI
+  CARD
+  NET_BANKING
+  CASH
+  WHATSAPP_PAY
+  INSURANCE
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+enum LeadStage {
+  NEW
+  CONTACTED
+  APPOINTMENT_BOOKED
+  VISITED
+  FOLLOW_UP_PENDING
+  ACTIVE_PATIENT
+  DORMANT
+  LOST
+}
+
+enum LeadSource {
+  WHATSAPP
+  WEBSITE
+  WALK_IN
+  REFERRAL
+  GOOGLE_ADS
+  FACEBOOK_ADS
+  INSTAGRAM
+  JUSTDIAL
+  PRACTO
+  OTHER
+}
+
+enum MessageDirection {
+  INBOUND
+  OUTBOUND
+}
+
+enum MessageStatus {
+  QUEUED
+  SENT
+  DELIVERED
+  READ
+  FAILED
+}
+
+enum BedCategory {
+  ICU
+  SEMI_ICU
+  GENERAL
+  PRIVATE
+  DELUXE
+  PEDIATRIC
+  MATERNITY
+  ISOLATION
+}
+
+enum BedStatus {
+  AVAILABLE
+  OCCUPIED
+  RESERVED
+  MAINTENANCE
+  HOUSEKEEPING
+}
+
+enum AutomationTrigger {
+  VISIT_COMPLETED
+  DIAGNOSIS_RECORDED
+  MEDICATION_PRESCRIBED
+  TIME_ELAPSED
+  TAG_APPLIED
+  APPOINTMENT_CANCELLED
+  NO_SHOW
+  PAYMENT_RECEIVED
+  LAB_REPORT_READY
+}
+
+enum AutomationAction {
+  SEND_WHATSAPP
+  CREATE_APPOINTMENT
+  UPDATE_CRM_STAGE
+  NOTIFY_STAFF
+  SEND_PAYMENT_LINK
+  ADD_TAG
+  CREATE_TASK
+}
+
+enum LabOrderStatus {
+  ORDERED
+  SAMPLE_COLLECTED
+  PROCESSING
+  COMPLETED
+  DELIVERED
+  CANCELLED
+}
+
+// ==============================================
+// CORE ENTITIES
+// ==============================================
+
+model Tenant {
+  id              String        @id @default(uuid())
+  name            String
+  slug            String        @unique
+  type            TenantType
+  status          TenantStatus  @default(TRIAL)
+  plan            PlanType      @default(STARTER)
+
+  // Contact
+  email           String
+  phone           String
+  website         String?
+
+  // Address
+  address         String?
+  city            String?
+  state           String?
+  country         String        @default("India")
+  pincode         String?
+
+  // WhatsApp
+  waPhoneNumberId String?       @map("wa_phone_number_id")
+  waBusinessId    String?       @map("wa_business_id")
+  waAccessToken   String?       @map("wa_access_token")
+
+  // Branding
+  logoUrl         String?       @map("logo_url")
+  primaryColor    String        @default("0D7C66")
+  settings        Json          @default("{}")
+
+  // Billing
+  gstNumber       String?       @map("gst_number")
+
+  // Timestamps
+  trialEndsAt     DateTime?     @map("trial_ends_at")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+  deletedAt       DateTime?     @map("deleted_at")
+
+  // Relations
+  branches        Branch[]
+  users           User[]
+  departments     Department[]
+  patients        Patient[]
+  doctors         Doctor[]
+  appointments    Appointment[]
+  invoices        Invoice[]
+  conversations   Conversation[]
+  leads           Lead[]
+  automationRules AutomationRule[]
+  campaigns       Campaign[]
+  beds            Bed[]
+  labOrders       LabOrder[]
+
+  @@map("tenants")
+}
+
+model Branch {
+  id          String    @id @default(uuid())
+  tenantId    String    @map("tenant_id")
+  name        String
+  code        String?
+  address     String?
+  city        String?
+  state       String?
+  country     String    @default("India")
+  pincode     String?
+  phone       String?
+  email       String?
+  timezone    String    @default("Asia/Kolkata")
+  isActive    Boolean   @default(true) @map("is_active")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  tenant      Tenant    @relation(fields: [tenantId], references: [id])
+
+  departments Department[]
+  users       User[]
+  appointments Appointment[]
+  beds        Bed[]
+
+  @@unique([tenantId, code])
+  @@map("branches")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  tenantId      String    @map("tenant_id")
+  branchId      String?   @map("branch_id")
+  email         String
+  phone         String?
+  passwordHash  String    @map("password_hash")
+  firstName     String    @map("first_name")
+  lastName      String?   @map("last_name")
+  role          UserRole
+  avatarUrl     String?   @map("avatar_url")
+  isActive      Boolean   @default(true) @map("is_active")
+  lastLoginAt   DateTime? @map("last_login_at")
+  permissions   Json      @default("{}") // Granular permission overrides
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  tenant        Tenant    @relation(fields: [tenantId], references: [id])
+  branch        Branch?   @relation(fields: [branchId], references: [id])
+  doctor        Doctor?
+
+  @@unique([tenantId, email])
+  @@map("users")
+}
+
+model Department {
+  id          String    @id @default(uuid())
+  tenantId    String    @map("tenant_id")
+  branchId    String?   @map("branch_id")
+  name        String
+  code        String?
+  type        String?   // clinical, ancillary, administrative
+  isActive    Boolean   @default(true) @map("is_active")
+  settings    Json      @default("{}")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  tenant      Tenant    @relation(fields: [tenantId], references: [id])
+  branch      Branch?   @relation(fields: [branchId], references: [id])
+  doctors     Doctor[]
+  appointments Appointment[]
+
+  @@unique([tenantId, branchId, code])
+  @@map("departments")
+}
+
+model Doctor {
+  id                String    @id @default(uuid())
+  tenantId          String    @map("tenant_id")
+  userId            String    @unique @map("user_id")
+  departmentId      String?   @map("department_id")
+  registrationNo    String?   @map("registration_no")
+  specialties       String[]  @default([])
+  qualifications    String?
+  experience        Int?      // years
+  consultationFee   Int?      @map("consultation_fee") // in paise (INR smallest unit)
+  bio               String?
+  isAvailable       Boolean   @default(true) @map("is_available")
+  slotDuration      Int       @default(15) @map("slot_duration") // minutes
+  settings          Json      @default("{}") // working hours, break times, etc.
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  tenant            Tenant    @relation(fields: [tenantId], references: [id])
+  user              User      @relation(fields: [userId], references: [id])
+  department        Department? @relation(fields: [departmentId], references: [id])
+  appointments      Appointment[]
+  prescriptions     Prescription[]
+
+  @@map("doctors")
+}
+
+// ==============================================
+// PATIENT & HEALTH VAULT
+// ==============================================
+
+model Patient {
+  id              String    @id @default(uuid())
+  tenantId        String    @map("tenant_id")
+  healthId        String?   @unique @map("health_id") // HB-XXXXXXXX
+  abhaId          String?   @map("abha_id")
+
+  // Demographics
+  firstName       String    @map("first_name")
+  lastName        String?   @map("last_name")
+  phone           String
+  email           String?
+  dateOfBirth     DateTime? @map("date_of_birth")
+  gender          Gender?
+  bloodGroup      String?   @map("blood_group")
+
+  // Address
+  address         String?
+  city            String?
+  state           String?
+  pincode         String?
+
+  // Medical
+  allergies       String[]  @default([])
+  chronicConditions String[] @default([]) @map("chronic_conditions")
+  currentMedications Json   @default("[]") @map("current_medications")
+  emergencyContact Json?    @map("emergency_contact")
+
+  // Insurance
+  insuranceProvider String? @map("insurance_provider")
+  insurancePolicyNo String? @map("insurance_policy_no")
+
+  // CRM
+  tags            String[]  @default([])
+  notes           String?
+  language        String    @default("en")
+
+  // Timestamps
+  lastVisitAt     DateTime? @map("last_visit_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  deletedAt       DateTime? @map("deleted_at")
+
+  // Relations
+  tenant          Tenant    @relation(fields: [tenantId], references: [id])
+  appointments    Appointment[]
+  visits          Visit[]
+  invoices        Invoice[]
+  conversations   Conversation[]
+  leads           Lead[]
+  prescriptions   Prescription[]
+  labOrders       LabOrder[]
+
+  @@unique([tenantId, phone])
+  @@index([phone])
+  @@index([healthId])
+  @@map("patients")
+}
+
+model Visit {
+  id              String    @id @default(uuid())
+  tenantId        String    @map("tenant_id")
+  patientId       String    @map("patient_id")
+  appointmentId   String?   @map("appointment_id")
+  doctorId        String?   @map("doctor_id")
+
+  // Clinical
+  chiefComplaint  String?   @map("chief_complaint")
+  vitals          Json      @default("{}") // BP, pulse, temp, SpO2, weight, height
+  diagnosisCodes  String[]  @default([]) @map("diagnosis_codes") // ICD-10
+  diagnosisText   String?   @map("diagnosis_text")
+  clinicalNotes   String?   @map("clinical_notes")
+  treatmentPlan   String?   @map("treatment_plan")
+  followUpDays    Int?      @map("follow_up_days")
+
+  // Metadata
+  visitType       String?   @map("visit_type") // OPD, IPD, Emergency
+  source          String?   // dictation, manual, imported
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  patient         Patient   @relation(fields: [patientId], references: [id])
+  prescriptions   Prescription[]
+  invoices        Invoice[]
+
+  @@map("visits")
+}
+
+model Prescription {
+  id              String    @id @default(uuid())
+  tenantId        String    @map("tenant_id")
+  patientId       String    @map("patient_id")
+  doctorId        String    @map("doctor_id")
+  visitId         String?   @map("visit_id")
+
+  medications     Json      @default("[]") // [{name, generic, dosage, frequency, duration, route, instructions}]
+  notes           String?
+  pdfUrl          String?   @map("pdf_url")
+  refillDueDate   DateTime? @map("refill_due_date")
+  isActive        Boolean   @default(true) @map("is_active")
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  patient         Patient   @relation(fields: [patientId], references: [id])
+  doctor          Doctor    @relation(fields: [doctorId], references: [id])
+  visit           Visit?    @relation(fields: [visitId], references: [id])
+
+  @@map("prescriptions")
+}
+
+// ==============================================
+// APPOINTMENTS & QUEUE
+// ==============================================
+
+model Appointment {
+  id              String            @id @default(uuid())
+  tenantId        String            @map("tenant_id")
+  branchId        String?           @map("branch_id")
+  patientId       String            @map("patient_id")
+  doctorId        String            @map("doctor_id")
+  departmentId    String?           @map("department_id")
+
+  type            AppointmentType   @default(SCHEDULED)
+  status          AppointmentStatus @default(PENDING)
+  tokenNumber     String?           @map("token_number")
+
+  scheduledAt     DateTime          @map("scheduled_at")
+  duration        Int               @default(15) // minutes
+  checkedInAt     DateTime?         @map("checked_in_at")
+  startedAt       DateTime?         @map("started_at")
+  completedAt     DateTime?         @map("completed_at")
+  cancelledAt     DateTime?         @map("cancelled_at")
+  cancelReason    String?           @map("cancel_reason")
+
+  notes           String?
+  source          String?           // whatsapp, web, walk-in, phone
+
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+
+  tenant          Tenant            @relation(fields: [tenantId], references: [id])
+  branch          Branch?           @relation(fields: [branchId], references: [id])
+  patient         Patient           @relation(fields: [patientId], references: [id])
+  doctor          Doctor            @relation(fields: [doctorId], references: [id])
+  department      Department?       @relation(fields: [departmentId], references: [id])
+
+  @@index([tenantId, scheduledAt])
+  @@index([doctorId, scheduledAt])
+  @@map("appointments")
+}
+
+// ==============================================
+// BILLING & PAYMENTS
+// ==============================================
+
+model Invoice {
+  id              String        @id @default(uuid())
+  tenantId        String        @map("tenant_id")
+  patientId       String        @map("patient_id")
+  visitId         String?       @map("visit_id")
+  invoiceNumber   String        @map("invoice_number")
+
+  items           Json          @default("[]") // [{description, qty, rate, amount, department, gstRate}]
+  subtotal        Int           @default(0) // paise
+  gstAmount       Int           @default(0) @map("gst_amount")
+  discount        Int           @default(0)
+  totalAmount     Int           @default(0) @map("total_amount")
+  paidAmount      Int           @default(0) @map("paid_amount")
+  dueAmount       Int           @default(0) @map("due_amount")
+
+  status          InvoiceStatus @default(DRAFT)
+  dueDate         DateTime?     @map("due_date")
+  pdfUrl          String?       @map("pdf_url")
+  notes           String?
+
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  tenant          Tenant        @relation(fields: [tenantId], references: [id])
+  patient         Patient       @relation(fields: [patientId], references: [id])
+  visit           Visit?        @relation(fields: [visitId], references: [id])
+  payments        Payment[]
+
+  @@unique([tenantId, invoiceNumber])
+  @@map("invoices")
+}
+
+model Payment {
+  id              String        @id @default(uuid())
+  tenantId        String        @map("tenant_id")
+  invoiceId       String        @map("invoice_id")
+  amount          Int           // paise
+  method          PaymentMethod
+  status          PaymentStatus @default(PENDING)
+
+  gatewayOrderId  String?       @map("gateway_order_id")
+  gatewayPaymentId String?     @map("gateway_payment_id")
+  gatewaySignature String?     @map("gateway_signature")
+
+  paidAt          DateTime?     @map("paid_at")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  invoice         Invoice       @relation(fields: [invoiceId], references: [id])
+
+  @@map("payments")
+}
+
+// ==============================================
+// WHATSAPP & CONVERSATIONS
+// ==============================================
+
+model Conversation {
+  id              String    @id @default(uuid())
+  tenantId        String    @map("tenant_id")
+  patientId       String?   @map("patient_id")
+  waContactPhone  String    @map("wa_contact_phone")
+  waContactName   String?   @map("wa_contact_name")
+
+  assignedTo      String?   @map("assigned_to") // userId
+  department      String?
+  isBot           Boolean   @default(true) @map("is_bot") // bot handling or human
+  isClosed        Boolean   @default(false) @map("is_closed")
+
+  lastMessageAt   DateTime? @map("last_message_at")
+  messageCount    Int       @default(0) @map("message_count")
+  unreadCount     Int       @default(0) @map("unread_count")
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  tenant          Tenant    @relation(fields: [tenantId], references: [id])
+  patient         Patient?  @relation(fields: [patientId], references: [id])
+  messages        Message[]
+
+  @@unique([tenantId, waContactPhone])
+  @@map("conversations")
+}
+
+model Message {
+  id              String           @id @default(uuid())
+  conversationId  String           @map("conversation_id")
+  direction       MessageDirection
+  content         String?
+  mediaUrl        String?          @map("media_url")
+  mediaType       String?          @map("media_type") // image, document, audio, video
+  templateName    String?          @map("template_name")
+
+  waMessageId     String?          @unique @map("wa_message_id")
+  status          MessageStatus    @default(QUEUED)
+
+  senderType      String?          @map("sender_type") // patient, bot, staff
+  senderUserId    String?          @map("sender_user_id")
+
+  createdAt       DateTime         @default(now()) @map("created_at")
+
+  conversation    Conversation     @relation(fields: [conversationId], references: [id])
+
+  @@index([conversationId, createdAt])
+  @@map("messages")
+}
+
+// ==============================================
+// CRM & LEADS
+// ==============================================
+
+model Lead {
+  id              String    @id @default(uuid())
+  tenantId        String    @map("tenant_id")
+  patientId       String?   @map("patient_id")
+
+  name            String?
+  phone           String
+  email           String?
+
+  source          LeadSource @default(WHATSAPP)
+  stage           LeadStage  @default(NEW)
+  campaignId      String?    @map("campaign_id")
+
+  assignedTo      String?    @map("assigned_to") // userId
+  tags            String[]   @default([])
+  notes           String?
+  score           Int        @default(0)
+
+  lastContactAt   DateTime?  @map("last_contact_at")
+  convertedAt     DateTime?  @map("converted_at")
+  lostReason      String?    @map("lost_reason")
+
+  createdAt       DateTime   @default(now()) @map("created_at")
+  updatedAt       DateTime   @updatedAt @map("updated_at")
+
+  tenant          Tenant     @relation(fields: [tenantId], references: [id])
+  patient         Patient?   @relation(fields: [patientId], references: [id])
+  campaign        Campaign?  @relation(fields: [campaignId], references: [id])
+
+  @@index([tenantId, stage])
+  @@map("leads")
+}
+
+model Campaign {
+  id              String    @id @default(uuid())
+  tenantId        String    @map("tenant_id")
+  name            String
+  templateName    String    @map("template_name")
+  filters         Json      @default("{}") // {tags, lastVisitBefore, diagnosisCodes, etc.}
+
+  // Stats
+  targetCount     Int       @default(0) @map("target_count")
+  sentCount       Int       @default(0) @map("sent_count")
+  deliveredCount  Int       @default(0) @map("delivered_count")
+  readCount       Int       @default(0) @map("read_count")
+  respondedCount  Int       @default(0) @map("responded_count")
+  convertedCount  Int       @default(0) @map("converted_count")
+
+  scheduledAt     DateTime? @map("scheduled_at")
+  executedAt      DateTime? @map("executed_at")
+  status          String    @default("draft") // draft, scheduled, executing, completed, cancelled
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  tenant          Tenant    @relation(fields: [tenantId], references: [id])
+  leads           Lead[]
+
+  @@map("campaigns")
+}
+
+// ==============================================
+// AUTOMATION / REVENUE ENGINE
+// ==============================================
+
+model AutomationRule {
+  id              String    @id @default(uuid())
+  tenantId        String    @map("tenant_id")
+  name            String
+  description     String?
+  isActive        Boolean   @default(true) @map("is_active")
+
+  trigger         AutomationTrigger
+  conditions      Json      @default("{}") // {diagnosisCodes, tags, ageRange, etc.}
+  waitDays        Int       @default(30) @map("wait_days")
+  actions         Json      @default("[]") // [{type, template, message, etc.}]
+  escalation      Json      @default("{}") // {retryAfterDays, maxRetries, escalateTo}
+
+  // Stats
+  triggeredCount  Int       @default(0) @map("triggered_count")
+  convertedCount  Int       @default(0) @map("converted_count")
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  tenant          Tenant    @relation(fields: [tenantId], references: [id])
+  logs            AutomationLog[]
+
+  @@map("automation_rules")
+}
+
+model AutomationLog {
+  id              String    @id @default(uuid())
+  ruleId          String    @map("rule_id")
+  patientId       String    @map("patient_id")
+  tenantId        String    @map("tenant_id")
+
+  actionTaken     String    @map("action_taken")
+  result          String?   // sent, booked, no_response, failed
+  responseAt      DateTime? @map("response_at")
+
+  executedAt      DateTime  @default(now()) @map("executed_at")
+
+  rule            AutomationRule @relation(fields: [ruleId], references: [id])
+
+  @@index([ruleId, executedAt])
+  @@map("automation_logs")
+}
+
+// ==============================================
+// BED MANAGEMENT
+// ==============================================
+
+model Bed {
+  id              String      @id @default(uuid())
+  tenantId        String      @map("tenant_id")
+  branchId        String      @map("branch_id")
+
+  ward            String
+  number          String
+  category        BedCategory @default(GENERAL)
+  status          BedStatus   @default(AVAILABLE)
+
+  patientId       String?     @map("patient_id")
+  admittedAt      DateTime?   @map("admitted_at")
+  expectedDischarge DateTime? @map("expected_discharge")
+
+  dailyRate       Int         @default(0) @map("daily_rate") // paise
+  notes           String?
+
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  tenant          Tenant      @relation(fields: [tenantId], references: [id])
+  branch          Branch      @relation(fields: [branchId], references: [id])
+
+  @@unique([tenantId, branchId, ward, number])
+  @@map("beds")
+}
+
+// ==============================================
+// LAB & DIAGNOSTICS
+// ==============================================
+
+model LabOrder {
+  id              String         @id @default(uuid())
+  tenantId        String         @map("tenant_id")
+  patientId       String         @map("patient_id")
+  doctorId        String?        @map("doctor_id")
+  orderNumber     String         @map("order_number")
+
+  tests           Json           @default("[]") // [{testName, testCode, result, normalRange, unit, flag}]
+  status          LabOrderStatus @default(ORDERED)
+
+  sampleCollectedAt DateTime?    @map("sample_collected_at")
+  reportedAt      DateTime?      @map("reported_at")
+  reportUrl       String?        @map("report_url")
+  reportDelivered Boolean        @default(false) @map("report_delivered")
+
+  notes           String?
+  priority        String         @default("normal") // normal, urgent, stat
+
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @updatedAt @map("updated_at")
+
+  tenant          Tenant         @relation(fields: [tenantId], references: [id])
+  patient         Patient        @relation(fields: [patientId], references: [id])
+
+  @@unique([tenantId, orderNumber])
+  @@map("lab_orders")
+}
+
+// ==============================================
+// AUDIT LOG
+// ==============================================
+
+model AuditLog {
+  id          String    @id @default(uuid())
+  tenantId    String    @map("tenant_id")
+  userId      String?   @map("user_id")
+  action      String    // CREATE, READ, UPDATE, DELETE, EXPORT, LOGIN
+  entity      String    // patient, appointment, invoice, etc.
+  entityId    String?   @map("entity_id")
+  changes     Json?     // {before, after}
+  ipAddress   String?   @map("ip_address")
+  userAgent   String?   @map("user_agent")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@index([tenantId, entity, createdAt])
+  @@map("audit_logs")
+}

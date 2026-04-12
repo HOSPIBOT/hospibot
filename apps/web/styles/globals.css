@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: #0D7C66;
+    --color-primary-dark: #0A5E4F;
+    --color-primary-light: #E8F5F0;
+    --color-accent: #F59E0B;
+    --color-whatsapp: #25D366;
+    --color-text: #1E293B;
+    --color-text-secondary: #64748B;
+    --color-surface: #F8FAFC;
+    --color-border: #E2E8F0;
+  }
+
+  body {
+    @apply bg-surface text-slate-800 antialiased;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-500 text-white px-4 py-2 rounded-lg font-medium
+           hover:bg-primary-600 transition-colors duration-200
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-accent {
+    @apply bg-accent-500 text-white px-4 py-2 rounded-lg font-medium
+           hover:bg-accent-600 transition-colors duration-200
+           focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2;
+  }
+
+  .btn-outline {
+    @apply border border-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium
+           hover:bg-gray-50 transition-colors duration-200;
+  }
+
+  .btn-whatsapp {
+    @apply bg-whatsapp text-white px-4 py-2 rounded-lg font-medium
+           hover:bg-whatsapp-dark transition-colors duration-200;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl border border-gray-100 p-5
+           hover:shadow-lg transition-shadow duration-300;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-2.5 rounded-xl border border-gray-200
+           focus:border-primary-500 focus:ring-2 focus:ring-primary-100
+           outline-none transition-all duration-200
+           placeholder:text-gray-400 text-sm;
+  }
+
+  .sidebar-item {
+    @apply flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium
+           text-gray-600 hover:bg-primary-50 hover:text-primary-600
+           transition-all duration-200 cursor-pointer;
+  }
+
+  .sidebar-item-active {
+    @apply bg-primary-50 text-primary-600;
+  }
+
+  .badge {
+    @apply text-xs px-2 py-0.5 rounded-full font-medium;
+  }
+
+  .badge-success {
+    @apply bg-emerald-100 text-emerald-700;
+  }
+
+  .badge-warning {
+    @apply bg-amber-100 text-amber-700;
+  }
+
+  .badge-danger {
+    @apply bg-red-100 text-red-700;
+  }
+
+  .badge-info {
+    @apply bg-blue-100 text-blue-700;
+  }
+}
