@@ -21,6 +21,7 @@ import { SchedulerModule } from './modules/scheduler/scheduler.module';
 import { VaultModule } from './modules/vault/vault.module';
 import { LabModule } from './modules/lab/lab.module';
 import { PharmacyModule } from './modules/pharmacy/pharmacy.module';
+import { MarketplaceModule } from './modules/marketplace/marketplace.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { PharmacyModule } from './modules/pharmacy/pharmacy.module';
     VaultModule,
     LabModule,
     PharmacyModule,
+    MarketplaceModule,
   ],
   controllers: [HealthController],
 })

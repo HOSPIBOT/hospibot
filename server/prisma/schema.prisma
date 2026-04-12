@@ -1325,3 +1325,69 @@ model PurchaseOrder {
   @@unique([tenantId, orderNumber])
   @@map("purchase_orders")
 }
+
+// ==============================================
+// COMMERCE MARKETPLACE
+// ==============================================
+
+model MarketplaceProduct {
+  id              String   @id @default(uuid())
+  tenantId        String   @map("tenant_id")
+  tenantName      String   @map("tenant_name")
+  portalFamily    String   @map("portal_family")   // pharmacy, equipment, wellness, diagnostic, etc.
+
+  // Product details
+  name            String
+  description     String?
+  category        String
+  subcategory     String?  @map("subcategory")
+  images          String[] @default([])
+  tags            String[] @default([])
+
+  // Pricing
+  price           Int                               // paise
+  mrp             Int?                              // original price (for discount display)
+  currency        String   @default("INR")
+  priceUnit       String   @default("per unit") @map("price_unit") // per unit, per day, per session, etc.
+
+  // Availability
+  inStock         Boolean  @default(true) @map("in_stock")
+  quantity        Int?                              // null = unlimited
+  isAvailable     Boolean  @default(true) @map("is_available")
+  isHomeDelivery  Boolean  @default(false) @map("is_home_delivery")
+  deliveryDays    Int?     @map("delivery_days")
+
+  // Metadata
+  specifications  Json     @default("{}") @map("specifications")
+  featured        Boolean  @default(false)
+  viewCount       Int      @default(0) @map("view_count")
+  orderCount      Int      @default(0) @map("order_count")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@index([portalFamily, category])
+  @@index([tenantId])
+  @@map("marketplace_products")
+}
+
+model MarketplaceOrder {
+  id               String   @id @default(uuid())
+  buyerTenantId    String?  @map("buyer_tenant_id")   // null for public/patient orders
+  buyerPhone       String   @map("buyer_phone")
+  buyerName        String   @map("buyer_name")
+  buyerEmail       String?  @map("buyer_email")
+  buyerAddress     String   @map("buyer_address")
+  buyerCity        String   @map("buyer_city")
+  buyerPincode     String   @map("buyer_pincode")
+  orderNumber      String   @unique @map("order_number")
+  items            Json     @default("[]")             // [{productId, productName, qty, price}]
+  totalAmount      Int      @map("total_amount")
+  status           String   @default("PENDING")        // PENDING|CONFIRMED|SHIPPED|DELIVERED|CANCELLED
+  paymentStatus    String   @default("PENDING") @map("payment_status")
+  notes            String?
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@map("marketplace_orders")
+}

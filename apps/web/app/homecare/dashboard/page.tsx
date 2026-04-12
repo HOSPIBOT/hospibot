@@ -1,91 +1,54 @@
 'use client';
-
-import { useAuthStore } from '@/lib/store';
-import { FALLBACK_THEMES } from '@/lib/portal/portal-types';
-import { Home, Users, Calendar, MessageSquare, ArrowUpRight, TrendingUp, Activity } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { api } from '@/lib/api';
+import { formatINR } from '@/lib/utils';
+import { Home, Users, Calendar, Activity, ArrowUpRight, TrendingUp, CheckCircle2, Clock } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-const revenueData = [
-  { month: 'Oct', value: 180000 }, { month: 'Nov', value: 210000 },
-  { month: 'Dec', value: 195000 }, { month: 'Jan', value: 240000 },
-  { month: 'Feb', value: 268000 }, { month: 'Mar', value: 295000 },
-  { month: 'Apr', value: 318000 },
-];
-
-function KpiCard({ label, value, sub, change, icon: Icon, color }: any) {
-  return (
-    <div className="bg-white rounded-2xl border border-slate-100 p-5 relative overflow-hidden hover:shadow-md transition-shadow">
-      <div className="absolute top-0 right-0 w-20 h-20 rounded-bl-[50px] opacity-[0.07]" style={{ background: color }} />
-      <div className="flex items-start justify-between mb-3">
-        <p className="text-sm text-slate-500 font-medium">{label}</p>
-        <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: `${color}15` }}>
-          <Icon className="w-4.5 h-4.5" style={{ color }} />
-        </div>
-      </div>
-      <p className="text-3xl font-bold text-slate-900 leading-none">{value}</p>
-      {sub && <p className="text-xs text-slate-400 mt-1">{sub}</p>}
-      {change && (
-        <div className="flex items-center gap-1 mt-2 text-xs font-medium text-emerald-600">
-          <ArrowUpRight className="w-3.5 h-3.5" />{change}
-          <span className="text-slate-400 font-normal">vs last week</span>
-        </div>
-      )}
-    </div>
-  );
-}
+const NAV_COLOR = '#6B21A8';
 
 export default function HomecareDashboard() {
-  const { user, tenant } = useAuthStore();
-  const theme = FALLBACK_THEMES['homecare'];
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
+  const [stats, setStats] = useState({ activePatients: 142, todayVisits: 18, pendingVisits: 5, staffDeployed: 12, monthRevenue: 34500000 });
+  const trend = Array.from({length:14},(_,i)=>({ date: new Date(Date.now()-i*86400000).toISOString().split('T')[0].slice(5), visits: Math.floor(Math.random()*20+10) })).reverse();
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">{greeting}, {user?.firstName} 👋</h1>
-        <p className="text-slate-500 text-sm mt-0.5">
-          {tenant?.name} &bull; {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-        </p>
-      </div>
-
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard label=Active Visits value="34" sub="12 in progress" change={"+6"} icon={Home} color="#6B21A8" />
-        <KpiCard label=Staff Dispatched value="28" sub="of 42 staff"  icon={Users} color="#FB923C" />
-        <KpiCard label=Bookings Today value="52" sub="18 pending" change={"+9"} icon={Calendar} color="#3B82F6" />
-        <KpiCard label=WhatsApp Messages value="187" sub="5 unread" change={"+22%"} icon={MessageSquare} color="#25D366" />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-white rounded-2xl border border-slate-100 p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-slate-900">Performance Trend</h3>
-            <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">+7.8% MoM</span>
+      <h1 className="text-2xl font-bold text-slate-900">Home Care Dashboard</h1>
+      <div className="grid grid-cols-5 gap-4">
+        {[
+          { label:'Active Clients', value: stats.activePatients, icon: Users,        color: NAV_COLOR },
+          { label:"Today's Visits", value: stats.todayVisits,    icon: Home,         color: '#3B82F6' },
+          { label:'Pending Visits', value: stats.pendingVisits,  icon: Clock,        color: '#F59E0B' },
+          { label:'Staff Deployed', value: stats.staffDeployed,  icon: Activity,     color: '#10B981' },
+          { label:'Month Revenue',  value: formatINR(stats.monthRevenue), icon: TrendingUp, color: '#8B5CF6' },
+        ].map(k=>(
+          <div key={k.label} className="bg-white rounded-2xl border border-slate-100 p-5">
+            <div className="flex items-center gap-2 mb-2"><k.icon className="w-4 h-4" style={{color:k.color}}/><p className="text-xs text-slate-500">{k.label}</p></div>
+            <p className="text-2xl font-bold text-slate-900">{k.value}</p>
           </div>
-          <ResponsiveContainer width="100%" height={200}>
-            <AreaChart data={revenueData} margin={{ top: 0, right: 0, left: -25, bottom: 0 }}>
-              <defs>
-                <linearGradient id="homecareGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={theme.primaryColor} stopOpacity={0.15} />
-                  <stop offset="95%" stopColor={theme.primaryColor} stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickFormatter={v => `₹${(v/1000).toFixed(0)}K`} />
-              <Tooltip contentStyle={{ borderRadius: 12, border: 'none', fontSize: 12 }} />
-              <Area type="monotone" dataKey="value" stroke={theme.primaryColor} strokeWidth={2.5} fill="url(#homecareGrad)" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-slate-100 p-5 flex items-center justify-center">
-          <div className="text-center text-slate-400">
-            <Activity className="w-12 h-12 mx-auto mb-3 opacity-30" />
-            <p className="text-sm font-medium">More analytics coming soon</p>
-            <p className="text-xs mt-1">WhatsApp automation, patient insights &amp; more</p>
-          </div>
-        </div>
+        ))}
+      </div>
+      <div className="bg-white rounded-2xl border border-slate-100 p-5">
+        <h3 className="font-semibold text-slate-900 mb-4">Daily Home Visits — Last 14 Days</h3>
+        <ResponsiveContainer width="100%" height={200}>
+          <AreaChart data={trend}>
+            <defs><linearGradient id="hcg" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={NAV_COLOR} stopOpacity={0.2}/><stop offset="95%" stopColor={NAV_COLOR} stopOpacity={0}/></linearGradient></defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9"/>
+            <XAxis dataKey="date" tick={{fontSize:10,fill:'#94a3b8'}} axisLine={false} tickLine={false}/>
+            <YAxis tick={{fontSize:11,fill:'#94a3b8'}} axisLine={false} tickLine={false}/>
+            <Tooltip contentStyle={{borderRadius:12,border:'none',fontSize:12}}/>
+            <Area type="monotone" dataKey="visits" stroke={NAV_COLOR} strokeWidth={2.5} fill="url(#hcg)"/>
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+      <div className="grid grid-cols-4 gap-4">
+        {[{href:'/homecare/bookings',label:'Bookings',icon:Calendar,color:NAV_COLOR},{href:'/homecare/staff',label:'Staff Dispatch',icon:Users,color:'#3B82F6'},{href:'/homecare/visits',label:'Home Visits',icon:Home,color:'#10B981'},{href:'/homecare/patients',label:'Clients',icon:Activity,color:'#F59E0B'}].map(l=>(
+          <a key={l.href} href={l.href} className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-all group flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{background:`${l.color}15`}}><l.icon className="w-5 h-5" style={{color:l.color}}/></div>
+            <p className="font-semibold text-slate-900 text-sm group-hover:text-[#6B21A8] transition-colors">{l.label}</p>
+            <ArrowUpRight className="w-4 h-4 text-slate-300 ml-auto"/>
+          </a>
+        ))}
       </div>
     </div>
   );
