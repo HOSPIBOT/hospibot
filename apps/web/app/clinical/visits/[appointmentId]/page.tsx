@@ -235,7 +235,7 @@ export default function VisitConsolePage() {
     setCompleting(true);
     try {
       await saveVisit();
-      await api.patch(`/appointments/${appointmentId}/status`, { status: 'COMPLETED' });
+      await api.put(`/appointments/${appointmentId}/status`, { status: 'COMPLETED' });
       toast.success('Consultation completed!');
       router.push('/clinical/appointments/queue');
     } catch (err: any) { toast.error(err?.response?.data?.message || 'Failed to complete'); }

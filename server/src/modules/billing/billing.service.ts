@@ -106,7 +106,10 @@ export class BillingService {
       include: {
         patient: { select: { id: true, firstName: true, lastName: true, phone: true, healthId: true, email: true, address: true, city: true } },
         payments: { orderBy: { createdAt: 'desc' } },
-        visit: { select: { id: true, chiefComplaint: true, diagnosisText: true, createdAt: true } },
+        visit: {
+          select: { id: true, chiefComplaint: true, diagnosisText: true, createdAt: true,
+            doctor: { include: { user: { select: { firstName: true, lastName: true } } } } },
+        },
       },
     });
     if (!invoice) throw new NotFoundException('Invoice not found');

@@ -165,7 +165,7 @@ export default function AppointmentQueuePage() {
 
   const handleStatusChange = async (id: string, newStatus: string) => {
     try {
-      await api.patch(`/appointments/${id}/status`, { status: newStatus });
+      await api.put(`/appointments/${id}/status`, { status: newStatus });
       if (newStatus === 'COMPLETED') {
         toast.success('Consultation completed!');
       } else {

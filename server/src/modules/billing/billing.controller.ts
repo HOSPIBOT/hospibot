@@ -58,3 +58,18 @@ export class BillingController {
     return this.billingService.getRevenueStats(tenantId, period || 'month');
   }
 }
+
+  @Post('invoices/:id/send')
+  @ApiOperation({ summary: 'Send invoice to patient via WhatsApp' })
+  async sendInvoice(
+    @CurrentTenant() tenantId: string,
+    @Param('id') id: string,
+  ) {
+    const invoice = await this.billingService.findById(tenantId, id);
+    if (!invoice) throw new Error('Invoice not found');
+
+    // Get WhatsApp service
+    const { WhatsappService } = await import('../whatsapp/whatsapp.service');
+    // Instead, use the billing service's sendPaymentLink which already exists
+    return this.billingService.sendPaymentLink(tenantId, id);
+  }
