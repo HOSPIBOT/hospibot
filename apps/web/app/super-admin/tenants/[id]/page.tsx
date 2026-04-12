@@ -1,91 +1,132 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 import {
   ArrowLeft, Building2, Users, MessageSquare, Calendar, CreditCard,
-  Globe, Phone, Mail, MapPin, CheckCircle2, XCircle, AlertTriangle,
-  Edit3, Ban, RefreshCw, Trash2, Wifi, Activity, TrendingUp
+  Edit3, Ban, Trash2, AlertTriangle, Activity, TrendingUp, RefreshCw,
+  CheckCircle2,
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  getTenantById, updateTenantStatus, updateTenantPlan, deleteTenant,
+  type Tenant, type PlanType,
+} from '@/lib/super-admin-api';
 
-// Mock tenant data (replace with API call)
-const TENANT = {
-  id: '3',
-  name: 'Dr. Kiran Heart Centre',
-  slug: 'kiran-heart',
-  type: 'HOSPITAL',
-  status: 'ACTIVE',
-  plan: 'ENTERPRISE',
-  email: 'admin@kiranheartcentre.com',
-  phone: '+91 98765 43210',
-  website: 'www.kiranheartcentre.com',
-  address: '12, Jubilee Hills',
-  city: 'Hyderabad',
-  state: 'Telangana',
-  country: 'India',
-  pincode: '500033',
-  waPhoneNumberId: '1234567890',
-  waLinked: true,
-  logoUrl: null,
-  createdAt: '2023-11-02',
-  trialEndsAt: null,
-  users: 68,
-  branches: 3,
-  patients: 34200,
-  appointments: 1842,
-  mrr: 18000,
-  outstandingInvoices: 2,
-  planRenewsAt: '2025-05-02',
-};
+const PLAN_MRR: Record<string, number> = { STARTER: 500, GROWTH: 1200, ENTERPRISE: 4500 };
 
-const usageData = [
-  { month: 'Oct', appointments: 1420, messages: 8200 },
-  { month: 'Nov', appointments: 1580, messages: 9400 },
-  { month: 'Dec', appointments: 1320, messages: 7800 },
-  { month: 'Jan', appointments: 1750, messages: 10200 },
-  { month: 'Feb', appointments: 1680, messages: 9600 },
-  { month: 'Mar', appointments: 1842, messages: 11400 },
-];
-
-const BRANCHES = [
-  { id: 'b1', name: 'Dr. Kiran Heart Centre - Main', city: 'Hyderabad', users: 42, status: true },
-  { id: 'b2', name: 'Kiran Diagnostics Wing', city: 'Hyderabad', users: 18, status: true },
-  { id: 'b3', name: 'Kiran Jubilee Hills OPD', city: 'Hyderabad', users: 8, status: true },
-];
-
-function InfoRow({ label, value }: { label: string; value: string }) {
+function InfoRow({ label, value }: { label: string; value?: string | null }) {
   return (
     <div className="flex items-start justify-between py-3 border-b border-slate-50 last:border-0">
-      <span className="text-sm text-slate-500 w-40 flex-shrink-0">{label}</span>
-      <span className="text-sm text-slate-900 font-medium text-right">{value}</span>
+      <span className="text-sm text-slate-500 w-44 flex-shrink-0">{label}</span>
+      <span className="text-sm text-slate-900 font-medium text-right">{value || '—'}</span>
     </div>
   );
 }
 
+function Skeleton({ className = '' }: { className?: string }) {
+  return <div className={`animate-pulse bg-slate-200 rounded-xl ${className}`} />;
+}
+
+const STATUS_COLORS: Record<string, string> = {
+  ACTIVE: 'bg-emerald-100 text-emerald-700', TRIAL: 'bg-amber-100 text-amber-700',
+  SUSPENDED: 'bg-red-100 text-red-700', CANCELLED: 'bg-slate-100 text-slate-500',
+};
+const PLAN_COLORS: Record<string, string> = {
+  STARTER: 'bg-slate-100 text-slate-700', GROWTH: 'bg-blue-100 text-blue-700',
+  ENTERPRISE: 'bg-violet-100 text-violet-700',
+};
+
 export default function TenantDetailPage() {
-  const params = useParams();
+  const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'overview' | 'branches' | 'billing' | 'whatsapp'>('overview');
-  const [showConfirm, setShowConfirm] = useState<null | 'suspend' | 'delete'>(null);
+  const [tenant, setTenant] = useState<Tenant | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState<'overview' | 'branches' | 'billing' | 'whatsapp'>('overview');
+  const [confirm, setConfirm] = useState<null | 'suspend' | 'activate' | 'cancel' | 'delete'>(null);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<PlanType>('GROWTH');
 
-  const t = TENANT;
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await getTenantById(id);
+      setTenant(data);
+      setSelectedPlan(data.plan);
+    } catch {
+      toast.error('Tenant not found');
+      router.push('/super-admin/tenants');
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
 
-  const statusColor: Record<string, string> = {
-    ACTIVE: 'bg-emerald-100 text-emerald-700',
-    TRIAL: 'bg-amber-100 text-amber-700',
-    SUSPENDED: 'bg-red-100 text-red-700',
+  useEffect(() => { load(); }, [load]);
+
+  const handleStatusAction = async () => {
+    if (!confirm || confirm === 'delete') return;
+    setActionLoading(true);
+    try {
+      const action = confirm === 'suspend' ? 'SUSPEND' : confirm === 'activate' ? 'ACTIVATE' : 'CANCEL';
+      const updated = await updateTenantStatus(id, action);
+      setTenant(prev => prev ? { ...prev, status: updated.status } : prev);
+      toast.success(`Tenant ${action.toLowerCase()}d successfully`);
+      setConfirm(null);
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Action failed');
+    } finally {
+      setActionLoading(false);
+    }
   };
-  const planColor: Record<string, string> = {
-    STARTER: 'bg-slate-100 text-slate-700',
-    GROWTH: 'bg-blue-100 text-blue-700',
-    ENTERPRISE: 'bg-violet-100 text-violet-700',
+
+  const handleDelete = async () => {
+    setActionLoading(true);
+    try {
+      await deleteTenant(id);
+      toast.success('Tenant permanently deleted');
+      router.push('/super-admin/tenants');
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Delete failed');
+    } finally {
+      setActionLoading(false);
+    }
   };
+
+  const handlePlanChange = async () => {
+    if (!tenant || selectedPlan === tenant.plan) return;
+    setActionLoading(true);
+    try {
+      const updated = await updateTenantPlan(id, selectedPlan);
+      setTenant(prev => prev ? { ...prev, plan: updated.plan } : prev);
+      toast.success(`Plan changed to ${selectedPlan}`);
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Plan update failed');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="space-y-5">
+        <Skeleton className="h-8 w-40" />
+        <Skeleton className="h-40" />
+        <div className="grid grid-cols-2 gap-4">
+          <Skeleton className="h-64" />
+          <Skeleton className="h-64" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!tenant) return null;
+
+  const mrr = PLAN_MRR[tenant.plan] || 0;
 
   return (
     <div className="space-y-5">
-      {/* Back */}
       <Link href="/super-admin/tenants" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-[#0D7C66] transition-colors">
         <ArrowLeft className="w-4 h-4" /> Back to Tenants
       </Link>
@@ -95,33 +136,36 @@ export default function TenantDetailPage() {
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-[#E8F5F0] text-[#0D7C66] flex items-center justify-center text-xl font-bold">
-              {t.name.split(' ').map(w => w[0]).slice(0, 2).join('')}
+              {tenant.name.split(' ').map(w => w[0]).slice(0, 2).join('')}
             </div>
             <div>
-              <h1 className="text-xl font-bold text-slate-900">{t.name}</h1>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-xs text-slate-500">{t.slug}</span>
+              <h1 className="text-xl font-bold text-slate-900">{tenant.name}</h1>
+              <div className="flex items-center gap-2 mt-1 flex-wrap">
+                <span className="text-xs text-slate-500">{tenant.slug}</span>
                 <span className="text-slate-300">·</span>
-                <span className="text-xs text-slate-500">{t.type.replace(/_/g, ' ')}</span>
-                <span className="text-slate-300">·</span>
-                <span className={`text-[11px] px-2 py-0.5 rounded-full font-semibold ${statusColor[t.status]}`}>{t.status}</span>
-                <span className={`text-[11px] px-2 py-0.5 rounded-full font-semibold ${planColor[t.plan]}`}>{t.plan}</span>
+                <span className="text-xs text-slate-500">{tenant.type.replace(/_/g, ' ')}</span>
+                <span className={`text-[11px] px-2 py-0.5 rounded-full font-semibold ${STATUS_COLORS[tenant.status]}`}>{tenant.status}</span>
+                <span className={`text-[11px] px-2 py-0.5 rounded-full font-semibold ${PLAN_COLORS[tenant.plan]}`}>{tenant.plan}</span>
               </div>
             </div>
           </div>
-
-          {/* Actions */}
-          <div className="flex items-center gap-2">
-            <button className="flex items-center gap-1.5 text-xs font-medium text-slate-600 border border-slate-200 rounded-xl px-3 py-2 hover:bg-slate-50 transition-colors">
-              <Edit3 className="w-3.5 h-3.5" /> Edit
+          <div className="flex items-center gap-2 flex-wrap">
+            <button onClick={load} className="p-2 text-slate-400 hover:text-slate-700 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors" title="Refresh">
+              <RefreshCw className="w-3.5 h-3.5" />
             </button>
-            <button
-              onClick={() => setShowConfirm('suspend')}
-              className="flex items-center gap-1.5 text-xs font-medium text-amber-700 border border-amber-200 bg-amber-50 rounded-xl px-3 py-2 hover:bg-amber-100 transition-colors">
-              <Ban className="w-3.5 h-3.5" /> Suspend
-            </button>
-            <button
-              onClick={() => setShowConfirm('delete')}
+            {tenant.status !== 'ACTIVE' && (
+              <button onClick={() => setConfirm('activate')}
+                className="flex items-center gap-1.5 text-xs font-medium text-emerald-700 border border-emerald-200 bg-emerald-50 rounded-xl px-3 py-2 hover:bg-emerald-100 transition-colors">
+                <CheckCircle2 className="w-3.5 h-3.5" /> Activate
+              </button>
+            )}
+            {tenant.status === 'ACTIVE' && (
+              <button onClick={() => setConfirm('suspend')}
+                className="flex items-center gap-1.5 text-xs font-medium text-amber-700 border border-amber-200 bg-amber-50 rounded-xl px-3 py-2 hover:bg-amber-100 transition-colors">
+                <Ban className="w-3.5 h-3.5" /> Suspend
+              </button>
+            )}
+            <button onClick={() => setConfirm('delete')}
               className="flex items-center gap-1.5 text-xs font-medium text-red-700 border border-red-200 bg-red-50 rounded-xl px-3 py-2 hover:bg-red-100 transition-colors">
               <Trash2 className="w-3.5 h-3.5" /> Delete
             </button>
@@ -131,11 +175,11 @@ export default function TenantDetailPage() {
         {/* Quick stats */}
         <div className="grid grid-cols-5 gap-4 mt-5 pt-5 border-t border-slate-100">
           {[
-            { label: 'Users', value: t.users, icon: Users, color: '#0D7C66' },
-            { label: 'Branches', value: t.branches, icon: Building2, color: '#3B82F6' },
-            { label: 'Patients', value: t.patients.toLocaleString('en-IN'), icon: Activity, color: '#F59E0B' },
-            { label: 'Appts (month)', value: t.appointments.toLocaleString('en-IN'), icon: Calendar, color: '#8B5CF6' },
-            { label: 'MRR', value: `₹${(t.mrr / 1000).toFixed(0)}K`, icon: TrendingUp, color: '#10B981' },
+            { label: 'Users',        value: tenant._count?.users       ?? '—', icon: Users,        color: '#0D7C66' },
+            { label: 'Branches',     value: tenant._count?.branches    ?? '—', icon: Building2,    color: '#3B82F6' },
+            { label: 'Patients',     value: (tenant._count?.patients ?? 0).toLocaleString('en-IN'), icon: Activity, color: '#F59E0B' },
+            { label: 'Appointments', value: (tenant._count?.appointments ?? 0).toLocaleString('en-IN'), icon: Calendar, color: '#8B5CF6' },
+            { label: 'MRR',          value: `₹${(mrr / 1000).toFixed(1)}K`, icon: TrendingUp, color: '#10B981' },
           ].map((s) => (
             <div key={s.label} className="text-center">
               <div className="w-9 h-9 rounded-xl mx-auto flex items-center justify-center mb-2" style={{ background: `${s.color}15` }}>
@@ -150,106 +194,90 @@ export default function TenantDetailPage() {
 
       {/* Tabs */}
       <div className="flex gap-1 bg-slate-100 rounded-xl p-1 w-fit">
-        {(['overview', 'branches', 'billing', 'whatsapp'] as const).map((tab) => (
-          <button key={tab} onClick={() => setActiveTab(tab)}
-            className={`text-sm font-medium px-4 py-1.5 rounded-lg capitalize transition-all ${activeTab === tab ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
-            {tab === 'whatsapp' ? 'WhatsApp' : tab.charAt(0).toUpperCase() + tab.slice(1)}
+        {(['overview', 'branches', 'billing', 'whatsapp'] as const).map((t) => (
+          <button key={t} onClick={() => setTab(t)}
+            className={`text-sm font-medium px-4 py-1.5 rounded-lg capitalize transition-all ${tab === t ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
+            {t === 'whatsapp' ? 'WhatsApp' : t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
 
       {/* Tab: Overview */}
-      {activeTab === 'overview' && (
+      {tab === 'overview' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Contact info */}
           <div className="bg-white rounded-2xl border border-slate-100 p-5">
             <h3 className="font-semibold text-slate-900 mb-3">Contact & Location</h3>
-            <InfoRow label="Email" value={t.email} />
-            <InfoRow label="Phone" value={t.phone} />
-            <InfoRow label="Website" value={t.website} />
-            <InfoRow label="Address" value={t.address} />
-            <InfoRow label="City" value={`${t.city}, ${t.state}`} />
-            <InfoRow label="Pincode" value={t.pincode} />
-            <InfoRow label="Country" value={t.country} />
+            <InfoRow label="Email"    value={tenant.email} />
+            <InfoRow label="Phone"    value={tenant.phone} />
+            <InfoRow label="Website"  value={tenant.website} />
+            <InfoRow label="Address"  value={tenant.address} />
+            <InfoRow label="City"     value={[tenant.city, tenant.state].filter(Boolean).join(', ')} />
+            <InfoRow label="Pincode"  value={tenant.pincode} />
+            <InfoRow label="Country"  value={tenant.country} />
           </div>
-
-          {/* Account */}
           <div className="bg-white rounded-2xl border border-slate-100 p-5">
             <h3 className="font-semibold text-slate-900 mb-3">Account Details</h3>
-            <InfoRow label="Tenant ID" value={t.id} />
-            <InfoRow label="Slug" value={t.slug} />
-            <InfoRow label="Plan" value={t.plan} />
-            <InfoRow label="Status" value={t.status} />
-            <InfoRow label="Member Since" value={new Date(t.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })} />
-            <InfoRow label="Plan Renews" value={t.planRenewsAt ? new Date(t.planRenewsAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'} />
-            <InfoRow label="Outstanding Invoices" value={String(t.outstandingInvoices)} />
-          </div>
-
-          {/* Usage chart */}
-          <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 p-5">
-            <h3 className="font-semibold text-slate-900 mb-1">Usage Trends</h3>
-            <p className="text-xs text-slate-400 mb-4">Appointments & WhatsApp messages</p>
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={usageData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={{ borderRadius: 10, fontSize: 12, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
-                <Bar dataKey="appointments" name="Appointments" fill="#0D7C66" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="messages" name="WA Messages" fill="#25D366" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            <InfoRow label="Tenant ID"   value={tenant.id} />
+            <InfoRow label="Slug"        value={tenant.slug} />
+            <InfoRow label="Plan"        value={tenant.plan} />
+            <InfoRow label="Status"      value={tenant.status} />
+            <InfoRow label="Member Since" value={new Date(tenant.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })} />
+            <InfoRow label="Last Updated" value={new Date(tenant.updatedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })} />
           </div>
         </div>
       )}
 
       {/* Tab: Branches */}
-      {activeTab === 'branches' && (
+      {tab === 'branches' && (
         <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-            <h3 className="font-semibold text-slate-900">Branches ({BRANCHES.length})</h3>
+          <div className="px-5 py-4 border-b border-slate-100">
+            <h3 className="font-semibold text-slate-900">Branches ({tenant.branches?.length ?? 0})</h3>
           </div>
-          <table className="w-full">
-            <thead>
-              <tr className="bg-slate-50">
-                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Branch</th>
-                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">City</th>
-                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Staff</th>
-                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50">
-              {BRANCHES.map((b) => (
-                <tr key={b.id} className="hover:bg-slate-50/50 transition-colors">
-                  <td className="px-5 py-3.5 text-sm font-medium text-slate-900">{b.name}</td>
-                  <td className="px-5 py-3.5 text-sm text-slate-600">{b.city}</td>
-                  <td className="px-5 py-3.5 text-sm text-slate-700">{b.users} staff</td>
-                  <td className="px-5 py-3.5">
-                    <span className={`text-[11px] px-2 py-0.5 rounded-full font-semibold ${b.status ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
-                      {b.status ? 'Active' : 'Inactive'}
-                    </span>
-                  </td>
+          {(!tenant.branches || tenant.branches.length === 0) ? (
+            <div className="py-12 text-center text-slate-400 text-sm">No branches found.</div>
+          ) : (
+            <table className="w-full">
+              <thead>
+                <tr className="bg-slate-50">
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Branch</th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Code</th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">City</th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {tenant.branches.map((b) => (
+                  <tr key={b.id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-5 py-3.5 text-sm font-medium text-slate-900">{b.name}</td>
+                    <td className="px-5 py-3.5 text-xs font-mono text-slate-500">{b.code}</td>
+                    <td className="px-5 py-3.5 text-sm text-slate-600">{b.city}</td>
+                    <td className="px-5 py-3.5">
+                      <span className={`text-[11px] px-2 py-0.5 rounded-full font-semibold ${b.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+                        {b.isActive ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       )}
 
       {/* Tab: Billing */}
-      {activeTab === 'billing' && (
+      {tab === 'billing' && (
         <div className="space-y-4">
           <div className="bg-white rounded-2xl border border-slate-100 p-5">
             <h3 className="font-semibold text-slate-900 mb-4">Billing Summary</h3>
             <div className="grid grid-cols-3 gap-4">
               {[
-                { label: 'Current Plan', value: t.plan, sub: '₹4,500/month' },
-                { label: 'MRR Contribution', value: `₹${(t.mrr / 1000).toFixed(0)}K`, sub: 'Monthly' },
-                { label: 'Outstanding', value: `${t.outstandingInvoices} invoices`, sub: 'Requires attention' },
+                { label: 'Current Plan', value: tenant.plan, sub: `₹${PLAN_MRR[tenant.plan]?.toLocaleString('en-IN') || '—'}/month` },
+                { label: 'MRR Contribution', value: `₹${(mrr / 1000).toFixed(1)}K`, sub: 'Monthly' },
+                { label: 'Invoices', value: String(tenant._count?.invoices ?? '—'), sub: 'Total issued' },
               ].map((b) => (
                 <div key={b.label} className="bg-slate-50 rounded-xl p-4">
                   <p className="text-xs text-slate-500 mb-1">{b.label}</p>
-                  <p className="text-lg font-bold text-slate-900">{b.value}</p>
+                  <p className="text-xl font-bold text-slate-900">{b.value}</p>
                   <p className="text-xs text-slate-400 mt-0.5">{b.sub}</p>
                 </div>
               ))}
@@ -258,14 +286,15 @@ export default function TenantDetailPage() {
           <div className="bg-white rounded-2xl border border-slate-100 p-5">
             <h3 className="font-semibold text-slate-900 mb-3">Change Plan</h3>
             <div className="flex items-center gap-3">
-              {['STARTER', 'GROWTH', 'ENTERPRISE'].map((plan) => (
-                <button key={plan}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all ${t.plan === plan ? 'bg-[#0D7C66] text-white border-[#0D7C66]' : 'border-slate-200 text-slate-600 hover:border-[#0D7C66] hover:text-[#0D7C66]'}`}>
+              {(['STARTER', 'GROWTH', 'ENTERPRISE'] as PlanType[]).map((plan) => (
+                <button key={plan} onClick={() => setSelectedPlan(plan)}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all ${selectedPlan === plan ? 'bg-[#0D7C66] text-white border-[#0D7C66]' : 'border-slate-200 text-slate-600 hover:border-[#0D7C66] hover:text-[#0D7C66]'}`}>
                   {plan}
                 </button>
               ))}
-              <button className="ml-auto bg-[#0D7C66] text-white text-sm font-medium px-4 py-2 rounded-xl hover:bg-[#0A5E4F] transition-colors">
-                Apply Change
+              <button onClick={handlePlanChange} disabled={actionLoading || selectedPlan === tenant.plan}
+                className="ml-auto bg-[#0D7C66] text-white text-sm font-medium px-4 py-2 rounded-xl hover:bg-[#0A5E4F] disabled:opacity-50 transition-colors">
+                {actionLoading ? 'Saving…' : 'Apply Change'}
               </button>
             </div>
           </div>
@@ -273,30 +302,36 @@ export default function TenantDetailPage() {
       )}
 
       {/* Tab: WhatsApp */}
-      {activeTab === 'whatsapp' && (
+      {tab === 'whatsapp' && (
         <div className="bg-white rounded-2xl border border-slate-100 p-5 space-y-4">
           <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${t.waLinked ? 'bg-[#25D366]/15' : 'bg-slate-100'}`}>
-              <MessageSquare className={`w-5 h-5 ${t.waLinked ? 'text-[#25D366]' : 'text-slate-400'}`} />
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tenant.waPhoneNumberId ? 'bg-[#25D366]/15' : 'bg-slate-100'}`}>
+              <MessageSquare className={`w-5 h-5 ${tenant.waPhoneNumberId ? 'text-[#25D366]' : 'text-slate-400'}`} />
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-900">{t.waLinked ? 'WhatsApp Business API Connected' : 'WhatsApp Not Configured'}</p>
-              <p className="text-xs text-slate-400">{t.waLinked ? `Phone Number ID: ${t.waPhoneNumberId}` : 'This tenant has not linked a WhatsApp Business account'}</p>
+              <p className="text-sm font-semibold text-slate-900">
+                {tenant.waPhoneNumberId ? 'WhatsApp Business API Connected' : 'WhatsApp Not Configured'}
+              </p>
+              <p className="text-xs text-slate-400">
+                {tenant.waPhoneNumberId ? `Phone Number ID: ${tenant.waPhoneNumberId}` : 'No WhatsApp Business account linked'}
+              </p>
             </div>
-            {t.waLinked && <span className="ml-auto text-xs bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full font-semibold">● Live</span>}
+            {tenant.waPhoneNumberId && (
+              <span className="ml-auto text-xs bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full font-semibold">● Live</span>
+            )}
           </div>
-          {t.waLinked ? (
-            <div className="space-y-2">
-              <InfoRow label="Phone Number ID" value={t.waPhoneNumberId || '—'} />
-              <InfoRow label="Business ID" value="wa_business_3kiran" />
-              <InfoRow label="Access Token" value="••••••••••••••••••••••" />
-            </div>
+          {tenant.waPhoneNumberId ? (
+            <>
+              <InfoRow label="Phone Number ID" value={tenant.waPhoneNumberId} />
+              <InfoRow label="Business ID"     value={tenant.waBusinessId || 'Not set'} />
+              <InfoRow label="Access Token"    value="••••••••••••••••••••••" />
+            </>
           ) : (
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
               <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-medium text-amber-800">WhatsApp not configured</p>
-                <p className="text-xs text-amber-700 mt-0.5">This tenant cannot send or receive WhatsApp messages. Contact them to complete setup.</p>
+                <p className="text-xs text-amber-700 mt-0.5">Contact this tenant to complete WhatsApp Business API setup.</p>
               </div>
             </div>
           )}
@@ -304,25 +339,39 @@ export default function TenantDetailPage() {
       )}
 
       {/* Confirm dialog */}
-      {showConfirm && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
+      {confirm && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => !actionLoading && setConfirm(null)}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <h3 className="text-lg font-bold text-slate-900 mb-2">
-              {showConfirm === 'suspend' ? 'Suspend Tenant?' : 'Delete Tenant?'}
+              {confirm === 'delete' ? 'Delete Tenant?' :
+               confirm === 'suspend' ? 'Suspend Tenant?' :
+               confirm === 'activate' ? 'Activate Tenant?' : 'Cancel Tenant?'}
             </h3>
             <p className="text-sm text-slate-600 mb-5">
-              {showConfirm === 'suspend'
-                ? `Suspending "${t.name}" will disable all user logins and WhatsApp services. This can be reversed.`
-                : `Permanently deleting "${t.name}" will remove all data including patients, appointments, and invoices. This CANNOT be undone.`}
+              {confirm === 'delete'
+                ? `Permanently deleting "${tenant.name}" will erase all data including patients, appointments, and invoices. This CANNOT be undone.`
+                : confirm === 'suspend'
+                ? `Suspending "${tenant.name}" will disable all logins and WhatsApp services. This can be reversed.`
+                : confirm === 'activate'
+                ? `Re-activating "${tenant.name}" will restore full access for all users.`
+                : `Cancelling "${tenant.name}" marks the account as cancelled. It can be reactivated.`}
             </p>
             <div className="flex items-center gap-3 justify-end">
-              <button onClick={() => setShowConfirm(null)}
-                className="px-4 py-2 text-sm font-medium text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors">
+              <button onClick={() => setConfirm(null)} disabled={actionLoading}
+                className="px-4 py-2 text-sm font-medium text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50">
                 Cancel
               </button>
               <button
-                className={`px-4 py-2 text-sm font-medium text-white rounded-xl transition-colors ${showConfirm === 'delete' ? 'bg-red-600 hover:bg-red-700' : 'bg-amber-500 hover:bg-amber-600'}`}>
-                {showConfirm === 'suspend' ? 'Yes, Suspend' : 'Yes, Delete Permanently'}
+                onClick={confirm === 'delete' ? handleDelete : handleStatusAction}
+                disabled={actionLoading}
+                className={`px-4 py-2 text-sm font-medium text-white rounded-xl transition-colors disabled:opacity-60 ${
+                  confirm === 'delete' ? 'bg-red-600 hover:bg-red-700' :
+                  confirm === 'suspend' ? 'bg-amber-500 hover:bg-amber-600' :
+                  'bg-[#0D7C66] hover:bg-[#0A5E4F]'}`}>
+                {actionLoading ? 'Processing…' :
+                 confirm === 'delete' ? 'Yes, Delete Permanently' :
+                 confirm === 'suspend' ? 'Yes, Suspend' :
+                 confirm === 'activate' ? 'Yes, Activate' : 'Yes, Cancel'}
               </button>
             </div>
           </div>

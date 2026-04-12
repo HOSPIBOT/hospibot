@@ -1,60 +1,45 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Building2, Users, TrendingUp, AlertCircle, Activity,
-  MessageSquare, CreditCard, Globe, ArrowUpRight, ArrowDownRight,
-  CheckCircle2, Clock, XCircle, Wifi
+  MessageSquare, CreditCard, ArrowUpRight, CheckCircle2,
+  Clock, Wifi, RefreshCw,
 } from 'lucide-react';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, Legend
+  ResponsiveContainer, PieChart, Pie, Cell,
 } from 'recharts';
-import { api } from '@/lib/api';
+import { getPlatformStats, getAllTenants, type PlatformStats, type Tenant } from '@/lib/super-admin-api';
 
-// ─── Mock data (replace with API calls when backend is live) ─────────────────
-const revenueData = [
-  { month: 'Oct', mrr: 124000, new: 18000 },
-  { month: 'Nov', mrr: 148000, new: 24000 },
-  { month: 'Dec', mrr: 162000, new: 14000 },
-  { month: 'Jan', mrr: 188000, new: 26000 },
-  { month: 'Feb', mrr: 204000, new: 16000 },
-  { month: 'Mar', mrr: 231000, new: 27000 },
-  { month: 'Apr', mrr: 258000, new: 27000 },
+// ── MRR growth stub — computed once real billing data exists ──────────────────
+const REVENUE_STUB = [
+  { month: 'Oct', mrr: 124000 }, { month: 'Nov', mrr: 148000 },
+  { month: 'Dec', mrr: 162000 }, { month: 'Jan', mrr: 188000 },
+  { month: 'Feb', mrr: 204000 }, { month: 'Mar', mrr: 231000 },
+  { month: 'Apr', mrr: 258000 },
 ];
 
-const tenantTypeData = [
-  { name: 'Hospital', value: 34, color: '#0D7C66' },
-  { name: 'Clinic', value: 89, color: '#11A07A' },
-  { name: 'Doctor', value: 47, color: '#4DB896' },
-  { name: 'Diagnostic', value: 18, color: '#F59E0B' },
-  { name: 'Others', value: 12, color: '#94A3B8' },
-];
+const PIE_COLORS: Record<string, string> = {
+  HOSPITAL: '#0D7C66', CLINIC: '#11A07A', DOCTOR: '#4DB896',
+  DIAGNOSTIC_CENTER: '#F59E0B', IVF_CENTER: '#3B82F6',
+  PHARMACY: '#8B5CF6', HOME_HEALTHCARE: '#EC4899', EQUIPMENT_VENDOR: '#94A3B8',
+};
 
-const recentTenants = [
-  { id: '1', name: 'Apollo Specialty Clinic', city: 'Mumbai', type: 'CLINIC', plan: 'ENTERPRISE', status: 'ACTIVE', joined: '2 days ago', mrr: 12000 },
-  { id: '2', name: 'Sunrise Diagnostics', city: 'Pune', type: 'DIAGNOSTIC_CENTER', plan: 'GROWTH', status: 'TRIAL', joined: '4 days ago', mrr: 6000 },
-  { id: '3', name: 'Dr. Kiran Heart Centre', city: 'Hyderabad', type: 'HOSPITAL', plan: 'ENTERPRISE', status: 'ACTIVE', joined: '1 week ago', mrr: 18000 },
-  { id: '4', name: 'Lotus IVF Centre', city: 'Bangalore', type: 'IVF_CENTER', plan: 'GROWTH', status: 'ACTIVE', joined: '1 week ago', mrr: 9000 },
-  { id: '5', name: 'MedFirst Pharmacy', city: 'Chennai', type: 'PHARMACY', plan: 'STARTER', status: 'TRIAL', joined: '2 weeks ago', mrr: 2000 },
-];
+const TYPE_LABELS: Record<string, string> = {
+  HOSPITAL: 'Hospital', CLINIC: 'Clinic', DOCTOR: 'Doctor',
+  DIAGNOSTIC_CENTER: 'Diagnostic', IVF_CENTER: 'IVF', PHARMACY: 'Pharmacy',
+  HOME_HEALTHCARE: 'Home Care', EQUIPMENT_VENDOR: 'Vendor',
+};
 
-const systemAlerts = [
-  { type: 'warning', message: '3 tenants have WhatsApp not configured', time: '2h ago' },
-  { type: 'info', message: 'Scheduled maintenance window: Apr 14, 2AM IST', time: '5h ago' },
-  { type: 'success', message: 'Bulk invoice processing completed — 1,248 invoices', time: '8h ago' },
-];
+const MRR_BY_PLAN: Record<string, number> = { STARTER: 500, GROWTH: 1200, ENTERPRISE: 4500 };
 
-// ─── KPI Card ────────────────────────────────────────────────────────────────
-function KpiCard({
-  label, value, sub, change, positive, icon: Icon, color
-}: {
-  label: string; value: string; sub?: string; change?: string;
-  positive?: boolean; icon: any; color: string;
-}) {
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function KpiCard({ label, value, sub, change, positive, icon: Icon, color }: any) {
   return (
     <div className="bg-white rounded-2xl border border-slate-100 p-5 relative overflow-hidden group hover:shadow-md transition-shadow">
-      <div className={`absolute top-0 right-0 w-24 h-24 rounded-bl-[60px] opacity-[0.07] group-hover:opacity-[0.12] transition-opacity`}
+      <div className="absolute top-0 right-0 w-24 h-24 rounded-bl-[60px] opacity-[0.07] group-hover:opacity-[0.12] transition-opacity"
         style={{ background: color }} />
       <div className="flex items-start justify-between mb-3">
         <p className="text-sm text-slate-500 font-medium">{label}</p>
@@ -66,7 +51,7 @@ function KpiCard({
       {sub && <p className="text-xs text-slate-400 mt-1">{sub}</p>}
       {change && (
         <div className={`flex items-center gap-1 mt-2 text-xs font-medium ${positive ? 'text-emerald-600' : 'text-red-500'}`}>
-          {positive ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
+          <ArrowUpRight className="w-3.5 h-3.5" />
           {change} <span className="text-slate-400 font-normal">vs last month</span>
         </div>
       )}
@@ -74,82 +59,110 @@ function KpiCard({
   );
 }
 
-// ─── Status Badge ─────────────────────────────────────────────────────────────
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
-    ACTIVE: 'bg-emerald-100 text-emerald-700',
-    TRIAL: 'bg-amber-100 text-amber-700',
-    SUSPENDED: 'bg-red-100 text-red-700',
-    CANCELLED: 'bg-slate-100 text-slate-600',
+    ACTIVE: 'bg-emerald-100 text-emerald-700', TRIAL: 'bg-amber-100 text-amber-700',
+    SUSPENDED: 'bg-red-100 text-red-700',      CANCELLED: 'bg-slate-100 text-slate-600',
   };
-  return (
-    <span className={`text-[11px] px-2 py-0.5 rounded-full font-semibold ${map[status] || 'bg-slate-100 text-slate-600'}`}>
-      {status}
-    </span>
-  );
+  return <span className={`text-[11px] px-2 py-0.5 rounded-full font-semibold ${map[status] || 'bg-slate-100'}`}>{status}</span>;
 }
 
 function PlanBadge({ plan }: { plan: string }) {
   const map: Record<string, string> = {
-    STARTER: 'bg-slate-100 text-slate-700',
-    GROWTH: 'bg-blue-100 text-blue-700',
+    STARTER: 'bg-slate-100 text-slate-700', GROWTH: 'bg-blue-100 text-blue-700',
     ENTERPRISE: 'bg-violet-100 text-violet-700',
   };
-  return (
-    <span className={`text-[11px] px-2 py-0.5 rounded-full font-semibold ${map[plan] || 'bg-slate-100 text-slate-600'}`}>
-      {plan}
-    </span>
-  );
+  return <span className={`text-[11px] px-2 py-0.5 rounded-full font-semibold ${map[plan] || 'bg-slate-100'}`}>{plan}</span>;
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+function Skeleton({ className = '' }: { className?: string }) {
+  return <div className={`animate-pulse bg-slate-200 rounded-xl ${className}`} />;
+}
+
+// ── Page ──────────────────────────────────────────────────────────────────────
 export default function SuperAdminDashboard() {
-  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const [stats, setStats] = useState<PlatformStats | null>(null);
+  const [recentTenants, setRecentTenants] = useState<Tenant[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [lastRefresh, setLastRefresh] = useState(new Date());
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [statsData, tenantsData] = await Promise.all([
+        getPlatformStats(),
+        getAllTenants({ limit: 5 }),
+      ]);
+      setStats(statsData);
+      setRecentTenants(tenantsData.data);
+      setLastRefresh(new Date());
+    } catch (err: any) {
+      if (err?.response?.status === 403) router.push('/dashboard');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  // Compute MRR from plan distribution
+  const mrr = stats?.planDistribution.reduce(
+    (sum, p) => sum + p.count * (MRR_BY_PLAN[p.plan] || 0), 0
+  ) ?? 0;
+
+  const pieData = stats?.typeDistribution.map(t => ({
+    name: TYPE_LABELS[t.type] || t.type,
+    value: t.count,
+    color: PIE_COLORS[t.type] || '#94A3B8',
+  })) ?? [];
 
   return (
     <div className="space-y-6">
-      {/* Page header */}
+      {/* Header */}
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Platform Dashboard</h1>
           <p className="text-sm text-slate-500 mt-0.5">
             {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-            &nbsp;&bull;&nbsp;Real-time view of all tenants
           </p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200">
-          <Wifi className="w-3 h-3" /> Live
-        </div>
-      </div>
-
-      {/* System alerts */}
-      <div className="space-y-2">
-        {systemAlerts.map((alert, i) => (
-          <div key={i} className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm border ${
-            alert.type === 'warning' ? 'bg-amber-50 border-amber-200 text-amber-800' :
-            alert.type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-800' :
-            'bg-blue-50 border-blue-200 text-blue-800'
-          }`}>
-            {alert.type === 'warning' ? <AlertCircle className="w-4 h-4 flex-shrink-0" /> :
-             alert.type === 'success' ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> :
-             <Clock className="w-4 h-4 flex-shrink-0" />}
-            <span className="flex-1 font-medium">{alert.message}</span>
-            <span className="text-xs opacity-70">{alert.time}</span>
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-slate-400">
+            Refreshed {lastRefresh.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+          </span>
+          <button onClick={load} disabled={loading}
+            className="flex items-center gap-1.5 text-sm text-slate-600 border border-slate-200 bg-white px-3 py-1.5 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50">
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} /> Refresh
+          </button>
+          <div className="flex items-center gap-1.5 text-xs text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200">
+            <Wifi className="w-3 h-3" /> Live
           </div>
-        ))}
+        </div>
       </div>
 
       {/* KPI row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard label="Total Tenants" value="200" sub="34 hospitals · 89 clinics" change="+12 this month" positive icon={Building2} color="#0D7C66" />
-        <KpiCard label="Platform MRR" value="₹2.58L" sub="Monthly Recurring Revenue" change="+11.7%" positive icon={CreditCard} color="#F59E0B" />
-        <KpiCard label="Active Patients" value="1.4L" sub="Across all tenants today" change="+8.2%" positive icon={Users} color="#3B82F6" />
-        <KpiCard label="WhatsApp Messages" value="48.2K" sub="Sent today across platform" change="+23%" positive icon={MessageSquare} color="#25D366" />
+        {loading ? (
+          Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-32" />)
+        ) : (
+          <>
+            <KpiCard label="Total Tenants"     value={stats?.tenants.total ?? '—'}
+              sub={`${stats?.tenants.active ?? 0} active · ${stats?.tenants.trial ?? 0} trial`}
+              change="+12 this month" positive icon={Building2} color="#0D7C66" />
+            <KpiCard label="Platform MRR"      value={`₹${(mrr / 1000).toFixed(1)}K`}
+              sub="Monthly Recurring Revenue" change="+11.7%" positive icon={CreditCard} color="#F59E0B" />
+            <KpiCard label="Total Patients"    value={(stats?.patients ?? 0).toLocaleString('en-IN')}
+              sub="Across all tenants" change="+8.2%" positive icon={Users} color="#3B82F6" />
+            <KpiCard label="Platform Users"    value={(stats?.users ?? 0).toLocaleString('en-IN')}
+              sub="Staff across all hospitals" icon={Activity} color="#8B5CF6" />
+          </>
+        )}
       </div>
 
       {/* Charts row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* MRR Chart */}
+        {/* MRR trend */}
         <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 p-5">
           <div className="flex items-center justify-between mb-5">
             <div>
@@ -159,57 +172,87 @@ export default function SuperAdminDashboard() {
             <span className="text-xs text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full font-medium">+11.7% MoM</span>
           </div>
           <ResponsiveContainer width="100%" height={220}>
-            <AreaChart data={revenueData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+            <AreaChart data={REVENUE_STUB} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="mrrGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#0D7C66" stopOpacity={0.15} />
                   <stop offset="95%" stopColor="#0D7C66" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="newGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="#F59E0B" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
               <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} axisLine={false} tickLine={false}
                 tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}K`} />
-              <Tooltip formatter={(v: any) => [`₹${(v / 1000).toFixed(1)}K`, '']}
+              <Tooltip formatter={(v: any) => [`₹${(v / 1000).toFixed(1)}K`, 'MRR']}
                 contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 16px rgba(0,0,0,0.1)', fontSize: 12 }} />
-              <Area type="monotone" dataKey="mrr" name="Total MRR" stroke="#0D7C66" strokeWidth={2.5} fill="url(#mrrGrad)" />
-              <Area type="monotone" dataKey="new" name="New MRR" stroke="#F59E0B" strokeWidth={2} fill="url(#newGrad)" />
+              <Area type="monotone" dataKey="mrr" stroke="#0D7C66" strokeWidth={2.5} fill="url(#mrrGrad)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Tenant type pie */}
+        {/* Tenant mix pie */}
         <div className="bg-white rounded-2xl border border-slate-100 p-5">
           <h3 className="font-semibold text-slate-900 mb-1">Tenant Mix</h3>
           <p className="text-xs text-slate-400 mb-4">By facility type</p>
-          <ResponsiveContainer width="100%" height={160}>
-            <PieChart>
-              <Pie data={tenantTypeData} cx="50%" cy="50%" innerRadius={48} outerRadius={72}
-                dataKey="value" paddingAngle={3}>
-                {tenantTypeData.map((entry, i) => (
-                  <Cell key={i} fill={entry.color} />
+          {loading ? (
+            <Skeleton className="h-40" />
+          ) : (
+            <>
+              <ResponsiveContainer width="100%" height={160}>
+                <PieChart>
+                  <Pie data={pieData} cx="50%" cy="50%" innerRadius={48} outerRadius={72}
+                    dataKey="value" paddingAngle={3}>
+                    {pieData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                  </Pie>
+                  <Tooltip contentStyle={{ borderRadius: 10, fontSize: 12, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="space-y-1.5 mt-2">
+                {pieData.slice(0, 5).map((item, i) => (
+                  <div key={i} className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full" style={{ background: item.color }} />
+                      <span className="text-slate-600">{item.name}</span>
+                    </div>
+                    <span className="font-semibold text-slate-900">{item.value}</span>
+                  </div>
                 ))}
-              </Pie>
-              <Tooltip contentStyle={{ borderRadius: 10, fontSize: 12, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
-            </PieChart>
-          </ResponsiveContainer>
-          <div className="space-y-2 mt-2">
-            {tenantTypeData.map((item, i) => (
-              <div key={i} className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: item.color }} />
-                  <span className="text-slate-600">{item.name}</span>
-                </div>
-                <span className="font-semibold text-slate-900">{item.value}</span>
               </div>
-            ))}
-          </div>
+            </>
+          )}
         </div>
       </div>
+
+      {/* Plan distribution */}
+      {loading ? (
+        <div className="grid grid-cols-3 gap-4">
+          {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-28" />)}
+        </div>
+      ) : (
+        <div className="grid grid-cols-3 gap-4">
+          {(stats?.planDistribution ?? []).map((p) => {
+            const planMrr = p.count * (MRR_BY_PLAN[p.plan] || 0);
+            const colors: Record<string, string> = { STARTER: '#64748B', GROWTH: '#3B82F6', ENTERPRISE: '#7C3AED' };
+            const descs: Record<string, string> = { STARTER: '₹500/mo', GROWTH: '₹1,200/mo', ENTERPRISE: '₹4,500/mo' };
+            return (
+              <div key={p.plan} className="bg-white rounded-2xl border border-slate-100 p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full"
+                    style={{ background: `${colors[p.plan]}18`, color: colors[p.plan] }}>{p.plan}</span>
+                  <span className="text-xs text-slate-400">{descs[p.plan]}</span>
+                </div>
+                <p className="text-3xl font-bold text-slate-900">{p.count}</p>
+                <p className="text-xs text-slate-500 mt-0.5">tenants</p>
+                <div className="mt-3 pt-3 border-t border-slate-50">
+                  <p className="text-sm font-semibold text-slate-900">
+                    ₹{(planMrr / 1000).toFixed(1)}K <span className="text-xs text-slate-400 font-normal">/ month</span>
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Recent tenants */}
       <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
@@ -220,63 +263,46 @@ export default function SuperAdminDashboard() {
           </div>
           <a href="/super-admin/tenants" className="text-xs text-[#0D7C66] font-medium hover:underline">View all →</a>
         </div>
-        <table className="w-full">
-          <thead>
-            <tr className="text-left bg-slate-50">
-              <th className="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Organization</th>
-              <th className="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Type</th>
-              <th className="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Plan</th>
-              <th className="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Status</th>
-              <th className="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">MRR</th>
-              <th className="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Joined</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-50">
-            {recentTenants.map((t) => (
-              <tr key={t.id} className="hover:bg-slate-50/50 transition-colors cursor-pointer"
-                onClick={() => window.location.href = `/super-admin/tenants/${t.id}`}>
-                <td className="px-5 py-3.5">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-[#E8F5F0] text-[#0D7C66] flex items-center justify-center text-xs font-bold">
-                      {t.name.split(' ').map(w => w[0]).slice(0, 2).join('')}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-slate-900">{t.name}</p>
-                      <p className="text-xs text-slate-400">{t.city}</p>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-5 py-3.5 text-xs text-slate-600">{t.type.replace('_', ' ')}</td>
-                <td className="px-5 py-3.5"><PlanBadge plan={t.plan} /></td>
-                <td className="px-5 py-3.5"><StatusBadge status={t.status} /></td>
-                <td className="px-5 py-3.5 text-sm font-semibold text-slate-900">₹{(t.mrr / 1000).toFixed(0)}K</td>
-                <td className="px-5 py-3.5 text-xs text-slate-400">{t.joined}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Plan distribution */}
-      <div className="grid grid-cols-3 gap-4">
-        {[
-          { plan: 'STARTER', count: 89, mrr: '₹44.5K', color: '#64748B', desc: '₹500/mo · Up to 3 users' },
-          { plan: 'GROWTH', count: 87, mrr: '₹1.04L', color: '#3B82F6', desc: '₹1,200/mo · Up to 15 users' },
-          { plan: 'ENTERPRISE', count: 24, mrr: '₹1.08L', color: '#7C3AED', desc: '₹4,500/mo · Unlimited users' },
-        ].map((p) => (
-          <div key={p.plan} className="bg-white rounded-2xl border border-slate-100 p-5">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold px-2 py-0.5 rounded-full"
-                style={{ background: `${p.color}18`, color: p.color }}>{p.plan}</span>
-              <span className="text-xs text-slate-400">{p.desc}</span>
-            </div>
-            <p className="text-3xl font-bold text-slate-900">{p.count}</p>
-            <p className="text-xs text-slate-500 mt-0.5">tenants</p>
-            <div className="mt-3 pt-3 border-t border-slate-50">
-              <p className="text-sm font-semibold text-slate-900">{p.mrr} <span className="text-xs text-slate-400 font-normal">/ month</span></p>
-            </div>
+        {loading ? (
+          <div className="p-5 space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-12" />)}
           </div>
-        ))}
+        ) : (
+          <table className="w-full">
+            <thead>
+              <tr className="text-left bg-slate-50">
+                {['Organization', 'Type', 'Plan', 'Status', 'Users', 'Joined'].map(h => (
+                  <th key={h} className="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-50">
+              {recentTenants.map((t) => (
+                <tr key={t.id} className="hover:bg-slate-50/50 transition-colors cursor-pointer"
+                  onClick={() => window.location.href = `/super-admin/tenants/${t.id}`}>
+                  <td className="px-5 py-3.5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-[#E8F5F0] text-[#0D7C66] flex items-center justify-center text-xs font-bold">
+                        {t.name.split(' ').map(w => w[0]).slice(0, 2).join('')}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-slate-900">{t.name}</p>
+                        <p className="text-xs text-slate-400">{t.city}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-5 py-3.5 text-xs text-slate-600">{t.type.replace(/_/g, ' ')}</td>
+                  <td className="px-5 py-3.5"><PlanBadge plan={t.plan} /></td>
+                  <td className="px-5 py-3.5"><StatusBadge status={t.status} /></td>
+                  <td className="px-5 py-3.5 text-sm font-semibold text-slate-800">{t._count?.users ?? '—'}</td>
+                  <td className="px-5 py-3.5 text-xs text-slate-400">
+                    {new Date(t.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );
