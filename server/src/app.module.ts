@@ -20,6 +20,7 @@ import { ChatbotModule } from './modules/chatbot/chatbot.module';
 import { SchedulerModule } from './modules/scheduler/scheduler.module';
 import { VaultModule } from './modules/vault/vault.module';
 import { LabModule } from './modules/lab/lab.module';
+import { PharmacyModule } from './modules/pharmacy/pharmacy.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { LabModule } from './modules/lab/lab.module';
     SchedulerModule,
     VaultModule,
     LabModule,
+    PharmacyModule,
   ],
   controllers: [HealthController],
 })

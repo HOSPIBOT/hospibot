@@ -1,91 +1,139 @@
 'use client';
-
-import { useAuthStore } from '@/lib/store';
-import { FALLBACK_THEMES } from '@/lib/portal/portal-types';
-import { TrendingUp, ShoppingCart, Package, MessageSquare, ArrowUpRight, TrendingUp, Activity } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { api } from '@/lib/api';
+import { formatINR } from '@/lib/utils';
+import { Pill, AlertTriangle, Package, TrendingUp, Clock, ShoppingCart, ArrowUpRight, RefreshCw } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-const revenueData = [
-  { month: 'Oct', value: 180000 }, { month: 'Nov', value: 210000 },
-  { month: 'Dec', value: 195000 }, { month: 'Jan', value: 240000 },
-  { month: 'Feb', value: 268000 }, { month: 'Mar', value: 295000 },
-  { month: 'Apr', value: 318000 },
-];
-
-function KpiCard({ label, value, sub, change, icon: Icon, color }: any) {
-  return (
-    <div className="bg-white rounded-2xl border border-slate-100 p-5 relative overflow-hidden hover:shadow-md transition-shadow">
-      <div className="absolute top-0 right-0 w-20 h-20 rounded-bl-[50px] opacity-[0.07]" style={{ background: color }} />
-      <div className="flex items-start justify-between mb-3">
-        <p className="text-sm text-slate-500 font-medium">{label}</p>
-        <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: `${color}15` }}>
-          <Icon className="w-4.5 h-4.5" style={{ color }} />
-        </div>
-      </div>
-      <p className="text-3xl font-bold text-slate-900 leading-none">{value}</p>
-      {sub && <p className="text-xs text-slate-400 mt-1">{sub}</p>}
-      {change && (
-        <div className="flex items-center gap-1 mt-2 text-xs font-medium text-emerald-600">
-          <ArrowUpRight className="w-3.5 h-3.5" />{change}
-          <span className="text-slate-400 font-normal">vs last week</span>
-        </div>
-      )}
-    </div>
-  );
-}
+const NAV_COLOR = '#166534';
 
 export default function PharmacyDashboard() {
-  const { user, tenant } = useAuthStore();
-  const theme = FALLBACK_THEMES['pharmacy'];
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
+  const [stats, setStats] = useState<any>(null);
+  const [trend, setTrend] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      api.get('/pharmacy/dashboard').catch(() => ({ data: {} })),
+      api.get('/pharmacy/revenue-trend?days=14').catch(() => ({ data: [] })),
+    ]).then(([s, t]) => {
+      setStats(s.data);
+      setTrend(Array.isArray(t.data) ? t.data : []);
+    }).finally(() => setLoading(false));
+  }, []);
+
+  const kpis = stats ? [
+    { label: 'Total Products',  value: stats.totalProducts,                       icon: Pill,          color: NAV_COLOR },
+    { label: 'Low Stock',       value: stats.lowStockCount,                        icon: AlertTriangle, color: '#F59E0B' },
+    { label: 'Near Expiry',     value: stats.expiringCount,                        icon: Clock,         color: '#EF4444' },
+    { label: 'Out of Stock',    value: stats.outOfStockCount,                      icon: Package,       color: '#DC2626' },
+    { label: "Today's Sales",   value: stats.todayOrders,                          icon: ShoppingCart,  color: '#3B82F6' },
+    { label: "Today's Revenue", value: formatINR(stats.todayRevenue),              icon: TrendingUp,    color: '#8B5CF6' },
+  ] : [];
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">{greeting}, {user?.firstName} 👋</h1>
-        <p className="text-slate-500 text-sm mt-0.5">
-          {tenant?.name} &bull; {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Pharmacy Dashboard</h1>
+          <p className="text-sm text-slate-500 mt-0.5">Inventory & dispensing overview</p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard label=Today's Sales value="₹1.24L" sub="284 bills" change={"+14%"} icon={TrendingUp} color="#166534" />
-        <KpiCard label=Orders Pending value="47" sub="12 home delivery" change={"+5"} icon={ShoppingCart} color="#84CC16" />
-        <KpiCard label=Low Stock Items value="23" sub="Need reorder"  icon={Package} color="#EF4444" />
-        <KpiCard label=WhatsApp Orders value="38" sub="via WhatsApp today" change={"+31%"} icon={MessageSquare} color="#25D366" />
+      {loading ? (
+        <div className="grid grid-cols-3 gap-4 lg:grid-cols-6">
+          {Array.from({ length: 6 }).map((_, i) => <div key={i} className="animate-pulse bg-slate-200 rounded-2xl h-24" />)}
+        </div>
+      ) : (
+        <div className="grid grid-cols-3 gap-4 lg:grid-cols-6">
+          {kpis.map(k => (
+            <div key={k.label} className="bg-white rounded-2xl border border-slate-100 p-4 text-center">
+              <div className="w-9 h-9 rounded-xl mx-auto flex items-center justify-center mb-2" style={{ background: `${k.color}15` }}>
+                <k.icon className="w-4 h-4" style={{ color: k.color }} />
+              </div>
+              <p className="text-xl font-bold text-slate-900">{k.value}</p>
+              <p className="text-[10px] text-slate-400 mt-0.5 leading-tight">{k.label}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Alerts */}
+      {stats && (stats.lowStockCount > 0 || stats.expiringCount > 0 || stats.outOfStockCount > 0) && (
+        <div className="grid grid-cols-3 gap-3">
+          {stats.outOfStockCount > 0 && (
+            <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 flex items-center gap-3">
+              <Package className="w-5 h-5 text-red-600" />
+              <div>
+                <p className="text-sm font-bold text-red-800">{stats.outOfStockCount} Out of Stock</p>
+                <p className="text-xs text-red-600">Requires immediate restocking</p>
+              </div>
+              <a href="/pharmacy/inventory" className="ml-auto text-red-600 hover:text-red-800"><ArrowUpRight className="w-4 h-4" /></a>
+            </div>
+          )}
+          {stats.lowStockCount > 0 && (
+            <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center gap-3">
+              <AlertTriangle className="w-5 h-5 text-amber-600" />
+              <div>
+                <p className="text-sm font-bold text-amber-800">{stats.lowStockCount} Low Stock</p>
+                <p className="text-xs text-amber-600">Below minimum level</p>
+              </div>
+              <a href="/pharmacy/inventory" className="ml-auto text-amber-600 hover:text-amber-800"><ArrowUpRight className="w-4 h-4" /></a>
+            </div>
+          )}
+          {stats.expiringCount > 0 && (
+            <div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 flex items-center gap-3">
+              <Clock className="w-5 h-5 text-orange-600" />
+              <div>
+                <p className="text-sm font-bold text-orange-800">{stats.expiringCount} Near Expiry</p>
+                <p className="text-xs text-orange-600">Expiring within 90 days</p>
+              </div>
+              <a href="/pharmacy/inventory" className="ml-auto text-orange-600 hover:text-orange-800"><ArrowUpRight className="w-4 h-4" /></a>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Revenue trend */}
+      <div className="bg-white rounded-2xl border border-slate-100 p-5">
+        <h3 className="font-semibold text-slate-900 mb-4">Revenue — Last 14 Days</h3>
+        <ResponsiveContainer width="100%" height={220}>
+          <AreaChart data={trend} margin={{ top: 0, right: 0, left: -15, bottom: 0 }}>
+            <defs>
+              <linearGradient id="pg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor={NAV_COLOR} stopOpacity={0.2} />
+                <stop offset="95%" stopColor={NAV_COLOR} stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+            <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false}
+              tickFormatter={(v: string) => v.slice(5)} />
+            <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false}
+              tickFormatter={(v: number) => `₹${(v/100000).toFixed(0)}L`} />
+            <Tooltip formatter={(v: any) => [formatINR(v), 'Revenue']}
+              contentStyle={{ borderRadius: 12, border: 'none', fontSize: 12 }} />
+            <Area type="monotone" dataKey="revenue" name="Revenue" stroke={NAV_COLOR} strokeWidth={2.5} fill="url(#pg)" />
+          </AreaChart>
+        </ResponsiveContainer>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-white rounded-2xl border border-slate-100 p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-slate-900">Performance Trend</h3>
-            <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">+7.8% MoM</span>
-          </div>
-          <ResponsiveContainer width="100%" height={200}>
-            <AreaChart data={revenueData} margin={{ top: 0, right: 0, left: -25, bottom: 0 }}>
-              <defs>
-                <linearGradient id="pharmacyGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={theme.primaryColor} stopOpacity={0.15} />
-                  <stop offset="95%" stopColor={theme.primaryColor} stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickFormatter={v => `₹${(v/1000).toFixed(0)}K`} />
-              <Tooltip contentStyle={{ borderRadius: 12, border: 'none', fontSize: 12 }} />
-              <Area type="monotone" dataKey="value" stroke={theme.primaryColor} strokeWidth={2.5} fill="url(#pharmacyGrad)" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-slate-100 p-5 flex items-center justify-center">
-          <div className="text-center text-slate-400">
-            <Activity className="w-12 h-12 mx-auto mb-3 opacity-30" />
-            <p className="text-sm font-medium">More analytics coming soon</p>
-            <p className="text-xs mt-1">WhatsApp automation, patient insights &amp; more</p>
-          </div>
-        </div>
+      {/* Quick links */}
+      <div className="grid grid-cols-4 gap-4">
+        {[
+          { href: '/pharmacy/products',       label: 'Products',        icon: Pill,          color: NAV_COLOR },
+          { href: '/pharmacy/inventory',      label: 'Inventory',       icon: Package,       color: '#3B82F6' },
+          { href: '/pharmacy/orders',         label: 'Dispensing',      icon: ShoppingCart,  color: '#8B5CF6' },
+          { href: '/pharmacy/purchase-orders',label: 'Purchase Orders', icon: TrendingUp,    color: '#F59E0B' },
+        ].map(link => (
+          <a key={link.href} href={link.href}
+            className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-all group flex items-center gap-4">
+            <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: `${link.color}15` }}>
+              <link.icon className="w-5 h-5" style={{ color: link.color }} />
+            </div>
+            <p className="font-semibold text-slate-900 text-sm group-hover:text-[#166534] transition-colors">{link.label}</p>
+            <ArrowUpRight className="w-4 h-4 text-slate-300 ml-auto" />
+          </a>
+        ))}
       </div>
     </div>
   );

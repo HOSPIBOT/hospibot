@@ -414,7 +414,8 @@ model Patient {
   leads           Lead[]
   prescriptions   Prescription[]
   labOrders       LabOrder[]
-  homeCollections HomeCollection[]
+  homeCollections   HomeCollection[]
+  dispensingOrders  DispensingOrder[]
 
   @@unique([tenantId, phone])
   @@index([phone])
@@ -1166,4 +1167,161 @@ model HomeCollection {
   patient Patient @relation(fields: [patientId], references: [id])
 
   @@map("home_collections")
+}
+
+// ==============================================
+// PHARMACY — PRODUCT CATALOGUE
+// ==============================================
+
+model PharmacyProduct {
+  id                String   @id @default(uuid())
+  tenantId          String   @map("tenant_id")
+
+  // Drug identity
+  name              String                        // Brand name
+  genericName       String?  @map("generic_name")
+  manufacturer      String?
+  category          String   @default("General")  // Tablet, Capsule, Syrup, Injection, etc.
+  composition       String?                       // Active ingredients
+  strength          String?                       // 500mg, 10mg/5ml, etc.
+  form              String   @default("Tablet")   // Tablet, Capsule, Syrup, Injection, Cream, Drops
+  schedule          String?                       // H, H1, X (drug schedule)
+  hsCode            String?  @map("hs_code")      // HS code for GST
+
+  // Pricing
+  mrp               Int      @map("mrp")          // paise — Maximum Retail Price
+  costPrice         Int      @default(0) @map("cost_price") // paise
+  sellingPrice      Int      @map("selling_price") // paise
+  gstRate           Float    @default(12)          @map("gst_rate")
+
+  // Stock
+  currentStock      Int      @default(0) @map("current_stock")   // units
+  minimumStock      Int      @default(10) @map("minimum_stock")  // reorder level
+  unit              String   @default("Strip")                    // Strip, Bottle, Vial, Tube
+  unitsPerPack      Int      @default(10) @map("units_per_pack")
+  storageCondition  String?  @map("storage_condition")           // Cool & Dry, Refrigerate, etc.
+
+  isActive          Boolean  @default(true) @map("is_active")
+  requiresPrescription Boolean @default(false) @map("requires_prescription")
+  isControlledSubstance Boolean @default(false) @map("is_controlled_substance")
+
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  batches           PharmacyBatch[]
+  dispensingItems   DispensingItem[]
+
+  @@unique([tenantId, name, strength])
+  @@index([tenantId, category])
+  @@map("pharmacy_products")
+}
+
+// Batch tracking for expiry management
+model PharmacyBatch {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  productId    String   @map("product_id")
+  batchNumber  String   @map("batch_number")
+  expiryDate   DateTime @map("expiry_date")
+  quantity     Int                            // units received
+  remaining    Int                            // units left
+  costPrice    Int      @map("cost_price")    // paise per unit
+  sellingPrice Int      @map("selling_price") // paise per unit
+  supplierId   String?  @map("supplier_id")
+  purchaseOrderId String? @map("purchase_order_id")
+  receivedAt   DateTime @default(now()) @map("received_at")
+
+  product PharmacyProduct @relation(fields: [productId], references: [id])
+
+  @@index([tenantId, productId, expiryDate])
+  @@map("pharmacy_batches")
+}
+
+// ==============================================
+// PHARMACY — DISPENSING
+// ==============================================
+
+model DispensingOrder {
+  id              String   @id @default(uuid())
+  tenantId        String   @map("tenant_id")
+  patientId       String   @map("patient_id")
+  prescriptionId  String?  @map("prescription_id")
+  orderNumber     String   @map("order_number")
+  status          String   @default("PENDING")  // PENDING | DISPENSED | PARTIAL | CANCELLED
+  totalAmount     Int      @default(0) @map("total_amount")   // paise
+  discountAmount  Int      @default(0) @map("discount_amount")
+  gstAmount       Int      @default(0) @map("gst_amount")
+  billAmount      Int      @default(0) @map("bill_amount")
+  paymentStatus   String   @default("UNPAID") @map("payment_status")
+  notes           String?
+  dispensedAt     DateTime? @map("dispensed_at")
+  dispensedBy     String?  @map("dispensed_by")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  patient  Patient           @relation(fields: [patientId], references: [id])
+  items    DispensingItem[]
+
+  @@unique([tenantId, orderNumber])
+  @@map("dispensing_orders")
+}
+
+model DispensingItem {
+  id                String   @id @default(uuid())
+  dispensingOrderId String   @map("dispensing_order_id")
+  productId         String   @map("product_id")
+  batchId           String?  @map("batch_id")
+  quantity          Int
+  unitPrice         Int      @map("unit_price")   // paise
+  totalPrice        Int      @map("total_price")  // paise
+  gstRate           Float    @default(12) @map("gst_rate")
+  gstAmount         Int      @default(0) @map("gst_amount")
+
+  dispensingOrder DispensingOrder @relation(fields: [dispensingOrderId], references: [id])
+  product         PharmacyProduct @relation(fields: [productId], references: [id])
+
+  @@map("dispensing_items")
+}
+
+// ==============================================
+// PHARMACY — SUPPLIERS & PURCHASE ORDERS
+// ==============================================
+
+model Supplier {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  name         String
+  contactPerson String? @map("contact_person")
+  phone        String?
+  email        String?
+  address      String?
+  gstNumber    String?  @map("gst_number")
+  drugLicence  String?  @map("drug_licence")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  purchaseOrders PurchaseOrder[]
+
+  @@map("suppliers")
+}
+
+model PurchaseOrder {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  supplierId   String   @map("supplier_id")
+  orderNumber  String   @map("order_number")
+  status       String   @default("DRAFT")  // DRAFT | SENT | PARTIAL | RECEIVED | CANCELLED
+  items        Json     @default("[]")      // [{productId, productName, quantity, unitCost, totalCost}]
+  totalAmount  Int      @default(0) @map("total_amount")
+  notes        String?
+  orderedAt    DateTime? @map("ordered_at")
+  expectedAt   DateTime? @map("expected_at")
+  receivedAt   DateTime? @map("received_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  supplier Supplier @relation(fields: [supplierId], references: [id])
+
+  @@unique([tenantId, orderNumber])
+  @@map("purchase_orders")
 }
