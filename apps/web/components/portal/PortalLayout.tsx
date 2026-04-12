@@ -30,6 +30,7 @@ const NAV_BY_PORTAL: Record<string, NavItem[]> = {
     { href: 'dashboard',    label: 'Dashboard',      icon: LayoutDashboard, always: true },
     { href: 'whatsapp',     label: 'WhatsApp Inbox', icon: MessageSquare,   flag: 'whatsapp', badge: true },
     { href: 'appointments', label: 'Appointments',   icon: Calendar,        flag: 'appointments' },
+    { href: 'prescriptions',label: 'Prescriptions',  icon: Pill,            flag: 'patients' },
     { href: 'patients',     label: 'Patients',       icon: Users,           flag: 'patients' },
     { href: 'doctors',      label: 'Doctors',        icon: Stethoscope,     flag: 'doctors' },
     { href: 'billing',      label: 'Billing',        icon: CreditCard,      flag: 'billing' },
