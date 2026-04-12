@@ -98,8 +98,20 @@ export class PatientService {
             doctor: { include: { user: { select: { firstName: true, lastName: true } } } },
           },
         },
-        prescriptions: { where: { isActive: true }, orderBy: { createdAt: 'desc' }, take: 10 },
+        prescriptions: {
+          where: { isActive: true },
+          orderBy: { createdAt: 'desc' },
+          take: 10,
+          include: {
+            doctor: { include: { user: { select: { firstName: true, lastName: true } } } },
+          },
+        },
         visits: { orderBy: { createdAt: 'desc' }, take: 10 },
+        labOrders: {
+          orderBy: { createdAt: 'desc' },
+          take: 10,
+          select: { id: true, orderNumber: true, tests: true, status: true, reportUrl: true, reportDelivered: true, priority: true, createdAt: true, reportedAt: true },
+        },
         invoices: {
           orderBy: { createdAt: 'desc' },
           take: 10,

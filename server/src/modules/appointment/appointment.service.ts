@@ -97,10 +97,11 @@ export class AppointmentService {
     const appointment = await this.prisma.appointment.findFirst({
       where: { id, tenantId },
       include: {
-        patient: { select: { id: true, firstName: true, lastName: true, phone: true, healthId: true, bloodGroup: true, allergies: true } },
+        patient: { select: { id: true, firstName: true, lastName: true, phone: true, healthId: true, bloodGroup: true, allergies: true, chronicConditions: true, email: true } },
         doctor: { include: { user: { select: { firstName: true, lastName: true } } } },
         department: { select: { name: true } },
         branch: { select: { name: true } },
+        visit: true,
       },
     });
     if (!appointment) throw new NotFoundException('Appointment not found');
