@@ -221,6 +221,10 @@ model Tenant {
   waBusinessId    String?       @map("wa_business_id")
   waAccessToken   String?       @map("wa_access_token")
 
+  // Portal routing (DB-driven, replaces hardcoded enum routing)
+  portalFamilyId  String?       @map("portal_family_id")
+  subTypeId       String?       @map("sub_type_id")
+
   // Branding
   logoUrl         String?       @map("logo_url")
   primaryColor    String        @default("0D7C66")
@@ -236,6 +240,8 @@ model Tenant {
   deletedAt       DateTime?     @map("deleted_at")
 
   // Relations
+  portalFamily    PortalFamily?  @relation("TenantPortalFamily", fields: [portalFamilyId], references: [id])
+  subType         TenantSubType? @relation("TenantSubType", fields: [subTypeId], references: [id])
   branches        Branch[]
   users           User[]
   departments     Department[]
@@ -844,4 +850,84 @@ model PlatformConfig {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("platform_config")
+}
+
+// ==============================================
+// PORTAL FAMILIES (DB-driven, Super Admin managed)
+// ==============================================
+
+model PortalFamily {
+  id            String    @id @default(uuid())
+  name          String    @unique        // "Clinical", "Diagnostic", etc.
+  slug          String    @unique        // "clinical", "diagnostic", etc.
+  description   String                  // shown on registration card
+  icon          String                  // Lucide icon name
+  sortOrder     Int       @default(0)   @map("sort_order")
+  isActive      Boolean   @default(true) @map("is_active")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt    @map("updated_at")
+
+  subTypes      TenantSubType[]
+  theme         PortalTheme?
+  tenants       Tenant[]       @relation("TenantPortalFamily")
+
+  @@map("portal_families")
+}
+
+model TenantSubType {
+  id              String    @id @default(uuid())
+  portalFamilyId  String    @map("portal_family_id")
+  name            String
+  slug            String                // unique within family
+  description     String?
+  icon            String?               // Lucide icon name
+  featureFlags    Json      @default("{}") @map("feature_flags")
+  // e.g. { appointments: true, inventory: false, labReports: true, ... }
+  regFields       Json      @default("{}") @map("reg_fields")
+  // extra registration fields: { drugLicense: true, nablNo: false, ... }
+  sortOrder       Int       @default(0) @map("sort_order")
+  isActive        Boolean   @default(true) @map("is_active")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  portalFamily    PortalFamily @relation(fields: [portalFamilyId], references: [id])
+  tenants         Tenant[]     @relation("TenantSubType")
+
+  @@unique([portalFamilyId, slug])
+  @@map("tenant_sub_types")
+}
+
+model PortalTheme {
+  id              String    @id @default(uuid())
+  portalFamilyId  String    @unique @map("portal_family_id")
+
+  // Primary brand colors
+  primaryColor    String    @default("#0D7C66") @map("primary_color")
+  primaryDark     String    @default("#0A5E4F") @map("primary_dark")
+  primaryLight    String    @default("#E8F5F0") @map("primary_light")
+  accentColor     String    @default("#F59E0B") @map("accent_color")
+
+  // UI
+  sidebarBg       String    @default("#063A31") @map("sidebar_bg")
+  loginBg         String    @default("#0D7C66") @map("login_bg")
+  loginGradient   String    @default("#0A5E4F") @map("login_gradient")
+
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  updatedBy       String?   @map("updated_by")
+
+  portalFamily    PortalFamily @relation(fields: [portalFamilyId], references: [id])
+
+  @@map("portal_themes")
+}
+
+model PlatformAsset {
+  id          String    @id @default("singleton")
+  logoUrl     String?   @map("logo_url")        // stored path or external URL
+  logoAlt     String    @default("HospiBot")    @map("logo_alt")
+  faviconUrl  String?   @map("favicon_url")
+  tagline     String    @default("Connect 24*7...") @map("tagline")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  updatedBy   String?   @map("updated_by")
+
+  @@map("platform_assets")
 }

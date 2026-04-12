@@ -15,6 +15,7 @@ import { AutomationModule } from './modules/automation/automation.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { HealthController } from './health.controller';
 import { SuperAdminModule } from './modules/super-admin/super-admin.module';
+import { PortalModule } from './modules/portal/portal.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { SuperAdminModule } from './modules/super-admin/super-admin.module';
     AutomationModule,
     AnalyticsModule,
     SuperAdminModule,
+    PortalModule,
   ],
   controllers: [HealthController],
 })
