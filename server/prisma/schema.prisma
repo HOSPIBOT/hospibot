@@ -814,3 +814,34 @@ model AuditLog {
   @@index([tenantId, entity, createdAt])
   @@map("audit_logs")
 }
+
+// ==============================================
+// PLATFORM ANNOUNCEMENTS (Super Admin)
+// ==============================================
+
+model Announcement {
+  id          String    @id @default(uuid())
+  title       String
+  body        String    @db.Text
+  type        String    @default("INFO") // INFO | WARNING | SUCCESS | MAINTENANCE
+  audience    String    @default("ALL")  // ALL | PLAN:STARTER | STATUS:TRIAL | etc.
+  sentTo      Int       @default(0)      @map("sent_to")
+  scheduledAt DateTime? @map("scheduled_at")
+  sentAt      DateTime? @map("sent_at")
+  createdBy   String    @map("created_by")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@map("announcements")
+}
+
+// ==============================================
+// PLATFORM SETTINGS (Super Admin)
+// ==============================================
+
+model PlatformConfig {
+  id        String   @id @default("singleton")
+  settings  Json     @default("{}")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("platform_config")
+}
