@@ -414,6 +414,7 @@ model Patient {
   leads           Lead[]
   prescriptions   Prescription[]
   labOrders       LabOrder[]
+  homeCollections HomeCollection[]
 
   @@unique([tenantId, phone])
   @@index([phone])
@@ -1112,4 +1113,57 @@ model Dependent {
 
   @@unique([primaryUhrId, dependentUhrId])
   @@map("dependents")
+}
+
+// ==============================================
+// DIAGNOSTIC — TEST CATALOG
+// ==============================================
+
+model TestCatalog {
+  id            String   @id @default(uuid())
+  tenantId      String   @map("tenant_id")
+  code          String                        // e.g. CBC, HbA1c, LFT
+  name          String
+  category      String                        // Haematology, Biochemistry, Microbiology, etc.
+  price         Int                           // in paise
+  turnaroundHrs Int      @default(24)         @map("turnaround_hrs")
+  sampleType    String   @default("Blood")    @map("sample_type")
+  containerType String?  @map("container_type")
+  normalRange   String?  @map("normal_range")
+  unit          String?
+  methodology   String?
+  isActive      Boolean  @default(true)       @map("is_active")
+  isHomeCollectionAllowed Boolean @default(true) @map("is_home_collection_allowed")
+  createdAt     DateTime @default(now())      @map("created_at")
+  updatedAt     DateTime @updatedAt           @map("updated_at")
+
+  @@unique([tenantId, code])
+  @@map("test_catalog")
+}
+
+// ==============================================
+// DIAGNOSTIC — HOME COLLECTION SLOTS
+// ==============================================
+
+model HomeCollection {
+  id              String   @id @default(uuid())
+  tenantId        String   @map("tenant_id")
+  patientId       String   @map("patient_id")
+  labOrderId      String?  @map("lab_order_id")
+  scheduledAt     DateTime @map("scheduled_at")
+  address         String
+  city            String
+  pincode         String
+  contactPhone    String   @map("contact_phone")
+  technicianName  String?  @map("technician_name")
+  technicianPhone String?  @map("technician_phone")
+  status          String   @default("SCHEDULED") // SCHEDULED|ASSIGNED|COLLECTED|CANCELLED
+  notes           String?
+  collectedAt     DateTime? @map("collected_at")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  patient Patient @relation(fields: [patientId], references: [id])
+
+  @@map("home_collections")
 }

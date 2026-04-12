@@ -19,6 +19,7 @@ import { PortalModule } from './modules/portal/portal.module';
 import { ChatbotModule } from './modules/chatbot/chatbot.module';
 import { SchedulerModule } from './modules/scheduler/scheduler.module';
 import { VaultModule } from './modules/vault/vault.module';
+import { LabModule } from './modules/lab/lab.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { VaultModule } from './modules/vault/vault.module';
     ChatbotModule,
     SchedulerModule,
     VaultModule,
+    LabModule,
   ],
   controllers: [HealthController],
 })
