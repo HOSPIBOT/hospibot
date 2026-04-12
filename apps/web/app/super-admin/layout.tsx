@@ -46,9 +46,21 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
   const [adminName, setAdminName] = useState('Super Admin');
 
   useEffect(() => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('hospibot_super_token') : null;
+    const token = typeof window !== 'undefined' ? localStorage.getItem('hospibot_access_token') : null;
+    const userStr = typeof window !== 'undefined' ? localStorage.getItem('hospibot_user') : null;
     if (!token) {
       router.push('/auth/login');
+      return;
+    }
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        if (user.role !== 'SUPER_ADMIN') {
+          router.push('/dashboard');
+          return;
+        }
+        setAdminName(`${user.firstName} ${user.lastName || ''}`.trim());
+      } catch { /* ignore */ }
     }
   }, []);
 

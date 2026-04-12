@@ -21,7 +21,12 @@ export default function LoginPage() {
       const res = await api.post('/auth/login', form);
       setAuth(res.data.user, res.data.tenant, res.data.accessToken, res.data.refreshToken);
       toast.success(`Welcome back, ${res.data.user.firstName}!`);
-      router.push('/dashboard');
+      // Route SUPER_ADMIN to their dedicated portal
+      if (res.data.user.role === 'SUPER_ADMIN') {
+        router.push('/super-admin');
+      } else {
+        router.push('/dashboard');
+      }
     } catch (err: any) {
       toast.error(err.response?.data?.message || 'Login failed');
     } finally {
