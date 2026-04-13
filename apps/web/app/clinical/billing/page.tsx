@@ -157,6 +157,21 @@ export default function BillingPage() {
     finally { setRecording(false); }
   };
 
+
+  const exportTally = async () => {
+    try {
+      const res = await api.get('/billing/export/tally', { responseType: 'blob' });
+      const blob = new Blob([res.data], { type: 'application/xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `tally-export-${new Date().toISOString().slice(0,7)}.xml`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success('Tally XML exported! Import via Gateway → Import Data in Tally.');
+    } catch { toast.error('Tally export failed. Please try again.'); }
+  };
+
   const sendPaymentLink = async (invoiceId: string) => {
     try {
       const res = await api.post(`/billing/invoices/${invoiceId}/payment-link`);

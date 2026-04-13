@@ -391,6 +391,13 @@ export default function PatientDetailPage() {
 
           {/* ── BILLING ── */}
           {tab === 'billing' && (
+            <>
+            <div className="flex justify-end mb-3">
+              <a href={`/clinical/billing/patient/${p?.id}`} target="_blank"
+                className="flex items-center gap-1.5 text-xs font-semibold text-[#0D7C66] border border-[#0D7C66]/30 bg-[#E8F5F0] px-3 py-1.5 rounded-xl hover:bg-[#0D7C66]/10 transition-colors">
+                <Printer className="w-3 h-3" /> Print Billing Ledger
+              </a>
+            </div>
             <div className="space-y-3">
               {/* Total outstanding */}
               {p.invoices?.some((i: any) => i.dueAmount > 0) && (
