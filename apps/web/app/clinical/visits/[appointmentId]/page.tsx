@@ -25,10 +25,56 @@ const COMMON_DIAGNOSES = [
 ];
 
 const DRUG_META = {
-  drugs: ['Paracetamol','Ibuprofen','Amoxicillin','Azithromycin','Metformin','Atorvastatin','Amlodipine','Omeprazole','Cetirizine','Montelukast','Doxycycline','Ciprofloxacin','Cefixime','Losartan','Aspirin','Vitamin B12','Vitamin D3','Iron + Folic Acid','Ondansetron','Domperidone'],
+  drugs: ['Paracetamol','Ibuprofen','Amoxicillin','Azithromycin','Metformin','Atorvastatin','Amlodipine','Omeprazole','Cetirizine','Montelukast','Doxycycline','Ciprofloxacin','Cefixime','Losartan','Aspirin','Vitamin B12','Vitamin D3','Iron + Folic Acid','Ondansetron','Domperidone','Warfarin','Metoprolol','Lisinopril','Clopidogrel','Pantoprazole','Prednisolone','Insulin','Glipizide','Telmisartan','Ramipril'],
   frequencies: ['Once daily (OD)','Twice daily (BD)','Three times daily (TDS)','At bedtime (HS)','Before food (AC)','After food (PC)','As needed (SOS)'],
   durations: ['3 days','5 days','7 days','10 days','14 days','1 month','3 months','Ongoing'],
+  // Known drug interactions [drugA, drugB, severity, message]
+  interactions: [
+    ['Aspirin',    'Warfarin',     'HIGH',   'Aspirin + Warfarin: High bleeding risk. Avoid unless under close monitoring.'],
+    ['Clopidogrel','Omeprazole',   'MEDIUM', 'Clopidogrel + Omeprazole: Reduced antiplatelet effect. Consider Pantoprazole.'],
+    ['Ibuprofen',  'Aspirin',      'MEDIUM', 'Ibuprofen + Aspirin: Ibuprofen reduces cardioprotective effect of Aspirin.'],
+    ['Ibuprofen',  'Lisinopril',   'MEDIUM', 'NSAIDs may reduce effectiveness of ACE inhibitors and worsen kidney function.'],
+    ['Ibuprofen',  'Warfarin',     'HIGH',   'NSAIDs + Warfarin: Significantly elevated bleeding risk. Avoid combination.'],
+    ['Metformin',  'Ibuprofen',    'MEDIUM', 'NSAIDs may worsen kidney function and affect Metformin clearance.'],
+    ['Doxycycline','Iron + Folic Acid','LOW', 'Iron reduces Doxycycline absorption. Take 2–3 hours apart.'],
+    ['Ciprofloxacin','Iron + Folic Acid','LOW','Iron reduces Ciprofloxacin absorption. Take 2 hours apart.'],
+    ['Atorvastatin','Azithromycin', 'MEDIUM','Azithromycin may increase Atorvastatin levels — watch for muscle pain.'],
+    ['Warfarin',   'Azithromycin', 'HIGH',   'Azithromycin + Warfarin: May increase INR/bleeding risk. Monitor closely.'],
+  ] as [string, string, string, string][],
+  // Drug-allergy cross-references
+  allergyMap: {
+    'Penicillin':    ['Amoxicillin','Ampicillin','Co-amoxiclav'],
+    'Sulfa':         ['Trimethoprim','Co-trimoxazole'],
+    'NSAIDs':        ['Ibuprofen','Aspirin','Naproxen','Diclofenac'],
+    'Aspirin':       ['Aspirin'],
+    'Ibuprofen':     ['Ibuprofen'],
+    'Amoxicillin':   ['Amoxicillin'],
+    'Ciprofloxacin': ['Ciprofloxacin'],
+    'Azithromycin':  ['Azithromycin'],
+  } as Record<string, string[]>,
 };
+
+// Check drug interactions and allergy conflicts for a medication list
+function checkDrugSafety(meds: {name:string}[], allergies: string[] = []): {level:'HIGH'|'MEDIUM'|'LOW'; msg:string}[] {
+  const warnings: {level:'HIGH'|'MEDIUM'|'LOW'; msg:string}[] = [];
+  const names = meds.map(m => m.name.trim()).filter(Boolean);
+  // Interaction check
+  for (const [a, b, level, msg] of DRUG_META.interactions) {
+    const hasA = names.some(n => n.toLowerCase().includes(a.toLowerCase()));
+    const hasB = names.some(n => n.toLowerCase().includes(b.toLowerCase()));
+    if (hasA && hasB) warnings.push({ level: level as any, msg });
+  }
+  // Allergy cross-check
+  for (const allergy of allergies) {
+    const conflictDrugs = DRUG_META.allergyMap[allergy] || [];
+    for (const drug of conflictDrugs) {
+      if (names.some(n => n.toLowerCase().includes(drug.toLowerCase()))) {
+        warnings.push({ level: 'HIGH', msg: `⚠️ ALLERGY ALERT: Patient is allergic to ${allergy}. ${drug} may cause allergic reaction.` });
+      }
+    }
+  }
+  return warnings;
+}
 
 interface Medication { name: string; dosage: string; frequency: string; duration: string; instructions: string; }
 interface Vitals { bp: string; pulse: string; temp: string; spo2: string; weight: string; height: string; rr: string; }
@@ -409,6 +455,26 @@ export default function VisitConsolePage() {
                 onRemove={() => setMedications(meds => meds.filter((_, j) => j !== i))} />
             ))}
           </div>
+
+          {/* Drug safety warnings */}
+          {(() => {
+            const warnings = checkDrugSafety(medications, patient?.allergies || []);
+            if (warnings.length === 0) return null;
+            return (
+              <div className="space-y-2 mt-3">
+                {warnings.map((w, i) => (
+                  <div key={i} className={`flex items-start gap-2.5 rounded-xl px-4 py-3 text-xs font-medium border ${
+                    w.level === 'HIGH'   ? 'bg-red-50 border-red-200 text-red-800' :
+                    w.level === 'MEDIUM' ? 'bg-amber-50 border-amber-200 text-amber-800' :
+                    'bg-blue-50 border-blue-200 text-blue-800'
+                  }`}>
+                    <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                    <span>{w.msg}</span>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
 
           <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
             <div className="bg-[#E8F5F0] rounded-xl px-4 py-3 flex items-center gap-2 text-xs text-[#0A5E4F]">
