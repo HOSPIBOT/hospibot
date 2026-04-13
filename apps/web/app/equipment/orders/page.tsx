@@ -1,48 +1,120 @@
 'use client';
-import { useState } from 'react';
-import { formatDate } from '@/lib/utils';
-import { ShoppingCart, Package, Clock, CheckCircle2 } from 'lucide-react';
-const STATUS_COLORS: Record<string,string> = { PENDING:'bg-amber-100 text-amber-700', CONFIRMED:'bg-blue-100 text-blue-700', SHIPPED:'bg-purple-100 text-purple-700', DELIVERED:'bg-emerald-100 text-emerald-700', CANCELLED:'bg-red-100 text-red-700' };
-const ORDERS = [
-  { id:'1', orderNo:'EQ-2024-0091', buyer:'City Multi-Speciality Hospital', items:'Hospital Bed x5, Oxygen Concentrator x2', amount:'₹10,25,000', status:'CONFIRMED', date:new Date().toISOString() },
-  { id:'2', orderNo:'EQ-2024-0090', buyer:'Sunrise Nursing Home',          items:'Digital Monitor x3, Infusion Pump x10', amount:'₹6,52,500',  status:'SHIPPED',   date:new Date(Date.now()-86400000*2).toISOString() },
-  { id:'3', orderNo:'EQ-2024-0089', buyer:'Apollo Diagnostics',            items:'ECG Machine x2',                        amount:'₹1,30,000',  status:'DELIVERED', date:new Date(Date.now()-86400000*5).toISOString() },
-  { id:'4', orderNo:'EQ-2024-0088', buyer:'MedCare Clinic',                items:'Wheelchair x6, Pulse Oximeter x20',     amount:'₹1,07,000',  status:'PENDING',   date:new Date(Date.now()-86400000*1).toISOString() },
-];
+import { useState, useEffect, useCallback } from 'react';
+import { api } from '@/lib/api';
+import { formatDate, formatINR } from '@/lib/utils';
+import toast from 'react-hot-toast';
+import { ShoppingCart, RefreshCw, Package, ChevronLeft, ChevronRight } from 'lucide-react';
+
+const STATUS_COLORS: Record<string,string> = {
+  PENDING:'bg-amber-100 text-amber-700', CONFIRMED:'bg-blue-100 text-blue-700',
+  SHIPPED:'bg-purple-100 text-purple-700', DELIVERED:'bg-emerald-100 text-emerald-700',
+  CANCELLED:'bg-red-100 text-red-700',
+};
+
 export default function EquipmentOrdersPage() {
-  const [filter, setFilter] = useState('');
-  const filtered = ORDERS.filter(o=>!filter||o.status===filter);
+  const [orders, setOrders]   = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter]   = useState('');
+  const [meta, setMeta]       = useState({ page:1, total:0, totalPages:1 });
+
+  const load = useCallback(async (page=1) => {
+    setLoading(true);
+    try {
+      const params: any = { page, limit: 20 };
+      if (filter) params.status = filter;
+      const r = await api.get('/marketplace/orders', { params });
+      setOrders(r.data.data ?? []);
+      setMeta(r.data.meta ?? { page:1, total:0, totalPages:1 });
+    } catch { toast.error('Failed to load orders'); }
+    finally { setLoading(false); }
+  }, [filter]);
+
+  useEffect(() => { load(1); }, [load]);
+
+  const advance = async (id: string, status: string) => {
+    try {
+      await api.patch(`/marketplace/orders/${id}`, { status });
+      toast.success(`Order updated to ${status}`);
+      load(meta.page);
+    } catch { toast.error('Failed to update'); }
+  };
+
+  const NEXT_STATUS: Record<string,string> = { PENDING:'CONFIRMED', CONFIRMED:'SHIPPED', SHIPPED:'DELIVERED' };
+
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">B2B Orders</h1>
-        <select className="px-3 py-2 text-sm border border-slate-200 rounded-xl bg-slate-50 outline-none" value={filter} onChange={e=>setFilter(e.target.value)}>
-          <option value="">All Orders</option>{['PENDING','CONFIRMED','SHIPPED','DELIVERED','CANCELLED'].map(s=><option key={s}>{s}</option>)}
-        </select>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">B2B Orders</h1>
+          <p className="text-sm text-slate-500 mt-0.5">{meta.total} orders</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <select className="px-3 py-2 text-sm border border-slate-200 rounded-xl bg-slate-50 outline-none cursor-pointer"
+            value={filter} onChange={e=>setFilter(e.target.value)}>
+            <option value="">All Status</option>
+            {['PENDING','CONFIRMED','SHIPPED','DELIVERED','CANCELLED'].map(s=><option key={s} value={s}>{s}</option>)}
+          </select>
+          <button onClick={()=>load(meta.page)} className="p-2 border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50">
+            <RefreshCw className={`w-4 h-4 ${loading?'animate-spin':''}`}/>
+          </button>
+        </div>
       </div>
-      <div className="grid grid-cols-4 gap-4">
-        {[{l:'Total Orders',v:ORDERS.length,c:'#1E40AF'},{l:'Pending',v:ORDERS.filter(o=>o.status==='PENDING').length,c:'#F59E0B'},{l:'In Transit',v:ORDERS.filter(o=>o.status==='SHIPPED').length,c:'#8B5CF6'},{l:'Delivered',v:ORDERS.filter(o=>o.status==='DELIVERED').length,c:'#10B981'}].map(s=>(
-          <div key={s.l} className="bg-white rounded-2xl border border-slate-100 p-4"><p className="text-xs text-slate-500 mb-1">{s.l}</p><p className="text-2xl font-bold" style={{color:s.c}}>{s.v}</p></div>
-        ))}
-      </div>
-      <div className="space-y-3">
-        {filtered.map(o=>(
-          <div key={o.id} className="bg-white rounded-2xl border border-slate-100 p-5">
-            <div className="flex items-start justify-between mb-2">
-              <div>
-                <p className="font-bold text-slate-900 font-mono text-sm">{o.orderNo}</p>
-                <p className="text-sm font-semibold text-slate-700 mt-0.5">{o.buyer}</p>
-                <p className="text-xs text-slate-400 mt-0.5">{o.items}</p>
-              </div>
-              <div className="text-right">
-                <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${STATUS_COLORS[o.status]}`}>{o.status}</span>
-                <p className="text-sm font-bold text-slate-900 mt-1">{o.amount}</p>
-                <p className="text-xs text-slate-400">{formatDate(o.date)}</p>
-              </div>
-            </div>
+
+      {loading ? (
+        <div className="space-y-3">{Array.from({length:5}).map((_,i)=><div key={i} className="animate-pulse bg-slate-200 rounded-2xl h-20"/>)}</div>
+      ) : orders.length === 0 ? (
+        <div className="bg-white rounded-2xl border border-slate-100 py-20 text-center">
+          <ShoppingCart className="w-12 h-12 text-slate-200 mx-auto mb-3"/>
+          <p className="text-slate-400 text-sm">No orders found</p>
+        </div>
+      ) : (
+        <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+          <table className="w-full">
+            <thead><tr className="bg-slate-50 border-b border-slate-100">
+              {['Order #','Buyer','Items','Amount','Date','Status',''].map(h=>(
+                <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase">{h}</th>
+              ))}
+            </tr></thead>
+            <tbody className="divide-y divide-slate-50">
+              {orders.map(o=>{
+                const items = (o.items as any[]) ?? [];
+                const next = NEXT_STATUS[o.status];
+                return (
+                  <tr key={o.id} className="hover:bg-slate-50/60 transition-colors">
+                    <td className="px-5 py-3.5 font-mono text-xs text-slate-600">{o.orderNumber||o.id?.slice(0,8).toUpperCase()}</td>
+                    <td className="px-5 py-3.5 font-semibold text-slate-900 text-sm">{o.buyer?.name||o.tenantId?.slice(0,8)||'—'}</td>
+                    <td className="px-5 py-3.5 text-sm text-slate-500 max-w-48 truncate">
+                      {items.slice(0,2).map((i:any)=>`${i.productName||i.name} x${i.quantity}`).join(', ')}
+                      {items.length>2&&` +${items.length-2}`}
+                    </td>
+                    <td className="px-5 py-3.5 font-bold text-slate-900 text-sm">{formatINR(o.totalAmount||0)}</td>
+                    <td className="px-5 py-3.5 text-xs text-slate-500">{formatDate(o.createdAt)}</td>
+                    <td className="px-5 py-3.5">
+                      <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${STATUS_COLORS[o.status]||'bg-slate-100 text-slate-600'}`}>{o.status}</span>
+                    </td>
+                    <td className="px-5 py-3.5">
+                      {next&&<button onClick={()=>advance(o.id,next)}
+                        className="text-[11px] font-bold text-[#1E40AF] bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors">
+                        → {next}
+                      </button>}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+      {meta.totalPages>1&&(
+        <div className="flex items-center justify-between">
+          <p className="text-xs text-slate-500">{meta.total} total</p>
+          <div className="flex items-center gap-1">
+            <button onClick={()=>load(meta.page-1)} disabled={meta.page===1} className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 disabled:opacity-40"><ChevronLeft className="w-4 h-4"/></button>
+            <span className="text-xs px-3">{meta.page}/{meta.totalPages}</span>
+            <button onClick={()=>load(meta.page+1)} disabled={meta.page>=meta.totalPages} className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 disabled:opacity-40"><ChevronRight className="w-4 h-4"/></button>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
