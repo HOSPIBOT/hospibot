@@ -141,6 +141,22 @@ export default function BillingPage() {
     } finally { setSubmitting(false); }
   };
 
+  const recordPayment = async () => {
+    if (!payInvoice || !payAmount) { toast.error('Enter payment amount'); return; }
+    setRecording(true);
+    try {
+      await api.post(`/billing/invoices/${payInvoice.id}/payments`, {
+        amount: Math.round(Number(payAmount) * 100), // convert to paise
+        method: payMethod,
+        reference: payRef || undefined,
+      });
+      toast.success(`Payment of ₹${payAmount} recorded!`);
+      setPayInvoice(null); setPayAmount(''); setPayRef('');
+      load(meta.page);
+    } catch (err: any) { toast.error(err?.response?.data?.message || 'Failed'); }
+    finally { setRecording(false); }
+  };
+
   const sendPaymentLink = async (invoiceId: string) => {
     try {
       const res = await api.post(`/billing/invoices/${invoiceId}/payment-link`);
@@ -262,6 +278,12 @@ export default function BillingPage() {
                       className="text-[11px] font-semibold text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-1.5 rounded-lg hover:bg-slate-200 transition-colors flex items-center gap-1">
                       <Printer className="w-3 h-3" /> Print
                     </a>
+                    {inv.status !== 'PAID' && inv.dueAmount > 0 && (
+                      <button onClick={() => { setPayInvoice(inv); setPayAmount((inv.dueAmount / 100).toString()); }}
+                        className="text-[11px] font-semibold text-[#0D7C66] bg-[#E8F5F0] border border-[#0D7C66]/30 px-2.5 py-1.5 rounded-lg hover:bg-[#0D7C66]/10 transition-colors flex items-center gap-1">
+                        ₹ Record
+                      </button>
+                    )}
                     {inv.status !== 'PAID' && (
                       <button onClick={() => sendPaymentLink(inv.id)}
                         className="text-[11px] font-semibold text-white bg-[#25D366] px-2.5 py-1.5 rounded-lg hover:opacity-90 transition-opacity flex items-center gap-1">
@@ -433,6 +455,50 @@ export default function BillingPage() {
                   {submitting ? 'Creating…' : 'Create Invoice'}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {payInvoice && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={e => e.target === e.currentTarget && setPayInvoice(null)}>
+          <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+              <div>
+                <h2 className="text-lg font-bold text-slate-900">Record Payment</h2>
+                <p className="text-xs text-slate-400 mt-0.5">{payInvoice.invoiceNumber} · Due: ₹{(payInvoice.dueAmount/100).toLocaleString('en-IN')}</p>
+              </div>
+              <button onClick={() => setPayInvoice(null)} className="p-2 text-slate-400 hover:bg-slate-100 rounded-xl"><X className="w-4 h-4"/></button>
+            </div>
+            <div className="px-6 py-5 space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Amount (₹) *</label>
+                <input type="number" min={0} step={1} className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#0D7C66] outline-none"
+                  value={payAmount} onChange={e => setPayAmount(e.target.value)} />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Payment Method</label>
+                <div className="grid grid-cols-4 gap-2">
+                  {['CASH','CARD','UPI','CHEQUE'].map(m => (
+                    <button key={m} onClick={() => setPayMethod(m)}
+                      className={`py-2 text-xs font-bold rounded-xl border-2 transition-all ${payMethod === m ? 'border-[#0D7C66] bg-[#E8F5F0] text-[#0D7C66]' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>
+                      {m}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Reference / Transaction ID</label>
+                <input className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#0D7C66] outline-none"
+                  placeholder="UPI ref, cheque no., etc." value={payRef} onChange={e => setPayRef(e.target.value)} />
+              </div>
+            </div>
+            <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 bg-slate-50/50 rounded-b-2xl">
+              <button onClick={() => setPayInvoice(null)} className="text-sm text-slate-500 px-4 py-2 rounded-xl hover:bg-slate-100">Cancel</button>
+              <button onClick={recordPayment} disabled={recording || !payAmount}
+                className="bg-[#0D7C66] text-white text-sm font-semibold px-6 py-2.5 rounded-xl hover:bg-[#0A5E4F] disabled:opacity-50 flex items-center gap-2">
+                {recording && <Loader2 className="w-4 h-4 animate-spin"/>}
+                Record ₹{Number(payAmount || 0).toLocaleString('en-IN')}
+              </button>
             </div>
           </div>
         </div>
