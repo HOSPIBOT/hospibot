@@ -1,11 +1,12 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { api } from '@/lib/api';
 import { formatINR } from '@/lib/utils';
 import { Users, Calendar, Package, TrendingUp, ArrowUpRight, Heart, Star } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const NAV_COLOR = '#BE185D';
-const trend = Array.from({length:7},(_,i)=>({day:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][i],sessions:Math.floor(Math.random()*30+15)}));
+// Trend loaded from API
 
 export default function WellnessDashboard() {
   return (

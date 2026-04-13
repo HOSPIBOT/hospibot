@@ -32,7 +32,7 @@ interface LineItem {
 }
 
 function newItem(): LineItem {
-  const id = Math.random().toString(36).slice(2);
+  const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
   return { id, description: '', quantity: 1, rate: 0, gstRate: 18, amount: 0, gstAmount: 0 };
 }
 

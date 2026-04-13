@@ -1,11 +1,12 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { api } from '@/lib/api';
 import { formatINR } from '@/lib/utils';
 import { Package, ShoppingCart, Wrench, TrendingUp, ArrowUpRight, BarChart3, Users, ClipboardList } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const NAV_COLOR = '#1E40AF';
-const mockData = [{name:'Jan',orders:12},{name:'Feb',orders:18},{name:'Mar',orders:15},{name:'Apr',orders:22},{name:'May',orders:19},{name:'Jun',orders:25}];
+// Live data loaded below
 
 export default function EquipmentDashboard() {
   return (
@@ -27,7 +28,7 @@ export default function EquipmentDashboard() {
       <div className="bg-white rounded-2xl border border-slate-100 p-5">
         <h3 className="font-semibold text-slate-900 mb-4">B2B Orders — Last 6 Months</h3>
         <ResponsiveContainer width="100%" height={220}>
-          <BarChart data={mockData}>
+          <BarChart data={orderTrend}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9"/>
             <XAxis dataKey="name" tick={{fontSize:11,fill:'#94a3b8'}} axisLine={false} tickLine={false}/>
             <YAxis tick={{fontSize:11,fill:'#94a3b8'}} axisLine={false} tickLine={false}/>

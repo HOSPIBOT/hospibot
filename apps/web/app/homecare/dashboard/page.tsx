@@ -9,7 +9,7 @@ const NAV_COLOR = '#6B21A8';
 
 export default function HomecareDashboard() {
   const [stats, setStats] = useState({ activePatients: 142, todayVisits: 18, pendingVisits: 5, staffDeployed: 12, monthRevenue: 34500000 });
-  const trend = Array.from({length:14},(_,i)=>({ date: new Date(Date.now()-i*86400000).toISOString().split('T')[0].slice(5), visits: Math.floor(Math.random()*20+10) })).reverse();
+  const trend = [{date:'04-01',visits:12},{date:'04-02',visits:18},{date:'04-03',visits:15},{date:'04-04',visits:20},{date:'04-05',visits:17},{date:'04-06',visits:22},{date:'04-07',visits:14}];
 
   return (
     <div className="space-y-6">
