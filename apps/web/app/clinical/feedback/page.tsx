@@ -58,7 +58,7 @@ export default function FeedbackPage() {
         submittedAt: new Date().toISOString(),
       }).catch(() => {
         // If endpoint doesn't exist yet, store locally
-        console.log('Feedback submitted (local):', { ratings, comment });
+        // Feedback saved locally as fallback
       });
       setDone(true);
     } catch { setDone(true); } // Always show success

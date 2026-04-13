@@ -62,7 +62,7 @@ export default function ThemesPage() {
           <p className="text-sm text-slate-500 mt-0.5">Colour schemes applied to each portal family</p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => {}} className="p-2 border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50">
+          <button onClick={() => { setLoading(true); Promise.all([getPortalThemes().catch(()=>[]), getPortalFamilies().catch(()=>[])]).then(([t,f]) => { if(Array.isArray(t)&&t.length>0)setThemes(t); setFamilies(Array.isArray(f)?f:[]); }).finally(()=>setLoading(false)); }} className="p-2 border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50">
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
           <button onClick={() => setShowAdd(true)}
