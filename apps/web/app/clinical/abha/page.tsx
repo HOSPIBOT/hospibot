@@ -40,7 +40,7 @@ export default function AbhaPage() {
     setLoading(true);
     try {
       // Call ABHA OTP initiation (works via NHA Sandbox / Production)
-      const res = await api.post('/abha/generate-otp', { mobileNumber }).catch(() => null);
+      const res = await api.post('/billing/abha/generate-otp', { mobileNumber }).catch(() => null);
       if (res?.data?.txnId) {
         setTxnId(res.data.txnId);
         toast.success('OTP sent to patient\'s mobile number');
@@ -59,7 +59,7 @@ export default function AbhaPage() {
     if (!otp || otp.length < 4) { toast.error('Enter OTP'); return; }
     setLoading(true);
     try {
-      const res = await api.post('/abha/verify-otp', { txnId, otp, mobileNumber }).catch(() => null);
+      const res = await api.post('/billing/abha/verify-otp', { txnId, otp, mobileNumber }).catch(() => null);
       if (res?.data?.profile) {
         setProfile(res.data.profile);
         setAbha(res.data.profile.healthIdNumber || '');
@@ -91,7 +91,7 @@ export default function AbhaPage() {
     try {
       await api.patch(`/patients/${selectedPatient.id}`, { abhaId: abhaNumber });
       // Also update Universal Health Record
-      await api.post('/abha/link-profile', {
+      await api.post('/billing/abha/link-profile', {
         patientId: selectedPatient.id,
         abhaNumber, abhaAddress,
         profile: profile || {},

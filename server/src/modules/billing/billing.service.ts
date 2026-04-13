@@ -474,3 +474,71 @@ export class BillingService {
 
     return { verified: true, invoiceNumber: invoice.invoiceNumber };
   }
+
+  // ── Tally Export (XML format compatible with Tally ERP 9 / Tally Prime) ────
+
+  async exportToTally(tenantId: string, fromDate: Date, toDate: Date): Promise<string> {
+    const invoices = await this.prisma.invoice.findMany({
+      where: {
+        tenantId,
+        createdAt: { gte: fromDate, lte: toDate },
+        status: { in: ['PAID', 'PARTIALLY_PAID'] },
+      },
+      include: {
+        patient: { select: { firstName: true, lastName: true } },
+        payments: true,
+      },
+      orderBy: { createdAt: 'asc' },
+    });
+
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { name: true, gstNumber: true },
+    });
+
+    // Generate Tally XML
+    const voucherXml = invoices.map(inv => {
+      const patientName = `${inv.patient.firstName} ${inv.patient.lastName || ''}`.trim();
+      const totalAmount = (inv.totalAmount / 100).toFixed(2);
+      const date = new Date(inv.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '');
+
+      return `  <VOUCHER VCHTYPE="Sales" ACTION="Create">
+    <DATE>${date}</DATE>
+    <VOUCHERTYPENAME>Sales</VOUCHERTYPENAME>
+    <VOUCHERNUMBER>${inv.invoiceNumber}</VOUCHERNUMBER>
+    <NARRATION>Invoice to ${patientName}</NARRATION>
+    <ALLLEDGERENTRIES.LIST>
+      <LEDGERNAME>${patientName}</LEDGERNAME>
+      <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>
+      <AMOUNT>-${totalAmount}</AMOUNT>
+    </ALLLEDGERENTRIES.LIST>
+    <ALLLEDGERENTRIES.LIST>
+      <LEDGERNAME>Healthcare Services</LEDGERNAME>
+      <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>
+      <AMOUNT>${totalAmount}</AMOUNT>
+    </ALLLEDGERENTRIES.LIST>
+  </VOUCHER>`;
+    }).join('\n');
+
+    return `<?xml version="1.0" encoding="UTF-8"?>
+<ENVELOPE>
+  <HEADER>
+    <TALLYREQUEST>Import Data</TALLYREQUEST>
+  </HEADER>
+  <BODY>
+    <IMPORTDATA>
+      <REQUESTDESC>
+        <REPORTNAME>All Masters</REPORTNAME>
+        <STATICVARIABLES>
+          <SVCURRENTCOMPANY>${tenant?.name || 'HospiBot Clinic'}</SVCURRENTCOMPANY>
+        </STATICVARIABLES>
+      </REQUESTDESC>
+      <REQUESTDATA>
+        <TALLYMESSAGE xmlns:UDF="TallyUDF">
+${voucherXml}
+        </TALLYMESSAGE>
+      </REQUESTDATA>
+    </IMPORTDATA>
+  </BODY>
+</ENVELOPE>`;
+  }
