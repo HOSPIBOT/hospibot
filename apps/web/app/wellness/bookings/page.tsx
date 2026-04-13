@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 import {
   Calendar, Plus, RefreshCw, X, Loader2, Clock,
   Phone, CheckCircle2, ChevronLeft, ChevronRight,
-  Search, Ban,
+  Search, Ban, Download,
 } from 'lucide-react';
 
 const COLOR = '#BE185D';
@@ -90,6 +90,31 @@ export default function WellnessBookingsPage() {
 
   useEffect(() => { load(1); }, [load]);
 
+  const [exporting, setExporting] = useState(false);
+  const exportCSV = async () => {
+    setExporting(true);
+    try {
+      const res = await api.get('/appointments', { params: { limit: 2000, type: 'WELLNESS' } });
+      const all: any[] = res.data.data ?? appointments;
+      const header = ['Date', 'Time', 'Member', 'Phone', 'Session Type', 'Status'];
+      const rows = all.map(a => [
+        formatDate(a.scheduledAt), formatTime(a.scheduledAt),
+        `${a.patient?.firstName ?? ''} ${a.patient?.lastName ?? ''}`.trim(),
+        a.patient?.phone ?? '',
+        a.notes?.match(/Session:\s*([^\n]+)/)?.[1]?.trim() ?? 'Wellness',
+        a.status ?? '',
+      ]);
+      const csv  = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url; a.download = `wellness-bookings-${new Date().toISOString().slice(0,10)}.csv`;
+      a.click(); URL.revokeObjectURL(url);
+      toast.success(`Exported ${all.length} sessions`);
+    } catch { toast.error('Export failed'); }
+    finally { setExporting(false); }
+  };
+
   const advance = async (id: string, nextStatus: string) => {
     setUpdating(id);
     try {
@@ -166,6 +191,10 @@ export default function WellnessBookingsPage() {
           <button onClick={() => load(meta.page)}
             className="p-2 border border-slate-200 rounded-xl text-slate-400 hover:bg-slate-50">
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+          <button onClick={exportCSV} disabled={exporting}
+            className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm font-medium px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50">
+            <Download className="w-4 h-4" /> {exporting ? 'Exporting…' : 'Export'}
           </button>
           <button onClick={() => setShowCreate(true)}
             className="flex items-center gap-2 text-white text-sm font-semibold px-4 py-2.5 rounded-xl"

@@ -3,7 +3,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { api } from '@/lib/api';
 import { formatDate, formatTime } from '@/lib/utils';
 import toast from 'react-hot-toast';
-import { Calendar, Plus, RefreshCw, X, Loader2, Clock, Phone, CheckCircle2, Ban, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, Plus, RefreshCw, X, Loader2, Clock, Phone, CheckCircle2, Ban, MapPin, ChevronLeft, ChevronRight, Download } from 'lucide-react';
 
 const NAV_COLOR = '#6B21A8';
 const STATUS_COLORS: Record<string,string> = {
@@ -48,6 +48,32 @@ export default function HomecareBookingsPage() {
   }, []);
 
   useEffect(() => { load(1); }, [load]);
+
+  const [exporting, setExporting] = useState(false);
+  const exportCSV = async () => {
+    setExporting(true);
+    try {
+      const res = await api.get('/appointments', { params: { limit: 2000, type: 'HOME_VISIT' } });
+      const all: any[] = res.data.data ?? appointments;
+      const header = ['Date', 'Time', 'Client', 'Phone', 'Address', 'Service', 'Status'];
+      const rows = all.map(a => [
+        formatDate(a.scheduledAt), formatTime(a.scheduledAt),
+        `${a.patient?.firstName ?? ''} ${a.patient?.lastName ?? ''}`.trim(),
+        a.patient?.phone ?? '',
+        a.patient?.address ?? a.patient?.city ?? '',
+        a.notes?.match(/Service:\s*([^\n]+)/)?.[1]?.trim() ?? 'Home Visit',
+        a.status ?? '',
+      ]);
+      const csv  = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url; a.download = `home-visits-${new Date().toISOString().slice(0,10)}.csv`;
+      a.click(); URL.revokeObjectURL(url);
+      toast.success(`Exported ${all.length} visits`);
+    } catch { toast.error('Export failed'); }
+    finally { setExporting(false); }
+  };
 
   const advance = async (id: string, nextStatus: string) => {
     setUpdating(id);
@@ -94,6 +120,10 @@ export default function HomecareBookingsPage() {
         <div className="flex items-center gap-2">
           <button onClick={() => load(meta.page)} className="p-2 border border-slate-200 rounded-xl text-slate-400 hover:bg-slate-50">
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+          <button onClick={exportCSV} disabled={exporting}
+            className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm font-medium px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50">
+            <Download className="w-4 h-4" /> {exporting ? 'Exporting…' : 'Export'}
           </button>
           <button onClick={() => setShowCreate(true)}
             className="flex items-center gap-2 text-white text-sm font-semibold px-4 py-2.5 rounded-xl" style={{ background: NAV_COLOR }}>

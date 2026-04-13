@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Search, Shield, ChevronLeft, ChevronRight, MoreHorizontal, RefreshCw } from 'lucide-react';
+import { Search, Shield, ChevronLeft, ChevronRight, MoreHorizontal, RefreshCw, Download } from 'lucide-react';
 import { getAllUsers, type PlatformUser } from '@/lib/super-admin-api';
+import toast from 'react-hot-toast';
 
 const ALL_ROLES = ['ALL', 'SUPER_ADMIN', 'TENANT_ADMIN', 'BRANCH_ADMIN', 'DOCTOR', 'RECEPTIONIST', 'BILLING_STAFF', 'NURSE', 'LAB_TECHNICIAN', 'PHARMACIST', 'MARKETING_USER'];
 
@@ -48,6 +49,31 @@ export default function UsersPage() {
   useEffect(() => { setPage(1); }, [debSearch, roleFilter]);
   useEffect(() => { load(); }, [load]);
 
+  const [exporting, setExporting] = useState(false);
+  const exportCSV = async () => {
+    setExporting(true);
+    try {
+      const res = await getAllUsers({ page: 1, limit: 5000, search: debSearch || undefined, role: roleFilter });
+      const all: PlatformUser[] = res.data;
+      const header = ['First Name', 'Last Name', 'Email', 'Role', 'Tenant', 'Status', 'Last Login'];
+      const rows = all.map(u => [
+        u.firstName ?? '', u.lastName ?? '', u.email ?? '',
+        u.role?.replace(/_/g, ' ') ?? '',
+        (u as any).tenant?.name ?? '',
+        u.isActive !== false ? 'Active' : 'Inactive',
+        u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleDateString('en-IN') : 'Never',
+      ]);
+      const csv  = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url; a.download = `platform-users-${new Date().toISOString().slice(0,10)}.csv`;
+      a.click(); URL.revokeObjectURL(url);
+      toast.success(`Exported ${all.length} users`);
+    } catch { toast.error('Export failed'); }
+    finally { setExporting(false); }
+  };
+
   // Aggregate counts
   const superAdminCount = users.filter(u => u.role === 'SUPER_ADMIN').length;
 
@@ -58,10 +84,16 @@ export default function UsersPage() {
           <h1 className="text-2xl font-bold text-slate-900">Platform Users</h1>
           <p className="text-sm text-slate-500 mt-0.5">{loading ? 'Loading…' : `${total.toLocaleString('en-IN')} total users across all tenants`}</p>
         </div>
-        <button onClick={load} disabled={loading}
-          className="flex items-center gap-1.5 text-sm text-slate-600 border border-slate-200 bg-white px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50">
-          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} /> Refresh
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={exportCSV} disabled={exporting || loading}
+            className="flex items-center gap-1.5 text-sm text-slate-600 border border-slate-200 bg-white px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50">
+            <Download className="w-4 h-4" /> {exporting ? 'Exporting…' : 'Export'}
+          </button>
+          <button onClick={load} disabled={loading}
+            className="flex items-center gap-1.5 text-sm text-slate-600 border border-slate-200 bg-white px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50">
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} /> Refresh
+          </button>
+        </div>
       </div>
 
       {/* Filters */}
