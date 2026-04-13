@@ -52,6 +52,14 @@ export default function PatientsPage() {
   const [form, setForm]         = useState<AddPatientForm>(defaultForm);
   const [addStep, setAddStep]   = useState<1 | 2>(1);
 
+  // ── Filters ──────────────────────────────────────────────────────────────
+  const [showFilters,  setShowFilters]  = useState(false);
+  const [filterGender, setFilterGender] = useState('');
+  const [filterBlood,  setFilterBlood]  = useState('');
+  const [exporting,    setExporting]    = useState(false);
+
+  const activeFilters = [filterGender, filterBlood].filter(Boolean).length;
+
   useEffect(() => {
     const t = setTimeout(() => setDebSearch(search), 400);
     return () => clearTimeout(t);
@@ -61,15 +69,51 @@ export default function PatientsPage() {
     setLoading(true);
     try {
       const params: any = { page, limit: 20 };
-      if (debSearch) params.search = debSearch;
+      if (debSearch)    params.search    = debSearch;
+      if (filterGender) params.gender    = filterGender;
+      if (filterBlood)  params.bloodGroup = filterBlood;
       const res = await api.get('/patients', { params });
       setPatients(res.data.data ?? []);
       setMeta(res.data.meta ?? { page: 1, limit: 20, total: 0, totalPages: 1 });
     } catch { toast.error('Failed to load patients'); }
     finally { setLoading(false); }
-  }, [debSearch]);
+  }, [debSearch, filterGender, filterBlood]);
 
   useEffect(() => { load(1); }, [load]);
+
+  const exportCSV = async () => {
+    setExporting(true);
+    try {
+      // Pull up to 5000 patients for export
+      const res = await api.get('/patients', {
+        params: {
+          limit: 5000,
+          search: debSearch || undefined,
+          gender: filterGender || undefined,
+          bloodGroup: filterBlood || undefined,
+        },
+      });
+      const all: any[] = res.data.data ?? [];
+      const header = ['Health ID','First Name','Last Name','Phone','Email','Gender','Blood Group','DOB','City','Registered On'];
+      const rows = all.map(p => [
+        p.healthId ?? '', p.firstName ?? '', p.lastName ?? '', p.phone ?? '',
+        p.email ?? '', p.gender ?? '', p.bloodGroup ?? '',
+        p.dateOfBirth ? p.dateOfBirth.slice(0, 10) : '',
+        p.city ?? '',
+        p.createdAt ? p.createdAt.slice(0, 10) : '',
+      ]);
+      const csv = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
+      a.download = `patients-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success(`Exported ${all.length} patients`);
+    } catch { toast.error('Export failed'); }
+    finally { setExporting(false); }
+  };
 
   const setF = (k: keyof AddPatientForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setForm(f => ({ ...f, [k]: e.target.value }));
@@ -124,20 +168,80 @@ export default function PatientsPage() {
       </div>
 
       {/* Search + filter bar */}
-      <div className="bg-white rounded-2xl border border-slate-100 p-4 flex items-center gap-3">
-        <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 flex-1">
-          <Search className="w-4 h-4 text-slate-400 flex-shrink-0" />
-          <input className="bg-transparent text-sm outline-none flex-1 placeholder:text-slate-400"
-            placeholder="Search by name, phone, Health ID…"
-            value={search} onChange={e => setSearch(e.target.value)} />
-          {search && <button onClick={() => setSearch('')}><X className="w-3.5 h-3.5 text-slate-400 hover:text-slate-600" /></button>}
+      <div className="space-y-3">
+        <div className="bg-white rounded-2xl border border-slate-100 p-4 flex items-center gap-3">
+          <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 flex-1">
+            <Search className="w-4 h-4 text-slate-400 flex-shrink-0" />
+            <input className="bg-transparent text-sm outline-none flex-1 placeholder:text-slate-400"
+              placeholder="Search by name, phone, Health ID…"
+              value={search} onChange={e => setSearch(e.target.value)} />
+            {search && <button onClick={() => setSearch('')}><X className="w-3.5 h-3.5 text-slate-400 hover:text-slate-600" /></button>}
+          </div>
+          <button
+            onClick={() => setShowFilters(v => !v)}
+            className={`flex items-center gap-2 border text-sm px-3 py-2 rounded-xl transition-colors ${
+              showFilters || activeFilters > 0
+                ? 'border-[#0D7C66] bg-[#E8F5F0] text-[#0D7C66]'
+                : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+            }`}>
+            <Filter className="w-4 h-4" />
+            Filter
+            {activeFilters > 0 && (
+              <span className="w-4 h-4 rounded-full bg-[#0D7C66] text-white text-[10px] font-bold flex items-center justify-center">
+                {activeFilters}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={exportCSV}
+            disabled={exporting}
+            className="flex items-center gap-2 border border-slate-200 text-slate-600 text-sm px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50">
+            <Download className="w-4 h-4" />
+            {exporting ? 'Exporting…' : 'Export CSV'}
+          </button>
         </div>
-        <button className="flex items-center gap-2 border border-slate-200 text-slate-600 text-sm px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors">
-          <Filter className="w-4 h-4" /> Filter
-        </button>
-        <button className="flex items-center gap-2 border border-slate-200 text-slate-600 text-sm px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors">
-          <Download className="w-4 h-4" /> Export
-        </button>
+
+        {/* Filter panel */}
+        {showFilters && (
+          <div className="bg-white rounded-2xl border border-slate-100 p-4">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-sm font-semibold text-slate-700">Filter patients</p>
+              {activeFilters > 0 && (
+                <button
+                  onClick={() => { setFilterGender(''); setFilterBlood(''); }}
+                  className="text-xs text-red-500 hover:text-red-700 font-medium flex items-center gap-1">
+                  <X className="w-3 h-3" /> Clear filters
+                </button>
+              )}
+            </div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Gender</label>
+                <select
+                  value={filterGender}
+                  onChange={e => setFilterGender(e.target.value)}
+                  className="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:border-[#0D7C66] outline-none cursor-pointer">
+                  <option value="">All Genders</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Blood Group</label>
+                <select
+                  value={filterBlood}
+                  onChange={e => setFilterBlood(e.target.value)}
+                  className="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:border-[#0D7C66] outline-none cursor-pointer">
+                  <option value="">All Blood Groups</option>
+                  {['A+','A-','B+','B-','O+','O-','AB+','AB-'].map(bg => (
+                    <option key={bg} value={bg}>{bg}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Table */}
