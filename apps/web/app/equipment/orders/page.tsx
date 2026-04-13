@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
 import { formatDate, formatINR } from '@/lib/utils';
 import toast from 'react-hot-toast';
-import { ShoppingCart, RefreshCw, Package, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ShoppingCart, RefreshCw, Package, ChevronLeft, ChevronRight, Download } from 'lucide-react';
 
 const STATUS_COLORS: Record<string,string> = {
   PENDING:'bg-amber-100 text-amber-700', CONFIRMED:'bg-blue-100 text-blue-700',
@@ -31,6 +31,28 @@ export default function EquipmentOrdersPage() {
 
   useEffect(() => { load(1); }, [load]);
 
+  const [exporting, setExporting] = useState(false);
+  const exportCSV = async () => {
+    setExporting(true);
+    try {
+      const res = await api.get('/marketplace/orders', { params: { limit: 2000 } });
+      const all: any[] = res.data.data ?? orders;
+      const header = ['Order #','Buyer','Items','Amount','Status','Date'];
+      const rows = all.map(o => [
+        o.orderNumber ?? o.id?.slice(0,8).toUpperCase() ?? '',
+        o.buyer?.name ?? o.tenantId?.slice(0,8) ?? '',
+        ((o.items as any[])?.length ?? 0),
+        o.totalAmount ?? 0,
+        o.status ?? '',
+        o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN') : '',
+      ]);
+      const csv = [header,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob);
+      const a=document.createElement('a'); a.href=url; a.download=`equipment-orders-${new Date().toISOString().slice(0,10)}.csv`;
+      a.click(); URL.revokeObjectURL(url); toast.success(`Exported ${all.length} orders`);
+    } catch { toast.error('Export failed'); } finally { setExporting(false); }
+  };
+
   const advance = async (id: string, status: string) => {
     try {
       await api.patch(`/marketplace/orders/${id}`, { status });
@@ -56,6 +78,10 @@ export default function EquipmentOrdersPage() {
           </select>
           <button onClick={()=>load(meta.page)} className="p-2 border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50">
             <RefreshCw className={`w-4 h-4 ${loading?'animate-spin':''}`}/>
+          </button>
+          <button onClick={exportCSV} disabled={exporting}
+            className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm font-medium px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50">
+            <Download className="w-4 h-4"/> {exporting?'Exporting…':'Export'}
           </button>
         </div>
       </div>

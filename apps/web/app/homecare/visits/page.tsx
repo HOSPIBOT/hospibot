@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
 import { formatDate, formatTime } from '@/lib/utils';
 import toast from 'react-hot-toast';
-import { Home, CheckCircle2, Clock, RefreshCw, MapPin, Phone, User, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Home, CheckCircle2, Clock, RefreshCw, MapPin, Phone, User, ChevronLeft, ChevronRight, Download } from 'lucide-react';
 
 const STATUS_COLORS: Record<string,string> = {
   PENDING:'bg-amber-100 text-amber-700', CONFIRMED:'bg-blue-100 text-blue-700',
@@ -27,6 +27,26 @@ export default function HomecareVisitsPage() {
   }, []);
 
   useEffect(() => { load(1); }, [load]);
+
+  const [exporting, setExporting] = useState(false);
+  const exportCSV = async () => {
+    setExporting(true);
+    try {
+      const res = await api.get('/appointments', { params: { limit: 2000, type: 'HOME_VISIT' } });
+      const all: any[] = res.data.data ?? visits;
+      const header = ['Date','Time','Client','Phone','Address','Service','Status'];
+      const rows = all.map(v => [
+        formatDate(v.scheduledAt), formatTime(v.scheduledAt),
+        `${v.patient?.firstName??''} ${v.patient?.lastName??''}`.trim(),
+        v.patient?.phone??'', v.patient?.address??v.patient?.city??'',
+        v.notes?.match(/Service:\s*([^\n]+)/)?.[1]?.trim()??'Home Visit', v.status??'',
+      ]);
+      const csv=[header,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');a.href=url;a.download=`home-visits-${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();URL.revokeObjectURL(url);toast.success(`Exported ${all.length} visits`);
+    } catch { toast.error('Export failed'); } finally { setExporting(false); }
+  };
 
   const advance = async (id: string, nextStatus: string) => {
     try {

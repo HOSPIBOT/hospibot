@@ -5,7 +5,7 @@ import { api } from '@/lib/api';
 import { formatDate } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import {
-  Pill, Plus, RefreshCw, Search, X, Send, Loader2,
+  Pill, Plus, RefreshCw, Search, X, Send, Loader2, Download,
   ChevronLeft, ChevronRight, MessageSquare, CheckCircle2,
   AlertTriangle, Clock, Eye,, Bell} from 'lucide-react'';
 
@@ -381,9 +381,32 @@ export default function PrescriptionsPage() {
     finally { setLoading(false); }
   }, [debSearch, dateFrom, dateTo]);
 
-  useEffect(() => { load(1); }, [load]);
+  const [exporting, setExporting] = useState(false);
+  const exportCSV = async () => {
+    setExporting(true);
+    try {
+      const res = await api.get('/prescriptions', { params: { limit: 5000, search: debSearch || undefined, from: dateFrom || undefined, to: dateTo || undefined } });
+      const all: any[] = res.data.data ?? prescriptions;
+      const header = ['Date', 'Patient', 'Phone', 'Doctor', 'Medications', 'Status'];
+      const rows = all.map(rx => [
+        rx.createdAt ? new Date(rx.createdAt).toLocaleDateString('en-IN') : '',
+        `${rx.patient?.firstName ?? ''} ${rx.patient?.lastName ?? ''}`.trim(),
+        rx.patient?.phone ?? '',
+        rx.doctor ? `Dr. ${rx.doctor.user?.firstName ?? ''} ${rx.doctor.user?.lastName ?? ''}`.trim() : '',
+        (rx.medications as any[])?.map((m: any) => `${m.name} ${m.dosage || ''}`.trim()).join('; ') ?? '',
+        rx.isActive ? 'Active' : 'Expired',
+      ]);
+      const csv = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = `prescriptions-${new Date().toISOString().slice(0,10)}.csv`;
+      a.click(); URL.revokeObjectURL(url);
+      toast.success(`Exported ${all.length} prescriptions`);
+    } catch { toast.error('Export failed'); }
+    finally { setExporting(false); }
+  };
 
-  const sendRx = async (id: string) => {
+  const sendRx  const sendRx = async (id: string) => {
     setSending(id);
     try {
       await api.post(`/prescriptions/${id}/send`);
@@ -404,6 +427,10 @@ export default function PrescriptionsPage() {
         <div className="flex items-center gap-2">
           <button onClick={() => load(meta.page)} className="p-2 border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50 transition-colors">
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+          <button onClick={exportCSV} disabled={exporting}
+            className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm font-medium px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50">
+            <Download className="w-4 h-4" /> {exporting ? 'Exporting…' : 'Export'}
           </button>
           <button onClick={() => setShowWrite(true)}
             className="flex items-center gap-2 bg-[#0D7C66] text-white text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-[#0A5E4F] transition-colors shadow-sm">
