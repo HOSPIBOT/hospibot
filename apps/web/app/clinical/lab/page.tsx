@@ -23,6 +23,8 @@ export default function ClinicalLabPage() {
   const [deb, setDeb]           = useState('');
   const [meta, setMeta]         = useState({ page: 1, total: 0, totalPages: 1, limit: 20 });
   const [showOrder, setShow]    = useState(false);
+  const [statusFilter, setStatusFilter] = useState('');
+  const [priorityFilter, setPriorityFilter] = useState('');
 
   // New order form state
   const [patSearch, setPatSearch] = useState('');
@@ -40,13 +42,15 @@ export default function ClinicalLabPage() {
     setLoading(true);
     try {
       const params: any = { page, limit: 20 };
-      if (deb) params.search = deb;
+      if (deb)            params.search   = deb;
+      if (statusFilter)   params.status   = statusFilter;
+      if (priorityFilter) params.priority = priorityFilter;
       const res = await api.get('/lab/orders', { params });
       setOrders(res.data.data ?? []);
       setMeta(res.data.meta ?? { page: 1, total: 0, totalPages: 1, limit: 20 });
     } catch { toast.error('Failed to load lab orders'); }
     finally { setLoading(false); }
-  }, [deb]);
+  }, [deb, statusFilter, priorityFilter]);
 
   useEffect(() => { load(1); }, [load]);
 
@@ -100,10 +104,51 @@ export default function ClinicalLabPage() {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
-        <Search className="w-4 h-4 text-slate-400 flex-shrink-0"/>
-        <input className="bg-transparent text-sm outline-none flex-1 placeholder:text-slate-400"
-          placeholder="Search by patient name or order number…" value={search} onChange={e=>setSearch(e.target.value)}/>
+      <div className="space-y-3">
+        <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
+          <Search className="w-4 h-4 text-slate-400 flex-shrink-0"/>
+          <input className="bg-transparent text-sm outline-none flex-1 placeholder:text-slate-400"
+            placeholder="Search by patient name or order number…" value={search} onChange={e=>setSearch(e.target.value)}/>
+          {search && <button onClick={() => setSearch('')}><X className="w-3 h-3 text-slate-400" /></button>}
+        </div>
+
+        {/* Status filter tabs */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
+            {[
+              { key: '',                 label: 'All'       },
+              { key: 'ORDERED',          label: 'Ordered'   },
+              { key: 'SAMPLE_COLLECTED', label: 'Collected' },
+              { key: 'PROCESSING',       label: 'Processing'},
+              { key: 'COMPLETED',        label: 'Ready'     },
+              { key: 'DELIVERED',        label: 'Delivered' },
+            ].map(s => (
+              <button key={s.key} onClick={() => setStatusFilter(s.key)}
+                className={`text-xs font-medium px-3 py-1.5 rounded-lg transition-all ${
+                  statusFilter === s.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                }`}>{s.label}</button>
+            ))}
+          </div>
+          <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
+            {[
+              { key: '',        label: 'All'     },
+              { key: 'ROUTINE', label: 'Routine' },
+              { key: 'URGENT',  label: '⚡ Urgent'},
+              { key: 'STAT',    label: '🔴 STAT'  },
+            ].map(p => (
+              <button key={p.key} onClick={() => setPriorityFilter(p.key)}
+                className={`text-xs font-medium px-3 py-1.5 rounded-lg transition-all ${
+                  priorityFilter === p.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                }`}>{p.label}</button>
+            ))}
+          </div>
+          {(statusFilter || priorityFilter) && (
+            <button onClick={() => { setStatusFilter(''); setPriorityFilter(''); }}
+              className="text-xs text-red-500 hover:text-red-700 font-medium flex items-center gap-1 px-2 py-1.5">
+              <X className="w-3 h-3" /> Clear
+            </button>
+          )}
+        </div>
       </div>
 
       {loading ? (

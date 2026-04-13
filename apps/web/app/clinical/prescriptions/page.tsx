@@ -359,6 +359,8 @@ export default function PrescriptionsPage() {
   const [debSearch, setDebSearch] = useState('');
   const [showWrite, setShowWrite] = useState(false);
   const [sending, setSending] = useState<string | null>(null);
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo,   setDateTo]   = useState('');
 
   useEffect(() => {
     const t = setTimeout(() => setDebSearch(search), 400);
@@ -370,12 +372,14 @@ export default function PrescriptionsPage() {
     try {
       const params: any = { page, limit: 20 };
       if (debSearch) params.search = debSearch;
+      if (dateFrom)  params.from   = dateFrom;
+      if (dateTo)    params.to     = dateTo;
       const res = await api.get('/prescriptions', { params });
       setPrescriptions(res.data.data ?? []);
       setMeta(res.data.meta ?? { page: 1, limit: 20, total: 0, totalPages: 1 });
     } catch { toast.error('Failed to load prescriptions'); }
     finally { setLoading(false); }
-  }, [debSearch]);
+  }, [debSearch, dateFrom, dateTo]);
 
   useEffect(() => { load(1); }, [load]);
 
@@ -408,14 +412,46 @@ export default function PrescriptionsPage() {
         </div>
       </div>
 
-      {/* Search */}
-      <div className="bg-white rounded-2xl border border-slate-100 p-4">
+      {/* Search + date filters */}
+      <div className="bg-white rounded-2xl border border-slate-100 p-4 space-y-3">
         <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
           <Search className="w-4 h-4 text-slate-400 flex-shrink-0" />
           <input className="bg-transparent text-sm outline-none flex-1 placeholder:text-slate-400"
             placeholder="Search by patient name or phone…"
             value={search} onChange={e => setSearch(e.target.value)} />
           {search && <button onClick={() => setSearch('')}><X className="w-3.5 h-3.5 text-slate-400" /></button>}
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 flex-1">
+            <label className="text-xs text-slate-500 whitespace-nowrap">From</label>
+            <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)}
+              className="flex-1 px-3 py-1.5 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:border-[#0D7C66] outline-none" />
+          </div>
+          <div className="flex items-center gap-2 flex-1">
+            <label className="text-xs text-slate-500 whitespace-nowrap">To</label>
+            <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)}
+              className="flex-1 px-3 py-1.5 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:border-[#0D7C66] outline-none" />
+          </div>
+          {(dateFrom || dateTo) && (
+            <button onClick={() => { setDateFrom(''); setDateTo(''); }}
+              className="text-xs text-red-500 hover:text-red-700 font-medium flex items-center gap-1 px-2 py-1.5 flex-shrink-0">
+              <X className="w-3 h-3" /> Clear
+            </button>
+          )}
+          <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1 flex-shrink-0">
+            {[
+              { label: 'Today',    from: new Date().toISOString().slice(0, 10), to: new Date().toISOString().slice(0, 10) },
+              { label: '7 days',   from: (() => { const d = new Date(); d.setDate(d.getDate() - 7); return d.toISOString().slice(0, 10); })(), to: new Date().toISOString().slice(0, 10) },
+              { label: '30 days',  from: (() => { const d = new Date(); d.setDate(d.getDate() - 30); return d.toISOString().slice(0, 10); })(), to: new Date().toISOString().slice(0, 10) },
+            ].map(p => (
+              <button key={p.label} onClick={() => { setDateFrom(p.from); setDateTo(p.to); }}
+                className={`text-xs font-medium px-2.5 py-1.5 rounded-lg transition-all ${
+                  dateFrom === p.from && dateTo === p.to
+                    ? 'bg-white text-slate-900 shadow-sm'
+                    : 'text-slate-500 hover:text-slate-700'
+                }`}>{p.label}</button>
+            ))}
+          </div>
         </div>
       </div>
 
