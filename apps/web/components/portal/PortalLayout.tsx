@@ -260,11 +260,15 @@ export default function PortalLayout({ children, portalSlug }: PortalLayoutProps
                   style={active ? { background: theme.primaryColor } : {}}>
                   <item.icon className={cn('w-4 h-4 flex-shrink-0', active ? 'text-white' : 'text-white/50 group-hover:text-white')} />
                   <span className="flex-1">{item.label}</span>
-                  {item.badge && !active && (
-                    <span className="w-5 h-5 bg-[#25D366] text-white text-[10px] rounded-full flex items-center justify-center font-bold">
-                      {notifications.find(n => n.id === 'wa-unread') ? notifications.find(n => n.id === 'wa-unread')?.title?.match(/\d+/)?.[0] || '!' : ''}
-                    </span>
-                  )}
+                  {(() => {
+                    const waNotif = notifications.find(n => n.id === 'wa-unread');
+                    const waCount = waNotif?.title?.match(/\d+/)?.[0];
+                    return item.badge && !active && waCount ? (
+                      <span className="w-5 h-5 bg-[#25D366] text-white text-[10px] rounded-full flex items-center justify-center font-bold">
+                        {waCount}
+                      </span>
+                    ) : null;
+                  })()}
                   {active && <ChevronRight className="w-3 h-3 text-white/60" />}
                 </div>
               </Link>
