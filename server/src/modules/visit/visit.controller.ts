@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Param, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { VisitService } from './visit.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -60,4 +60,26 @@ export class VisitController {
         doctor:  { include: { user: { select: { firstName: true, lastName: true } } } },
       },
     });
+  
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update visit clinical notes, vitals, diagnosis' })
+  update(
+    @CurrentTenant() tenantId: string,
+    @Param('id') id: string,
+    @Body() dto: any,
+  ) {
+    return this.visitService['prisma'].visit.update({
+      where: { id },
+      data: {
+        vitals:         dto.vitals,
+        chiefComplaint: dto.chiefComplaint,
+        diagnosisText:  dto.diagnosisText,
+        diagnosisCodes: dto.diagnosisCodes,
+        clinicalNotes:  dto.clinicalNotes,
+        treatmentPlan:  dto.treatmentPlan,
+        followUpDays:   dto.followUpDays ? Number(dto.followUpDays) : undefined,
+        visitType:      dto.visitType,
+      },
+    });
   }
+}

@@ -45,4 +45,32 @@ export class PrescriptionController {
   sendViaWhatsApp(@CurrentTenant() tenantId: string, @Param('id') id: string) {
     return this.prescriptionService.sendViaWhatsApp(tenantId, id);
   }
+
+  @Post(':id/refill')
+  @ApiOperation({ summary: 'Create refill — duplicates active prescription with new refillDueDate' })
+  async createRefill(
+    @CurrentTenant() tenantId: string,
+    @Param('id') id: string,
+    @Body() dto: { daysSupply?: number },
+  ) {
+    const rx = await this.prescriptionService['prisma'].prescription.findFirst({
+      where: { id, tenantId },
+    });
+    if (!rx) throw new Error('Prescription not found');
+    const daysSupply = dto.daysSupply || 30;
+    const refillDueDate = new Date(Date.now() + daysSupply * 24 * 60 * 60 * 1000);
+    return this.prescriptionService['prisma'].prescription.create({
+      data: {
+        tenantId: rx.tenantId,
+        patientId: rx.patientId,
+        doctorId: rx.doctorId,
+        medications: rx.medications as any,
+        instructions: rx.instructions,
+        refillDueDate,
+        isActive: true,
+        originalPrescriptionId: id,
+      },
+    });
+  }
+
 }
