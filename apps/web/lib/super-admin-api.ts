@@ -193,3 +193,14 @@ export const updatePlatformSettings = (settings: Partial<PlatformSettings>) =>
 
 export const getSystemHealth = (): Promise<SystemHealth> =>
   api.get('/super-admin/health').then(r => r.data);
+
+// ── Portal Families & Sub-Types ──────────────────────────────────────────────
+
+export const getPortalFamilies = () =>
+  api.get('/portal/families?includeInactive=true').then(r => r.data);
+
+export const getPortalSubTypes = () =>
+  api.get('/portal/subtypes').then(r => r.data);
+
+export const getPortalThemes = () =>
+  api.get('/portal/themes').then(r => r.data);

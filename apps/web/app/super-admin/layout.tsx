@@ -21,7 +21,9 @@ const navSections = [
     label: 'MANAGEMENT',
     items: [
       { href: '/super-admin/tenants', label: 'Hospitals & Clinics', icon: Building2 },
-      { href: '/super-admin/portals', label: 'Portal Families', icon: Globe },
+      { href: '/super-admin/portals',  label: 'Portal Families', icon: Globe },
+      { href: '/super-admin/subtypes', label: 'Sub-Types',       icon: Layers },
+      { href: '/super-admin/themes',   label: 'Themes',          icon: Palette },
       { href: '/super-admin/plans', label: 'Plans & Billing', icon: CreditCard },
       { href: '/super-admin/users', label: 'Platform Users', icon: Users },
     ],
