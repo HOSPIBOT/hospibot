@@ -17,7 +17,7 @@ const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Unknown
 
 export default function PatientSelfRegistrationPage() {
   const params = useSearchParams();
-  const tenantSlug = params.get('clinic') || '';
+  const tenantSlug = params?.get('clinic') || '';
 
   const [step, setStep]       = useState<'form' | 'done'>('form');
   const [submitting, setSub]  = useState(false);

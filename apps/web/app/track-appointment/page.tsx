@@ -18,8 +18,8 @@ const TIMELINE = [
 
 export default function TrackAppointmentPage() {
   const params  = useSearchParams();
-  const apptId  = params.get('id');
-  const phone   = params.get('phone'); // For verification
+  const apptId  = params?.get('id');
+  const phone   = params?.get('phone'); // For verification
 
   const [appt, setAppt]     = useState<any>(null);
   const [tenant, setTenant] = useState<any>(null);

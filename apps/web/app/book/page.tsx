@@ -37,7 +37,7 @@ function StepIndicator({ current, steps }: { current: number; steps: string[] })
 
 export default function PublicBookingPage() {
   const params     = useSearchParams();
-  const tenantSlug = params.get('clinic') || '';
+  const tenantSlug = params?.get('clinic') || '';
 
   const [step, setStep]           = useState<Step>('doctor');
   const [submitting, setSubmitting] = useState(false);

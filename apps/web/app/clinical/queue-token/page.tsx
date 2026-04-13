@@ -10,7 +10,7 @@ import { Printer, ArrowLeft } from 'lucide-react';
 
 export default function QueueTokenPage() {
   const params       = useSearchParams();
-  const appointmentId = params.get('id');
+  const appointmentId = params?.get('id');
   const [apt, setApt] = useState<any>(null);
   const [tenant, setTenant] = useState<any>(null);
   const [loading, setLoading] = useState(true);

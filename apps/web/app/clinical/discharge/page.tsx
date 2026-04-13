@@ -18,8 +18,8 @@ const inputCls = 'w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-20
 export default function DischargeSummaryPage() {
   const router         = useRouter();
   const params         = useSearchParams();
-  const patientId      = params.get('patientId');
-  const appointmentId  = params.get('appointmentId');
+  const patientId      = params?.get('patientId');
+  const appointmentId  = params?.get('appointmentId');
 
   const [patient,  setPatient]  = useState<any>(null);
   const [visit,    setVisit]    = useState<any>(null);
