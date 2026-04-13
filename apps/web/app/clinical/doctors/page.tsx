@@ -54,6 +54,10 @@ function DoctorCard({ doc, onToggle }: { doc: any; onToggle: (id: string, availa
                doc.isAvailable ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
               {doc.isAvailable ? 'Available' : 'Unavailable'}
             </button>
+            <a href={`/clinical/doctors/${doc.id}`}
+              className="flex items-center gap-1 text-xs font-semibold text-slate-500 border border-slate-200 px-2.5 py-1.5 rounded-xl hover:bg-slate-50 transition-colors">
+              Profile →
+            </a>
           </div>
         </div>
       </div>
