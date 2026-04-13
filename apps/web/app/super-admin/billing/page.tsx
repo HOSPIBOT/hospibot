@@ -58,11 +58,11 @@ export default function PlatformBillingPage() {
   const startCheckout = async (tenantId: string, plan: string) => {
     setSaving(true);
     try {
-      const res = await api.post('/subscriptions/checkout', {
+      const res = await api.post('/subscriptions/payment-link', {
         plan, returnUrl: window.location.href,
       }, { headers: { 'x-tenant-id': tenantId } });
       if (res.data?.url) window.open(res.data.url, '_blank');
-      else toast.success(res.data?.message || 'Checkout initiated');
+      else toast.success(res.data?.message || 'Razorpay payment link generated');
     } catch { toast.error('Failed to create checkout'); }
     finally { setSaving(false); }
   };
@@ -250,7 +250,7 @@ export default function PlatformBillingPage() {
               <button onClick={()=>setSelected(null)} className="text-sm text-slate-500 px-4 py-2 rounded-xl hover:bg-slate-100">Cancel</button>
               <button onClick={() => updatePlan(selected.id, planUpdate)} disabled={saving||planUpdate===selected.plan}
                 className="flex items-center gap-2 bg-[#0D7C66] text-white text-sm font-semibold px-6 py-2.5 rounded-xl disabled:opacity-50">
-                {saving ? 'Updating…' : 'Update Plan'}
+                {saving ? 'Generating link…' : 'Pay via Razorpay'}
               </button>
             </div>
           </div>

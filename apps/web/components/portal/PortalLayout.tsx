@@ -49,6 +49,7 @@ const NAV_BY_PORTAL: Record<string, NavItem[]> = {
     { href: 'crm/drip',     label: 'Drip Campaigns', icon: Zap,             always: true },
     { href: 'automation',   label: 'Revenue Engine', icon: Zap,             flag: 'whatsapp' },
     { href: 'security',     label: 'Security',       icon: Lock,            always: true },
+    { href: 'subscription', label: 'Subscription',   icon: CreditCard,      always: true },
     { href: 'staff',        label: 'Staff',          icon: UserCheck,       always: true },
     { href: 'staff/attendance', label: 'Attendance',  icon: Clock,           always: true },
     { href: 'hrms',         label: 'Payroll',         icon: IndianRupee,     always: true },

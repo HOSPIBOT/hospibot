@@ -116,3 +116,11 @@ export const VaultAPI = {
 };
 
 export default api;
+
+export const SubscriptionAPI = {
+  plans:          ()                           => api.get('/subscriptions/plans'),
+  current:        ()                           => api.get('/subscriptions/current'),
+  paymentLink:    (plan: string, returnUrl: string) => api.post('/subscriptions/payment-link', { plan, returnUrl }),
+  subscribe:      (plan: string, email: string)     => api.post('/subscriptions/subscribe',    { plan, email }),
+  cancel:         ()                           => api.post('/subscriptions/cancel'),
+};
