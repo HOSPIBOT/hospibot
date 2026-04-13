@@ -41,6 +41,7 @@ const NAV_BY_PORTAL: Record<string, NavItem[]> = {
     { href: 'crm',          label: 'CRM / Leads',    icon: TrendingUp,      flag: 'crm', always: true },
     { href: 'automation',   label: 'Revenue Engine', icon: Zap,             flag: 'whatsapp' },
     { href: 'security',     label: 'Security',       icon: Lock,            always: true },
+    { href: 'staff',        label: 'Staff',          icon: UserCheck,       always: true },
     { href: 'branches',     label: 'Branches',       icon: Building2,       always: true },
     { href: 'departments',  label: 'Departments',    icon: Layers2,         always: true },
     { href: 'analytics',    label: 'Analytics',      icon: BarChart3,       always: true },

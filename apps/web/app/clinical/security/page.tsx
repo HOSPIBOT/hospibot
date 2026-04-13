@@ -450,8 +450,10 @@ export default function SecurityPage() {
                 { right: 'Right to Information', desc: 'Patients are informed when their data is collected via WhatsApp registration message', status: '✅ Enforced' },
                 { right: 'Right to Consent', desc: 'WhatsApp consent flow before any cross-provider data sharing via Health Vault', status: '✅ Enforced' },
                 { right: 'Right to Correction', desc: 'Staff can update patient demographics through the patient edit form', status: '✅ Available' },
-                { right: 'Right to Erasure', desc: 'Patient data anonymisation via API with audit trail', status: '✅ Available' },
-                { right: 'Right to Portability', desc: 'Full patient data export available via Security API', status: '✅ Available' },
+                { right: 'Right to Erasure', desc: 'Patient data anonymisation via API with audit trail', status: '✅ Available',
+                  action: <button onClick={()=>handleDpdpa('erasure')} className="text-xs font-semibold text-red-600 border border-red-200 bg-red-50 px-3 py-1.5 rounded-xl hover:bg-red-100 ml-2 whitespace-nowrap">Request Erasure</button> },
+                { right: 'Right to Portability', desc: 'Full patient data export available via Security API', status: '✅ Available',
+                  action: <button onClick={()=>handleDpdpa('export')} className="text-xs font-semibold text-[#0D7C66] border border-[#0D7C66]/30 bg-[#E8F5F0] px-3 py-1.5 rounded-xl hover:bg-[#0D7C66]/10 ml-2 whitespace-nowrap">Export Data</button> },
                 { right: 'Right to Grievance', desc: 'Grievance redressal officer contact required — configure in Settings', status: '⚠️ Configure' },
               ].map(item => (
                 <div key={item.right} className="flex items-center justify-between py-2.5 border-b border-slate-50 last:border-0">
@@ -459,7 +461,10 @@ export default function SecurityPage() {
                     <p className="text-sm font-semibold text-slate-900">{item.right}</p>
                     <p className="text-xs text-slate-400 mt-0.5">{item.desc}</p>
                   </div>
-                  <span className="text-xs font-semibold text-slate-700 ml-4 flex-shrink-0">{item.status}</span>
+                  <div className="flex items-center gap-2 ml-4 flex-shrink-0">
+                    <span className="text-xs font-semibold text-slate-700">{item.status}</span>
+                    {(item as any).action}
+                  </div>
                 </div>
               ))}
             </div>
