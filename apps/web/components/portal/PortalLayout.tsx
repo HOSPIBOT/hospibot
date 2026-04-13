@@ -162,7 +162,41 @@ export default function PortalLayout({ children, portalSlug }: PortalLayoutProps
     });
   }, [isAuthenticated, portalSlug]);
 
-  const theme: PortalTheme = FALLBACK_THEMES[portalSlug] || FALLBACK_THEMES.clinical;
+  // ── Global search ──────────────────────────────────────────────────────────
+  const [globalSearch,   setGlobalSearch]   = useState('');
+  const [searchResults,  setSearchResults]  = useState<any[]>([]);
+  const [searchLoading,  setSearchLoading]  = useState(false);
+  const [showSearchDrop, setShowSearchDrop] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) setShowSearchDrop(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  useEffect(() => {
+    if (!globalSearch || globalSearch.length < 2) { setSearchResults([]); setShowSearchDrop(false); return; }
+    const t = setTimeout(async () => {
+      setSearchLoading(true);
+      try {
+        const { api } = await import('@/lib/api');
+        const res = await api.get('/patients', { params: { search: globalSearch, limit: 5 } });
+        const patients = (res.data.data ?? []).map((p: any) => ({
+          id: p.id, type: 'patient',
+          title: `${p.firstName} ${p.lastName || ''}`.trim(),
+          sub: p.phone ?? p.healthId ?? '',
+          href: `/clinical/patients/${p.id}`,
+        }));
+        setSearchResults(patients);
+        setShowSearchDrop(patients.length > 0);
+      } catch { setSearchResults([]); }
+      finally { setSearchLoading(false); }
+    }, 300);
+    return () => clearTimeout(t);
+  }, [globalSearch]);
   const navItems = NAV_BY_PORTAL[portalSlug] || NAV_BY_PORTAL.clinical;
 
   useEffect(() => { loadFromStorage(); }, []);
@@ -227,7 +261,9 @@ export default function PortalLayout({ children, portalSlug }: PortalLayoutProps
                   <item.icon className={cn('w-4 h-4 flex-shrink-0', active ? 'text-white' : 'text-white/50 group-hover:text-white')} />
                   <span className="flex-1">{item.label}</span>
                   {item.badge && !active && (
-                    <span className="w-5 h-5 bg-[#25D366] text-white text-[10px] rounded-full flex items-center justify-center font-bold">4</span>
+                    <span className="w-5 h-5 bg-[#25D366] text-white text-[10px] rounded-full flex items-center justify-center font-bold">
+                      {notifications.find(n => n.id === 'wa-unread') ? notifications.find(n => n.id === 'wa-unread')?.title?.match(/\d+/)?.[0] || '!' : ''}
+                    </span>
                   )}
                   {active && <ChevronRight className="w-3 h-3 text-white/60" />}
                 </div>
@@ -259,10 +295,47 @@ export default function PortalLayout({ children, portalSlug }: PortalLayoutProps
         {/* Topbar */}
         <header className="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between sticky top-0 z-10">
           <div className="flex items-center gap-3 flex-1">
-            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 w-80">
-              <Search className="w-4 h-4 text-slate-400" />
-              <input className="bg-transparent text-sm outline-none flex-1 text-slate-700"
-                placeholder="Search..." />
+            <div className="relative" ref={searchRef}>
+              <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 w-80">
+                <Search className={`w-4 h-4 flex-shrink-0 ${searchLoading ? 'text-[#0D7C66] animate-pulse' : 'text-slate-400'}`} />
+                <input
+                  className="bg-transparent text-sm outline-none flex-1 text-slate-700 placeholder:text-slate-400"
+                  placeholder="Search patients, appointments…"
+                  value={globalSearch}
+                  onChange={e => setGlobalSearch(e.target.value)}
+                  onFocus={() => searchResults.length > 0 && setShowSearchDrop(true)}
+                />
+                {globalSearch && (
+                  <button onClick={() => { setGlobalSearch(''); setSearchResults([]); setShowSearchDrop(false); }}
+                    className="text-slate-300 hover:text-slate-500 transition-colors text-xs">✕</button>
+                )}
+              </div>
+              {showSearchDrop && searchResults.length > 0 && (
+                <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 z-50 overflow-hidden">
+                  <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide px-4 pt-3 pb-1.5">Patients</p>
+                  {searchResults.map(r => (
+                    <a key={r.id} href={r.href}
+                      onClick={() => { setShowSearchDrop(false); setGlobalSearch(''); }}
+                      className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors">
+                      <div className="w-7 h-7 rounded-lg text-white text-xs font-bold flex items-center justify-center flex-shrink-0"
+                        style={{ background: theme.primaryColor }}>
+                        {r.title[0]}
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-slate-900">{r.title}</p>
+                        <p className="text-xs text-slate-400">{r.sub}</p>
+                      </div>
+                    </a>
+                  ))}
+                  <div className="border-t border-slate-50 px-4 py-2.5">
+                    <a href={`/clinical/patients?search=${encodeURIComponent(globalSearch)}`}
+                      onClick={() => { setShowSearchDrop(false); setGlobalSearch(''); }}
+                      className="text-xs font-semibold hover:underline" style={{ color: theme.primaryColor }}>
+                      View all results for "{globalSearch}" →
+                    </a>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-4">
