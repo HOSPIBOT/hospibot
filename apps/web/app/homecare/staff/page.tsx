@@ -1,8 +1,10 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
 import { Users, Plus, Phone, MapPin, Truck, X, Loader2 } from 'lucide-react';
 const STATUS_COLORS: Record<string,string> = { AVAILABLE:'bg-emerald-100 text-emerald-700', ON_VISIT:'bg-blue-100 text-blue-700', TRAVELLING:'bg-amber-100 text-amber-700', OFF_DUTY:'bg-slate-100 text-slate-500' };
+// Staff data — replace with real API when staff module is available
 const STAFF = [
   { id:'1', name:'Meena Nair',   spec:'Nursing Care',   phone:'+91 98001 11001', status:'ON_VISIT',   visits:3, loc:'Banjara Hills' },
   { id:'2', name:'Ravi Kumar',   spec:'Physiotherapy',  phone:'+91 98001 11002', status:'AVAILABLE',  visits:2, loc:'Jubilee Hills' },

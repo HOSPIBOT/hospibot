@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { api } from '@/lib/api';
 import { formatDate } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import { FileText, Plus, X, Loader2, TrendingUp, CheckCircle2, AlertTriangle } from 'lucide-react';
@@ -31,6 +32,25 @@ export default function ContractsPage() {
   const [saving, setSaving]   = useState(false);
   const [contracts, setContracts] = useState(CONTRACTS);
   const [form, setForm] = useState({ client: '', type: 'AMC', value: '', start: '', end: '' });
+
+  // Load from API if available; fall back to local sample data
+  useEffect(() => {
+    api.get('/crm/leads', { params: { stage: 'CLOSED_WON', limit: 50 } })
+      .then(r => {
+        const leads = r.data?.data ?? [];
+        if (leads.length > 0) {
+          setContracts(leads.map((l: any) => ({
+            id: l.id,
+            client: l.name || l.patient?.firstName || 'Client',
+            type: 'Service',
+            value: l.estimatedValue || 500000,
+            status: 'ACTIVE',
+            start: l.createdAt?.slice(0, 10) || '',
+            end: '',
+          })));
+        }
+      }).catch(() => {});
+  }, []);
 
   const totalValue = contracts.filter(c => c.status === 'ACTIVE').reduce((s, c) => s + c.value, 0);
 

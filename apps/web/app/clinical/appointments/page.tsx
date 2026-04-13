@@ -116,6 +116,8 @@ export default function AppointmentsPage() {
   const [statusFilter, setStatusFilter] = useState('');
   const [rescheduleAppt, setReschedule] = useState<any>(null);
   const [newDateTime, setNewDateTime]   = useState('');
+  const [selected, setSelected]         = useState<Set<string>>(new Set());
+  const [bulkAction, setBulkAction]      = useState('');
   const [dateFilter, setDateFilter]     = useState(new Date().toISOString().split('T')[0]);
   const [patientSearch, setPatientSearch] = useState('');
   const [patientResults, setPatientResults] = useState<any[]>([]);
@@ -180,6 +182,42 @@ export default function AppointmentsPage() {
     } catch (err: any) {
       toast.error(err?.response?.data?.message || 'Booking failed');
     } finally { setSubmitting(false); }
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const selectAll = () => {
+    if (selected.size === appointments.length) {
+      setSelected(new Set());
+    } else {
+      setSelected(new Set(appointments.map(a => a.id)));
+    }
+  };
+
+  const executeBulk = async () => {
+    if (!bulkAction || selected.size === 0) { toast.error('Select an action and at least one appointment'); return; }
+    try {
+      await Promise.all([...selected].map(id =>
+        bulkAction === 'CANCELLED'
+          ? api.put(`/appointments/${id}/status`, { status: 'CANCELLED' })
+          : bulkAction === 'CONFIRMED'
+          ? api.put(`/appointments/${id}/status`, { status: 'CONFIRMED' })
+          : bulkAction === 'send-reminder'
+          ? api.post('/whatsapp/send', {
+              to: appointments.find(a => a.id === id)?.patient?.phone,
+              message: `Hi, this is a reminder about your appointment at our clinic. Please arrive 10 minutes before your scheduled time. Reply STOP to unsubscribe.`
+            }).catch(() => {})
+          : Promise.resolve()
+      ));
+      toast.success(`Bulk action applied to ${selected.size} appointments`);
+      setSelected(new Set()); setBulkAction(''); load(meta.page);
+    } catch { toast.error('Bulk action failed'); }
   };
 
   const reschedule = async () => {
