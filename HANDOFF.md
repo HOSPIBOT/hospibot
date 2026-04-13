@@ -1,5 +1,5 @@
 # HospiBot — Developer Handoff
-*72 commits · 132 pages · 22 backend modules · Last updated: April 2026*
+*75 commits · 132 pages · 22 backend modules · Last updated: April 2026*
 
 ## Live URLs
 - **Frontend:** https://hospibot-web.vercel.app
@@ -153,12 +153,21 @@ npx prisma migrate deploy && npx prisma db seed
 - **Analytics** — live revenue bar chart + contract type pie chart
 - **Staff** — live from /doctors with fallback seed
 
+### Pharmacy
+- **Purchase Orders** — full PO creation with supplier + item selection, status filters, supplier management tab
+- **Receive Goods** — modal on SENT/PARTIAL POs: per-item received qty, batch number, expiry date, cost/MRP; hits `POST /pharmacy/purchase-orders/:id/receive`; auto-updates inventory stock
+
 ### Wellness
 - **Dashboard** — fixed crash (undefined trend/stats), live API
+- **Analytics** — portal-specific: session trend area chart, membership plan pie, session type breakdown bars, week/month toggle
 - Membership management with plan enrollment
 
 ### Equipment
 - **Dashboard** — fixed crash (undefined stats/orderTrend), live from /marketplace/stats + /marketplace/orders
+- **Analytics** — portal-specific: B2B order trend bar chart, order status pie, top products by sales, week/month/quarter toggle
+
+### Super Admin
+- **Plans & Billing** — live tenant counts per plan via getAllTenants API; MRR calculated from real data
 
 ## Pages Needing Backend Modules (use seed/fallback data)
 - Services portal — no dedicated /services/* backend module; uses /billing/invoices + /doctors
@@ -174,10 +183,12 @@ git add -A && git commit -m "..." && git push origin main
 ## Session History (recent)
 | Commit | Feature |
 |---|---|
+| 4d4955e | feat: Equipment + Wellness analytics portal-specific; Super Admin plans live MRR |
+| c76a7fc | feat: Pharmacy Purchase Orders — Receive Goods modal, auto stock update |
+| 5cd20af | feat: Services dashboard live API + Visit History filters + HANDOFF update |
 | 798c379 | fix: Wellness + Equipment dashboards — undefined vars, live API |
 | 56824b8 | feat: HomeCare dashboard/staff live API; Services billing/analytics/staff off mock |
 | 36099f0 | feat: WhatsApp Inbox — filter tabs, template picker, auto-refresh, patient panel |
-| 04c899c | docs: HANDOFF update (prev session) |
 | 0ea2b52 | feat: Patient Feedback + Refill Tracker |
 | 4db4d56 | fix: My Schedule nav + Aging Report link |
 | 9dbe360 | feat: Doctor My Schedule + Invoice Aging Report |
