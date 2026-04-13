@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import { ArrowLeft, Printer, CheckCircle2, Package, Loader2, MessageSquare } from 'lucide-react';
 
 export default function DispenseOrderDetailPage() {
-  const { id }    = useParams<{ id: string }>();
+  const id = (useParams() as any)?.['id'] ?? '';
   const router    = useRouter();
   const [order, setOrder]     = useState<any>(null);
   const [tenant, setTenant]   = useState<any>(null);

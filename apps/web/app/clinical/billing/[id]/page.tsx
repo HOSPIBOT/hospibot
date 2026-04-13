@@ -8,7 +8,7 @@ import { Printer, ArrowLeft, MessageSquare, Loader2, Download } from 'lucide-rea
 import { RazorpayCheckout } from '@/components/ui/RazorpayCheckout';
 
 export default function InvoicePrintPage() {
-  const { id } = useParams<{ id: string }>();
+  const id = (useParams() as any)?.['id'] ?? '';
   const [invoice, setInvoice] = useState<any>(null);
   const [tenant, setTenant]   = useState<any>(null);
   const [loading, setLoading] = useState(true);

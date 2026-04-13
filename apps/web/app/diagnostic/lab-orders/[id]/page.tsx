@@ -21,7 +21,7 @@ const PIPELINE = [
 const inputCls = 'w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#1E3A5F] outline-none transition-all placeholder:text-slate-400';
 
 export default function LabOrderDetailPage() {
-  const { id }    = useParams<{ id: string }>();
+  const id = (useParams() as any)?.['id'] ?? '';
   const router    = useRouter();
   const [order, setOrder]     = useState<any>(null);
   const [loading, setLoading] = useState(true);

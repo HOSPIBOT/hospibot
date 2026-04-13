@@ -177,7 +177,7 @@ function MedRow({ med, index, onChange, onRemove }: {
 }
 
 export default function VisitConsolePage() {
-  const { appointmentId } = useParams<{ appointmentId: string }>();
+  const appointmentId = (useParams() as any)?.['appointmentId'] ?? '';
   const router = useRouter();
 
   const [appointment, setAppointment]   = useState<any>(null);

@@ -22,7 +22,7 @@ const PO_STATUS_COLORS: Record<string, string> = {
 };
 
 export default function SupplierDetailPage() {
-  const { id }    = useParams<{ id: string }>();
+  const id = (useParams() as any)?.['id'] ?? '';
   const router    = useRouter();
   const [supplier, setSupplier] = useState<any>(null);
   const [orders,   setOrders]   = useState<any[]>([]);

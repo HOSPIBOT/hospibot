@@ -40,7 +40,7 @@ const PLAN_COLORS: Record<string, string> = {
 };
 
 export default function TenantDetailPage() {
-  const { id } = useParams<{ id: string }>();
+  const id = (useParams() as any)?.['id'] ?? '';
   const router = useRouter();
   const [tenant, setTenant] = useState<Tenant | null>(null);
   const [loading, setLoading] = useState(true);

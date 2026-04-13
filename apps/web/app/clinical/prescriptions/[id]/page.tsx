@@ -7,7 +7,7 @@ import { formatDate } from '@/lib/utils';
 import { Printer, ArrowLeft, MessageSquare, Loader2, Pill } from 'lucide-react';
 
 export default function PrescriptionDetailPage() {
-  const { id }    = useParams<{ id: string }>();
+  const id = (useParams() as any)?.['id'] ?? '';
   const [rx, setRx]         = useState<any>(null);
   const [tenant, setTenant] = useState<any>(null);
   const [loading, setLoading] = useState(true);

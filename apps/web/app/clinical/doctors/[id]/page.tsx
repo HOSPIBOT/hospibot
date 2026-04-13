@@ -17,7 +17,7 @@ const SLOTS = ['08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30',
 const inputCls = 'w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#0D7C66] focus:ring-2 focus:ring-[#0D7C66]/10 outline-none transition-all placeholder:text-slate-400';
 
 export default function DoctorProfilePage() {
-  const { id }     = useParams<{ id: string }>();
+  const id = (useParams() as any)?.['id'] ?? '';
   const router     = useRouter();
   const [doctor, setDoctor]     = useState<any>(null);
   const [loading, setLoading]   = useState(true);

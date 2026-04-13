@@ -7,7 +7,7 @@ import { formatDate, formatINR } from '@/lib/utils';
 import { Printer, ArrowLeft, Loader2, Shield, Heart, Pill, FlaskConical, CreditCard } from 'lucide-react';
 
 export default function PatientSummaryPage() {
-  const { id }      = useParams<{ id: string }>();
+  const id = (useParams() as any)?.['id'] ?? '';
   const [patient, setPatient] = useState<any>(null);
   const [tenant, setTenant]   = useState<any>(null);
   const [loading, setLoading] = useState(true);

@@ -44,7 +44,7 @@ function Skeleton() {
 }
 
 export default function RegisterFamilyPage() {
-  const { family: familySlug } = useParams<{ family: string }>();
+  const familySlug = (useParams() as any)?.['family'] ?? '';
   const router = useRouter();
 
   const [family, setFamily] = useState<PortalFamily | null>(null);

@@ -14,7 +14,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function PatientLedgerPage() {
-  const { patientId } = useParams<{ patientId: string }>();
+  const patientId = (useParams() as any)?.['patientId'] ?? '';
   const [patient, setPatient]   = useState<any>(null);
   const [invoices, setInvoices] = useState<any[]>([]);
   const [tenant, setTenant]     = useState<any>(null);

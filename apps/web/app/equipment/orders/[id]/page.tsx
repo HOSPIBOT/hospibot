@@ -20,7 +20,7 @@ const ADVANCE: Record<string, string> = {
 };
 
 export default function EquipmentOrderDetailPage() {
-  const { id }    = useParams<{ id: string }>();
+  const id = (useParams() as any)?.['id'] ?? '';
   const router    = useRouter();
   const [order, setOrder]     = useState<any>(null);
   const [loading, setLoading] = useState(true);

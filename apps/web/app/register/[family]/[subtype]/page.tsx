@@ -67,7 +67,7 @@ function Select({ value, onChange, children }: any) {
 }
 
 export default function RegisterSubTypePage() {
-  const { family: familySlug, subtype: subTypeSlug } = useParams<{ family: string; subtype: string }>();
+  const familySlug = (useParams() as any)?.['family'] ?? ''; const subTypeSlug = (useParams() as any)?.['subtype'] ?? '';
   const router = useRouter();
   const { setAuth } = useAuthStore();
 
