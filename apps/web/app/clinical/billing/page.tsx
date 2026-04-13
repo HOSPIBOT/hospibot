@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 import {
   Plus, Search, Download, RefreshCw, X, Loader2, ChevronLeft, ChevronRight, Printer,
   TrendingUp, CreditCard, AlertCircle, CheckCircle2, FileText, Trash2,
-  Send, IndianRupee, Percent,, TrendingDown} from 'lucide-react'';
+  Send, IndianRupee, Percent, TrendingDown} from 'lucide-react';
 
 const STATUS_COLORS: Record<string, string> = {
   DRAFT: 'bg-slate-100 text-slate-600', SENT: 'bg-blue-100 text-blue-700',
@@ -59,6 +59,12 @@ export default function BillingPage() {
     patientId: '', patientName: '', notes: '', discount: 0,
     items: [newItem()] as LineItem[],
   });
+  // Payment recording state
+  const [payInvoice,   setPayInvoice]  = useState<any>(null);
+  const [payAmount,    setPayAmount]   = useState('');
+  const [payMethod,    setPayMethod]   = useState('CASH');
+  const [payRef,       setPayRef]      = useState('');
+  const [recording,    setRecording]   = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setDebSearch(search), 400);

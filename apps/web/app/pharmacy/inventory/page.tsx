@@ -138,7 +138,7 @@ export default function InventoryPage() {
               style={{
                 background: s.bg,
                 borderColor: activeTab === s.key ? s.color : 'transparent',
-                ringColor: s.color,
+                // ringColor: s.color,
               }}>
               <div className="w-10 h-10 rounded-xl mx-auto mb-2 flex items-center justify-center" style={{ background: `${s.color}20` }}>
                 <s.icon className="w-5 h-5" style={{ color: s.color }} />

@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 import {
   Settings, MessageSquare, Building2, Bell, Shield, Save,
   CheckCircle2, AlertTriangle, Eye, EyeOff, RefreshCw, Plus, Trash2,
-} from 'lucide-react';
+  Zap, ExternalLink } from 'lucide-react';
 
 type Tab = 'general' | 'whatsapp' | 'departments' | 'notifications' | 'integrations';
 

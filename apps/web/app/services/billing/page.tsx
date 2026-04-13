@@ -69,8 +69,7 @@ export default function ServicesBillingPage() {
     if (!search) return true;
     const q = search.toLowerCase();
     return (
-      (inv.patientName ?? inv.patient?.firstName ?? '').toLowerCase().includes(q) ||
-      (inv.invoiceNumber ?? '').toLowerCase().includes(q)
+      ((inv.patientName ?? inv.patient?.firstName ?? '').toLowerCase().includes(q)) || ((inv.invoiceNumber ?? '').toLowerCase().includes(q))
     );
   });
 
@@ -79,7 +78,7 @@ export default function ServicesBillingPage() {
   const overdue     = invoices.filter(i => i.status === 'OVERDUE').length;
 
   const clientName = (inv: any) =>
-    inv.patientName ?? `${inv.patient?.firstName ?? ''} ${inv.patient?.lastName ?? ''}`.trim() || '—';
+    (inv.patientName ?? `${inv.patient?.firstName ?? ''} ${inv.patient?.lastName ?? ''}`.trim()) || '—';
 
   return (
     <div className="space-y-5">

@@ -6,7 +6,7 @@ import { getAllTenants } from '@/lib/super-admin-api';
 import { api } from '@/lib/api';
 
 // Live plan data fetched below — static fallback shown here
-const PLAN_DEFAULTS = [
+const plans = [
   {
     key: 'STARTER',
     name: 'Starter',

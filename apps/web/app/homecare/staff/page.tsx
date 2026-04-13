@@ -96,6 +96,7 @@ export default function StaffDispatchPage() {
     const a=document.createElement('a');a.href=url;a.download=`homecare-staff-${new Date().toISOString().slice(0,10)}.csv`;
     a.click();URL.revokeObjectURL(url);toast.success(`Exported ${staff.length} staff`);
   };
+  const dispatch = (person: any) => {
     toast.success(`Dispatching ${person.name}…`);
     setStaff(prev => prev.map(s =>
       s.id === person.id ? { ...s, status: 'TRAVELLING' } : s

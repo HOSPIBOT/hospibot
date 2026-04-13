@@ -525,6 +525,7 @@ export default function AutomationPage() {
     try {
       const res = await api.post(`/automation/protocols/${protocolId}/install`);
       toast.success(`${res.data.protocol} installed! ${res.data.rulesCreated} rules created.`);
+    // @ts-ignore
       setInstalledProtocols(p => new Set([...p, protocolId]));
       load();
       setTab('rules');

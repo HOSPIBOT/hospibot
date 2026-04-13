@@ -5,10 +5,11 @@ import { api } from '@/lib/api';
 import { formatDate } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import {
-  Shield, Users, Activity, Lock, RefreshCw, X, Loader2,
+  Shield, Plus, Users, Activity, Lock, RefreshCw, X, Loader2,
   CheckCircle2, AlertTriangle, Eye, EyeOff, Clock, User,
   FileText, Trash2, Download,
-} from 'lucide-react';
+} // Plus already should be there
+from 'lucide-react';
 
 type Tab = 'overview' | 'users' | 'audit' | 'compliance';
 
@@ -60,6 +61,13 @@ function RoleEditModal({ user, permissions, onClose, onUpdated }: {
 
   const togglePerm = (perm: string) => {
     setCustomPerms(p => p.includes(perm) ? p.filter(x => x !== perm) : [...p, perm]);
+  };
+
+  const handleDpdpa = async (action: string) => {
+    try {
+      await api.patch('/tenants/current/settings', { dpdpaCompliance: action });
+      toast.success(`DPDPA ${action} request processed`);
+    } catch { toast.error('Failed to update DPDPA settings'); }
   };
 
   return (
@@ -209,6 +217,13 @@ export default function SecurityPage() {
     { key: 'audit'       as Tab, label: 'Audit Log',   icon: Activity },
     { key: 'compliance'  as Tab, label: 'Compliance',  icon: FileText },
   ];
+
+  const handleDpdpa = async (action: string) => {
+    try {
+      await api.patch('/tenants/current/settings', { dpdpaCompliance: action });
+      toast.success(`DPDPA ${action} request processed`);
+    } catch { toast.error('Failed to update DPDPA settings'); }
+  };
 
   return (
     <div className="space-y-5">

@@ -169,6 +169,7 @@ export default function DoctorsPage() {
     a.click(); URL.revokeObjectURL(url);
     toast.success(`Exported ${doctors.length} doctors`);
   };
+  const toggleAvailability = (id: string, available: boolean) => {
     setDoctors(d => d.map(doc => doc.id === id ? { ...doc, isAvailable: available } : doc));
   };
 

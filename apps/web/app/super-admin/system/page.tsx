@@ -161,7 +161,7 @@ export default function SystemPage() {
       {/* Service grid — API (live) + static services */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         <ServiceCard name="API Server" description="NestJS REST API (Railway)" icon={Server}
-          status={s.statusKey === 'db' ? (health?.database?.status || 'operational') : s.statusKey === 'api' ? (health ? 'operational' : 'degraded') : 'operational'}
+          status={health ? 'operational' : 'degraded'}
           latency={health?.database.latencyMs} />
         <ServiceCard name="Database" description="PostgreSQL on Supabase" icon={Database}
           status={health?.database.status || 'operational'} latency={health?.database.latencyMs} />

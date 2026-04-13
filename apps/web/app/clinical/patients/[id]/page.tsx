@@ -332,7 +332,7 @@ export default function PatientDetailPage() {
                       <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${rx.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
                         {rx.isActive ? 'Active' : 'Inactive'}
                       </span>
-                      <button onClick={async () => { try { await api.post(\`/prescriptions/\${rx.id}/send\`); toast.success('Sent via WhatsApp!'); } catch { toast.error('Failed to send'); } }}
+                      <button onClick={async () => { try { await api.post(`/prescriptions/${rx.id}/send`); toast.success('Sent via WhatsApp!'); } catch { toast.error('Failed to send'); } }}
                         className="opacity-0 group-hover:opacity-100 flex items-center gap-1 text-[10px] font-bold text-white bg-[#25D366] px-2 py-1 rounded-lg hover:opacity-90 transition-all">
                         <Send className="w-2.5 h-2.5" /> Send
                       </button>
@@ -434,6 +434,7 @@ export default function PatientDetailPage() {
                 </div>
               ))}
             </div>
+            </>
           )}
 
           {/* ── WHATSAPP ── */}

@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 import {
   Pill, Plus, RefreshCw, Search, X, Send, Loader2, Download,
   ChevronLeft, ChevronRight, MessageSquare, CheckCircle2,
-  AlertTriangle, Clock, Eye,, Bell} from 'lucide-react'';
+  AlertTriangle, Clock, Eye, Bell} from 'lucide-react';
 
 const inputCls = 'w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#0D7C66] focus:ring-2 focus:ring-[#0D7C66]/10 outline-none transition-all placeholder:text-slate-400';
 
@@ -406,7 +406,7 @@ export default function PrescriptionsPage() {
     finally { setExporting(false); }
   };
 
-  const sendRx  const sendRx = async (id: string) => {
+  const sendRx = async (id: string) => {
     setSending(id);
     try {
       await api.post(`/prescriptions/${id}/send`);

@@ -38,6 +38,7 @@ function StarRating({ value, onChange }: { value: number; onChange: (v: number) 
 }
 
 export default function FeedbackPage() {
+  const searchParams = useSearchParams();
   const params      = useSearchParams();
   const appointmentId = params.get('id');
   const [ratings, setRatings]     = useState<Record<string, any>>({});

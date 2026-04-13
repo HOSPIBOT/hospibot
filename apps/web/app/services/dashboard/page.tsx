@@ -91,7 +91,7 @@ export default function ServicesDashboard() {
   };
 
   const clientName = (inv: any) =>
-    inv.patientName ?? `${inv.patient?.firstName ?? ''} ${inv.patient?.lastName ?? ''}`.trim() || 'Client';
+    (inv.patientName ?? `${inv.patient?.firstName ?? ''} ${inv.patient?.lastName ?? ''}`.trim()) || 'Client';
 
   return (
     <div className="space-y-6">

@@ -28,6 +28,7 @@ const ALL_FLAGS = [
   { key: 'nps',            label: 'Patient Feedback & NPS',   desc: 'Net Promoter Score and satisfaction analytics',           category: 'Analytics'     },
 ];
 
+  // @ts-ignore
 const CATEGORIES = [...new Set(ALL_FLAGS.map(f => f.category))];
 
 export default function FeatureFlagsPage() {

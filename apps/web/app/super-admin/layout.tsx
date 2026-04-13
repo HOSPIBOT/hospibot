@@ -108,7 +108,7 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
               <p className="text-[10px] text-white/30 font-semibold tracking-[0.15em] px-3 mb-1.5">{section.label}</p>
               <div className="space-y-0.5">
                 {section.items.map((item) => {
-                  const active = isActive(item.href, item.exact);
+                  const active = isActive(item.href, (item as any).exact);
                   return (
                     <Link key={item.href} href={item.href}>
                       <div className={cn(

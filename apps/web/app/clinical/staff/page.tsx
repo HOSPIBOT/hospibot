@@ -154,6 +154,7 @@ export default function ClinicalStaffPage() {
     } catch { toast.error('Export failed'); }
     finally { setExporting(false); }
   };
+  const toggleActive = async (userId: string, currentActive: boolean, name: string) => {
     try {
       await api.patch(`/auth/users/${userId}`, { isActive: !currentActive });
       setStaff(prev => prev.map(s => s.id === userId ? { ...s, isActive: !currentActive } : s));

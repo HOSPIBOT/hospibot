@@ -77,6 +77,7 @@ export default function ServicesStaffPage() {
     a.click(); URL.revokeObjectURL(url);
     toast.success(`Exported ${staff.length} staff members`);
   };
+  const save = async () => {
     if (!form.name || !form.phone) { toast.error('Name and phone required'); return; }
     setSaving(true);
     await new Promise(r => setTimeout(r, 500));

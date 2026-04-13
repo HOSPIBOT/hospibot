@@ -136,6 +136,13 @@ export default function PortalLayout({ children, portalSlug }: PortalLayoutProps
   const { user, tenant, isAuthenticated, loadFromStorage, logout, featureFlags, hasFlag } = useAuthStore();
   const [assets, setAssets] = useState<PlatformAssets | null>(null);
 
+  // ── Portal theme ─────────────────────────────────────────────────────────
+  const theme = FALLBACK_THEMES[portalSlug] || FALLBACK_THEMES.clinical || {
+    primaryColor: '#0D7C66',
+    sidebarBg: '#0A3D2E',
+    accentColor: '#F59E0B',
+  };
+
   // ── Notification bell ─────────────────────────────────────────────────────
   const [notifications, setNotifications] = useState<any[]>([]);
   const [showNotifs,    setShowNotifs]     = useState(false);

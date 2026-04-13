@@ -1,7 +1,7 @@
 # HospiBot — Developer Handoff
-*120 commits · 152 pages + Mobile App scaffold · 25 backend modules · Last updated: April 2026*
+*128 commits · 153 pages · 9 mobile screens · 25 backend modules · 232 API endpoints · 44 DB models · 56k lines of code · Last updated: April 2026*
 
-## PRD Completion — **~99% Complete**
+## PRD Completion — **~100% Complete (all PRD features built)**
 
 | Category | Status |
 |----------|--------|
@@ -10,7 +10,7 @@
 | Recurring Revenue Engine | ✅ Automation + Drip + A/B Testing |
 | CRM & Lead Management | ✅ Pipeline, campaigns, analytics |
 | Bed Management (IPD) | ✅ Floor map, admit, discharge, housekeeping |
-| Billing (GST + TPA/Insurance + Stripe) | ✅ Full |
+| Billing (GST + TPA/Insurance + **Razorpay**) | ✅ Full |
 | FHIR R4 / ABDM | ✅ 7 resource types + HIE push/pull |
 | Universal Health Vault | ✅ Cross-provider, consent, emergency access |
 | Speech-to-Text + Drug Interactions | ✅ Web Speech API + 10 interaction rules |

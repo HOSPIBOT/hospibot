@@ -172,7 +172,7 @@ function QuickBookModal({ lead, onClose, onBooked }: { lead: Lead; onClose: () =
       if (existing?.data?.data?.[0]) {
         patientId = existing.data.data[0].id;
       } else {
-        const [firstName, ...rest] = lead.name.split(' ');
+        const [firstName, ...rest] = (lead.name || '').split(' ');
         const newPat = await api.post('/patients', { firstName, lastName: rest.join(' ') || undefined, phone: lead.phone, email: lead.email });
         patientId = newPat.data.id;
       }
@@ -361,6 +361,7 @@ export default function CRMPage() {
   const byStage = (stageKey: string) => leads.filter(l => l.stage === stageKey);
 
   const [exporting, setExporting] = useState(false);
+  const [bookingLead, setBookingLead] = useState<any>(null);
 
   const exportCSV = async () => {
     setExporting(true);
@@ -517,7 +518,7 @@ export default function CRMPage() {
                     ) : stageleads.map(lead => (
                       <LeadCard key={lead.id} lead={lead}
                         onMove={moveStage}
-                        onConvert={convertLead} />
+                        onConvert={convertLead} onBook={(l: any) => setBookingLead(l)} />
                     ))}
                   </div>
                 </div>

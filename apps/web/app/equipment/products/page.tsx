@@ -131,7 +131,6 @@ export default function EquipmentProductsPage() {
             </div>
           )})}
         </div>
-        </div>
       )}
 
       {showAdd&&(

@@ -446,6 +446,7 @@ export default function PurchaseOrdersPage() {
     } catch { toast.error('Export failed'); }
     finally { setExporting(false); }
   };
+  return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>

@@ -453,6 +453,7 @@ export default function LabOrdersPage() {
     } catch { toast.error('Export failed'); }
     finally { setExporting(false); }
   };
+  const handleStatusChange = async (id: string, newStatus: string) => {
     try {
       await api.patch(`/lab/orders/${id}/status`, { status: newStatus });
       toast.success(`Status updated to ${newStatus.replace('_', ' ')}`);

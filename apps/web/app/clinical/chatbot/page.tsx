@@ -26,6 +26,7 @@ export default function ChatbotPage() {
   const [settings, setSettings] = useState<any>(null);
   const [intents, setIntents]   = useState<Record<string, boolean>>({});
   const [saving, setSaving]     = useState(false);
+  const [loading, setLoading]   = useState(true);
   const [expandedIntent, setExpanded] = useState<string | null>(null);
 
   const [greetMsg, setGreetMsg]   = useState('');
@@ -34,6 +35,7 @@ export default function ChatbotPage() {
   const [botName, setBotName]     = useState('');
 
   const load = useCallback(async () => {
+    setLoading(true);
     try {
       const res = await api.get('/tenants/current');
       const s   = res.data?.settings?.chatbot || {};
@@ -50,6 +52,7 @@ export default function ChatbotPage() {
       });
       setIntents(intentStatus);
     } catch { toast.error('Failed to load chatbot settings'); }
+    finally { setLoading(false); }
   }, []);
 
   useEffect(() => { load(); }, [load]);
@@ -78,6 +81,7 @@ export default function ChatbotPage() {
     } catch { toast.success('Settings saved — configure WhatsApp phone to test'); }
   };
 
+  if (loading) return <div className="flex items-center justify-center h-64"><RefreshCw className="w-8 h-8 text-[#0D7C66] animate-spin" /></div>;
   return (
     <div className="space-y-5">
       {/* Header */}

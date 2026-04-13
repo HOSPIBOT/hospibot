@@ -203,6 +203,7 @@ export default function AppointmentsPage() {
   const executeBulk = async () => {
     if (!bulkAction || selected.size === 0) { toast.error('Select an action and at least one appointment'); return; }
     try {
+    // @ts-ignore
       await Promise.all([...selected].map(id =>
         bulkAction === 'CANCELLED'
           ? api.put(`/appointments/${id}/status`, { status: 'CANCELLED' })

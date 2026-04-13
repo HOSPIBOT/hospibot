@@ -443,7 +443,6 @@ export default function DiagnosticWhatsAppPage() {
                     value={messageText}
                     onChange={e => setMessageText(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
-                    style={{ maxHeight: '120px' }}
                     onInput={e => {
                       const el = e.target as HTMLTextAreaElement;
                       el.style.height = 'auto';
