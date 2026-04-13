@@ -13,7 +13,7 @@ import {
   FlaskConical, Package, ShoppingCart, Home, Truck, Heart,
   Briefcase, ClipboardList, FileText, Pill, Dumbbell,
   ChevronRight, Building2, TrendingUp, Shield, Globe, Star, Lock,
-  AlertTriangle, UserCheck, Layers2, BedDouble, Send, Scissors, Clock, Video, IndianRupee,
+  AlertTriangle, UserCheck, Layers2, BedDouble, Send, Scissors, Clock, Video, IndianRupee, FlaskConical,
 } from 'lucide-react';
 
 // ── Feature-flag → nav item map ───────────────────────────────────────────────
@@ -32,6 +32,7 @@ const NAV_BY_PORTAL: Record<string, NavItem[]> = {
     { href: 'my-schedule',  label: 'My Schedule',    icon: Stethoscope,     flag: 'patients' },
     { href: 'whatsapp',     label: 'WhatsApp Inbox', icon: MessageSquare,   flag: 'whatsapp', badge: true },
     { href: 'whatsapp-analytics', label: 'WA Analytics', icon: BarChart3,   always: true },
+    { href: 'whatsapp-ab',    label: 'A/B Testing',     icon: FlaskConical,    always: true },
     { href: 'appointments', label: 'Appointments',   icon: Calendar,        flag: 'appointments' },
     { href: 'prescriptions',label: 'Prescriptions',  icon: Pill,            flag: 'patients' },
     { href: 'visits',       label: 'Visit History',  icon: Activity,        flag: 'patients' },
