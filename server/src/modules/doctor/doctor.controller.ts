@@ -1,5 +1,5 @@
 import {
-  Controller, Get, Post, Put, Body, Param, Query, UseGuards,
+  Controller, Get, Post, Put, Patch, Delete, Body, Param, Query, UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { DoctorService } from './doctor.service';
@@ -58,5 +58,24 @@ export class DoctorController {
   @ApiQuery({ name: 'date', example: '2026-04-15' })
   async getSlots(@CurrentTenant() tenantId: string, @Param('id') id: string, @Query('date') date: string) {
     return this.doctorService.getAvailableSlots(tenantId, id, date);
+  }
+  // ── Department endpoints ───────────────────────────────────────────────────
+
+  @Get('/departments')
+  @ApiOperation({ summary: 'List all departments' })
+  listDepartments(@CurrentTenant() tenantId: string, @Query('limit') limit?: string) {
+    return this.doctorService.listDepartments(tenantId, limit ? +limit : 100);
+  }
+
+  @Post('/departments')
+  @ApiOperation({ summary: 'Create a department' })
+  createDepartment(@CurrentTenant() tenantId: string, @Body() dto: { name: string; code?: string; type?: string }) {
+    return this.doctorService.createDepartment(tenantId, dto);
+  }
+
+  @Delete('/departments/:id')
+  @ApiOperation({ summary: 'Delete (deactivate) a department' })
+  deleteDepartment(@CurrentTenant() tenantId: string, @Param('id') id: string) {
+    return this.doctorService.deleteDepartment(tenantId, id);
   }
 }

@@ -93,7 +93,7 @@ export default function SettingsPage() {
 
   const loadDepts = () => {
     setLoadingDepts(true);
-    api.get('/departments', { params: { limit: 100 } })
+    api.get('/doctors/departments', { params: { limit: 100 } })
       .then(r => setDepts(r.data.data ?? []))
       .catch(() => toast.error('Failed to load departments'))
       .finally(() => setLoadingDepts(false));
@@ -139,7 +139,7 @@ export default function SettingsPage() {
     if (!newDept.name) { toast.error('Department name required'); return; }
     setAddingDept(true);
     try {
-      await api.post('/departments', newDept);
+      await api.post('/doctors/departments', newDept);
       toast.success(`${newDept.name} department created`);
       setNewDept({ name: '', code: '', type: 'clinical' });
       loadDepts();
@@ -151,7 +151,7 @@ export default function SettingsPage() {
   const deleteDept = async (id: string, name: string) => {
     if (!window.confirm(`Delete ${name} department? This cannot be undone.`)) return;
     try {
-      await api.delete(`/departments/${id}`);
+      await api.delete(`/doctors/departments/${id}`);
       toast.success(`${name} deleted`);
       loadDepts();
     } catch { toast.error('Failed to delete department'); }

@@ -114,6 +114,8 @@ export default function AppointmentsPage() {
   const [showBook, setShowBook]         = useState(false);
   const [submitting, setSubmitting]     = useState(false);
   const [statusFilter, setStatusFilter] = useState('');
+  const [rescheduleAppt, setReschedule] = useState<any>(null);
+  const [newDateTime, setNewDateTime]   = useState('');
   const [dateFilter, setDateFilter]     = useState(new Date().toISOString().split('T')[0]);
   const [patientSearch, setPatientSearch] = useState('');
   const [patientResults, setPatientResults] = useState<any[]>([]);
@@ -178,6 +180,15 @@ export default function AppointmentsPage() {
     } catch (err: any) {
       toast.error(err?.response?.data?.message || 'Booking failed');
     } finally { setSubmitting(false); }
+  };
+
+  const reschedule = async () => {
+    if (!newDateTime || !rescheduleAppt) return;
+    try {
+      await api.post(`/appointments/${rescheduleAppt.id}/reschedule`, { scheduledAt: newDateTime });
+      toast.success('Appointment rescheduled. Patient notified via WhatsApp.');
+      setReschedule(null); setNewDateTime(''); load(1);
+    } catch (err: any) { toast.error(err?.response?.data?.message || 'Failed to reschedule'); }
   };
 
   // Queue stats
@@ -353,6 +364,39 @@ export default function AppointmentsPage() {
       )}
 
       {/* Book Appointment Modal */}
+      {rescheduleAppt && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={e => e.target === e.currentTarget && setReschedule(null)}>
+          <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+              <div>
+                <h2 className="text-lg font-bold text-slate-900">Reschedule Appointment</h2>
+                <p className="text-xs text-slate-400 mt-0.5">{rescheduleAppt.patient?.firstName} {rescheduleAppt.patient?.lastName || ''}</p>
+              </div>
+              <button onClick={() => setReschedule(null)} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl"><X className="w-4 h-4"/></button>
+            </div>
+            <div className="px-6 py-5 space-y-4">
+              <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-xs text-amber-700">
+                Current: {rescheduleAppt.scheduledAt ? new Date(rescheduleAppt.scheduledAt).toLocaleString('en-IN') : '—'}
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">New Date & Time *</label>
+                <input type="datetime-local" className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#0D7C66] outline-none"
+                  value={newDateTime} onChange={e => setNewDateTime(e.target.value)} />
+              </div>
+              <div className="bg-[#E8F5F0] border border-[#0D7C66]/20 rounded-xl px-4 py-3 text-xs text-[#0A5E4F]">
+                Patient will receive a WhatsApp notification about the rescheduled appointment.
+              </div>
+            </div>
+            <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 bg-slate-50/50 rounded-b-2xl">
+              <button onClick={() => setReschedule(null)} className="text-sm text-slate-500 hover:text-slate-700 px-4 py-2 rounded-xl hover:bg-slate-100">Cancel</button>
+              <button onClick={reschedule} disabled={!newDateTime}
+                className="bg-[#0D7C66] text-white text-sm font-semibold px-6 py-2.5 rounded-xl hover:bg-[#0A5E4F] disabled:opacity-50">
+                Confirm Reschedule
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {showBook && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={e => e.target === e.currentTarget && setShowBook(false)}>
           <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl">

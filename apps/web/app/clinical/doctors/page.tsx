@@ -140,7 +140,7 @@ export default function DoctorsPage() {
       if (debSearch) params.search = debSearch;
       const [docRes, deptRes] = await Promise.all([
         api.get('/doctors', { params }),
-        api.get('/departments', { params: { limit: 100 } }).catch(() => ({ data: { data: [] } })),
+        api.get('/doctors/departments', { params: { limit: 100 } }).then(r => ({ data: { data: r.data } })).catch(() => ({ data: { data: [] } })),
       ]);
       setDoctors(docRes.data.data ?? []);
       setDepts(deptRes.data.data ?? []);

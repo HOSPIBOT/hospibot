@@ -187,3 +187,26 @@ export class DoctorService {
     };
   }
 }
+
+  // ── Department management ─────────────────────────────────────────────────
+
+  async listDepartments(tenantId: string, limit = 100) {
+    return this.prisma.department.findMany({
+      where: { tenantId, isActive: true },
+      orderBy: { name: 'asc' },
+      take: limit,
+    });
+  }
+
+  async createDepartment(tenantId: string, dto: { name: string; code?: string; type?: string }) {
+    return this.prisma.department.create({
+      data: { tenantId, name: dto.name, code: dto.code, type: dto.type || 'clinical', isActive: true },
+    });
+  }
+
+  async deleteDepartment(tenantId: string, id: string) {
+    const dept = await this.prisma.department.findFirst({ where: { id, tenantId } });
+    if (!dept) throw new Error('Department not found');
+    await this.prisma.department.update({ where: { id }, data: { isActive: false } });
+    return { deleted: true };
+  }
