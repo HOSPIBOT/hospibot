@@ -359,6 +359,21 @@ export default function PortalLayout({ children, portalSlug }: PortalLayoutProps
                 {tenant.plan}
               </span>
             )}
+            {/* Language switcher */}
+            <select
+              defaultValue={typeof window !== 'undefined' ? localStorage.getItem('hospibot_locale') || 'en' : 'en'}
+              onChange={e => {
+                localStorage.setItem('hospibot_locale', e.target.value);
+                document.documentElement.lang = e.target.value;
+                document.documentElement.dir  = e.target.value === 'ar' ? 'rtl' : 'ltr';
+              }}
+              className="text-xs font-semibold border border-slate-200 rounded-xl px-2.5 py-1.5 bg-slate-50 outline-none cursor-pointer"
+              title="Change language">
+              <option value="en">English</option>
+              <option value="hi">हिन्दी</option>
+              <option value="te">తెలుగు</option>
+              <option value="ar">العربية</option>
+            </select>
             <div className="relative" ref={notifRef}>
               <button
                 onClick={() => setShowNotifs(v => !v)}
