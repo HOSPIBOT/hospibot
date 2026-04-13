@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import {
   LayoutDashboard, Building2, CreditCard, Users, Activity,
   Megaphone, Settings, LogOut, ChevronRight, Shield,
-  Bell, HelpCircle, Globe, MessageSquare,
+  Bell, HelpCircle, Globe, MessageSquare, Code,
 } from 'lucide-react';
 
 const navSections = [
@@ -43,6 +43,7 @@ const navSections = [
     items: [
       { href: '/super-admin/platform', label: 'Logo & Assets', icon: Globe },
       { href: '/super-admin/settings', label: 'Platform Settings', icon: Settings },
+      { href: '/super-admin/api-docs', label: 'API Documentation', icon: Code },
     ],
   },
 ];
