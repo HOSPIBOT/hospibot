@@ -143,7 +143,10 @@ export default function BillingPage() {
 
   const sendPaymentLink = async (invoiceId: string) => {
     try {
-      await api.post(`/billing/invoices/${invoiceId}/send-payment-link`);
+      const res = await api.post(`/billing/invoices/${invoiceId}/payment-link`);
+      if (res.data?.paymentLink) {
+        await navigator.clipboard.writeText(res.data.paymentLink).catch(() => {});
+      }
       toast.success('Payment link sent via WhatsApp!');
     } catch { toast.error('Failed to send payment link'); }
   };
