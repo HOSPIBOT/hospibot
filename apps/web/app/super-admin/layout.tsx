@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import {
   LayoutDashboard, Building2, CreditCard, Users, Activity,
   Megaphone, Settings, LogOut, ChevronRight, Shield,
-  Bell, HelpCircle, Globe, MessageSquare, Code,
+  Bell, HelpCircle, Globe, MessageSquare, Code, Zap,
 } from 'lucide-react';
 
 const navSections = [
@@ -27,6 +27,7 @@ const navSections = [
       { href: '/super-admin/plans', label: 'Plans & Billing', icon: CreditCard },
       { href: '/super-admin/billing', label: 'Subscription Mgmt', icon: CreditCard },
       { href: '/super-admin/users', label: 'Platform Users', icon: Users },
+      { href: '/super-admin/feature-flags', label: 'Feature Flags', icon: Zap },
     ],
   },
   {
