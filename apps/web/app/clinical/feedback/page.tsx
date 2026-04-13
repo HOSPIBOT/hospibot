@@ -43,6 +43,7 @@ export default function FeedbackPage() {
   const [ratings, setRatings]     = useState<Record<string, any>>({});
   const [comment, setComment]     = useState('');
   const [submitting, setSubmit]   = useState(false);
+  const visitId = searchParams.get('visitId') || searchParams.get('visit_id') || '';
   const [done, setDone]           = useState(false);
 
   const allAnswered = QUESTIONS.every(q => ratings[q.id] != null);

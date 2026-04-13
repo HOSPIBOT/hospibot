@@ -388,6 +388,52 @@ export class SchedulerService implements OnModuleInit, OnModuleDestroy {
   // ── Refill reminder job ─────────────────────────────────────────────────────
   // Runs every morning — sends prescription refill reminders
 
+  // ── 2-hour before appointment reminder ─────────────────────────────────────
+  // Runs every hour — sends WhatsApp message 2h before upcoming appointments
+  @Cron('0 */30 * * * *') // every 30 minutes
+  async sendTwoHourReminders() {
+    const now         = new Date();
+    const twoHoursOut = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+    // Window: appointments starting in 1h55m – 2h05m from now
+    const windowStart = new Date(twoHoursOut.getTime() - 5 * 60 * 1000);
+    const windowEnd   = new Date(twoHoursOut.getTime() + 5 * 60 * 1000);
+
+    const tenants = await this.prisma.tenant.findMany({
+      where: { status: 'ACTIVE', deletedAt: null },
+      select: { id: true, name: true },
+    });
+
+    for (const tenant of tenants) {
+      try {
+        const appointments = await this.prisma.appointment.findMany({
+          where: {
+            tenantId: tenant.id,
+            scheduledAt: { gte: windowStart, lte: windowEnd },
+            status: { in: ['CONFIRMED', 'PENDING'] },
+          },
+          include: {
+            patient: { select: { firstName: true, phone: true } },
+            doctor:  { include: { user: { select: { firstName: true, lastName: true } } } },
+          },
+        });
+
+        for (const apt of appointments) {
+          if (!apt.patient?.phone) continue;
+          const time = new Date(apt.scheduledAt).toLocaleTimeString('en-IN', {
+            hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata',
+          });
+          const doctor = apt.doctor
+            ? `Dr. ${apt.doctor.user.firstName} ${apt.doctor.user.lastName || ''}`.trim()
+            : 'your doctor';
+          const msg = `⏰ *Appointment in 2 hours!*\n\nHi ${apt.patient.firstName},\n\nReminder: Your appointment with *${doctor}* is at *${time}* today.\n\n📍 ${tenant.name}\n\nPlease leave soon to arrive on time. Bring any previous reports or prescriptions.\n\n_Reply CANCEL if you need to cancel._`;
+          await this.whatsappService.sendTextMessage(tenant.id, apt.patient.phone, msg).catch(() => {});
+        }
+      } catch (err) {
+        this.logger.error(`2h reminder job failed for tenant ${tenant.id}: ${err}`);
+      }
+    }
+  }
+
   @Cron('0 30 2 * * *', { timeZone: 'Asia/Kolkata' }) // 8:00 AM IST
   async sendRefillReminders() {
     const fiveDaysFromNow = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000);

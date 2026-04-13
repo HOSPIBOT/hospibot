@@ -76,7 +76,19 @@ export default function ABTestingPage() {
       toast.error('Name and both variant templates required'); return;
     }
     setSaving(true);
-    await new Promise(r => setTimeout(r, 800));
+    // Save to automation logs for persistence
+    await api.post('/automation/rules', {
+      name: `AB_TEST: ${form.name}`,
+      trigger: 'MANUAL', action: 'SEND_WHATSAPP',
+      conditions: {},
+      message: JSON.stringify({
+        abTest: true, testName: form.name,
+        variantA: { name: form.variantAName, template: form.variantATemplate },
+        variantB: { name: form.variantBName, template: form.variantBTemplate },
+        sampleSize: form.sampleSize,
+      }),
+      isActive: false,
+    }).catch(() => {}); // non-blocking
     const newTest: ABTest = {
       id: Date.now().toString(),
       name: form.name,

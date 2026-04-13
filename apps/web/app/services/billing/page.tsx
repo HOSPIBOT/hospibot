@@ -34,7 +34,7 @@ export default function ServicesBillingPage() {
       const data = res.data?.data ?? res.data ?? [];
       setInvoices(Array.isArray(data) ? data : []);
     } catch {
-      setInvoices(SEED_INVOICES);
+      setInvoices([]);
     } finally {
       setLoading(false);
     }
