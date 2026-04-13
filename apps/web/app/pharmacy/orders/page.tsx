@@ -6,7 +6,7 @@ import { formatDate, formatTime, formatINR } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import {
   ShoppingCart, Plus, Search, RefreshCw, X, Loader2,
-  CheckCircle2, Send, AlertTriangle, ChevronLeft, ChevronRight, Pill,
+  CheckCircle2, Send, AlertTriangle, ChevronLeft, ChevronRight, Pill, Download,
 } from 'lucide-react';
 
 const NAV_COLOR = '#166534';
@@ -237,6 +237,30 @@ export default function DispensingPage() {
 
   useEffect(() => { load(1); }, [load]);
 
+  const [exporting, setExporting] = useState(false);
+  const exportCSV = async () => {
+    setExporting(true);
+    try {
+      const res = await api.get('/pharmacy/dispensing', { params: { limit: 2000 } });
+      const all: any[] = res.data.data ?? orders;
+      const header = ['Order #', 'Patient', 'Phone', 'Doctor', 'Items', 'Total', 'Status', 'Date'];
+      const rows = all.map(o => [
+        o.orderNumber ?? o.id?.slice(0,8).toUpperCase() ?? '',
+        `${o.patient?.firstName ?? ''} ${o.patient?.lastName ?? ''}`.trim(),
+        o.patient?.phone ?? '',
+        o.doctor ? `Dr. ${o.doctor.user?.firstName ?? ''} ${o.doctor.user?.lastName ?? ''}`.trim() : '',
+        (o.items as any[])?.map((i: any) => `${i.productName??i.name??''} x${i.quantity??1}`).join('; ') ?? '',
+        o.totalAmount ?? 0,
+        o.status ?? '',
+        o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN') : '',
+      ]);
+      const csv = [header,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');a.href=url;a.download=`dispensing-${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();URL.revokeObjectURL(url);toast.success(`Exported ${all.length} orders`);
+    } catch { toast.error('Export failed'); } finally { setExporting(false); }
+  };
+
   const dispenseOrder = async (id: string) => {
     setDispensing(id);
     try {
@@ -258,6 +282,10 @@ export default function DispensingPage() {
         <div className="flex items-center gap-2">
           <button onClick={() => load(meta.page)} className="p-2 border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50 transition-colors">
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+          <button onClick={exportCSV} disabled={exporting}
+            className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm font-medium px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50">
+            <Download className="w-4 h-4" /> {exporting ? 'Exporting…' : 'Export'}
           </button>
           <button onClick={() => setShowCreate(true)}
             className="flex items-center gap-2 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors shadow-sm"

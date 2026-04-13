@@ -5,7 +5,7 @@ import { api } from '@/lib/api';
 import { formatDate, formatTime } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import {
-  Users, Plus, Phone, MapPin, Truck, X, Loader2,
+  Users, Plus, Phone, MapPin, Truck, X, Loader2, Download,
   RefreshCw, CheckCircle2, Clock, Circle,
 } from 'lucide-react';
 
@@ -81,7 +81,21 @@ export default function StaffDispatchPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const dispatch = async (person: any) => {
+  const [exporting, setExporting] = useState(false);
+  const exportCSV = () => {
+    const header = ['Name', 'Phone', 'Specialties', 'Available', 'Visits Today'];
+    const rows = staff.map(s => [
+      s.name ?? `${s.user?.firstName ?? ''} ${s.user?.lastName ?? ''}`.trim(),
+      s.user?.phone ?? s.phone ?? '',
+      Array.isArray(s.specialties) ? s.specialties.join('; ') : (s.specialties ?? ''),
+      s.isAvailable ? 'Yes' : 'No',
+      s.todayVisits ?? 0,
+    ]);
+    const csv = [header,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download=`homecare-staff-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();URL.revokeObjectURL(url);toast.success(`Exported ${staff.length} staff`);
+  };
     toast.success(`Dispatching ${person.name}…`);
     setStaff(prev => prev.map(s =>
       s.id === person.id ? { ...s, status: 'TRAVELLING' } : s
@@ -149,6 +163,10 @@ export default function StaffDispatchPage() {
           <button onClick={load}
             className="p-2 border border-slate-200 rounded-xl text-slate-400 hover:bg-slate-50 transition-colors">
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+          <button onClick={exportCSV} disabled={staff.length === 0}
+            className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm font-medium px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50">
+            <Download className="w-4 h-4" /> Export
           </button>
           <button onClick={() => setShowAdd(true)}
             className="flex items-center gap-2 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors"

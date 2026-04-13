@@ -5,7 +5,7 @@ import { api } from '@/lib/api';
 import { formatINR } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import {
-  Pill, Plus, Search, RefreshCw, X, Loader2, AlertTriangle,
+  Pill, Plus, Search, RefreshCw, X, Loader2, AlertTriangle, Download,
   Clock, Package, ChevronLeft, ChevronRight, Edit3, CheckCircle2,
 } from 'lucide-react';
 
@@ -221,6 +221,21 @@ export default function PharmacyProductsPage() {
   }, [debSearch, catFilter, lowStockOnly]);
 
   useEffect(() => { load(1); }, [load]);
+
+  const [exporting, setExporting] = useState(false);
+  const exportCSV = async () => {
+    setExporting(true);
+    try {
+      const res = await api.get('/pharmacy/products', { params: { limit: 5000 } });
+      const all: any[] = res.data.data ?? products;
+      const header = ['Name', 'Generic Name', 'Category', 'Form', 'Strength', 'Stock', 'Min Stock', 'Active'];
+      const rows = all.map(p => [p.name??'', p.genericName??'', p.category??'', p.form??'', p.strength??'', p.currentStock??0, p.minimumStock??0, p.isActive!==false?'Yes':'No']);
+      const csv=[header,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');a.href=url;a.download=`pharmacy-products-${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();URL.revokeObjectURL(url);toast.success(`Exported ${all.length} products`);
+    } catch { toast.error('Export failed'); } finally { setExporting(false); }
+  };
 
   const toggleActive = async (id: string, currentlyActive: boolean) => {
     try {
