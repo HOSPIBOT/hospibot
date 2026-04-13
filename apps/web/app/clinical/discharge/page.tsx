@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { formatDate, formatINR } from '@/lib/utils';
@@ -15,7 +15,7 @@ import {
 
 const inputCls = 'w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#0D7C66] outline-none transition-all placeholder:text-slate-400';
 
-export default function DischargeSummaryPage() {
+function DischargeSummaryPageInner() {
   const router         = useRouter();
   const params         = useSearchParams();
   const patientId      = params?.get('patientId');
@@ -295,5 +295,13 @@ For queries, contact ${tenant?.phone || 'our helpline'}.`;
         </div>
       </div>
     </div>
+  );
+}
+
+export default function DischargeSummaryPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-[#0D7C66] border-t-transparent rounded-full" /></div>}>
+      <DischargeSummaryPageInner />
+    </Suspense>
   );
 }

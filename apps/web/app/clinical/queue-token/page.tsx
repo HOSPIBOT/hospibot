@@ -3,12 +3,12 @@
 export const dynamic = 'force-dynamic';
 
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { formatTime } from '@/lib/utils';
 import { Printer, ArrowLeft } from 'lucide-react';
 
-export default function QueueTokenPage() {
+function QueueTokenPageInner() {
   const params       = useSearchParams();
   const appointmentId = params?.get('id');
   const [apt, setApt] = useState<any>(null);
@@ -146,5 +146,13 @@ export default function QueueTokenPage() {
         }
       `}</style>
     </div>
+  );
+}
+
+export default function QueueTokenPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-[#0D7C66] border-t-transparent rounded-full" /></div>}>
+      <QueueTokenPageInner />
+    </Suspense>
   );
 }

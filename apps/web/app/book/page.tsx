@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { formatDate } from '@/lib/utils';
@@ -35,7 +35,7 @@ function StepIndicator({ current, steps }: { current: number; steps: string[] })
   );
 }
 
-export default function PublicBookingPage() {
+function PublicBookingPageInner() {
   const params     = useSearchParams();
   const tenantSlug = params?.get('clinic') || '';
 
@@ -343,5 +343,13 @@ export default function PublicBookingPage() {
         <p className="text-center text-xs text-slate-300 mt-6 pb-4">Powered by HospiBot · hospibot.in</p>
       </div>
     </div>
+  );
+}
+
+export default function PublicBookingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-[#0D7C66] border-t-transparent rounded-full" /></div>}>
+      <PublicBookingPageInner />
+    </Suspense>
   );
 }

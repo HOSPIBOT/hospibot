@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { Star, MessageSquare, CheckCircle2, Loader2, ThumbsUp } from 'lucide-react';
@@ -39,7 +39,7 @@ function StarRating({ value, onChange }: { value: number; onChange: (v: number) 
   );
 }
 
-export default function FeedbackPage() {
+function FeedbackPageInner() {
   const searchParams = useSearchParams();
   const params      = useSearchParams();
   const appointmentId = params?.get('id');
@@ -168,5 +168,13 @@ export default function FeedbackPage() {
         <p className="text-center text-xs text-slate-300 pb-4">Powered by HospiBot · hospibot.in</p>
       </div>
     </div>
+  );
+}
+
+export default function FeedbackPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-[#0D7C66] border-t-transparent rounded-full" /></div>}>
+      <FeedbackPageInner />
+    </Suspense>
   );
 }

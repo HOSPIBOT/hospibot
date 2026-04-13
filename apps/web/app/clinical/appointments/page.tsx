@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect, useCallback } from 'react';
+import { Suspense, useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { formatDate, formatTime, formatINR } from '@/lib/utils';
@@ -105,7 +105,7 @@ function QueueCard({ appt, onStatusChange }: { appt: any; onStatusChange: () => 
   );
 }
 
-export default function AppointmentsPage() {
+function AppointmentsPageInner() {
   const searchParams = useSearchParams();
   const [appointments, setAppointments] = useState<any[]>([]);
   const [doctors, setDoctors]           = useState<any[]>([]);
@@ -593,5 +593,13 @@ export default function AppointmentsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function AppointmentsPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-[#0D7C66] border-t-transparent rounded-full" /></div>}>
+      <AppointmentsPageInner />
+    </Suspense>
   );
 }

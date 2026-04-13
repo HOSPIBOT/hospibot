@@ -1,12 +1,12 @@
 'use client';
 
 export const dynamic = 'force-dynamic';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { api } from '@/lib/api';
 import { useSearchParams } from 'next/navigation';
 import { CheckCircle2, Search, Loader2, Phone, User, Calendar, ArrowRight } from 'lucide-react';
 
-export default function SelfCheckInPage() {
+function SelfCheckInPageInner() {
   const params = useSearchParams();
   const [phone, setPhone]       = useState('');
   const [searching, setSearching] = useState(false);
@@ -146,5 +146,13 @@ export default function SelfCheckInPage() {
         <p className="text-center text-xs text-slate-300">Powered by HospiBot · hospibot.in</p>
       </div>
     </div>
+  );
+}
+
+export default function SelfCheckInPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-[#0D7C66] border-t-transparent rounded-full" /></div>}>
+      <SelfCheckInPageInner />
+    </Suspense>
   );
 }

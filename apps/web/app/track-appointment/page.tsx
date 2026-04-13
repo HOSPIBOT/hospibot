@@ -3,6 +3,7 @@
 export const dynamic = 'force-dynamic';
 
 import { useEffect, useState } from 'react';
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { formatDate, formatTime } from '@/lib/utils';
@@ -16,7 +17,7 @@ const TIMELINE = [
   { status: 'COMPLETED',   label: 'Consultation Done',icon: CheckCircle2 },
 ];
 
-export default function TrackAppointmentPage() {
+function TrackAppointmentPageInner() {
   const params  = useSearchParams();
   const apptId  = params?.get('id');
   const phone   = params?.get('phone'); // For verification
@@ -200,5 +201,13 @@ export default function TrackAppointmentPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function TrackAppointmentPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-[#0D7C66] border-t-transparent rounded-full" /></div>}>
+      <TrackAppointmentPageInner />
+    </Suspense>
   );
 }

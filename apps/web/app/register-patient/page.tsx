@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
@@ -15,7 +15,7 @@ const inputCls = 'w-full px-4 py-3 text-sm rounded-2xl border border-slate-200 b
 
 const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Unknown'];
 
-export default function PatientSelfRegistrationPage() {
+function PatientSelfRegistrationPageInner() {
   const params = useSearchParams();
   const tenantSlug = params?.get('clinic') || '';
 
@@ -248,5 +248,13 @@ export default function PatientSelfRegistrationPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function PatientSelfRegistrationPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-[#0D7C66] border-t-transparent rounded-full" /></div>}>
+      <PatientSelfRegistrationPageInner />
+    </Suspense>
   );
 }
