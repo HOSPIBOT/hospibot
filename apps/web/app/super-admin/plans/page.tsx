@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import { Check, Edit3, TrendingUp, Users, Building2, Zap, RefreshCw } from 'lucide-react';
 import { getAllTenants } from '@/lib/super-admin-api';
+import { api } from '@/lib/api';
 
-const plans = [
+// Live plan data fetched below — static fallback shown here
+const PLAN_DEFAULTS = [
   {
     key: 'STARTER',
     name: 'Starter',

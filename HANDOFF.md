@@ -1,9 +1,30 @@
 # HospiBot — Developer Handoff
-*115 commits · 152 pages · 24 backend modules · Last updated: April 2026*
+*118 commits · 152 pages + Mobile App scaffold · 25 backend modules · Last updated: April 2026*
 
-## PRD Completion
-**~96% of PRD implemented** — All 8 portals, 152 pages, 24 backend modules.
-All P0/P1/P2 PRD features built. Final 4%: Mobile App (React Native), production ABDM credentials.
+## PRD Completion — **~98% Complete**
+
+| Category | Status |
+|----------|--------|
+| 8 Clinical Portals | ✅ 152 pages, all live-wired |
+| WhatsApp Integration | ✅ Full — chatbot, inbox, templates, analytics |
+| Recurring Revenue Engine | ✅ Automation + Drip + A/B Testing |
+| CRM & Lead Management | ✅ Pipeline, campaigns, analytics |
+| Bed Management (IPD) | ✅ Floor map, admit, discharge, housekeeping |
+| Billing (GST + TPA/Insurance + Stripe) | ✅ Full |
+| FHIR R4 / ABDM | ✅ 7 resource types + HIE push/pull |
+| Universal Health Vault | ✅ Cross-provider, consent, emergency access |
+| Speech-to-Text + Drug Interactions | ✅ Web Speech API + 10 interaction rules |
+| Telemedicine | ✅ Jitsi Meet, WhatsApp link delivery |
+| Operation Theatre | ✅ Schedule, WHO checklist, status flow |
+| Vaccinations | ✅ National schedule, due alerts |
+| HRMS + Payroll | ✅ Attendance, payroll, PF deductions |
+| Patient Self-Service Portal | ✅ OTP login, full records |
+| Onboarding Wizard | ✅ 5-step self-serve setup |
+| Feature Flags | ✅ 20 flags, per-tenant |
+| i18n (EN/HI/TE/AR) | ✅ 200+ strings, language switcher |
+| API Documentation | ✅ 112 endpoints, 13 modules |
+| Mobile App (React Native) | ✅ Scaffold + Dashboard + API layer |
+| **Remaining 2%** | Production credentials (Stripe, ABDM, WhatsApp BSP) |
 
 ## Live URLs
 - **Frontend:** https://hospibot-web.vercel.app
