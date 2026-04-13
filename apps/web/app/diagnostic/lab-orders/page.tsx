@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 import {
   FlaskConical, Plus, RefreshCw, Search, X, Loader2,
   ChevronLeft, ChevronRight, Clock, CheckCircle2, AlertTriangle,
-  Send, Upload, Eye, Filter, Printer,
+  Send, Upload, Eye, Filter, Printer, Download,
 } from 'lucide-react';
 
 const STATUS_PIPELINE = [
@@ -422,7 +422,37 @@ export default function LabOrdersPage() {
 
   useEffect(() => { load(1); }, [load]);
 
-  const handleStatusChange = async (id: string, newStatus: string) => {
+  const [exporting, setExporting] = useState(false);
+  const exportCSV = async () => {
+    setExporting(true);
+    try {
+      const params: any = { limit: 5000 };
+      if (statusFilter)   params.status   = statusFilter;
+      if (priorityFilter) params.priority = priorityFilter;
+      if (debSearch)      params.search   = debSearch;
+      if (dateFilter)     params.date     = dateFilter;
+      const res  = await api.get('/lab/orders', { params });
+      const all: any[] = res.data.data ?? orders;
+      const header = ['Order #', 'Patient', 'Phone', 'Tests', 'Priority', 'Status', 'Date', 'Report'];
+      const rows = all.map(o => [
+        o.id?.slice(0,8).toUpperCase() ?? '',
+        `${o.patient?.firstName ?? ''} ${o.patient?.lastName ?? ''}`.trim(),
+        o.patient?.phone ?? '',
+        (o.tests as any[])?.map((t: any) => t.testName).join('; ') ?? '',
+        o.priority ?? 'ROUTINE', o.status ?? '',
+        o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN') : '',
+        o.reportUrl ? 'Yes' : 'No',
+      ]);
+      const csv  = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url; a.download = `lab-orders-${new Date().toISOString().slice(0,10)}.csv`;
+      a.click(); URL.revokeObjectURL(url);
+      toast.success(`Exported ${all.length} orders`);
+    } catch { toast.error('Export failed'); }
+    finally { setExporting(false); }
+  };
     try {
       await api.patch(`/lab/orders/${id}/status`, { status: newStatus });
       toast.success(`Status updated to ${newStatus.replace('_', ' ')}`);
@@ -442,6 +472,10 @@ export default function LabOrdersPage() {
         <div className="flex items-center gap-2">
           <button onClick={() => load(meta.page)} className="p-2 border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50 transition-colors">
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+          <button onClick={exportCSV} disabled={exporting}
+            className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm font-medium px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50">
+            <Download className="w-4 h-4" /> {exporting ? 'Exporting…' : 'Export'}
           </button>
           <button onClick={() => setShowCreate(true)}
             className="flex items-center gap-2 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors shadow-sm"

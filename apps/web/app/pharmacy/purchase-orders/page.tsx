@@ -6,6 +6,7 @@ import { formatDate, formatINR } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import {
   TrendingUp, Plus, RefreshCw, Search, X, Loader2,
+  Download,
   CheckCircle2, Package, ChevronLeft, ChevronRight, Truck, Users,
   ClipboardCheck, AlertTriangle,
 } from 'lucide-react';
@@ -419,7 +420,32 @@ export default function PurchaseOrdersPage() {
 
   useEffect(() => { load(1); }, [load]);
 
-  return (
+  const [exporting, setExporting] = useState(false);
+  const exportCSV = async () => {
+    setExporting(true);
+    try {
+      const res  = await api.get('/pharmacy/purchase-orders', { params: { limit: 2000 } });
+      const all: any[] = res.data.data ?? orders;
+      const header = ['PO Number', 'Supplier', 'Items', 'Total Amount', 'Status', 'Expected', 'Created'];
+      const rows = all.map(po => [
+        po.orderNumber ?? po.id?.slice(0,8).toUpperCase() ?? '',
+        po.supplier?.name ?? '',
+        (po.items as any[])?.length ?? 0,
+        po.totalAmount ?? 0,
+        po.status ?? '',
+        po.expectedAt ? new Date(po.expectedAt).toLocaleDateString('en-IN') : '',
+        po.createdAt  ? new Date(po.createdAt).toLocaleDateString('en-IN') : '',
+      ]);
+      const csv  = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url; a.download = `purchase-orders-${new Date().toISOString().slice(0,10)}.csv`;
+      a.click(); URL.revokeObjectURL(url);
+      toast.success(`Exported ${all.length} POs`);
+    } catch { toast.error('Export failed'); }
+    finally { setExporting(false); }
+  };
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
@@ -427,6 +453,10 @@ export default function PurchaseOrdersPage() {
           <p className="text-sm text-slate-500 mt-0.5">Procurement from distributors and suppliers</p>
         </div>
         <div className="flex items-center gap-2">
+          <button onClick={exportCSV} disabled={exporting}
+            className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm font-medium px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50">
+            <Download className="w-4 h-4" /> {exporting ? 'Exporting…' : 'Export'}
+          </button>
           <button onClick={() => setAddSupplier(true)}
             className="flex items-center gap-2 border border-slate-200 text-slate-600 text-sm font-medium px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors">
             <Users className="w-4 h-4" /> Add Supplier
