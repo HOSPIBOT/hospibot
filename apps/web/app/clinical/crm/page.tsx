@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 import {
   Plus, RefreshCw, Search, X, Loader2, Phone, Mail,
   MessageSquare, Calendar, ArrowRight, User, BarChart3,
-  TrendingUp, Filter, ChevronDown,
+  TrendingUp, Filter, ChevronDown, Download,
 } from 'lucide-react';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -360,6 +360,34 @@ export default function CRMPage() {
 
   const byStage = (stageKey: string) => leads.filter(l => l.stage === stageKey);
 
+  const [exporting, setExporting] = useState(false);
+
+  const exportCSV = async () => {
+    setExporting(true);
+    try {
+      const res = await api.get('/crm/leads', { params: { limit: 5000 } });
+      const all: any[] = res.data.data ?? leads;
+      const header = ['Name', 'Phone', 'Email', 'Source', 'Stage', 'Notes', 'Created'];
+      const rows = all.map(l => [
+        l.name ?? '',
+        l.phone ?? '',
+        l.email ?? '',
+        l.source ?? '',
+        l.stage ?? '',
+        l.notes ?? '',
+        l.createdAt ? new Date(l.createdAt).toLocaleDateString('en-IN') : '',
+      ]);
+      const csv  = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url; a.download = `crm-leads-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click(); URL.revokeObjectURL(url);
+      toast.success(`Exported ${all.length} leads`);
+    } catch { toast.error('Export failed'); }
+    finally { setExporting(false); }
+  };
+
   return (
     <div className="space-y-5 h-full">
       {/* Header */}
@@ -373,6 +401,10 @@ export default function CRMPage() {
         <div className="flex items-center gap-2">
           <button onClick={load} className="p-2 border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50 transition-colors">
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+          <button onClick={exportCSV} disabled={exporting}
+            className="flex items-center gap-2 border border-slate-200 text-slate-600 text-sm font-medium px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50">
+            <Download className="w-4 h-4" /> {exporting ? 'Exporting…' : 'Export'}
           </button>
           <a href="/clinical/crm/campaigns">
             <button className="flex items-center gap-2 border border-slate-200 text-slate-600 text-sm font-medium px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors">

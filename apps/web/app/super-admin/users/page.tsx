@@ -123,10 +123,25 @@ export default function UsersPage() {
                   <td className="px-5 py-3.5 text-xs text-slate-500">
                     {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Never'}
                   </td>
-                  <td className="px-4 py-3.5">
-                    <button className="text-slate-400 hover:text-slate-700 opacity-0 group-hover:opacity-100 transition-all">
-                      <MoreHorizontal className="w-4 h-4" />
-                    </button>
+                  <td className="px-4 py-3.5 relative">
+                    <div className="relative group/menu">
+                      <button className="text-slate-400 hover:text-slate-700 opacity-0 group-hover:opacity-100 transition-all p-1 rounded-lg hover:bg-slate-100">
+                        <MoreHorizontal className="w-4 h-4" />
+                      </button>
+                      <div className="absolute right-0 top-8 hidden group-hover/menu:block bg-white border border-slate-200 rounded-xl shadow-xl z-20 py-1 min-w-[160px]">
+                        <a href={`/super-admin/tenants`}
+                          className="flex items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50 transition-colors">
+                          <Shield className="w-3.5 h-3.5 text-slate-400" />
+                          View Tenant
+                        </a>
+                        <button
+                          onClick={() => navigator.clipboard.writeText(u.email).then(() => {/* silent */})}
+                          className="flex items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50 transition-colors w-full text-left">
+                          <MoreHorizontal className="w-3.5 h-3.5 text-slate-400" />
+                          Copy Email
+                        </button>
+                      </div>
+                    </div>
                   </td>
                 </tr>
               ))}

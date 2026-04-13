@@ -13,13 +13,48 @@ import {
 } from 'recharts';
 import { getPlatformStats, getAllTenants, type PlatformStats, type Tenant } from '@/lib/super-admin-api';
 
-// ── MRR growth stub — computed once real billing data exists ──────────────────
-const REVENUE_STUB = [
-  { month: 'Oct', mrr: 124000 }, { month: 'Nov', mrr: 148000 },
-  { month: 'Dec', mrr: 162000 }, { month: 'Jan', mrr: 188000 },
-  { month: 'Feb', mrr: 204000 }, { month: 'Mar', mrr: 231000 },
-  { month: 'Apr', mrr: 258000 },
-];
+// ── MRR chart built from real recentOnboarding data ──────────────────────────
+function buildMrrChart(
+  recentOnboarding: { createdAt: string; plan: string }[],
+  planDistribution: { plan: string; count: number }[]
+) {
+  const MRR_PLAN: Record<string, number> = { STARTER: 500, GROWTH: 1200, ENTERPRISE: 4500 };
+  const currentMrr = planDistribution.reduce((s, p) => s + p.count * (MRR_PLAN[p.plan] || 0), 0);
+
+  // Build last-6-months buckets
+  const months: { month: string; mrr: number }[] = [];
+  const now = new Date();
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push({
+      month: d.toLocaleString('en-IN', { month: 'short' }),
+      mrr: 0,
+    });
+  }
+
+  // Count new tenants per month and accumulate MRR growth
+  const monthKeys = months.map((_, i) => {
+    const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  });
+
+  const newPerMonth: Record<string, number> = {};
+  recentOnboarding.forEach(t => {
+    const key = t.createdAt.slice(0, 7);
+    newPerMonth[key] = (newPerMonth[key] || 0) + (MRR_PLAN[t.plan] || 500);
+  });
+
+  // Build cumulative MRR ending at currentMrr
+  let running = currentMrr;
+  for (let i = monthKeys.length - 1; i >= 0; i--) {
+    months[i].mrr = Math.max(0, running);
+    running -= (newPerMonth[monthKeys[i]] || 0);
+  }
+  // Cap last point at currentMrr
+  if (months.length) months[months.length - 1].mrr = currentMrr;
+
+  return months;
+}
 
 const PIE_COLORS: Record<string, string> = {
   HOSPITAL: '#0D7C66', CLINIC: '#11A07A', DOCTOR: '#4DB896',
@@ -111,6 +146,10 @@ export default function SuperAdminDashboard() {
     (sum, p) => sum + p.count * (MRR_BY_PLAN[p.plan] || 0), 0
   ) ?? 0;
 
+  const mrrChartData = stats
+    ? buildMrrChart(stats.recentOnboarding ?? [], stats.planDistribution ?? [])
+    : [];
+
   const pieData = stats?.typeDistribution.map(t => ({
     name: TYPE_LABELS[t.type] || t.type,
     value: t.count,
@@ -172,7 +211,7 @@ export default function SuperAdminDashboard() {
             <span className="text-xs text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full font-medium">+11.7% MoM</span>
           </div>
           <ResponsiveContainer width="100%" height={220}>
-            <AreaChart data={REVENUE_STUB} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+            <AreaChart data={mrrChartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="mrrGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#0D7C66" stopOpacity={0.15} />
