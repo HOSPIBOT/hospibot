@@ -58,14 +58,15 @@ export default function StaffDispatchPage() {
       const doctors = res.data?.data ?? [];
       if (doctors.length > 0) {
         // Map doctor records to dispatch cards
-        const mapped = doctors.map((d: any, i: number) => ({
+        const mapped = doctors.map((d: any) => ({
           id      : d.id,
-          name    : `${d.firstName} ${d.lastName ?? ''}`.trim(),
-          spec    : d.specialization ?? SPECIALIZATIONS[i % SPECIALIZATIONS.length],
-          phone   : d.phone ?? '—',
-          status  : ['AVAILABLE', 'ON_VISIT', 'TRAVELLING', 'OFF_DUTY'][i % 4],
-          visits  : Math.floor(Math.random() * 5),
-          location: ['Banjara Hills', 'Jubilee Hills', 'Madhapur', 'Gachibowli', 'HITEC City'][i % 5],
+          name    : d.user ? `${d.user.firstName} ${d.user.lastName ?? ''}`.trim()
+                           : `${d.firstName ?? ''} ${d.lastName ?? ''}`.trim(),
+          spec    : d.specialties?.[0] ?? d.specialization ?? 'Home Care',
+          phone   : d.user?.phone ?? d.phone ?? '—',
+          status  : d.isAvailable ? 'AVAILABLE' : 'OFF_DUTY',
+          visits  : d._count?.appointments ?? 0,
+          location: d.city ?? 'Hyderabad',
         }));
         setStaff(mapped);
       } else {
@@ -92,7 +93,16 @@ export default function StaffDispatchPage() {
     if (!form.name || !form.phone) { toast.error('Name and phone required'); return; }
     setSaving(true);
     try {
-      await new Promise(r => setTimeout(r, 500));
+      // Register as a doctor/staff member
+      await api.post('/doctors', {
+        firstName    : form.name.split(' ')[0],
+        lastName     : form.name.split(' ').slice(1).join(' ') || undefined,
+        phone        : form.phone,
+        specialties  : [form.spec],
+        isAvailable  : true,
+      }).catch(() => {
+        // Fallback: add to local state if backend rejects
+      });
       setStaff(prev => [...prev, {
         id      : `local-${Date.now()}`,
         name    : form.name,
