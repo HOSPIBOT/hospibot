@@ -23,6 +23,18 @@ export class TenantController {
     return this.tenantService.getBranches(tenantId);
   }
 
+  @Post('current/branches')
+  @ApiOperation({ summary: 'Create a new branch' })
+  createBranch(@CurrentTenant() tenantId: string, @Body() dto: any) {
+    return this.tenantService.createBranch(tenantId, dto);
+  }
+
+  @Patch('current/branches/:id')
+  @ApiOperation({ summary: 'Update a branch' })
+  updateBranch(@CurrentTenant() tenantId: string, @Param('id') id: string, @Body() dto: any) {
+    return this.tenantService.updateBranch(tenantId, id, dto);
+  }
+
   @Patch('current/settings')
   @ApiOperation({ summary: 'Update tenant settings (WhatsApp config, notifications, etc.)' })
   updateSettings(@CurrentTenant() tenantId: string, @Body() dto: any) {

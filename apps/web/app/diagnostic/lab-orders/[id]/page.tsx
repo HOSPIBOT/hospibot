@@ -51,6 +51,7 @@ export default function LabOrderDetailPage() {
     setSaving(true);
     try {
       await api.patch(`/lab/orders/${id}`, { reportUrl, remarks });
+      await api.post(`/lab/orders/${id}/status`, { status: 'COMPLETED' }).catch(() => {});
       toast.success('Report saved and sent to patient via WhatsApp!');
       setOrder((o: any) => ({ ...o, reportUrl, reportDelivered: true }));
     } catch (err: any) { toast.error(err?.response?.data?.message || 'Failed'); }

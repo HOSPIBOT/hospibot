@@ -105,6 +105,23 @@ export class LabController {
     return this.labService.uploadReport(tenantId, id, body.reportUrl, body.reportData);
   }
 
+
+  @Patch('orders/:id')
+  @ApiOperation({ summary: 'Update lab order fields (reportUrl, remarks, etc.)' })
+  updateOrder(
+    @CurrentTenant() tenantId: string,
+    @Param('id') id: string,
+    @Body() body: { reportUrl?: string; remarks?: string; notes?: string },
+  ) {
+    return this.labService.updateOrder(tenantId, id, body);
+  }
+
+  @Post('orders/:id/deliver')
+  @ApiOperation({ summary: 'Deliver existing report via WhatsApp' })
+  deliverReport(@CurrentTenant() tenantId: string, @Param('id') id: string) {
+    return this.labService.deliverReport(tenantId, id);
+  }
+
   // ── Home Collection ───────────────────────────────────────────────────────
 
   @Post('collection')

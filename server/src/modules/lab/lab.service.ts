@@ -419,3 +419,40 @@ export class LabService {
     return this.prisma.homeCollection.update({ where: { id }, data: updateData });
   }
 }
+
+  // ── Update order fields ────────────────────────────────────────────────────
+
+  async updateOrder(tenantId: string, id: string, dto: { reportUrl?: string; remarks?: string; notes?: string }) {
+    const order = await this.prisma.labOrder.findFirst({ where: { id, tenantId } });
+    if (!order) throw new NotFoundException('Lab order not found');
+
+    const updated = await this.prisma.labOrder.update({
+      where: { id },
+      data: {
+        ...(dto.reportUrl ? { reportUrl: dto.reportUrl } : {}),
+        ...(dto.remarks   ? { remarks: dto.remarks }     : {}),
+        ...(dto.notes     ? { notes: dto.notes }         : {}),
+      },
+    });
+
+    // If report URL provided, also deliver via WhatsApp and mark delivered
+    if (dto.reportUrl) {
+      await this.uploadReport(tenantId, id, dto.reportUrl).catch(() => {});
+    }
+
+    return updated;
+  }
+
+  // ── Re-deliver existing report ─────────────────────────────────────────────
+
+  async deliverReport(tenantId: string, id: string) {
+    const order = await this.prisma.labOrder.findFirst({
+      where: { id, tenantId },
+      include: { patient: { select: { firstName: true, phone: true } } },
+    });
+    if (!order) throw new NotFoundException('Lab order not found');
+    if (!order.reportUrl) throw new BadRequestException('No report URL uploaded yet');
+
+    await this.uploadReport(tenantId, id, order.reportUrl).catch(() => {});
+    return { delivered: true, to: order.patient?.phone };
+  }

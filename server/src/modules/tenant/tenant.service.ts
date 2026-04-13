@@ -15,6 +15,30 @@ export class TenantService {
     return this.prisma.tenant.findUnique({ where: { slug } });
   }
 
+
+  async createBranch(tenantId: string, dto: any) {
+    return this.prisma.branch.create({
+      data: {
+        tenantId,
+        name:     dto.name,
+        address:  dto.address,
+        city:     dto.city,
+        state:    dto.state,
+        pincode:  dto.pincode,
+        phone:    dto.phone,
+        email:    dto.email,
+        isActive: true,
+        isMain:   dto.isMain || false,
+      },
+    });
+  }
+
+  async updateBranch(tenantId: string, branchId: string, dto: any) {
+    const branch = await this.prisma.branch.findFirst({ where: { id: branchId, tenantId } });
+    if (!branch) throw new Error('Branch not found');
+    return this.prisma.branch.update({ where: { id: branchId }, data: dto });
+  }
+
   async updateSettings(tenantId: string, settings: any) {
     return this.prisma.tenant.update({
       where: { id: tenantId },
@@ -29,6 +53,30 @@ export class TenantService {
     });
   }
 }
+
+
+  async createBranch(tenantId: string, dto: any) {
+    return this.prisma.branch.create({
+      data: {
+        tenantId,
+        name:     dto.name,
+        address:  dto.address,
+        city:     dto.city,
+        state:    dto.state,
+        pincode:  dto.pincode,
+        phone:    dto.phone,
+        email:    dto.email,
+        isActive: true,
+        isMain:   dto.isMain || false,
+      },
+    });
+  }
+
+  async updateBranch(tenantId: string, branchId: string, dto: any) {
+    const branch = await this.prisma.branch.findFirst({ where: { id: branchId, tenantId } });
+    if (!branch) throw new Error('Branch not found');
+    return this.prisma.branch.update({ where: { id: branchId }, data: dto });
+  }
 
   async updateSettings(tenantId: string, dto: any): Promise<any> {
     // Deep-merge settings — preserve existing keys, overwrite provided ones
