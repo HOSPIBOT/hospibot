@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
-import { Activity, RefreshCw, Shield, AlertTriangle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Activity, RefreshCw, Shield, AlertTriangle, ChevronLeft, ChevronRight, Download } from 'lucide-react';
 
 const ACTION_COLORS: Record<string, string> = {
   CREATE:'bg-emerald-100 text-emerald-700', READ:'bg-blue-100 text-blue-700',
@@ -33,6 +33,39 @@ export default function SuperAdminAuditPage() {
 
   useEffect(() => { load(1); }, [load]);
 
+  const [exporting, setExporting] = useState(false);
+
+  const exportCSV = async () => {
+    setExporting(true);
+    try {
+      const params: any = { limit: 5000 };
+      if (filters.action) params.action = filters.action;
+      if (filters.entity) params.entity = filters.entity;
+      const res = await api.get('/security/audit-logs', { params });
+      const all: any[] = res.data.data ?? logs;
+      const header = ['Timestamp', 'Tenant ID', 'User', 'Action', 'Entity', 'IP Address', 'Details'];
+      const rows = all.map(l => [
+        new Date(l.createdAt).toLocaleString('en-IN'),
+        l.tenantId ?? '',
+        l.user ? `${l.user.firstName} ${l.user.lastName || ''}` : '—',
+        l.action ?? '',
+        l.entity ?? '',
+        l.ipAddress ?? '',
+        l.details ? JSON.stringify(l.details).slice(0, 200) : '',
+      ]);
+      const csv  = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
+      a.download = `audit-log-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success(`Exported ${all.length} audit events`);
+    } catch { toast.error('Export failed'); }
+    finally { setExporting(false); }
+  };
+
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
@@ -42,9 +75,17 @@ export default function SuperAdminAuditPage() {
           </h1>
           <p className="text-sm text-slate-500 mt-0.5">{meta.total.toLocaleString('en-IN')} total events logged</p>
         </div>
-        <button onClick={() => load(meta.page)} className="p-2 border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50 transition-colors">
-          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={exportCSV}
+            disabled={exporting}
+            className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50">
+            <Download className="w-4 h-4" /> {exporting ? 'Exporting…' : 'Export CSV'}
+          </button>
+          <button onClick={() => load(meta.page)} className="p-2 border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50 transition-colors">
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+        </div>
       </div>
 
       {/* Filters */}

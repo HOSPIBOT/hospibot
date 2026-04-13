@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 import {
   Search, Plus, Download, MoreHorizontal,
   ChevronLeft, ChevronRight, RefreshCw,
@@ -70,6 +71,41 @@ export default function TenantsPage() {
     finally { setLoading(false); }
   }, [page, debouncedSearch, statusFilter, planFilter]);
 
+  const [exporting, setExporting] = useState(false);
+
+  const exportCSV = async () => {
+    setExporting(true);
+    try {
+      const res = await getAllTenants({
+        page: 1, limit: 5000,
+        search: debouncedSearch || undefined,
+        status: statusFilter,
+        plan: planFilter,
+      });
+      const all: Tenant[] = res.data;
+      const header = ['Name', 'Type', 'Plan', 'Status', 'City', 'State', 'Users', 'Patients', 'WhatsApp', 'Created'];
+      const MRR: Record<string, number> = { STARTER: 500, GROWTH: 1200, ENTERPRISE: 4500 };
+      const rows = all.map(t => [
+        t.name, t.type?.replace(/_/g, ' ') ?? '',
+        t.plan, t.status,
+        t.city ?? '', t.state ?? '',
+        t._count?.users ?? 0, t._count?.patients ?? 0,
+        t.waPhoneNumberId ? 'Yes' : 'No',
+        new Date(t.createdAt ?? '').toLocaleDateString('en-IN'),
+      ]);
+      const csv  = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
+      a.download = `tenants-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success(`Exported ${all.length} tenants`);
+    } catch { toast.error('Export failed'); }
+    finally { setExporting(false); }
+  };
+
   useEffect(() => { setPage(1); }, [debouncedSearch, statusFilter, planFilter]);
   useEffect(() => { load(); }, [load]);
 
@@ -118,8 +154,9 @@ export default function TenantsPage() {
             className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-600 hover:bg-slate-100 transition-colors disabled:opacity-50">
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
-          <button className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-600 hover:bg-slate-100 transition-colors">
-            <Download className="w-4 h-4" /> Export
+          <button onClick={exportCSV} disabled={exporting}
+            className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-600 hover:bg-slate-100 transition-colors disabled:opacity-50">
+            <Download className="w-4 h-4" /> {exporting ? 'Exporting…' : 'Export'}
           </button>
         </div>
       </div>
