@@ -320,3 +320,104 @@ export class SchedulerService implements OnModuleInit, OnModuleDestroy {
     return template.replace(/\{\{(\w+)\}\}/g, (_, key) => vars[key] || `[${key}]`);
   }
 }
+
+  // ── Daily Appointment Reminder Job ──────────────────────────────────────────
+  // Runs every day at 8:00 AM IST — sends WhatsApp reminders for next-day appointments
+
+  @Cron('0 0 2 * * *', { timeZone: 'Asia/Kolkata' }) // 2:30 AM UTC = 8:00 AM IST
+  async sendAppointmentReminders() {
+    this.logger.log('Running daily appointment reminder job...');
+
+    // Get all active tenants
+    const tenants = await this.prisma.tenant.findMany({
+      where: { status: 'ACTIVE', deletedAt: null },
+      select: { id: true, name: true },
+    });
+
+    for (const tenant of tenants) {
+      try {
+        await this.sendRemindersForTenant(tenant.id, tenant.name);
+      } catch (err) {
+        this.logger.error(`Reminder job failed for tenant ${tenant.id}: ${err}`);
+      }
+    }
+  }
+
+  private async sendRemindersForTenant(tenantId: string, tenantName: string) {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+    const tomorrowEnd = new Date(tomorrow);
+    tomorrowEnd.setHours(23, 59, 59, 999);
+
+    const appointments = await this.prisma.appointment.findMany({
+      where: {
+        tenantId,
+        scheduledAt: { gte: tomorrow, lte: tomorrowEnd },
+        status: { in: ['CONFIRMED', 'PENDING'] },
+      },
+      include: {
+        patient: { select: { firstName: true, phone: true } },
+        doctor: { include: { user: { select: { firstName: true, lastName: true } } } },
+      },
+    });
+
+    let sent = 0;
+    for (const apt of appointments) {
+      if (!apt.patient?.phone) continue;
+
+      const time = new Date(apt.scheduledAt).toLocaleTimeString('en-IN', {
+        hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata',
+      });
+      const doctorName = apt.doctor
+        ? `Dr. ${apt.doctor.user.firstName} ${apt.doctor.user.lastName || ''}`.trim()
+        : 'your doctor';
+
+      const message = `🏥 *Appointment Reminder*\n\nHi ${apt.patient.firstName},\n\nThis is a reminder for your appointment *tomorrow*.\n\n👨‍⚕️ Doctor: ${doctorName}\n⏰ Time: ${time}\n🏥 ${tenantName}\n\nPlease arrive 10 minutes early with any previous reports.\n\nReply *CONFIRM* to confirm or *CANCEL* to cancel.\n\n_Reply HELP for assistance_`;
+
+      try {
+        await this.whatsappService.sendTextMessage(tenantId, apt.patient.phone, message);
+        sent++;
+      } catch { /* non-blocking */ }
+    }
+
+    if (sent > 0) this.logger.log(`Sent ${sent} appointment reminders for tenant ${tenantId}`);
+    return sent;
+  }
+
+  // ── Refill reminder job ─────────────────────────────────────────────────────
+  // Runs every morning — sends prescription refill reminders
+
+  @Cron('0 30 2 * * *', { timeZone: 'Asia/Kolkata' }) // 8:00 AM IST
+  async sendRefillReminders() {
+    const fiveDaysFromNow = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000);
+    const fiveDaysStart   = new Date(fiveDaysFromNow);
+    fiveDaysStart.setHours(0, 0, 0, 0);
+    const fiveDaysEnd = new Date(fiveDaysFromNow);
+    fiveDaysEnd.setHours(23, 59, 59, 999);
+
+    const prescriptions = await this.prisma.prescription.findMany({
+      where: {
+        isActive: true,
+        refillDueDate: { gte: fiveDaysStart, lte: fiveDaysEnd },
+      },
+      include: {
+        patient: { select: { firstName: true, phone: true } },
+        doctor: { include: { user: { select: { firstName: true, lastName: true } } } },
+      },
+    });
+
+    for (const rx of prescriptions) {
+      if (!rx.patient?.phone) continue;
+      const meds = (rx.medications as any[]).slice(0, 3).map((m: any) => m.name).join(', ');
+      const doctorName = rx.doctor
+        ? `Dr. ${rx.doctor.user.firstName} ${rx.doctor.user.lastName || ''}`.trim()
+        : 'your doctor';
+
+      const msg = `💊 *Prescription Refill Reminder*\n\nHi ${rx.patient.firstName},\n\nYour prescription from ${doctorName} is due for a refill in 5 days.\n\nMedicines: ${meds}\n\nPlease visit us or call to request a refill.\n\n_This is an automated reminder from HospiBot_`;
+
+      await this.whatsappService.sendTextMessage(rx.tenantId, rx.patient.phone, msg).catch(() => {});
+    }
+
+    this.logger.log(`Sent ${prescriptions.length} refill reminders`);
+  }

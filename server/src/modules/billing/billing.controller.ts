@@ -179,3 +179,26 @@ export class BillingController {
     }
     return { linked: true, abhaNumber: body.abhaNumber };
   }
+
+  @Get('export/tally')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Export invoices as Tally XML (Tally ERP 9 / Tally Prime compatible)' })
+  async exportTally(
+    @CurrentTenant() tenantId: string,
+    @Query('from') from: string,
+    @Query('to') to: string,
+    @Res() res: Response,
+  ) {
+    const fromDate = from ? new Date(from) : new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    const toDate   = to ? new Date(to) : new Date();
+    toDate.setHours(23, 59, 59, 999);
+
+    const xml = await this.billingService.exportToTally(tenantId, fromDate, toDate);
+
+    (res as any).set({
+      'Content-Type': 'application/xml',
+      'Content-Disposition': `attachment; filename="tally-export-${fromDate.toISOString().split('T')[0]}-to-${toDate.toISOString().split('T')[0]}.xml"`,
+    });
+    (res as any).send(xml);
+  }

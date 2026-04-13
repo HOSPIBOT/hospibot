@@ -9,7 +9,7 @@ import {
   CheckCircle2, AlertTriangle, Eye, EyeOff, RefreshCw, Plus, Trash2,
 } from 'lucide-react';
 
-type Tab = 'general' | 'whatsapp' | 'departments' | 'notifications';
+type Tab = 'general' | 'whatsapp' | 'departments' | 'notifications' | 'integrations';
 
 const inputCls = 'w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#0D7C66] focus:ring-2 focus:ring-[#0D7C66]/10 outline-none transition-all placeholder:text-slate-400';
 
@@ -161,7 +161,8 @@ export default function SettingsPage() {
     { key: 'general' as Tab,       label: 'General',       icon: Settings },
     { key: 'whatsapp' as Tab,      label: 'WhatsApp',      icon: MessageSquare },
     { key: 'departments' as Tab,   label: 'Departments',   icon: Building2 },
-    { key: 'notifications' as Tab, label: 'Notifications', icon: Bell },
+    { key: 'notifications' as Tab,  label: 'Notifications', icon: Bell },
+    { key: 'integrations' as Tab,   label: 'Integrations',  icon: Zap },
   ];
 
   return (
@@ -413,6 +414,103 @@ export default function SettingsPage() {
                     ))}
                   </div>
                 )}
+              </div>
+            </div>
+          )}
+
+          {/* Integrations */}
+          {tab === 'integrations' && (
+            <div className="space-y-4">
+              {/* Razorpay */}
+              <div className="bg-white rounded-2xl border border-slate-100 p-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
+                      <span className="text-blue-700 font-bold text-sm">₹</span>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-slate-900">Razorpay Payments</h3>
+                      <p className="text-xs text-slate-400">Accept online payments via UPI, cards, net banking</p>
+                    </div>
+                  </div>
+                  <a href="https://dashboard.razorpay.com/app/keys" target="_blank" rel="noreferrer"
+                    className="flex items-center gap-1 text-xs text-[#0D7C66] hover:underline">
+                    Get API Keys <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+                <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-xs text-amber-700">
+                  Configure these in your Railway/Vercel environment variables — they should never be stored in the database.
+                </div>
+                <div className="grid grid-cols-1 gap-3">
+                  {[
+                    { key: 'RAZORPAY_KEY_ID',         label: 'Key ID',        placeholder: 'rzp_live_...' },
+                    { key: 'RAZORPAY_KEY_SECRET',      label: 'Key Secret',    placeholder: 'Set in backend env vars' },
+                    { key: 'RAZORPAY_WEBHOOK_SECRET',  label: 'Webhook Secret', placeholder: 'Set in backend env vars' },
+                  ].map(f => (
+                    <div key={f.key}>
+                      <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">{f.label}</label>
+                      <div className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-mono text-slate-500">{f.placeholder}</div>
+                    </div>
+                  ))}
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">Webhook URL</label>
+                    <code className="block bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-mono text-[#0D7C66] break-all">
+                      {typeof window !== 'undefined' ? window.location.origin.replace('hospibot-web.vercel.app', 'hospibot-api.railway.app') : 'https://your-api.railway.app'}/api/v1/billing/webhook/razorpay
+                    </code>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tally */}
+              <div className="bg-white rounded-2xl border border-slate-100 p-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
+                      <span className="text-amber-700 font-bold text-sm">T</span>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-slate-900">Tally Integration</h3>
+                      <p className="text-xs text-slate-400">Export invoices to Tally ERP 9 / Tally Prime</p>
+                    </div>
+                  </div>
+                  <a href="/clinical/billing"
+                    className="flex items-center gap-1 text-xs text-[#0D7C66] hover:underline">
+                    Go to Billing <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+                <div className="bg-[#E8F5F0] border border-[#0D7C66]/20 rounded-xl px-4 py-3 text-xs text-[#0A5E4F]">
+                  From the Billing page, click <strong>Tally Export</strong> to download the current month's invoices as Tally XML.
+                  Import the file in Tally via Gateway → Import Data → Import of Data.
+                </div>
+              </div>
+
+              {/* ABHA */}
+              <div className="bg-white rounded-2xl border border-slate-100 p-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-[#E8F5F0] flex items-center justify-center">
+                      <Shield className="w-5 h-5 text-[#0D7C66]" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-slate-900">ABHA (Ayushman Bharat)</h3>
+                      <p className="text-xs text-slate-400">India's national health ID — ABDM integration</p>
+                    </div>
+                  </div>
+                  <a href="/clinical/abha" className="flex items-center gap-1 text-xs text-[#0D7C66] hover:underline">
+                    Link Patients <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+                <div className="grid grid-cols-1 gap-3">
+                  {[
+                    { key: 'ABHA_CLIENT_ID',     label: 'Client ID',     placeholder: 'Set in backend env vars' },
+                    { key: 'ABHA_CLIENT_SECRET',  label: 'Client Secret', placeholder: 'Set in backend env vars' },
+                  ].map(f => (
+                    <div key={f.key}>
+                      <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">{f.label}</label>
+                      <div className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-mono text-slate-500">{f.placeholder}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}
