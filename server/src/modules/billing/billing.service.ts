@@ -542,3 +542,92 @@ ${voucherXml}
   </BODY>
 </ENVELOPE>`;
   }
+
+  // ── Insurance / TPA Billing ────────────────────────────────────────────────
+
+  async submitPreAuth(tenantId: string, invoiceId: string, body: {
+    tpaName: string; preAuthAmount: number; notes?: string;
+  }) {
+    const inv = await this.prisma.invoice.findFirst({ where: { id: invoiceId, tenantId } });
+    if (!inv) throw new Error('Invoice not found');
+    return this.prisma.invoice.update({
+      where: { id: invoiceId },
+      data: {
+        tpaName: body.tpaName,
+        preAuthAmount: body.preAuthAmount,
+        preAuthStatus: 'PENDING',
+        isTpaBill: true,
+        notes: body.notes || (inv.notes ?? undefined),
+      } as any,
+    });
+  }
+
+  async updatePreAuthStatus(tenantId: string, invoiceId: string, body: {
+    status: string; preAuthNumber?: string; approvedAmount?: number;
+  }) {
+    return this.prisma.invoice.update({
+      where: { id: invoiceId },
+      data: {
+        preAuthStatus: body.status,
+        preAuthNumber: body.preAuthNumber,
+        preAuthAmount: body.approvedAmount,
+      } as any,
+    });
+  }
+
+  async submitClaim(tenantId: string, invoiceId: string, body: {
+    claimAmount: number; documents?: string[];
+  }) {
+    return this.prisma.invoice.update({
+      where: { id: invoiceId },
+      data: {
+        claimAmount: body.claimAmount,
+        claimStatus: 'SUBMITTED',
+        claimSubmittedAt: new Date(),
+        claimNumber: `CLM-${Date.now().toString(36).toUpperCase()}`,
+      } as any,
+    });
+  }
+
+  async updateClaimStatus(tenantId: string, invoiceId: string, body: {
+    status: string; settledAmount?: number;
+  }) {
+    const data: any = { claimStatus: body.status };
+    if (body.settledAmount !== undefined) {
+      data.settledAmount = body.settledAmount;
+      data.claimSettledAt = new Date();
+      // Reduce due amount by settled amount
+      const inv = await this.prisma.invoice.findUnique({ where: { id: invoiceId } });
+      if (inv) {
+        const newPaid = (inv.paidAmount ?? 0) + body.settledAmount;
+        data.paidAmount = newPaid;
+        data.dueAmount  = Math.max(0, inv.totalAmount - newPaid);
+        if (data.dueAmount === 0) data.status = 'PAID';
+      }
+    }
+    return this.prisma.invoice.update({ where: { id: invoiceId }, data });
+  }
+
+  async getAllClaims(tenantId: string, filters: {
+    status?: string; tpa?: string; page?: number; limit?: number;
+  }) {
+    const { status, tpa, page = 1, limit = 20 } = filters;
+    const where: any = { tenantId, isTpaBill: true };
+    if (status) where.claimStatus = status;
+    if (tpa)    where.tpaName = { contains: tpa, mode: 'insensitive' };
+
+    const [data, total] = await Promise.all([
+      this.prisma.invoice.findMany({
+        where,
+        skip: (page - 1) * limit,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          patient: { select: { firstName: true, lastName: true, phone: true, insuranceProvider: true, insurancePolicyNo: true } },
+        },
+      }),
+      this.prisma.invoice.count({ where }),
+    ]);
+
+    return { data, meta: { page, limit, total, totalPages: Math.ceil(total / limit) } };
+  }

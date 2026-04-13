@@ -202,3 +202,66 @@ export class BillingController {
     });
     (res as any).send(xml);
   }
+
+  // ── Insurance / TPA Billing ────────────────────────────────────────────────
+
+  @Post('invoices/:id/tpa/pre-auth')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async submitPreAuth(
+    @CurrentTenant() tenantId: string,
+    @Param('id') id: string,
+    @Body() body: { tpaName: string; preAuthAmount: number; notes?: string },
+  ) {
+    return this.billingService.submitPreAuth(tenantId, id, body);
+  }
+
+  @Patch('invoices/:id/tpa/pre-auth/status')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async updatePreAuthStatus(
+    @CurrentTenant() tenantId: string,
+    @Param('id') id: string,
+    @Body() body: { status: string; preAuthNumber?: string; approvedAmount?: number },
+  ) {
+    return this.billingService.updatePreAuthStatus(tenantId, id, body);
+  }
+
+  @Post('invoices/:id/tpa/claim')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async submitClaim(
+    @CurrentTenant() tenantId: string,
+    @Param('id') id: string,
+    @Body() body: { claimAmount: number; documents?: string[] },
+  ) {
+    return this.billingService.submitClaim(tenantId, id, body);
+  }
+
+  @Patch('invoices/:id/tpa/claim/status')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async updateClaimStatus(
+    @CurrentTenant() tenantId: string,
+    @Param('id') id: string,
+    @Body() body: { status: string; settledAmount?: number },
+  ) {
+    return this.billingService.updateClaimStatus(tenantId, id, body);
+  }
+
+  @Get('tpa/claims')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async getAllClaims(
+    @CurrentTenant() tenantId: string,
+    @Query('status') status?: string,
+    @Query('tpa') tpa?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.billingService.getAllClaims(tenantId, {
+      status, tpa,
+      page: page ? +page : 1,
+      limit: limit ? +limit : 20,
+    });
+  }

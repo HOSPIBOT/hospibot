@@ -26,6 +26,7 @@ import { SecurityModule } from './modules/security/security.module';
 import { PrescriptionModule } from './modules/prescription/prescription.module';
 import { VisitModule } from './modules/visit/visit.module';
 import { BedModule } from './modules/bed/bed.module';
+import { FhirModule } from './modules/fhir/fhir.module';
 
 @Module({
   imports: [
@@ -68,6 +69,7 @@ import { BedModule } from './modules/bed/bed.module';
     PrescriptionModule,
     VisitModule,
     BedModule,
+    FhirModule,
   ],
   controllers: [HealthController],
 })
