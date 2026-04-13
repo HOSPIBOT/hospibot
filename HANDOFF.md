@@ -1,140 +1,209 @@
-# HospiBot — Complete Handoff Document
+# HospiBot — Developer Handoff Document
+*Last updated: April 2026 · Auto-generated*
 
-## Live URLs
-- **Frontend:** https://hospibot-web.vercel.app  
-- **GitHub:** https://github.com/HOSPIBOT/hospibot  
-- **Token:** [REDACTED — set in .env or CI/CD secrets]
+## Project Overview
 
-## Tech Stack
-| Layer | Technology |
-|---|---|
-| Frontend | Next.js 14, Tailwind CSS, Recharts, Zustand |
-| Backend | NestJS, Prisma ORM |
-| Database | Supabase PostgreSQL |
-| Hosting | Vercel (frontend), Railway (backend) |
-| Auth | JWT (short-lived) + refresh tokens |
+WhatsApp-first Healthcare Operating System. Multi-tenant SaaS supporting Hospitals, Clinics,
+Diagnostic Centres, Pharmacies, Home Healthcare, Equipment Vendors, and Wellness centres.
+
+**Stack:** Next.js 14 + Tailwind CSS (Vercel) · NestJS + Prisma + PostgreSQL (Railway)  
+**GitHub:** HOSPIBOT/hospibot  
+**Live:** hospibot-web.vercel.app  
+**Stats:** 50 commits · 116 pages · 22 backend service modules
+
+---
+
+## Repository Structure
+
+```
+hospibot/
+├── apps/web/              # Next.js 14 frontend (Vercel)
+│   ├── app/               # App Router pages
+│   │   ├── clinical/      # Core clinical portal (20+ pages)
+│   │   ├── diagnostic/    # Lab/diagnostic portal (8 pages)
+│   │   ├── pharmacy/      # Pharmacy portal (7 pages)
+│   │   ├── homecare/      # Home healthcare portal (9 pages)
+│   │   ├── equipment/     # Equipment vendor portal (6 pages)
+│   │   ├── wellness/      # Wellness centre portal (7 pages)
+│   │   ├── services/      # B2B services portal (7 pages)
+│   │   ├── marketplace/   # Public product catalog
+│   │   ├── super-admin/   # Platform admin (15 pages)
+│   │   ├── book/          # Public appointment booking
+│   │   └── register-patient/ # Public patient self-registration
+│   ├── components/
+│   │   ├── portal/PortalLayout.tsx  # Main nav + notification bell
+│   │   └── ui/            # ConfirmDialog, DictationButton, etc.
+│   └── lib/
+│       ├── api.ts          # Axios instance with auth interceptors
+│       ├── utils.ts        # formatINR, formatDate, formatTime
+│       ├── store.ts        # Zustand auth store
+│       └── super-admin-api.ts  # Super admin typed API functions
+└── server/                # NestJS backend (Railway)
+    └── src/modules/       # 22 modules (see below)
+```
+
+---
+
+## Clinical Portal Pages (/clinical/*)
+
+| Page | Description |
+|------|-------------|
+| dashboard | Live KPIs, revenue trend, queue preview, quick actions |
+| appointments | Full CRUD, filters, reschedule modal, CSV export |
+| appointments/queue | Live Kanban board, kiosk mode, token print |
+| patients | Search, add, import CSV, paginated list |
+| patients/[id] | Patient 360: 6 tabs, WhatsApp messaging, Print Summary |
+| patients/[id]/summary | A4 printable health summary |
+| patients/import | Drag-drop CSV import with validation |
+| doctors | List, availability toggle, Profile → link |
+| doctors/[id] | 3-tab: profile edit, weekly schedule, stats |
+| billing | Invoices, create, pay link, Record Payment modal |
+| billing/[id] | Invoice PDF print, Razorpay embedded checkout |
+| prescriptions | Write, send via WhatsApp, list with search |
+| prescriptions/[id] | A5 printable prescription with Rx symbol |
+| visits | Paginated visit history (completed consultations) |
+| visits/[appointmentId] | OPD Console: vitals, voice dictation, Rx, billing |
+| whatsapp | Inbox: conversations, reply, send media |
+| whatsapp-templates | Template manager with live WA preview |
+| whatsapp-broadcast | Segment targeting, audience estimate, campaign history |
+| chatbot | Bot name, 8 intent toggles, greeting/fallback messages |
+| crm | Kanban leads board + list view |
+| crm/campaigns | Campaign builder with segment analytics |
+| analytics | Revenue, appointments, doctors, demographics charts |
+| automation | Rules engine: triggers, conditions, actions |
+| security | User management, permissions, audit |
+| abha | ABHA health ID linking with OTP flow |
+| vault | Health Vault document storage |
+| lab | Clinical lab order creation with test catalog |
+| branches | Multi-branch CRUD + activate/deactivate |
+| departments | Department management (Clinical/Ancillary/Admin) |
+| registration-qr | A4 printable QR poster for patient self-reg |
+| queue-token | 80mm thermal token print |
+| settings | General, WhatsApp config, Departments, Notifications |
+
+---
+
+## Backend Modules (server/src/modules/)
+
+```
+auth           appointment     patient        doctor
+billing        whatsapp        analytics      crm
+automation     lab             pharmacy       marketplace
+portal         super-admin     chatbot        scheduler
+vault          notification    prescription   visit
+security       tenant
+```
+
+---
+
+## Key API Endpoints Reference
+
+```
+Auth:          POST /auth/login · POST /auth/register
+Tenant:        GET/PATCH /tenants/current · GET /tenants/current/branches
+               POST /tenants/current/branches · PATCH /tenants/current/branches/:id
+Appointments:  GET /appointments · POST /appointments · PUT /appointments/:id/status
+               POST /appointments/:id/reschedule · GET /appointments/queue
+               GET /appointments/today/stats
+Patients:      GET /patients · POST /patients · PUT|PATCH /patients/:id
+Doctors:       GET /doctors · POST /doctors · PUT|PATCH /doctors/:id
+               GET /doctors/:id/slots · GET/POST/DELETE /doctors/departments
+Billing:       GET /billing/invoices · POST /billing/invoices
+               POST /billing/invoices/:id/payments (record payment)
+               POST /billing/invoices/:id/payment-link (Razorpay)
+               POST /billing/invoices/:id/checkout-order
+               POST /billing/webhook/razorpay
+Lab:           GET /lab/orders · POST /lab/orders · GET /lab/orders/:id
+               PATCH /lab/orders/:id/status · POST /lab/orders/:id/deliver
+               PATCH /lab/orders/:id · GET/POST /lab/catalog
+               GET/POST/PATCH /lab/collection
+WhatsApp:      GET /whatsapp/conversations · POST /whatsapp/send
+               GET/POST /whatsapp/templates · POST /whatsapp/templates/seed-defaults
+CRM:           GET/POST /crm/leads · GET/POST /crm/campaigns
+               POST /crm/campaigns/estimate
+Analytics:     GET /analytics/dashboard · GET /analytics/revenue/trend
+               GET /analytics/appointments · GET /analytics/notifications
+               GET /analytics/doctors/top · GET /analytics/patients/demographics
+               GET /analytics/whatsapp
+Pharmacy:      GET /pharmacy/dashboard · GET /pharmacy/products
+               GET /pharmacy/orders · GET /pharmacy/inventory · GET /pharmacy/alerts
+ABHA:          POST /billing/abha/generate-otp · POST /billing/abha/verify-otp
+               POST /billing/abha/link-profile
+Prescriptions: GET/POST /prescriptions · POST /prescriptions/:id/send
+Vault:         GET /vault/stats · POST /vault/request-access
+Security:      GET /security/users · GET /security/audit-logs
+```
+
+---
 
 ## Environment Variables
 
-### Backend (Railway)
-```
+```bash
+# Backend (Railway)
 DATABASE_URL=postgresql://...
-JWT_SECRET=...
+JWT_SECRET=your-secret
 JWT_EXPIRES_IN=15m
-JWT_REFRESH_EXPIRES_IN=7d
-WHATSAPP_WEBHOOK_VERIFY_TOKEN=hospibot-webhook-verify
-RAZORPAY_KEY_ID=rzp_live_...
+RAZORPAY_KEY_ID=rzp_...
 RAZORPAY_KEY_SECRET=...
 RAZORPAY_WEBHOOK_SECRET=...
-ABHA_CLIENT_ID=...          # NHA developer portal
+ABHA_CLIENT_ID=...
 ABHA_CLIENT_SECRET=...
+WHATSAPP_WEBHOOK_VERIFY_TOKEN=hospibot-webhook-verify
 APP_URL=https://hospibot-web.vercel.app
+
+# Frontend (Vercel)
+NEXT_PUBLIC_API_URL=https://your-backend.railway.app/api/v1
 ```
 
-### Frontend (Vercel)
-```
-NEXT_PUBLIC_API_URL=https://your-api.railway.app/api/v1
-NEXT_PUBLIC_ROOT_DOMAIN=hospibot.in
-```
+---
 
-## Portal Architecture
+## Post-Deploy Commands (Railway)
 
-| Portal | URL Pattern | Color |
-|---|---|---|
-| Clinical / Hospital | /clinical/* | Teal #0D7C66 |
-| Diagnostic / Lab | /diagnostic/* | Navy #1E3A5F |
-| Pharmacy | /pharmacy/* | Forest #166534 |
-| Home Care | /homecare/* | Purple #6B21A8 |
-| Equipment | /equipment/* | Steel #1E40AF |
-| Wellness | /wellness/* | Crimson #BE185D |
-| Super Admin | /super-admin/* | Slate |
-
-## Key User Flows
-
-### Full OPD Flow
-1. `/clinical/appointments` → Book appointment or check in patient
-2. `/clinical/appointments/queue` → Live queue board (Kiosk mode for TV)
-3. `/clinical/visits/[appointmentId]` → OPD Console (vitals, notes, Rx, bill)
-4. `/clinical/billing/[id]` → Print invoice / Razorpay Pay Now
-
-### Prescription → WhatsApp
-1. Doctor opens OPD Console → Rx tab
-2. Adds medications (autocomplete, voice dictation supported)
-3. Clicks "Save Prescription" → saved to DB + auto-sent to patient WhatsApp
-
-### Lab Order → Report Delivery
-1. Create lab order → barcode generated, WhatsApp confirmation to patient
-2. Collect sample → status update → WhatsApp "Sample Collected"
-3. Upload report URL → auto-WhatsApp PDF link to patient → added to Health Vault
-
-### Health Vault Consent Flow
-1. Staff looks up patient by phone → /clinical/vault
-2. System sends WhatsApp to patient with 4 consent options
-3. Patient replies 1/2/3/4 → consent recorded
-4. Staff sees cross-provider history (respects scope)
-
-## Backend Modules (22 total)
-```
-Auth, Tenant, Patient, Doctor, Appointment, Billing,
-WhatsApp, CRM, Automation, Analytics, Portal, SuperAdmin,
-Chatbot, Scheduler, Vault, Lab, Pharmacy, Marketplace,
-Security, Prescription, Visit, (AbhaModule planned)
-```
-
-## Database Tables (40+)
-Core: tenants, users, patients, doctors, appointments, invoices, payments  
-Clinical: visits, prescriptions, lab_orders, beds  
-Pharmacy: pharmacy_products, pharmacy_batches, dispensing_orders, suppliers, purchase_orders  
-WhatsApp: conversations, messages, whatsapp_templates, chatbot_states  
-CRM: leads, campaigns, automation_rules, automation_logs, automation_jobs  
-Vault: universal_health_records, health_records, consent_grants, consent_audit_log  
-Marketplace: marketplace_products, marketplace_orders  
-Platform: portal_families, tenant_sub_types, portal_themes, platform_assets  
-Security: audit_logs, announcements  
-
-## WhatsApp Chatbot Intents (14)
-BOOKING, REPORT, BILLING, PRESCRIPTION, RECORDS, EMERGENCY,
-HUMAN, GREETING, CONFIRM, CANCEL, BOOK_NOW, REMIND_LATER, NOT_NEEDED,
-plus self-service vault commands
-
-## Scheduled Jobs (Cron)
-| Job | Schedule | Purpose |
-|---|---|---|
-| processAutomationJobs | Every 5 min | Execute pending automation jobs |
-| scanTimeElapsed | Every hour | Check TIME_ELAPSED automation rules |
-| sendAppointmentReminders | 8:00 AM IST | Next-day appointment WhatsApp reminders |
-| sendRefillReminders | 8:00 AM IST | 5-day prescription refill WhatsApp reminders |
-
-## External Integrations
-| Service | Purpose | Config |
-|---|---|---|
-| Meta WhatsApp Business API | Messaging | PHONE_NUMBER_ID + ACCESS_TOKEN per tenant |
-| Razorpay | Payments | RAZORPAY_KEY_ID + KEY_SECRET in backend env |
-| NHA ABDM | ABHA health ID | ABHA_CLIENT_ID + CLIENT_SECRET |
-| Supabase | PostgreSQL DB | DATABASE_URL |
-| Railway | Backend hosting | Auto-deploys from main branch |
-| Vercel | Frontend hosting | Auto-deploys from main branch |
-
-## After Deployment (run on Railway)
 ```bash
-npx prisma migrate deploy
-npx prisma db seed
+npx prisma migrate deploy && npx prisma db seed
 ```
 
-## SUPER_ADMIN Login
-Set in seed.ts — default admin@hospibot.in / hospibot@123  
-(change immediately in production)
+---
 
-## Git History Summary
-```
-Sprint 1-3: Multi-portal architecture + Clinical portal
-Sprint 4: WhatsApp Engine + AI Chatbot (14 intents, 4-step booking flow)
-Sprint 5: CRM Lead Pipeline + WhatsApp Campaigns
-Sprint 6: Universal Health Vault (consent + cross-provider records)
-Sprint 7: Diagnostic Portal (25 default tests, home collection, report delivery)
-Sprint 8: Pharmacy Portal (drug catalogue, dispensing, purchase orders)
-Sprint 9: Commerce Marketplace + HomeCare/Equipment/Wellness portals
-Sprint 10: Security & Compliance (RBAC, 28 permissions, DPDPA)
-Post-Sprint: OPD Console, Queue Board, Prescriptions, Invoice PDF,
-             Analytics live data, Razorpay, Voice Dictation, ABHA
-```
+## Design System
+
+| Token | Value |
+|-------|-------|
+| Clinical Primary | #0D7C66 (teal) |
+| Clinical Dark | #0A5E4F |
+| Clinical Light BG | #E8F5F0 |
+| Diagnostic Primary | #1E3A5F (navy) |
+| Pharmacy Primary | #166534 (green) |
+| HomeCare Primary | #6B21A8 (purple) |
+| WhatsApp Green | #25D366 |
+| Accent Amber | #F59E0B |
+| Surface | #F8FAFC |
+| Text | #1E293B |
+| Font: UI | Roboto |
+
+---
+
+## Scheduled Jobs (scheduler.service.ts)
+
+| Job | Schedule | Action |
+|-----|----------|--------|
+| processAutomationJobs | Every 5 min | Run pending automation rules |
+| scanTimeElapsed | Every hour | Mark appointments as elapsed |
+| sendAppointmentReminders | 8:00 AM IST | Next-day appointment reminders |
+| sendRefillReminders | 8:00 AM IST | 5-day medication refill alerts |
+
+---
+
+## Public Pages (no auth required)
+
+| URL | Description |
+|-----|-------------|
+| /book?clinic=slug | 4-step appointment booking wizard |
+| /register-patient?clinic=slug | Patient self-registration with DPDPA consent |
+| /clinical/queue-token?id=apptId | 80mm thermal token print |
+| /clinical/prescriptions/[id] | Printable prescription (A5) |
+| /clinical/patients/[id]/summary | A4 health summary (token-linked) |
+
+---
+
+*For session-specific change history, see the git log.*
