@@ -55,6 +55,18 @@ export default function PlatformBillingPage() {
   const trialCount  = tenants.filter(t => t.status === 'TRIAL').length;
   const churnCount  = tenants.filter(t => ['CANCELLED','EXPIRED'].includes(t.status)).length;
 
+  const startCheckout = async (tenantId: string, plan: string) => {
+    setSaving(true);
+    try {
+      const res = await api.post('/subscriptions/checkout', {
+        plan, returnUrl: window.location.href,
+      }, { headers: { 'x-tenant-id': tenantId } });
+      if (res.data?.url) window.open(res.data.url, '_blank');
+      else toast.success(res.data?.message || 'Checkout initiated');
+    } catch { toast.error('Failed to create checkout'); }
+    finally { setSaving(false); }
+  };
+
   const updatePlan = async (tenantId: string, plan: string) => {
     setSaving(true);
     try {

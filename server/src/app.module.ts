@@ -27,6 +27,7 @@ import { PrescriptionModule } from './modules/prescription/prescription.module';
 import { VisitModule } from './modules/visit/visit.module';
 import { BedModule } from './modules/bed/bed.module';
 import { FhirModule } from './modules/fhir/fhir.module';
+import { SubscriptionModule } from './modules/subscription/subscription.module';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { FhirModule } from './modules/fhir/fhir.module';
     VisitModule,
     BedModule,
     FhirModule,
+    SubscriptionModule,
   ],
   controllers: [HealthController],
 })

@@ -33,6 +33,8 @@ const NAV_BY_PORTAL: Record<string, NavItem[]> = {
     { href: 'whatsapp',     label: 'WhatsApp Inbox', icon: MessageSquare,   flag: 'whatsapp', badge: true },
     { href: 'whatsapp-analytics', label: 'WA Analytics', icon: BarChart3,   always: true },
     { href: 'whatsapp-ab',    label: 'A/B Testing',     icon: FlaskConical,    always: true },
+    { href: 'whatsapp-templates', label: 'WA Templates', icon: FileText,     always: true },
+    { href: 'chatbot',        label: 'Chatbot Config',  icon: MessageSquare,   always: true },
     { href: 'appointments', label: 'Appointments',   icon: Calendar,        flag: 'appointments' },
     { href: 'prescriptions',label: 'Prescriptions',  icon: Pill,            flag: 'patients' },
     { href: 'visits',       label: 'Visit History',  icon: Activity,        flag: 'patients' },
