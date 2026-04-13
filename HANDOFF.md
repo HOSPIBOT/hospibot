@@ -1,5 +1,5 @@
 # HospiBot — Developer Handoff
-*68 commits · 132 pages · 22 backend modules · Last updated: April 2026*
+*72 commits · 132 pages · 22 backend modules · Last updated: April 2026*
 
 ## Live URLs
 - **Frontend:** https://hospibot-web.vercel.app
@@ -19,20 +19,23 @@
 | Diagnostic Primary | #1E3A5F (navy) |
 | Pharmacy Primary | #166834 (green) |
 | HomeCare Primary | #6B21A8 (purple) |
+| Equipment Primary | #1E40AF (blue) |
+| Wellness Primary | #BE185D (pink) |
+| Services Primary | #334155 (slate) |
 | WhatsApp Green | #25D366 |
 | Font | Roboto (UI), system-ui (public pages) |
 
 ## Portal Architecture
-| Portal | Base URL | Nav Items |
-|---|---|---|
-| Clinical | /clinical/* | 20 items (dashboard, my-schedule, appointments, patients, doctors, billing, whatsapp, prescriptions, visits, lab, branches, departments, crm, analytics, automation, security, staff, vault, abha, chatbot, settings) |
-| Diagnostic | /diagnostic/* | 8 items |
-| Pharmacy | /pharmacy/* | 9 items (incl. suppliers) |
-| HomeCare | /homecare/* | 8 items |
-| Equipment | /equipment/* | 6 items |
-| Wellness | /wellness/* | 7 items |
-| Services | /services/* | 7 items |
-| Super Admin | /super-admin/* | 15 items |
+| Portal | Base URL | Nav Items | Notes |
+|---|---|---|---|
+| Clinical | /clinical/* | 20 items | Full-featured OPD portal |
+| Diagnostic | /diagnostic/* | 8 items | Lab orders + collection |
+| Pharmacy | /pharmacy/* | 9 items | Incl. suppliers + purchase orders |
+| HomeCare | /homecare/* | 8 items | Home visits + staff dispatch |
+| Equipment | /equipment/* | 6 items | B2B catalogue + orders |
+| Wellness | /wellness/* | 7 items | Sessions + memberships |
+| Services | /services/* | 7 items | Contracts + field staff |
+| Super Admin | /super-admin/* | 15 items | Platform management |
 
 ## Public Pages (no auth)
 | URL | Purpose |
@@ -68,9 +71,12 @@ Lab:         GET/POST /lab/orders  PATCH /lab/orders/:id/status
              PATCH /lab/orders/:id  POST /lab/orders/:id/deliver
              GET/POST /lab/catalog  GET/POST /lab/collection
 WhatsApp:    GET /whatsapp/conversations  POST /whatsapp/send
+             GET /whatsapp/conversations/:id/messages
+             PATCH /whatsapp/conversations/:id
              GET/POST /whatsapp/templates
 Analytics:   GET /analytics/dashboard  GET /analytics/revenue/trend
              GET /analytics/notifications  GET /analytics/doctors/top
+             GET /analytics/appointments  GET /analytics/patients/demographics
 Pharmacy:    GET /pharmacy/dashboard  GET/POST /pharmacy/products
              GET/POST /pharmacy/dispensing  GET/POST /pharmacy/suppliers
              GET /pharmacy/alerts  GET /pharmacy/inventory
@@ -79,6 +85,10 @@ CRM:         GET/POST /crm/leads  GET/POST /crm/campaigns
 Prescriptions: GET/POST /prescriptions  POST /prescriptions/:id/send
 Marketplace: GET /marketplace/products  POST /marketplace/products
              GET /marketplace/orders  PATCH /marketplace/orders/:id
+             GET /marketplace/stats
+Visits:      POST /visits  GET /visits/patient/:patientId
+             GET /visits/appointment/:appointmentId  GET /visits/:id
+Security:    GET /security/audit-logs
 ```
 
 ## Environment Variables (Production)
@@ -113,8 +123,11 @@ npx prisma migrate deploy && npx prisma db seed
 | sendRefillReminders | 8AM IST daily | 5-day refill alerts |
 
 ## Notable Features Built
-- Real-time OPD Queue Display (TV screen, 30s auto-refresh)
-- WhatsApp Broadcast with 6 audience segments
+### Clinical
+- Real-time OPD Queue Display (TV screen, 30s auto-refresh, kiosk mode)
+- **WhatsApp Inbox** — filter tabs (All/Unread/Bot/Human/Closed), template picker with variable substitution, 15s auto-refresh, patient context panel (appointments + prescriptions), read receipts
+- OPD Consultation Console (/clinical/visits/[appointmentId]) — vitals, diagnosis, prescription writer, lab orders, speech-to-text
+- **Visit History** — doctor filter, date range, quick presets (Today/This week/Month), "has notes" filter, paginated
 - Patient Self Check-In Kiosk (/check-in)
 - Appointment Status Tracker for patients
 - Invoice Aging Report with 4 brackets + WhatsApp reminders
@@ -127,3 +140,46 @@ npx prisma migrate deploy && npx prisma db seed
 - Razorpay payment links
 - Speech-to-text in OPD Console
 - CSV import for patients
+- WhatsApp Broadcast (6 audience segments)
+- Revenue Engine automation rules
+
+### HomeCare
+- **Dashboard** — live from /appointments/today/stats + /analytics/revenue/trend (removed mock data)
+- **Staff Dispatch** — status filter tabs, live from /doctors, dispatch button, status dot indicators
+
+### Services
+- **Dashboard** — live from /billing/invoices + /analytics/revenue/trend (removed hardcoded KPIs)
+- **Billing** — live from /billing/invoices with search
+- **Analytics** — live revenue bar chart + contract type pie chart
+- **Staff** — live from /doctors with fallback seed
+
+### Wellness
+- **Dashboard** — fixed crash (undefined trend/stats), live API
+- Membership management with plan enrollment
+
+### Equipment
+- **Dashboard** — fixed crash (undefined stats/orderTrend), live from /marketplace/stats + /marketplace/orders
+
+## Pages Needing Backend Modules (use seed/fallback data)
+- Services portal — no dedicated /services/* backend module; uses /billing/invoices + /doctors
+- HomeCare staff dispatch — uses /doctors endpoint as a proxy; no dedicated homecare-staff module
+- Equipment dashboard — uses /marketplace/stats; no dedicated equipment-stats module
+
+## Git Push
+Token configured in remote URL. All pushes done from container automatically.
+```bash
+git add -A && git commit -m "..." && git push origin main
+```
+
+## Session History (recent)
+| Commit | Feature |
+|---|---|
+| 798c379 | fix: Wellness + Equipment dashboards — undefined vars, live API |
+| 56824b8 | feat: HomeCare dashboard/staff live API; Services billing/analytics/staff off mock |
+| 36099f0 | feat: WhatsApp Inbox — filter tabs, template picker, auto-refresh, patient panel |
+| 04c899c | docs: HANDOFF update (prev session) |
+| 0ea2b52 | feat: Patient Feedback + Refill Tracker |
+| 4db4d56 | fix: My Schedule nav + Aging Report link |
+| 9dbe360 | feat: Doctor My Schedule + Invoice Aging Report |
+| ac532dd | feat: Pharmacy dispensing order detail + dashboard live API |
+| ea92373 | feat: Clinical Staff Management + DPDPA Actions + Security |
