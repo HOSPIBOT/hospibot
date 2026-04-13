@@ -82,8 +82,10 @@ export default function EquipmentProductsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-4">
-          {products.map(p=>(
-            <div key={p.id} className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-shadow">
+          {products.map(p=>{
+            const inStock = (p.stock??0) > 0 || p.inStock === true;
+            return (
+            <div key={p.id} className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-shadow group">
               <div className="flex items-start justify-between mb-3">
                 <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
                   <Package className="w-5 h-5 text-blue-600"/>
@@ -96,8 +98,39 @@ export default function EquipmentProductsPage() {
               {p.sku&&<p className="text-xs font-mono text-slate-400">{p.sku}</p>}
               {p.category&&<p className="text-xs text-slate-500 mt-1">{p.category}</p>}
               <p className="text-lg font-black text-blue-700 mt-2">{formatINR(p.price||0)}</p>
+              <div className="flex items-center gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  onClick={async () => {
+                    const qty = prompt(`Update stock for "${p.name}" (current: ${p.stock ?? 0}):`, String(p.stock ?? 0));
+                    if (qty === null) return;
+                    const n = Number(qty);
+                    if (isNaN(n) || n < 0) { toast.error('Invalid quantity'); return; }
+                    try {
+                      await api.patch(`/marketplace/products/${p.id}`, { stock: n });
+                      setProducts(prev => prev.map(x => x.id === p.id ? { ...x, stock: n } : x));
+                      toast.success('Stock updated');
+                    } catch { toast.error('Failed to update stock'); }
+                  }}
+                  className="flex-1 text-xs font-medium text-center border border-slate-200 text-slate-600 py-1.5 rounded-lg hover:bg-slate-50 transition-colors">
+                  Update Stock
+                </button>
+                <button
+                  onClick={async () => {
+                    try {
+                      await api.patch(`/marketplace/products/${p.id}`, { inStock: !inStock });
+                      setProducts(prev => prev.map(x => x.id === p.id ? { ...x, inStock: !inStock } : x));
+                      toast.success(inStock ? 'Marked out of stock' : 'Marked in stock');
+                    } catch { toast.error('Failed'); }
+                  }}
+                  className={`text-xs font-medium px-2.5 py-1.5 rounded-lg border transition-colors ${
+                    inStock ? 'border-red-200 text-red-600 hover:bg-red-50' : 'border-emerald-200 text-emerald-600 hover:bg-emerald-50'
+                  }`}>
+                  {inStock ? 'Disable' : 'Enable'}
+                </button>
+              </div>
             </div>
-          ))}
+          )})}
+        </div>
         </div>
       )}
 

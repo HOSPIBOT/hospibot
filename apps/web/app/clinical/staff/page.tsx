@@ -5,7 +5,7 @@ import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
 import {
   Users, Plus, Search, RefreshCw, X, Loader2,
-  Phone, Mail, Shield, CheckCircle2, XCircle, Edit3,
+  Phone, Mail, Shield, CheckCircle2, XCircle, Edit3, Download,
 } from 'lucide-react';
 
 const ROLES = [
@@ -120,6 +120,7 @@ export default function ClinicalStaffPage() {
   const [search, setSearch]   = useState('');
   const [roleFilter, setRole] = useState('');
   const [showInvite, setInvite] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -132,7 +133,27 @@ export default function ClinicalStaffPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const toggleActive = async (userId: string, currentActive: boolean, name: string) => {
+  const exportCSV = () => {
+    setExporting(true);
+    try {
+      const rows = filtered.map(s => [
+        s.firstName ?? '', s.lastName ?? '',
+        s.email ?? '', s.phone ?? '',
+        s.role ?? '', s.isActive !== false ? 'Active' : 'Inactive',
+        s.branch?.name ?? '',
+        s.lastLoginAt ? new Date(s.lastLoginAt).toLocaleDateString('en-IN') : 'Never',
+      ]);
+      const header = ['First Name', 'Last Name', 'Email', 'Phone', 'Role', 'Status', 'Branch', 'Last Login'];
+      const csv  = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url; a.download = `staff-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click(); URL.revokeObjectURL(url);
+      toast.success(`Exported ${filtered.length} staff members`);
+    } catch { toast.error('Export failed'); }
+    finally { setExporting(false); }
+  };
     try {
       await api.patch(`/auth/users/${userId}`, { isActive: !currentActive });
       setStaff(prev => prev.map(s => s.id === userId ? { ...s, isActive: !currentActive } : s));
@@ -161,6 +182,10 @@ export default function ClinicalStaffPage() {
         <div className="flex items-center gap-2">
           <button onClick={load} className="p-2 border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50">
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+          <button onClick={exportCSV} disabled={exporting || loading}
+            className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm font-medium px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50">
+            <Download className="w-4 h-4" /> {exporting ? 'Exporting…' : 'Export'}
           </button>
           <button onClick={() => setInvite(true)}
             className="flex items-center gap-2 bg-[#0D7C66] text-white text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-[#0A5E4F]">
