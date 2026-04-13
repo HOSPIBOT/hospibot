@@ -46,12 +46,13 @@ export default function ServicesStaffPage() {
       if (docs.length > 0) {
         setStaff(docs.map((d: any, i: number) => ({
           id       : d.id,
-          name     : `${d.firstName} ${d.lastName ?? ''}`.trim(),
-          role     : d.specialization ?? ROLES[i % ROLES.length],
-          phone    : d.phone ?? '—',
-          email    : d.email ?? '—',
+          name     : d.user ? `${d.user.firstName} ${d.user.lastName ?? ''}`.trim()
+                            : `${d.firstName ?? ''} ${d.lastName ?? ''}`.trim(),
+          role     : d.specialties?.[0] ?? d.specialization ?? ROLES[i % ROLES.length],
+          phone    : d.user?.phone ?? d.phone ?? '—',
+          email    : d.user?.email ?? d.email ?? '—',
           status   : 'ACTIVE',
-          contracts: Math.floor(Math.random() * 5) + 1,
+          contracts: d._count?.appointments ?? 0,
         })));
       } else {
         setStaff(SEED);
