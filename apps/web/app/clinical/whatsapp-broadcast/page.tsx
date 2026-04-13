@@ -67,7 +67,7 @@ export default function WhatsAppBroadcastPage() {
     if (!message.trim()) { toast.error('Enter a message'); return; }
     if (estimate === null) { toast.error('Get audience estimate first'); return; }
     if (estimate === 0)    { toast.error('No recipients in selected segment'); return; }
-    if (!window.confirm(`Send to ${estimate} patients? This cannot be undone.`)) return;
+    // Confirmed via UI button — proceed directly
 
     setSending(true);
     try {

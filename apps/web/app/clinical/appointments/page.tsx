@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import {
   Calendar, Plus, Search, Clock, User, CheckCircle2, XCircle,
   RefreshCw, ChevronLeft, ChevronRight, X, Loader2, Filter,
-  ArrowRight, Phone, Hash, Stethoscope, AlertCircle, Activity,
+  ArrowRight, Phone, Hash, Stethoscope, AlertCircle, Activity, Download,
 } from 'lucide-react';
 
 const STATUS_COLORS: Record<string, string> = {
@@ -191,6 +191,31 @@ export default function AppointmentsPage() {
     } catch (err: any) { toast.error(err?.response?.data?.message || 'Failed to reschedule'); }
   };
 
+
+  const exportCSV = () => {
+    const rows = [
+      ['Invoice Number', 'Patient', 'Phone', 'Doctor', 'Department', 'Date', 'Time', 'Status', 'Type'],
+      ...appointments.map(a => [
+        a.id?.slice(0,8).toUpperCase() || '',
+        `${a.patient?.firstName || ''} ${a.patient?.lastName || ''}`.trim(),
+        a.patient?.phone || '',
+        a.doctor ? `Dr. ${a.doctor.user?.firstName} ${a.doctor.user?.lastName || ''}`.trim() : '',
+        a.department?.name || '',
+        a.scheduledAt ? new Date(a.scheduledAt).toLocaleDateString('en-IN') : '',
+        a.scheduledAt ? new Date(a.scheduledAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : '',
+        a.status || '',
+        a.type || '',
+      ]),
+    ];
+    const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url;
+    a.download = `appointments-${dateFilter || 'all'}.csv`;
+    a.click(); URL.revokeObjectURL(url);
+    toast.success('Appointments exported!');
+  };
+
   // Queue stats
   const stats = {
     total:      appointments.length,
@@ -213,6 +238,10 @@ export default function AppointmentsPage() {
         <div className="flex items-center gap-2">
           <button onClick={() => load(meta.page)} className="p-2 border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50 transition-colors">
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+          <button onClick={exportCSV}
+            className="flex items-center gap-2 border border-slate-200 text-slate-600 text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-slate-50 transition-colors">
+            <Download className="w-4 h-4" /> Export CSV
           </button>
           <a href="/clinical/appointments/queue"
             className="flex items-center gap-2 border border-[#0D7C66] text-[#0D7C66] text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-[#E8F5F0] transition-colors">

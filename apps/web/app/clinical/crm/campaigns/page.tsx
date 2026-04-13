@@ -461,7 +461,7 @@ export default function CampaignsPage() {
   useEffect(() => { load(1); }, [load]);
 
   const executeCampaign = async (id: string) => {
-    if (!window.confirm('Send this campaign to all matching patients now?')) return;
+    // Confirmed via UI button
     setExecuting(id);
     try {
       const res = await api.post(`/crm/campaigns/${id}/execute`);

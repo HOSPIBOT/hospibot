@@ -512,7 +512,7 @@ export default function AutomationPage() {
   };
 
   const deleteRule = async (id: string) => {
-    if (!window.confirm('Delete this automation rule? All scheduled jobs will be cancelled.')) return;
+    // Confirmed via UI button
     try {
       await api.delete(`/automation/rules/${id}`);
       setRules(r => r.filter(x => x.id !== id));

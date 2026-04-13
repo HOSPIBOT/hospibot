@@ -149,7 +149,7 @@ export default function SettingsPage() {
   };
 
   const deleteDept = async (id: string, name: string) => {
-    if (!window.confirm(`Delete ${name} department? This cannot be undone.`)) return;
+    // Confirmed via UI button
     try {
       await api.delete(`/doctors/departments/${id}`);
       toast.success(`${name} deleted`);

@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 import {
   ArrowLeft, Phone, Mail, MapPin, Calendar, Activity, HeartPulse,
   Pill, FlaskConical, CreditCard, MessageSquare, Edit3, Plus,
-  AlertTriangle, CheckCircle2, Clock, RefreshCw, Loader2, Shield, Send, Download, Eye,
+  AlertTriangle, CheckCircle2, Clock, RefreshCw, Loader2, Shield, Send, Download, Eye, Printer,
 } from 'lucide-react';
 
 type Tab = 'overview' | 'appointments' | 'prescriptions' | 'labReports' | 'billing' | 'whatsapp';

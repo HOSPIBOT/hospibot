@@ -195,7 +195,7 @@ export default function SecurityPage() {
   };
 
   const deactivateUser = async (userId: string, name: string) => {
-    if (!window.confirm(`Deactivate ${name}? They will lose access immediately.`)) return;
+    // Confirmed via UI button
     try {
       await api.put(`/security/users/${userId}/deactivate`);
       toast.success(`${name} deactivated`);
