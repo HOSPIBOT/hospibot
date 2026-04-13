@@ -51,6 +51,8 @@ export default function PatientsPage() {
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm]         = useState<AddPatientForm>(defaultForm);
   const [addStep, setAddStep]   = useState<1 | 2>(1);
+  const [uhrLookup, setUhrLookup]     = useState<any>(null);
+  const [uhrChecking, setUhrChecking] = useState(false);
 
   // ── Filters ──────────────────────────────────────────────────────────────
   const [showFilters,  setShowFilters]  = useState(false);
@@ -379,7 +381,42 @@ export default function PatientsPage() {
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Phone <span className="text-red-500">*</span></label>
-                    <input className={inputCls} placeholder="+91 98765 43210" value={form.phone} onChange={setF('phone')} />
+                    <input className={inputCls} placeholder="+91 98765 43210" value={form.phone}
+                      onChange={async e => {
+                        setF('phone')(e);
+                        const digits = e.target.value.replace(/\D/g,'').slice(-10);
+                        if (digits.length === 10) {
+                          setUhrChecking(true);
+                          try {
+                            const res = await api.get(`/vault/lookup?phone=${digits}`);
+                            if (res.data?.found) {
+                              setUhrLookup(res.data);
+                              if (res.data.uhr) {
+                                setForm(f => ({...f,
+                                  firstName: f.firstName || res.data.uhr.firstName || '',
+                                  lastName: f.lastName || res.data.uhr.lastName || '',
+                                  bloodGroup: f.bloodGroup || res.data.uhr.bloodGroup || '',
+                                  allergies: f.allergies || (res.data.uhr.allergies||[]).join(', '),
+                                }));
+                              }
+                            } else { setUhrLookup(null); }
+                          } catch { setUhrLookup(null); }
+                          finally { setUhrChecking(false); }
+                        }
+                      }} />
+                    {uhrChecking && <p className="text-xs text-[#0D7C66] mt-1 flex items-center gap-1">⟳ Checking Universal Health Vault…</p>}
+                    {uhrLookup?.found && (
+                      <div className="mt-2 bg-[#E8F5F0] border border-[#0D7C66]/30 rounded-xl px-3 py-2.5 flex items-start gap-2">
+                        <span className="text-[#0D7C66] text-sm font-bold">✓</span>
+                        <div>
+                          <p className="text-xs font-bold text-[#0D7C66]">Found in Universal Health Vault</p>
+                          <p className="text-xs text-slate-600 mt-0.5">Health ID: <strong>{uhrLookup.uhr?.hospibot_health_id}</strong> · Blood: {uhrLookup.uhr?.bloodGroup||'—'}</p>
+                          {uhrLookup.consentStatus === 'GRANTED'
+                            ? <p className="text-xs text-emerald-700 font-medium">✓ Consent granted — records pre-filled</p>
+                            : <p className="text-xs text-amber-600 font-medium">Consent request will be sent via WhatsApp</p>}
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Email</label>

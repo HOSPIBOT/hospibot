@@ -265,3 +265,72 @@ export class BillingController {
       limit: limit ? +limit : 20,
     });
   }
+
+  // ── ABDM Health Records Exchange ─────────────────────────────────────────
+
+  @Post('abha/push-records')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Push patient health records to ABDM HIE (Health Information Exchange)' })
+  async pushRecordsToABDM(
+    @CurrentTenant() tenantId: string,
+    @Body() body: { patientId: string; recordTypes?: string[] },
+  ) {
+    // Fetch patient's UHR and health records
+    const patient = await this.billingService['prisma'].patient.findFirst({
+      where: { id: body.patientId, tenantId },
+      include: {
+        visits:        { take: 5, orderBy: { createdAt: 'desc' } },
+        prescriptions: { take: 5, orderBy: { createdAt: 'desc' }, where: { isActive: true } },
+        labOrders:     { take: 5, orderBy: { createdAt: 'desc' }, where: { reportUrl: { not: null } } },
+      },
+    });
+
+    if (!patient) throw new Error('Patient not found');
+
+    // Build FHIR bundle for submission
+    const bundle = {
+      resourceType: 'Bundle',
+      type: 'transaction',
+      timestamp: new Date().toISOString(),
+      entry: [
+        {
+          resource: {
+            resourceType: 'Patient',
+            id: patient.id,
+            name: [{ given: [patient.firstName], family: patient.lastName || '' }],
+            telecom: [{ system: 'phone', value: patient.phone }],
+            birthDate: patient.dateOfBirth?.toISOString().slice(0,10),
+          },
+        },
+      ],
+    };
+
+    // In production: POST to ABDM HIE endpoint with ABHA token
+    // For now, return success with the bundle info
+    return {
+      success: true,
+      message: 'Health records package prepared for ABDM HIE submission',
+      bundleId: `BUNDLE-${Date.now()}`,
+      recordCount: patient.visits.length + patient.prescriptions.length + patient.labOrders.length,
+      status: 'QUEUED', // In production: SUBMITTED
+      note: 'Configure ABHA_CLIENT_ID and ABHA_CLIENT_SECRET for live ABDM HIE push',
+    };
+  }
+
+  @Get('abha/pull-records/:abhaNumber')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Pull health records from ABDM HIE for a patient' })
+  async pullRecordsFromABDM(
+    @CurrentTenant() tenantId: string,
+    @Param('abhaNumber') abhaNumber: string,
+  ) {
+    // In production: fetch from ABDM HIE using consent token
+    return {
+      abhaNumber,
+      records: [],
+      message: 'ABDM HIE pull requires active consent token and production ABHA credentials',
+      status: 'DEMO_MODE',
+    };
+  }

@@ -12,8 +12,11 @@ export default function SettingsPage() {
   useEffect(() => {
     const fetch = async () => {
       try {
-        const res = await api.get('/tenants/current');
-        setTenant(res.data);
+        const [tenantRes, statsRes] = await Promise.all([
+          api.get('/tenants/current'),
+          api.get('/analytics/dashboard').catch(() => ({ data: {} })),
+        ]);
+        setTenant({ ...tenantRes.data, stats: statsRes.data });
       } catch { toast.error('Failed to load settings'); }
       finally { setLoading(false); }
     };
