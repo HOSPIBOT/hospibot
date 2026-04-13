@@ -6,7 +6,7 @@ import { formatDate, formatTime } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import {
   Stethoscope, Search, RefreshCw, ChevronLeft, ChevronRight,
-  Clock, User, FileText, Filter, X, Calendar, ChevronDown,
+  Clock, User, FileText, Filter, X, Calendar, ChevronDown, Download,
 } from 'lucide-react';
 
 export default function AllVisitsPage() {
@@ -40,6 +40,49 @@ export default function AllVisitsPage() {
 
   const clearFilters = () => {
     setDoctorId(''); setDateFrom(''); setDateTo(''); setHasNotes(false);
+  };
+
+  const [exporting, setExporting] = useState(false);
+
+  const exportCSV = async () => {
+    setExporting(true);
+    try {
+      const params: any = { limit: 5000, status: 'COMPLETED' };
+      if (deb)      params.search   = deb;
+      if (doctorId) params.doctorId = doctorId;
+      if (dateFrom) params.from     = dateFrom;
+      if (dateTo)   params.to       = dateTo;
+      const res = await api.get('/appointments', { params });
+      const all: any[] = res.data.data ?? [];
+      const header = ['Date', 'Time', 'Patient', 'Phone', 'Doctor', 'Department', 'Diagnosis', 'Chief Complaint'];
+      const rows = all.map(v => {
+        const drName = v.doctor
+          ? `Dr. ${v.doctor.user?.firstName ?? ''} ${v.doctor.user?.lastName ?? ''}`.trim()
+          : '';
+        return [
+          formatDate(v.scheduledAt),
+          formatTime(v.scheduledAt),
+          `${v.patient?.firstName ?? ''} ${v.patient?.lastName ?? ''}`.trim(),
+          v.patient?.phone ?? '',
+          drName,
+          v.department?.name ?? '',
+          v.visit?.diagnosisText ?? '',
+          v.visit?.chiefComplaint ?? '',
+        ];
+      });
+      const csv = [header, ...rows]
+        .map(r => r.map(val => `"${String(val).replace(/"/g, '""')}"`).join(','))
+        .join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
+      a.download = `visits-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success(`Exported ${all.length} visits`);
+    } catch { toast.error('Export failed'); }
+    finally { setExporting(false); }
   };
 
   const load = useCallback(async (page = 1) => {
@@ -97,6 +140,13 @@ export default function AllVisitsPage() {
           <button onClick={() => load(meta.page)}
             className="p-2 border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50">
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+          <button
+            onClick={exportCSV}
+            disabled={exporting}
+            className="flex items-center gap-1.5 text-sm font-medium border border-slate-200 text-slate-600 px-3.5 py-2 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50">
+            <Download className="w-4 h-4" />
+            {exporting ? 'Exporting…' : 'Export CSV'}
           </button>
         </div>
       </div>
