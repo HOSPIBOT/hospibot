@@ -1,36 +1,86 @@
 'use client';
-import { useState } from 'react';
-import { CreditCard, TrendingUp, AlertTriangle } from 'lucide-react';
-import { formatDate } from '@/lib/utils';
 
-const INVOICES = [
-  { client: 'Sunshine Hospital Group', amount: 120000, date: '2025-04-01', status: 'PAID'    },
-  { client: 'MedCare Diagnostics',     amount:  35000, date: '2025-04-05', status: 'PENDING' },
-  { client: 'Apollo Pharmacies',       amount:  87500, date: '2025-03-15', status: 'PAID'    },
-  { client: 'City Nursing Home',       amount:  52000, date: '2025-03-20', status: 'OVERDUE' },
-  { client: 'Reliance Health',         amount:  28000, date: '2025-04-10', status: 'PENDING' },
-];
+import { useState, useEffect, useCallback } from 'react';
+import { api } from '@/lib/api';
+import { formatDate, formatINR } from '@/lib/utils';
+import toast from 'react-hot-toast';
+import { CreditCard, TrendingUp, AlertTriangle, RefreshCw, Plus, Search } from 'lucide-react';
 
 const STATUS_CLR: Record<string, string> = {
   PAID:    'bg-emerald-100 text-emerald-700',
   PENDING: 'bg-amber-100 text-amber-700',
   OVERDUE: 'bg-red-100 text-red-700',
+  DRAFT:   'bg-slate-100 text-slate-500',
 };
 
+// Seed used when backend has no services-specific billing yet
+const SEED_INVOICES = [
+  { id: 'i1', patientName: 'Sunshine Hospital Group', totalAmount: 12000000, status: 'PAID',    createdAt: '2025-04-01', invoiceNumber: 'SRV-001' },
+  { id: 'i2', patientName: 'MedCare Diagnostics',     totalAmount:  3500000, status: 'PENDING', createdAt: '2025-04-05', invoiceNumber: 'SRV-002' },
+  { id: 'i3', patientName: 'Apollo Pharmacies',       totalAmount:  8750000, status: 'PAID',    createdAt: '2025-03-15', invoiceNumber: 'SRV-003' },
+  { id: 'i4', patientName: 'City Nursing Home',       totalAmount:  5200000, status: 'OVERDUE', createdAt: '2025-03-20', invoiceNumber: 'SRV-004' },
+  { id: 'i5', patientName: 'Reliance Health',         totalAmount:  2800000, status: 'PENDING', createdAt: '2025-04-10', invoiceNumber: 'SRV-005' },
+];
+
 export default function ServicesBillingPage() {
-  const [invoices] = useState(INVOICES);
-  const collected  = invoices.filter(i => i.status === 'PAID').reduce((s, i) => s + i.amount, 0);
-  const outstanding = invoices.filter(i => i.status !== 'PAID').reduce((s, i) => s + i.amount, 0);
+  const [invoices, setInvoices] = useState<any[]>([]);
+  const [loading,  setLoading]  = useState(true);
+  const [search,   setSearch]   = useState('');
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await api.get('/billing/invoices', { params: { limit: 50 } });
+      const data = res.data?.data ?? res.data ?? [];
+      setInvoices(Array.isArray(data) && data.length > 0 ? data : SEED_INVOICES);
+    } catch {
+      setInvoices(SEED_INVOICES);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const filtered = invoices.filter(inv => {
+    if (!search) return true;
+    const q = search.toLowerCase();
+    return (
+      (inv.patientName ?? inv.patient?.firstName ?? '').toLowerCase().includes(q) ||
+      (inv.invoiceNumber ?? '').toLowerCase().includes(q)
+    );
+  });
+
+  const collected   = invoices.filter(i => i.status === 'PAID').reduce((s, i) => s + (i.totalAmount ?? 0), 0);
+  const outstanding = invoices.filter(i => i.status !== 'PAID').reduce((s, i) => s + (i.totalAmount ?? 0), 0);
+  const overdue     = invoices.filter(i => i.status === 'OVERDUE').length;
+
+  const clientName = (inv: any) =>
+    inv.patientName ?? `${inv.patient?.firstName ?? ''} ${inv.patient?.lastName ?? ''}`.trim() || '—';
 
   return (
     <div className="space-y-5">
-      <h1 className="text-2xl font-bold text-slate-900">Services Billing</h1>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-slate-900">Services Billing</h1>
+        <div className="flex items-center gap-2">
+          <button onClick={load} className="p-2 border border-slate-200 rounded-xl text-slate-400 hover:bg-slate-50">
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+          <a href="/clinical/billing"
+            className="flex items-center gap-2 bg-slate-900 text-white text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-slate-800 transition-colors">
+            <Plus className="w-4 h-4" /> New Invoice
+          </a>
+        </div>
+      </div>
+
+      {/* KPIs */}
+      <div className="grid grid-cols-4 gap-4">
         {[
-          { l: 'Invoices Raised', v: invoices.length,                           icon: CreditCard,  color: '#334155' },
-          { l: 'Collected',       v: `₹${(collected / 100000).toFixed(1)}L`,    icon: TrendingUp,  color: '#10B981' },
-          { l: 'Outstanding',     v: `₹${(outstanding / 100000).toFixed(1)}L`,  icon: AlertTriangle, color: '#EF4444' },
+          { l: 'Total Invoices',   v: invoices.length,           icon: CreditCard,    color: '#334155' },
+          { l: 'Collected',        v: formatINR(collected),      icon: TrendingUp,    color: '#10B981' },
+          { l: 'Outstanding',      v: formatINR(outstanding),    icon: AlertTriangle, color: '#F59E0B' },
+          { l: 'Overdue',          v: overdue,                   icon: AlertTriangle, color: '#EF4444' },
         ].map(k => (
           <div key={k.l} className="bg-white rounded-2xl border border-slate-100 p-5">
             <div className="flex items-center gap-2 mb-2">
@@ -42,26 +92,62 @@ export default function ServicesBillingPage() {
         ))}
       </div>
 
+      {/* Search */}
+      <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-4 py-2.5 w-80">
+        <Search className="w-4 h-4 text-slate-400" />
+        <input className="bg-transparent text-sm outline-none flex-1 placeholder:text-slate-400"
+          placeholder="Search client or invoice…"
+          value={search} onChange={e => setSearch(e.target.value)} />
+      </div>
+
+      {/* Table */}
       <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
         <table className="w-full">
-          <thead><tr className="bg-slate-50 border-b border-slate-100">
-            {['Client', 'Amount', 'Date', 'Status'].map(h => (
-              <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
-            ))}
-          </tr></thead>
+          <thead>
+            <tr className="bg-slate-50 border-b border-slate-100">
+              {['Invoice #', 'Client', 'Amount', 'Date', 'Status', ''].map(h => (
+                <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
+              ))}
+            </tr>
+          </thead>
           <tbody className="divide-y divide-slate-50">
-            {invoices.map((inv, i) => (
-              <tr key={i} className="hover:bg-slate-50/60 transition-colors">
-                <td className="px-5 py-3.5 font-semibold text-slate-900 text-sm">{inv.client}</td>
-                <td className="px-5 py-3.5 font-bold text-slate-900 text-sm">₹{(inv.amount / 1000).toFixed(0)}K</td>
-                <td className="px-5 py-3.5 text-xs text-slate-500">{formatDate(inv.date)}</td>
-                <td className="px-5 py-3.5">
-                  <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${STATUS_CLR[inv.status] || 'bg-slate-100 text-slate-600'}`}>
-                    {inv.status}
-                  </span>
+            {loading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <tr key={i}>
+                  {Array.from({ length: 6 }).map((_, j) => (
+                    <td key={j} className="px-5 py-4">
+                      <div className="animate-pulse bg-slate-200 rounded h-3 w-full" />
+                    </td>
+                  ))}
+                </tr>
+              ))
+            ) : filtered.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="px-5 py-12 text-center text-slate-400 text-sm">
+                  {search ? 'No results match your search' : 'No invoices yet'}
                 </td>
               </tr>
-            ))}
+            ) : (
+              filtered.map(inv => (
+                <tr key={inv.id} className="hover:bg-slate-50/60 transition-colors">
+                  <td className="px-5 py-3.5 text-xs font-mono text-slate-500">{inv.invoiceNumber ?? `INV-${inv.id?.slice(-4)}`}</td>
+                  <td className="px-5 py-3.5 font-semibold text-slate-900 text-sm">{clientName(inv)}</td>
+                  <td className="px-5 py-3.5 font-bold text-slate-900 text-sm">{formatINR(inv.totalAmount ?? 0)}</td>
+                  <td className="px-5 py-3.5 text-xs text-slate-500">{formatDate(inv.createdAt)}</td>
+                  <td className="px-5 py-3.5">
+                    <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${STATUS_CLR[inv.status] ?? 'bg-slate-100 text-slate-600'}`}>
+                      {inv.status}
+                    </span>
+                  </td>
+                  <td className="px-5 py-3.5">
+                    <a href={`/clinical/billing/patient/${inv.patientId ?? ''}`}
+                      className="text-xs text-[#0D7C66] font-semibold hover:underline">
+                      View
+                    </a>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
