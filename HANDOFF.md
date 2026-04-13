@@ -1,5 +1,5 @@
 # HospiBot — Developer Handoff
-*82 commits · 134 pages · 22 backend modules · Last updated: April 2026*
+*85 commits · 134 pages · 22 backend modules · Last updated: April 2026*
 
 ## Live URLs
 - **Frontend:** https://hospibot-web.vercel.app
@@ -127,7 +127,11 @@ npx prisma migrate deploy && npx prisma db seed
 - Real-time OPD Queue Display (TV screen, 30s auto-refresh, kiosk mode)
 - **WhatsApp Inbox** — filter tabs (All/Unread/Bot/Human/Closed), template picker with variable substitution, 15s auto-refresh, patient context panel (appointments + prescriptions), read receipts
 - OPD Consultation Console (/clinical/visits/[appointmentId]) — vitals, diagnosis, prescription writer, lab orders, speech-to-text
-- **Visit History** — doctor filter, date range, quick presets (Today/This week/Month), "has notes" filter, paginated
+- **Visit History** — Export CSV (respects all active filters, up to 5,000 records)
+- **Appointments** — Export CSV upgraded from page-only to full-dataset fetch (up to 5,000)
+- **Lab Orders** — Status filter tabs (All/Ordered/Collected/Processing/Ready/Delivered) + priority filter (Routine/Urgent/STAT)
+- **Prescriptions** — Date range filter with From/To pickers + quick presets (Today/7 days/30 days)
+- **Patients** — Gender + blood group filter panel; Export CSV button wired to live data
 - Patient Self Check-In Kiosk (/check-in)
 - Appointment Status Tracker for patients
 - Invoice Aging Report with 4 brackets + WhatsApp reminders

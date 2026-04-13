@@ -230,28 +230,44 @@ export default function AppointmentsPage() {
   };
 
 
-  const exportCSV = () => {
-    const rows = [
-      ['Invoice Number', 'Patient', 'Phone', 'Doctor', 'Department', 'Date', 'Time', 'Status', 'Type'],
-      ...appointments.map(a => [
-        a.id?.slice(0,8).toUpperCase() || '',
-        `${a.patient?.firstName || ''} ${a.patient?.lastName || ''}`.trim(),
-        a.patient?.phone || '',
-        a.doctor ? `Dr. ${a.doctor.user?.firstName} ${a.doctor.user?.lastName || ''}`.trim() : '',
-        a.department?.name || '',
-        a.scheduledAt ? new Date(a.scheduledAt).toLocaleDateString('en-IN') : '',
-        a.scheduledAt ? new Date(a.scheduledAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : '',
-        a.status || '',
-        a.type || '',
-      ]),
-    ];
-    const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url;
-    a.download = `appointments-${dateFilter || 'all'}.csv`;
-    a.click(); URL.revokeObjectURL(url);
-    toast.success('Appointments exported!');
+  const [exporting, setExporting] = useState(false);
+
+  const exportCSV = async () => {
+    setExporting(true);
+    try {
+      const params: any = { limit: 5000 };
+      if (statusFilter) params.status = statusFilter;
+      if (dateFilter) {
+        params.startDate = `${dateFilter}T00:00:00`;
+        params.endDate   = `${dateFilter}T23:59:59`;
+      }
+      const res = await api.get('/appointments', { params });
+      const all: any[] = res.data.data ?? appointments;
+      const rows = [
+        ['Appointment ID', 'Patient', 'Phone', 'Doctor', 'Department', 'Date', 'Time', 'Status', 'Type'],
+        ...all.map(a => [
+          a.id?.slice(0, 8).toUpperCase() || '',
+          `${a.patient?.firstName || ''} ${a.patient?.lastName || ''}`.trim(),
+          a.patient?.phone || '',
+          a.doctor ? `Dr. ${a.doctor.user?.firstName} ${a.doctor.user?.lastName || ''}`.trim() : '',
+          a.department?.name || '',
+          a.scheduledAt ? new Date(a.scheduledAt).toLocaleDateString('en-IN') : '',
+          a.scheduledAt ? new Date(a.scheduledAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : '',
+          a.status || '',
+          a.type || '',
+        ]),
+      ];
+      const csv  = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url  = URL.createObjectURL(blob);
+      const el   = document.createElement('a');
+      el.href    = url;
+      el.download = `appointments-${dateFilter || 'all'}.csv`;
+      el.click();
+      URL.revokeObjectURL(url);
+      toast.success(`Exported ${all.length} appointments`);
+    } catch { toast.error('Export failed'); }
+    finally { setExporting(false); }
   };
 
   // Queue stats
@@ -282,8 +298,9 @@ export default function AppointmentsPage() {
             <Printer className="w-4 h-4" /> Day Sheet
           </a>
           <button onClick={exportCSV}
-            className="flex items-center gap-2 border border-slate-200 text-slate-600 text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-slate-50 transition-colors">
-            <Download className="w-4 h-4" /> Export CSV
+            disabled={exporting}
+            className="flex items-center gap-2 border border-slate-200 text-slate-600 text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50">
+            <Download className="w-4 h-4" /> {exporting ? 'Exporting…' : 'Export CSV'}
           </button>
           <a href="/clinical/appointments/queue"
             className="flex items-center gap-2 border border-[#0D7C66] text-[#0D7C66] text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-[#E8F5F0] transition-colors">
