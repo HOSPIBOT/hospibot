@@ -31,3 +31,33 @@ export class VisitController {
     return this.visitService.getById(tenantId, id);
   }
 }
+
+  @Post(':id/feedback')
+  @ApiOperation({ summary: 'Submit patient feedback and rating for a visit' })
+  async submitFeedback(
+    @CurrentTenant() tenantId: string,
+    @Param('id') id: string,
+    @Body() body: { rating: number; feedback?: string; npsScore?: number },
+  ) {
+    return this.visitService['prisma'].visit.update({
+      where: { id },
+      data: {
+        rating: body.rating,
+        feedback: body.feedback,
+        npsScore: body.npsScore,
+      },
+    });
+  }
+
+  @Get()
+  listAll(@CurrentTenant() tenantId: string) {
+    return this.visitService['prisma'].visit.findMany({
+      where: { tenantId },
+      take: 50,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        patient: { select: { firstName: true, lastName: true, phone: true } },
+        doctor:  { include: { user: { select: { firstName: true, lastName: true } } } },
+      },
+    });
+  }

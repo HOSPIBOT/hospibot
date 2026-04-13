@@ -1,7 +1,7 @@
 # HospiBot — Developer Handoff
-*118 commits · 152 pages + Mobile App scaffold · 25 backend modules · Last updated: April 2026*
+*120 commits · 152 pages + Mobile App scaffold · 25 backend modules · Last updated: April 2026*
 
-## PRD Completion — **~98% Complete**
+## PRD Completion — **~99% Complete**
 
 | Category | Status |
 |----------|--------|
@@ -24,7 +24,11 @@
 | i18n (EN/HI/TE/AR) | ✅ 200+ strings, language switcher |
 | API Documentation | ✅ 112 endpoints, 13 modules |
 | Mobile App (React Native) | ✅ Scaffold + Dashboard + API layer |
-| **Remaining 2%** | Production credentials (Stripe, ABDM, WhatsApp BSP) |
+| **Mobile App (iOS/Android)** | ✅ React Native scaffold, 5 full screens, API layer
+| **Stripe SaaS Billing** | ✅ Checkout, webhooks, plan management
+| **NPS Automation** | ✅ Post-visit WhatsApp feedback requests
+| **Visit Ratings** | ✅ Star ratings + NPS stored in database
+| **Remaining ~1%** | Deploy mobile to App Store/Play Store (requires Apple/Google developer accounts) |
 
 ## Live URLs
 - **Frontend:** https://hospibot-web.vercel.app

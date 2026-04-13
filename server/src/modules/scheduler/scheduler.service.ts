@@ -421,3 +421,33 @@ export class SchedulerService implements OnModuleInit, OnModuleDestroy {
 
     this.logger.log(`Sent ${prescriptions.length} refill reminders`);
   }
+
+  // ── Send NPS feedback requests after visits ─────────────────────────────
+  async sendFeedbackRequests() {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setHours(0, 0, 0, 0);
+    const yesterdayEnd = new Date(yesterday);
+    yesterdayEnd.setHours(23, 59, 59, 999);
+
+    const visits = await this.prisma.visit.findMany({
+      where: {
+        createdAt: { gte: yesterday, lte: yesterdayEnd },
+        rating: null, // Only visits without feedback yet
+      },
+      include: {
+        patient: { select: { firstName: true, phone: true, tenantId: true } },
+      },
+      take: 100,
+    });
+
+    let sent = 0;
+    for (const v of visits) {
+      if (!v.patient?.phone || !v.tenantId) continue;
+      const msg = `⭐ *How was your visit?*\n\nHi ${v.patient.firstName},\n\nWe hope you're feeling better! Please rate your recent visit:\n\nReply with:\n*1* - ⭐ Poor\n*2* - ⭐⭐ Fair\n*3* - ⭐⭐⭐ Good\n*4* - ⭐⭐⭐⭐ Very Good\n*5* - ⭐⭐⭐⭐⭐ Excellent\n\nYour feedback helps us improve. Thank you!`;
+      await this.whatsappService.sendTextMessage(v.tenantId, v.patient.phone, msg).catch(() => {});
+      sent++;
+    }
+
+    this.logger.log(`Sent ${sent} feedback requests`);
+  }

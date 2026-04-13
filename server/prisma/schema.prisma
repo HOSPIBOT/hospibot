@@ -442,6 +442,11 @@ model Visit {
   // Metadata
   visitType       String?   @map("visit_type") // OPD, IPD, Emergency
   source          String?   // dictation, manual, imported
+
+  // Patient feedback / NPS
+  rating          Int?      // 1-5 star rating
+  feedback        String?   // Patient comment
+  npsScore        Int?      @map("nps_score") // 0-10 NPS
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
 
