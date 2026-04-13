@@ -13,7 +13,7 @@ import {
   FlaskConical, Package, ShoppingCart, Home, Truck, Heart,
   Briefcase, ClipboardList, FileText, Pill, Dumbbell,
   ChevronRight, Building2, TrendingUp, Shield, Globe, Star, Lock,
-  AlertTriangle, UserCheck, Layers2, BedDouble, Send, Scissors, Clock, Video, IndianRupee, FlaskConical,
+  AlertTriangle, UserCheck, Layers2, BedDouble, Send, Scissors, Clock, Video, IndianRupee, Activity,
 } from 'lucide-react';
 
 // ── Feature-flag → nav item map ───────────────────────────────────────────────

@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import {
   LayoutDashboard, Building2, CreditCard, Users, Activity,
   Megaphone, Settings, LogOut, ChevronRight, Shield,
-  Bell, HelpCircle, Globe, MessageSquare, Code, Zap,
+  Bell, HelpCircle, Globe, MessageSquare, Code, Zap, Layers, Palette,
 } from 'lucide-react';
 
 const navSections = [
