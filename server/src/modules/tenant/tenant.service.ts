@@ -35,7 +35,7 @@ export class TenantService {
 
   async updateBranch(tenantId: string, branchId: string, dto: any) {
     const branch = await this.prisma.branch.findFirst({ where: { id: branchId, tenantId } });
-    if (!branch) throw new Error('Branch not found');
+    if (!branch) throw new NotFoundException('Branch not found');
     return this.prisma.branch.update({ where: { id: branchId }, data: dto });
   }
 
@@ -74,7 +74,7 @@ export class TenantService {
 
   async updateBranch(tenantId: string, branchId: string, dto: any) {
     const branch = await this.prisma.branch.findFirst({ where: { id: branchId, tenantId } });
-    if (!branch) throw new Error('Branch not found');
+    if (!branch) throw new NotFoundException('Branch not found');
     return this.prisma.branch.update({ where: { id: branchId }, data: dto });
   }
 

@@ -206,7 +206,7 @@ export class DoctorService {
 
   async deleteDepartment(tenantId: string, id: string) {
     const dept = await this.prisma.department.findFirst({ where: { id, tenantId } });
-    if (!dept) throw new Error('Department not found');
+    if (!dept) throw new NotFoundException('Department not found');
     await this.prisma.department.update({ where: { id }, data: { isActive: false } });
     return { deleted: true };
   }

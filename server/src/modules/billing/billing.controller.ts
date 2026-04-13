@@ -66,7 +66,7 @@ export class BillingController {
     @Param('id') id: string,
   ) {
     const invoice = await this.billingService.findById(tenantId, id);
-    if (!invoice) throw new Error('Invoice not found');
+    if (!invoice) throw new NotFoundException('Invoice not found');
 
     // Get WhatsApp service
     const { WhatsappService } = await import('../whatsapp/whatsapp.service');
