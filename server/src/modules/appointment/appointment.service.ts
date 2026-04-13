@@ -352,3 +352,18 @@ export class AppointmentService {
     };
   }
 }
+
+  async update(tenantId: string, id: string, dto: any) {
+    const appointment = await this.prisma.appointment.findFirst({ where: { id, tenantId } });
+    if (!appointment) throw new NotFoundException('Appointment not found');
+    const { status, ...rest } = dto;
+    if (status) return this.updateStatus(tenantId, id, { status });
+    return this.prisma.appointment.update({
+      where: { id },
+      data: rest,
+      include: {
+        patient: { select: { id: true, firstName: true, lastName: true, phone: true, healthId: true } },
+        doctor: { include: { user: { select: { firstName: true, lastName: true } } } },
+      },
+    });
+  }

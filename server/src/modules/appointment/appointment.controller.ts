@@ -71,4 +71,23 @@ export class AppointmentController {
   ) {
     return this.appointmentService.reschedule(tenantId, id, dto);
   }
+  @Patch(':id/status')
+  @ApiOperation({ summary: 'PATCH alias for status update' })
+  async patchStatus(
+    @CurrentTenant() tenantId: string,
+    @Param('id') id: string,
+    @Body('status') status: string,
+  ) {
+    return this.appointmentService.updateStatus(tenantId, id, status);
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Partial update appointment fields' })
+  async patch(
+    @CurrentTenant() tenantId: string,
+    @Param('id') id: string,
+    @Body() dto: any,
+  ) {
+    return this.appointmentService.update(tenantId, id, dto);
+  }
 }
