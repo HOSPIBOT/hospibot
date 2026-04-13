@@ -51,3 +51,9 @@ export class AnalyticsController {
     return this.analyticsService.getWhatsAppAnalytics(tenantId, days ? parseInt(days) : 30);
   }
 }
+
+  @Get('notifications')
+  @ApiOperation({ summary: 'Get actionable notifications for the portal header' })
+  async getNotifications(@CurrentTenant() tenantId: string) {
+    return this.analyticsService.getNotifications(tenantId);
+  }

@@ -222,10 +222,55 @@ export default function PortalLayout({ children, portalSlug }: PortalLayoutProps
                 {tenant.plan}
               </span>
             )}
-            <button className="relative p-2 text-slate-500 hover:text-slate-700 transition-colors">
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full" />
-            </button>
+            <div className="relative" ref={notifRef}>
+              <button
+                onClick={() => setShowNotifs(v => !v)}
+                className="relative p-2 text-slate-500 hover:text-slate-700 transition-colors">
+                <Bell className="w-4 h-4" />
+                {notifications.filter(n => n.type !== 'success').length > 0 && (
+                  <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                    {notifications.filter(n => n.type !== 'success').length}
+                  </span>
+                )}
+              </button>
+              {showNotifs && (
+                <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 z-50 overflow-hidden">
+                  <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+                    <p className="text-sm font-bold text-slate-900">Notifications</p>
+                    <button onClick={() => setShowNotifs(false)} className="text-slate-400 hover:text-slate-600 text-xs">✕</button>
+                  </div>
+                  <div className="max-h-80 overflow-y-auto divide-y divide-slate-50">
+                    {notifications.length === 0 ? (
+                      <div className="px-4 py-6 text-center text-slate-400 text-xs">Loading…</div>
+                    ) : notifications.map(n => {
+                      const colors: Record<string,string> = {
+                        warning: 'text-amber-600 bg-amber-50',
+                        danger: 'text-red-600 bg-red-50',
+                        info: 'text-blue-600 bg-blue-50',
+                        whatsapp: 'text-emerald-600 bg-emerald-50',
+                        lab: 'text-purple-600 bg-purple-50',
+                        success: 'text-emerald-600 bg-emerald-50',
+                      };
+                      const cls = colors[n.type] || 'text-slate-600 bg-slate-50';
+                      const inner = (
+                        <div className="flex items-start gap-3 px-4 py-3 hover:bg-slate-50 transition-colors">
+                          <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-sm ${cls}`}>
+                            {n.type === 'success' ? '✓' : n.type === 'warning' ? '⚠' : n.type === 'danger' ? '!' : '•'}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-slate-900 leading-tight">{n.title}</p>
+                            <p className="text-xs text-slate-400 mt-0.5">{n.subtitle}</p>
+                          </div>
+                        </div>
+                      );
+                      return n.href ? (
+                        <a key={n.id} href={n.href} onClick={() => setShowNotifs(false)}>{inner}</a>
+                      ) : <div key={n.id}>{inner}</div>;
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </header>
 

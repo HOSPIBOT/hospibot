@@ -43,10 +43,11 @@ const inputCls = 'w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-20
 
 // ─── Lead Card ────────────────────────────────────────────────────────────────
 
-function LeadCard({ lead, onMove, onConvert }: {
+function LeadCard({ lead, onMove, onConvert, onBook }: {
   lead: Lead;
   onMove: (id: string, stage: string) => void;
   onConvert: (id: string) => void;
+  onBook: (lead: Lead) => void;
 }) {
   const [showMenu, setShowMenu] = useState(false);
   const stageInfo = STAGES.find(s => s.key === lead.stage);
@@ -130,19 +131,106 @@ function LeadCard({ lead, onMove, onConvert }: {
       {/* Quick actions */}
       <div className="flex items-center gap-1.5 mt-2.5 pt-2.5 border-t border-slate-50 opacity-0 group-hover:opacity-100 transition-opacity">
         <a href={`https://wa.me/${lead.phone.replace(/\D/g, '')}`} target="_blank" rel="noreferrer"
-          className="flex-1 flex items-center justify-center gap-1 text-[10px] font-semibold text-white bg-[#25D366] py-1.5 rounded-lg hover:opacity-90 transition-opacity">
-          <MessageSquare className="w-3 h-3" /> WhatsApp
+          className="flex items-center justify-center gap-1 text-[10px] font-semibold text-white bg-[#25D366] py-1.5 px-2 rounded-lg hover:opacity-90 transition-opacity">
+          <MessageSquare className="w-3 h-3" /> WA
         </a>
         <a href={`tel:${lead.phone}`}
-          className="flex-1 flex items-center justify-center gap-1 text-[10px] font-semibold text-slate-600 border border-slate-200 py-1.5 rounded-lg hover:bg-slate-50 transition-colors">
+          className="flex items-center justify-center gap-1 text-[10px] font-semibold text-slate-600 border border-slate-200 py-1.5 px-2 rounded-lg hover:bg-slate-50 transition-colors">
           <Phone className="w-3 h-3" /> Call
         </a>
+        <button onClick={() => onBook(lead)}
+          className="flex-1 flex items-center justify-center gap-1 text-[10px] font-semibold text-white bg-[#0D7C66] py-1.5 rounded-lg hover:bg-[#0A5E4F] transition-colors">
+          <Calendar className="w-3 h-3" /> Book Appt
+        </button>
       </div>
     </div>
   );
 }
 
 // ─── Add Lead Modal ───────────────────────────────────────────────────────────
+
+// ─── Quick Book Appointment from CRM ─────────────────────────────────────────
+
+function QuickBookModal({ lead, onClose, onBooked }: { lead: Lead; onClose: () => void; onBooked: () => void }) {
+  const [doctors, setDoctors]     = useState<any[]>([]);
+  const [scheduledAt, setTime]    = useState('');
+  const [doctorId, setDoctorId]   = useState('');
+  const [notes, setNotes]         = useState(`Lead: ${lead.source} — ${lead.notes || ''}`);
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    api.get('/doctors?limit=50').then(r => setDoctors(r.data.data ?? [])).catch(() => {});
+  }, []);
+
+  const submit = async () => {
+    if (!scheduledAt) { toast.error('Select appointment time'); return; }
+    setSubmitting(true);
+    try {
+      // 1. Register as patient if not already
+      let patientId: string | undefined;
+      const existing = await api.get('/patients', { params: { search: lead.phone, limit: 1 } }).catch(() => null);
+      if (existing?.data?.data?.[0]) {
+        patientId = existing.data.data[0].id;
+      } else {
+        const [firstName, ...rest] = lead.name.split(' ');
+        const newPat = await api.post('/patients', { firstName, lastName: rest.join(' ') || undefined, phone: lead.phone, email: lead.email });
+        patientId = newPat.data.id;
+      }
+      // 2. Book appointment
+      await api.post('/appointments', { patientId, doctorId: doctorId || undefined, scheduledAt, notes, type: 'SCHEDULED' });
+      // 3. Move lead to APPOINTMENT_BOOKED stage
+      await api.put(`/crm/leads/${lead.id}`, { stage: 'APPOINTMENT_BOOKED' }).catch(() => {});
+      toast.success(`Appointment booked for ${lead.name}! Lead moved to Appt Booked.`);
+      onBooked();
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Failed to book');
+    } finally { setSubmitting(false); }
+  };
+
+  const inputCls = 'w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#0D7C66] outline-none transition-all placeholder:text-slate-400';
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+          <div>
+            <h2 className="text-lg font-bold text-slate-900">Book Appointment</h2>
+            <p className="text-xs text-slate-400 mt-0.5">{lead.name} · {lead.phone}</p>
+          </div>
+          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl"><X className="w-4 h-4" /></button>
+        </div>
+        <div className="px-6 py-5 space-y-4">
+          <div className="bg-[#E8F5F0] border border-[#0D7C66]/20 rounded-xl px-4 py-3 text-xs text-[#0A5E4F]">
+            Patient will be registered automatically if not already in the system.
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Date & Time *</label>
+            <input type="datetime-local" className={inputCls} value={scheduledAt} onChange={e => setTime(e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Doctor (optional)</label>
+            <select className={inputCls} value={doctorId} onChange={e => setDoctorId(e.target.value)}>
+              <option value="">Any Available Doctor</option>
+              {doctors.map(d => <option key={d.id} value={d.id}>Dr. {d.user?.firstName} {d.user?.lastName || ''}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Notes</label>
+            <textarea className={`${inputCls} resize-none`} rows={2} value={notes} onChange={e => setNotes(e.target.value)} />
+          </div>
+        </div>
+        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 bg-slate-50/50 rounded-b-2xl">
+          <button onClick={onClose} className="text-sm text-slate-500 hover:text-slate-700 px-4 py-2 rounded-xl hover:bg-slate-100">Cancel</button>
+          <button onClick={submit} disabled={submitting}
+            className="bg-[#0D7C66] text-white text-sm font-semibold px-6 py-2.5 rounded-xl hover:bg-[#0A5E4F] disabled:opacity-50 flex items-center gap-2">
+            {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
+            <Calendar className="w-4 h-4" /> Book Appointment
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function AddLeadModal({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
   const [form, setForm] = useState({ name: '', phone: '', email: '', source: 'WALK_IN', notes: '', tags: '' });
@@ -480,6 +568,7 @@ export default function CRMPage() {
       )}
 
       {showAdd && <AddLeadModal onClose={() => setShowAdd(false)} onCreated={load} />}
+      {bookingLead && <QuickBookModal lead={bookingLead} onClose={() => setBookingLead(null)} onBooked={() => { setBookingLead(null); load(); }} />}
     </div>
   );
 }

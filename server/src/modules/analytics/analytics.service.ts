@@ -284,3 +284,99 @@ export class AnalyticsService {
     };
   }
 }
+
+  // ── Actionable notifications ─────────────────────────────────────────────────
+
+  async getNotifications(tenantId: string): Promise<any[]> {
+    const now = new Date();
+    const today = new Date(now); today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
+    const in90 = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
+
+    const notifications: any[] = [];
+
+    const [
+      overdueInvoices,
+      pendingAppointments,
+      lowStockDrugs,
+      expiringDrugs,
+      unreadConvos,
+      pendingLabOrders,
+    ] = await Promise.all([
+      // Overdue invoices
+      this.prisma.invoice.count({ where: { tenantId, status: 'OVERDUE' } }),
+      // Today's unconfirmed appointments
+      this.prisma.appointment.count({
+        where: { tenantId, status: 'PENDING', scheduledAt: { gte: today, lt: tomorrow } },
+      }),
+      // Low stock drugs
+      this.prisma.pharmacyProduct.count({
+        where: { tenantId, isActive: true, currentStock: { gt: 0 }, minimumStock: { gt: 0 } },
+      }).catch(() => 0),
+      // Expiring drugs in 90 days
+      this.prisma.pharmacyBatch.count({
+        where: { tenantId, expiryDate: { lte: in90 }, remainingQuantity: { gt: 0 } },
+      }).catch(() => 0),
+      // Unread WhatsApp convos
+      this.prisma.conversation.count({
+        where: { tenantId, unreadCount: { gt: 0 } },
+      }).catch(() => 0),
+      // Pending lab orders
+      this.prisma.labOrder.count({
+        where: { tenantId, status: { in: ['ORDERED', 'SAMPLE_COLLECTED'] } },
+      }).catch(() => 0),
+    ]);
+
+    if (overdueInvoices > 0) notifications.push({
+      id: 'overdue-invoices', type: 'warning', icon: 'CreditCard',
+      title: `${overdueInvoices} overdue invoice${overdueInvoices > 1 ? 's' : ''}`,
+      subtitle: 'Collect outstanding payments',
+      href: '/clinical/billing?status=OVERDUE',
+    });
+
+    if (pendingAppointments > 0) notifications.push({
+      id: 'pending-appointments', type: 'info', icon: 'Calendar',
+      title: `${pendingAppointments} appointment${pendingAppointments > 1 ? 's' : ''} pending confirmation`,
+      subtitle: "Today's appointments awaiting confirmation",
+      href: '/clinical/appointments',
+    });
+
+    if (unreadConvos > 0) notifications.push({
+      id: 'unread-whatsapp', type: 'whatsapp', icon: 'MessageSquare',
+      title: `${unreadConvos} unread WhatsApp conversation${unreadConvos > 1 ? 's' : ''}`,
+      subtitle: 'Patients waiting for response',
+      href: '/clinical/whatsapp',
+    });
+
+    if (pendingLabOrders > 0) notifications.push({
+      id: 'pending-lab', type: 'lab', icon: 'FlaskConical',
+      title: `${pendingLabOrders} lab order${pendingLabOrders > 1 ? 's' : ''} in progress`,
+      subtitle: 'Pending sample collection or processing',
+      href: '/diagnostic/lab-orders',
+    });
+
+    if (lowStockDrugs > 0) notifications.push({
+      id: 'low-stock', type: 'warning', icon: 'Package',
+      title: `${lowStockDrugs} drug${lowStockDrugs > 1 ? 's' : ''} running low`,
+      subtitle: 'Check pharmacy inventory',
+      href: '/pharmacy/inventory',
+    });
+
+    if (expiringDrugs > 0) notifications.push({
+      id: 'expiring-drugs', type: 'danger', icon: 'AlertTriangle',
+      title: `${expiringDrugs} batch${expiringDrugs > 1 ? 'es' : ''} expiring within 90 days`,
+      subtitle: 'Check pharmacy batches',
+      href: '/pharmacy/inventory',
+    });
+
+    if (notifications.length === 0) {
+      notifications.push({
+        id: 'all-clear', type: 'success', icon: 'CheckCircle2',
+        title: 'All clear!',
+        subtitle: 'No action items right now',
+        href: null,
+      });
+    }
+
+    return notifications;
+  }
