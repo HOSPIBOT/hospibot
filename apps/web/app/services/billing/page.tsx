@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
 import { formatDate, formatINR } from '@/lib/utils';
 import toast from 'react-hot-toast';
-import { CreditCard, TrendingUp, AlertTriangle, RefreshCw, Plus, Search } from 'lucide-react';
+import { CreditCard, TrendingUp, AlertTriangle, RefreshCw, Plus, Search, Download } from 'lucide-react';
 
 const STATUS_CLR: Record<string, string> = {
   PAID:    'bg-emerald-100 text-emerald-700',
@@ -42,6 +42,29 @@ export default function ServicesBillingPage() {
 
   useEffect(() => { load(); }, [load]);
 
+  const [exporting, setExporting] = useState(false);
+  const exportCSV = () => {
+    setExporting(true);
+    try {
+      const header = ['Invoice #', 'Client', 'Amount', 'Status', 'Date'];
+      const rows = filtered.map(inv => [
+        inv.invoiceNumber ?? inv.id?.slice(0,8).toUpperCase() ?? '',
+        clientName(inv),
+        inv.totalAmount ?? 0,
+        inv.status ?? '',
+        inv.createdAt ? new Date(inv.createdAt).toLocaleDateString('en-IN') : '',
+      ]);
+      const csv  = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url; a.download = `services-billing-${new Date().toISOString().slice(0,10)}.csv`;
+      a.click(); URL.revokeObjectURL(url);
+      toast.success(`Exported ${filtered.length} invoices`);
+    } catch { toast.error('Export failed'); }
+    finally { setExporting(false); }
+  };
+
   const filtered = invoices.filter(inv => {
     if (!search) return true;
     const q = search.toLowerCase();
@@ -66,6 +89,10 @@ export default function ServicesBillingPage() {
         <div className="flex items-center gap-2">
           <button onClick={load} className="p-2 border border-slate-200 rounded-xl text-slate-400 hover:bg-slate-50">
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+          <button onClick={exportCSV} disabled={exporting}
+            className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm font-medium px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50">
+            <Download className="w-4 h-4" /> {exporting ? 'Exporting…' : 'Export'}
           </button>
           <a href="/clinical/billing"
             className="flex items-center gap-2 bg-slate-900 text-white text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-slate-800 transition-colors">

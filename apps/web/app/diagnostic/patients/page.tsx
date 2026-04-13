@@ -6,7 +6,7 @@ import { formatDate } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import {
   Users, Search, RefreshCw, Plus, ChevronLeft, ChevronRight,
-  FlaskConical, Phone, Mail, X, Loader2, CheckCircle2,
+  FlaskConical, Phone, Mail, X, Loader2, CheckCircle2, Download,
 } from 'lucide-react';
 
 const inputCls = 'w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#1E3A5F] focus:ring-2 focus:ring-[#1E3A5F]/10 outline-none transition-all placeholder:text-slate-400';
@@ -133,6 +133,29 @@ export default function DiagnosticPatientsPage() {
 
   useEffect(() => { load(1); }, [load]);
 
+  const [exporting, setExporting] = useState(false);
+  const exportCSV = async () => {
+    setExporting(true);
+    try {
+      const res  = await api.get('/patients', { params: { limit: 5000 } });
+      const all: any[] = res.data.data ?? patients;
+      const header = ['Health ID', 'First Name', 'Last Name', 'Phone', 'Email', 'Gender', 'Blood Group', 'Registered'];
+      const rows = all.map(p => [
+        p.healthId ?? '', p.firstName ?? '', p.lastName ?? '',
+        p.phone ?? '', p.email ?? '', p.gender ?? '', p.bloodGroup ?? '',
+        p.createdAt ? new Date(p.createdAt).toLocaleDateString('en-IN') : '',
+      ]);
+      const csv  = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url; a.download = `diagnostic-patients-${new Date().toISOString().slice(0,10)}.csv`;
+      a.click(); URL.revokeObjectURL(url);
+      toast.success(`Exported ${all.length} patients`);
+    } catch { toast.error('Export failed'); }
+    finally { setExporting(false); }
+  };
+
   const ageFromDOB = (dob: string) =>
     Math.floor((Date.now() - new Date(dob).getTime()) / (1000 * 60 * 60 * 24 * 365.25));
 
@@ -149,6 +172,10 @@ export default function DiagnosticPatientsPage() {
         <div className="flex items-center gap-2">
           <button onClick={() => load(meta.page)} className="p-2 border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50 transition-colors">
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+          <button onClick={exportCSV} disabled={exporting}
+            className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm font-medium px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50">
+            <Download className="w-4 h-4" /> {exporting ? 'Exporting…' : 'Export'}
           </button>
           <button onClick={() => setShowAdd(true)}
             className="flex items-center gap-2 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors shadow-sm"

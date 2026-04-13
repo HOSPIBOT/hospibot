@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
-import { Users, Plus, Phone, Mail, X, Loader2, RefreshCw, Briefcase } from 'lucide-react';
+import { Users, Plus, Phone, Mail, X, Loader2, RefreshCw, Briefcase, Download } from 'lucide-react';
 
 const THEME = '#334155'; // services dark-slate
 
@@ -65,7 +65,17 @@ export default function ServicesStaffPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const save = async () => {
+  const exportCSV = () => {
+    const header = ['Name', 'Phone', 'Email', 'Role', 'Status', 'Contracts'];
+    const rows = staff.map(s => [s.name ?? '', s.phone ?? '', s.email ?? '', s.role ?? '', s.status ?? '', s.contracts ?? 0]);
+    const csv  = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = `services-staff-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click(); URL.revokeObjectURL(url);
+    toast.success(`Exported ${staff.length} staff members`);
+  };
     if (!form.name || !form.phone) { toast.error('Name and phone required'); return; }
     setSaving(true);
     await new Promise(r => setTimeout(r, 500));
@@ -95,6 +105,10 @@ export default function ServicesStaffPage() {
         <div className="flex items-center gap-2">
           <button onClick={load} className="p-2 border border-slate-200 rounded-xl text-slate-400 hover:bg-slate-50">
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+          <button onClick={exportCSV} disabled={staff.length === 0}
+            className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm font-medium px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50">
+            <Download className="w-4 h-4" /> Export
           </button>
           <button onClick={() => setShowAdd(true)}
             className="flex items-center gap-2 bg-slate-900 text-white text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-slate-800 transition-colors">
