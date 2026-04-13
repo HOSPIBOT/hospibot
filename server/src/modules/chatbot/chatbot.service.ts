@@ -54,9 +54,52 @@ function detectIntent(text: string): string {
   return 'UNKNOWN';
 }
 
-// ── Menu texts ────────────────────────────────────────────────────────────────
-function mainMenu(facilityName: string): string {
-  return `Welcome to *${facilityName}* 🏥\n\nHow can I help you today?\n\n1️⃣ Book Appointment\n2️⃣ Download Lab Report\n3️⃣ Pay Bill\n4️⃣ View Prescription\n5️⃣ My Health Records\n6️⃣ Talk to Staff\n\nReply with a number or type your query.`;
+// ── Language detection ─────────────────────────────────────────────────────
+function detectLanguage(text: string): 'en' | 'hi' | 'te' | 'ar' {
+  // Hindi detection - Devanagari script
+  if (/[\u0900-\u097F]/.test(text)) return 'hi';
+  // Telugu detection - Telugu script
+  if (/[\u0C00-\u0C7F]/.test(text)) return 'te';
+  // Arabic detection
+  if (/[\u0600-\u06FF]/.test(text)) return 'ar';
+  // Hindi transliteration common words
+  if (/\b(aap|mujhe|chahiye|haan|nahi|kya|kaise|doctor|dawa|dawai|bimari|report|paisa)\b/i.test(text)) return 'hi';
+  return 'en';
+}
+
+// ── Multilingual menu texts ────────────────────────────────────────────────
+const MENUS: Record<string, (name: string) => string> = {
+  en: (name) => `Welcome to *${name}* 🏥\n\nHow can I help you today?\n\n1️⃣ Book Appointment\n2️⃣ Download Lab Report\n3️⃣ Pay Bill\n4️⃣ View Prescription\n5️⃣ My Health Records\n6️⃣ Talk to Staff\n\nReply with a number or type your query.`,
+  hi: (name) => `*${name}* में आपका स्वागत है 🏥\n\nमैं आपकी कैसे मदद कर सकता हूँ?\n\n1️⃣ अपॉइंटमेंट बुक करें\n2️⃣ लैब रिपोर्ट डाउनलोड करें\n3️⃣ बिल का भुगतान करें\n4️⃣ प्रिस्क्रिप्शन देखें\n5️⃣ मेरे स्वास्थ्य रिकॉर्ड\n6️⃣ स्टाफ से बात करें\n\nकोई नंबर भेजें या अपना सवाल टाइप करें।`,
+  te: (name) => `*${name}* కి స్వాగతం 🏥\n\nనేను మీకు ఎలా సహాయం చేయగలను?\n\n1️⃣ అపాయింట్‌మెంట్ బుక్ చేయండి\n2️⃣ లాబ్ రిపోర్ట్ డౌన్‌లోడ్ చేయండి\n3️⃣ బిల్ చెల్లించండి\n4️⃣ ప్రిస్క్రిప్షన్ చూడండి\n5️⃣ నా ఆరోగ్య రికార్డులు\n6️⃣ సిబ్బందితో మాట్లాడండి\n\nఒక నంబర్ పంపండి లేదా మీ ప్రశ్న టైప్ చేయండి।`,
+  ar: (name) => `مرحبًا بك في *${name}* 🏥\n\nكيف يمكنني مساعدتك اليوم؟\n\n1️⃣ احجز موعدًا\n2️⃣ تحميل تقرير المختبر\n3️⃣ سداد الفاتورة\n4️⃣ عرض الوصفة الطبية\n5️⃣ سجلاتي الصحية\n6️⃣ التحدث مع الموظفين\n\nأرسل رقمًا أو اكتب استفسارك.`,
+};
+
+function mainMenu(facilityName: string, lang: string = 'en'): string {
+  const fn = MENUS[lang] || MENUS.en;
+  return fn(facilityName);
+}
+
+// ── Multilingual response templates ──────────────────────────────────────
+const RESPONSES: Record<string, Record<string, string>> = {
+  emergency: {
+    en: '🚨 *EMERGENCY DETECTED*\n\nPlease call our emergency line immediately or go to the nearest emergency department.\n\nFor ambulance: 108\nFor our helpline: {phone}\n\nStaff has been notified.',
+    hi: '🚨 *आपातकालीन स्थिति*\n\nकृपया तुरंत हमारी आपातकालीन लाइन पर कॉल करें या नज़दीकी आपातकालीन विभाग जाएं।\n\nएम्बुलेंस: 108\nहमारा हेल्पलाइन: {phone}\n\nस्टाफ को सूचित कर दिया गया है।',
+    te: '🚨 *అత్యవసర పరిస్థితి*\n\nవెంటనే మా అత్యవసర లైన్‌కి కాల్ చేయండి.\n\nఆంబులెన్స్: 108\nమా హెల్ప్‌లైన్: {phone}',
+    ar: '🚨 *حالة طارئة*\n\nيرجى الاتصال بخط الطوارئ فورًا.\n\nإسعاف: 108\nخطنا: {phone}',
+  },
+  notFound: {
+    en: 'I\'m sorry, I didn\'t understand that. Let me show you the main menu:',
+    hi: 'माफ़ करें, मुझे समझ नहीं आया। मुख्य मेनू देखें:',
+    te: 'క్షమించండి, అర్థం కాలేదు. ప్రధాన మెనూ చూడండి:',
+    ar: 'عذرًا، لم أفهم ذلك. إليك القائمة الرئيسية:',
+  },
+};
+
+function getResponse(key: string, lang: string, vars: Record<string,string> = {}): string {
+  let msg = RESPONSES[key]?.[lang] || RESPONSES[key]?.en || '';
+  for (const [k, v] of Object.entries(vars)) msg = msg.replace(`{${k}}`, v);
+  return msg;
 }
 
 @Injectable()
@@ -85,6 +128,7 @@ export class ChatbotService {
 
     const facilityName = tenant.name;
     const text = messageText.trim();
+    const lang = detectLanguage(text); // Detect user's language
 
     // Load current chatbot state
     let state = await this.prisma.chatbotState.findUnique({
@@ -124,7 +168,7 @@ export class ChatbotService {
 
     switch (intent) {
       case 'GREETING':
-        await this.sendReply(tenantId, patientPhone, mainMenu(facilityName));
+        await this.sendReply(tenantId, patientPhone, mainMenu(facilityName, lang));
         break;
 
       case 'EMERGENCY':
@@ -173,7 +217,7 @@ export class ChatbotService {
         // Unknown intent — show menu or escalate
         if (text.length > 3) {
           await this.sendReply(tenantId, patientPhone,
-            `I am not sure I understood that. Let me show you what I can help with:\n\n${mainMenu(facilityName)}`);
+            `${getResponse("notFound", lang)}\n\n${mainMenu(facilityName, lang)}`);
         }
     }
   }
@@ -214,7 +258,7 @@ export class ChatbotService {
     else if (flow === 'BILLING') await this.continueBilling(tenantId, conversationId, patientPhone, patientId, text, step, data);
     else {
       await this.clearState(conversationId);
-      await this.sendReply(tenantId, patientPhone, `Something went wrong. Let me restart.\n\n${mainMenu(facilityName)}`);
+      await this.sendReply(tenantId, patientPhone, `Something went wrong. Let me restart.\n\n${mainMenu(facilityName, lang)}`);
     }
   }
 
