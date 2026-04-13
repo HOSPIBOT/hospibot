@@ -47,6 +47,7 @@ const NAV_BY_PORTAL: Record<string, NavItem[]> = {
     { href: 'branches',     label: 'Branches',       icon: Building2,       always: true },
     { href: 'departments',  label: 'Departments',    icon: Layers2,         always: true },
     { href: 'beds',         label: 'Bed Management', icon: BedDouble,       always: true },
+    { href: 'discharge',    label: 'Discharge Summary', icon: FileText,     always: true },
     { href: 'analytics',    label: 'Analytics',      icon: BarChart3,       always: true },
     { href: 'settings',     label: 'Settings',       icon: Settings,        always: true },
   ],

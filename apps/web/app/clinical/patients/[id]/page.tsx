@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 import {
   ArrowLeft, Phone, Mail, MapPin, Calendar, Activity, HeartPulse,
   Pill, FlaskConical, CreditCard, MessageSquare, Edit3, Plus,
-  AlertTriangle, CheckCircle2, Clock, RefreshCw, Loader2, Shield, Send, Download, Eye, Printer,
+  AlertTriangle, CheckCircle2, Clock, RefreshCw, Loader2, Shield, Send, Download, Eye, Printer, FileText,
 } from 'lucide-react';
 
 type Tab = 'overview' | 'appointments' | 'prescriptions' | 'labReports' | 'billing' | 'whatsapp';
@@ -166,6 +166,11 @@ export default function PatientDetailPage() {
                 <button className="flex items-center gap-1.5 text-xs font-medium text-slate-600 border border-slate-200 px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors">
                   <Edit3 className="w-3.5 h-3.5" /> Edit
                 </button>
+                <Link href={`/clinical/discharge?patientId=${p.id}`}>
+                  <button className="flex items-center gap-1.5 text-xs font-medium text-slate-600 border border-slate-200 px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors">
+                    <FileText className="w-3.5 h-3.5" /> Discharge
+                  </button>
+                </Link>
                 <Link href={`/clinical/appointments?patientId=${p.id}`}>
                   <button className="flex items-center gap-1.5 text-xs font-medium text-white bg-[#0D7C66] hover:bg-[#0A5E4F] px-3 py-2 rounded-xl transition-colors">
                     <Plus className="w-3.5 h-3.5" /> Book Appointment
