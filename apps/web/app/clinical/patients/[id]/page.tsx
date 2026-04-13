@@ -46,6 +46,50 @@ function TabButton({ label, active, count, icon: Icon, onClick }: any) {
   );
 }
 
+function QuickMessagePanel({ patientPhone, patientName }: { patientPhone: string; patientName: string }) {
+  const [message, setMessage] = useState('');
+  const [sending, setSending] = useState(false);
+  const TEMPLATES = [
+    { label: 'Appointment Reminder', text: `Hi ${patientName}, this is a reminder about your upcoming appointment. Please arrive 10 minutes early. Reply CONFIRM to confirm.` },
+    { label: 'Follow-Up', text: `Hi ${patientName}, how are you feeling after your visit? Please let us know if you need any assistance.` },
+    { label: 'Report Ready', text: `Hi ${patientName}, your lab report is ready. Please visit us to collect it or ask us to explain the results.` },
+    { label: 'Payment Due', text: `Hi ${patientName}, your invoice has a pending balance. Please arrange payment at your earliest convenience.` },
+  ];
+  const send = async () => {
+    if (!message.trim()) { toast.error('Enter a message'); return; }
+    setSending(true);
+    try {
+      await api.post('/whatsapp/send', { to: patientPhone, message });
+      toast.success('Message sent via WhatsApp!');
+      setMessage('');
+    } catch (err: any) { toast.error(err?.response?.data?.message || 'Failed to send'); }
+    finally { setSending(false); }
+  };
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-1.5">
+        {TEMPLATES.map(t => (
+          <button key={t.label} onClick={() => setMessage(t.text)}
+            className="text-[10px] font-semibold bg-white text-[#0D7C66] border border-[#0D7C66]/30 px-2.5 py-1 rounded-full hover:bg-[#0D7C66] hover:text-white transition-all">
+            {t.label}
+          </button>
+        ))}
+      </div>
+      <div className="flex gap-2">
+        <textarea
+          className="flex-1 px-3 py-2.5 text-sm rounded-xl border border-[#0D7C66]/20 bg-white focus:border-[#0D7C66] outline-none resize-none placeholder:text-slate-400"
+          rows={3} placeholder="Type a message or select a template above…"
+          value={message} onChange={e => setMessage(e.target.value)} />
+      </div>
+      <button onClick={send} disabled={sending || !message.trim()}
+        className="flex items-center gap-2 bg-[#25D366] text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 disabled:opacity-50 transition-all">
+        {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <MessageSquare className="w-4 h-4" />}
+        {sending ? 'Sending…' : 'Send WhatsApp'}
+      </button>
+    </div>
+  );
+}
+
 export default function PatientDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
@@ -382,15 +426,22 @@ export default function PatientDetailPage() {
 
           {/* ── WHATSAPP ── */}
           {tab === 'whatsapp' && (
-            <div className="text-center py-12">
-              <MessageSquare className="w-12 h-12 text-slate-200 mx-auto mb-3" />
-              <p className="text-slate-400 text-sm font-medium">WhatsApp conversation history</p>
-              <p className="text-slate-300 text-xs mt-1">Opens the WhatsApp inbox filtered to this patient</p>
-              <Link href={`/clinical/whatsapp?phone=${p.phone}`}>
-                <button className="mt-4 bg-[#25D366] text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2 mx-auto">
-                  <MessageSquare className="w-4 h-4" /> Open Conversation
-                </button>
-              </Link>
+            <div className="space-y-4">
+              {/* Quick message */}
+              <div className="bg-[#E8F5F0] border border-[#0D7C66]/20 rounded-2xl p-4">
+                <p className="text-xs font-bold text-[#0D7C66] uppercase tracking-widest mb-3">Quick Message</p>
+                <QuickMessagePanel patientPhone={p.phone} patientName={`${p.firstName} ${p.lastName || ''}`.trim()} />
+              </div>
+              {/* Open full conversation */}
+              <div className="text-center py-6 border border-slate-100 rounded-2xl bg-slate-50">
+                <MessageSquare className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                <p className="text-slate-400 text-sm mb-3">View full conversation history</p>
+                <Link href={`/clinical/whatsapp?phone=${p.phone}`}>
+                  <button className="bg-[#25D366] text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2 mx-auto">
+                    <MessageSquare className="w-4 h-4" /> Open in WhatsApp Inbox
+                  </button>
+                </Link>
+              </div>
             </div>
           )}
         </div>

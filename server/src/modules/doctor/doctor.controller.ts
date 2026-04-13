@@ -47,6 +47,12 @@ export class DoctorController {
     return this.doctorService.setSchedule(tenantId, id, dto);
   }
 
+  @Patch(':id')
+  @ApiOperation({ summary: 'Patch doctor profile' })
+  async patch(@CurrentTenant() tenantId: string, @Param('id') id: string, @Body() dto: any) {
+    return this.doctorService.update(tenantId, id, dto);
+  }
+
   @Get(':id/slots')
   @ApiOperation({ summary: 'Get available appointment slots for a date' })
   @ApiQuery({ name: 'date', example: '2026-04-15' })
