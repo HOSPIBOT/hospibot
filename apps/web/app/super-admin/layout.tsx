@@ -25,6 +25,7 @@ const navSections = [
       { href: '/super-admin/subtypes', label: 'Sub-Types',       icon: Layers },
       { href: '/super-admin/themes',   label: 'Themes',          icon: Palette },
       { href: '/super-admin/plans', label: 'Plans & Billing', icon: CreditCard },
+      { href: '/super-admin/billing', label: 'Subscription Mgmt', icon: CreditCard },
       { href: '/super-admin/users', label: 'Platform Users', icon: Users },
     ],
   },
