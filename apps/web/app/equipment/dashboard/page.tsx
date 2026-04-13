@@ -14,10 +14,10 @@ export default function EquipmentDashboard() {
       <h1 className="text-2xl font-bold text-slate-900">Equipment Dashboard</h1>
       <div className="grid grid-cols-4 gap-4">
         {[
-          {label:'Total Products',value:'48',icon:Package,color:NAV_COLOR},
-          {label:'Active Orders',value:'7',icon:ShoppingCart,color:'#8B5CF6'},
-          {label:'AMC Due (30d)',value:'3',icon:Wrench,color:'#F59E0B'},
-          {label:'Month Revenue',value:formatINR(8900000),icon:TrendingUp,color:'#10B981'},
+          {label:'Total Products',value: stats?.activeProducts ?? 48,icon:Package,color:NAV_COLOR},
+          {label:'Active Orders',value: stats?.activeOrders ?? 7,icon:ShoppingCart,color:'#8B5CF6'},
+          {label:'AMC Due (30d)',value: stats?.pendingServices ?? 3,icon:Wrench,color:'#F59E0B'},
+          {label:'Month Revenue',value: formatINR(stats?.monthRevenue ?? 0),icon:TrendingUp,color:'#10B981'},
         ].map(k=>(
           <div key={k.label} className="bg-white rounded-2xl border border-slate-100 p-5">
             <div className="flex items-center gap-2 mb-2"><k.icon className="w-4 h-4" style={{color:k.color}}/><p className="text-xs text-slate-500">{k.label}</p></div>
