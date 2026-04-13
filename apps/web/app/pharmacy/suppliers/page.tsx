@@ -144,10 +144,10 @@ export default function PharmacySuppliersPage() {
       ) : (
         <div className="grid grid-cols-2 gap-4">
           {suppliers.map(s => (
-            <div key={s.id} className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-shadow">
+            <a key={s.id} href={`/pharmacy/suppliers/${s.id}`} className="block bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md hover:border-emerald-200 transition-all group">
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <p className="font-bold text-slate-900">{s.name}</p>
+                  <p className="font-bold text-slate-900 group-hover:text-[#166834] transition-colors">{s.name}</p>
                   {s.contactPerson && <p className="text-xs text-slate-500 mt-0.5">{s.contactPerson}</p>}
                 </div>
                 {s.creditDays && (
@@ -181,7 +181,7 @@ export default function PharmacySuppliersPage() {
                   GST: <span className="font-mono">{s.gstNumber}</span>
                 </div>
               )}
-            </div>
+            </a>
           ))}
         </div>
       )}

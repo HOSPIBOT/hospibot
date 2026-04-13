@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Megaphone, Plus, Send, Building2, Users, AlertTriangle, Info, CheckCircle2, X, Clock } from 'lucide-react';
+import { createAnnouncement, getAllTenants } from '@/lib/super-admin-api';
 
 type AnnouncementType = 'INFO' | 'WARNING' | 'SUCCESS' | 'MAINTENANCE';
 type AudienceType = 'ALL' | 'PLAN' | 'STATUS';
@@ -98,20 +99,71 @@ export default function AnnouncementsPage() {
     scheduledAt: '',
   });
 
-  const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [sending, setSending]   = useState(false);
+  const [sent, setSent]         = useState(false);
+  const [tenantCounts, setCounts] = useState<Record<string, number>>({
+    ALL: 0, STARTER: 0, GROWTH: 0, ENTERPRISE: 0, ACTIVE: 0, TRIAL: 0, SUSPENDED: 0,
+  });
+  const [history, setHistory] = useState(PAST_ANNOUNCEMENTS as any[]);
+
+  // Load real tenant counts for recipient preview
+  useEffect(() => {
+    Promise.all([
+      getAllTenants({ page: 1, limit: 1, status: 'ALL' }).catch(() => ({ meta: { total: 0 } })),
+      getAllTenants({ page: 1, limit: 1, plan: 'STARTER' as any, status: 'ALL' }).catch(() => ({ meta: { total: 0 } })),
+      getAllTenants({ page: 1, limit: 1, plan: 'GROWTH' as any, status: 'ALL' }).catch(() => ({ meta: { total: 0 } })),
+      getAllTenants({ page: 1, limit: 1, plan: 'ENTERPRISE' as any, status: 'ALL' }).catch(() => ({ meta: { total: 0 } })),
+      getAllTenants({ page: 1, limit: 1, status: 'ACTIVE' as any }).catch(() => ({ meta: { total: 0 } })),
+      getAllTenants({ page: 1, limit: 1, status: 'TRIAL' as any }).catch(() => ({ meta: { total: 0 } })),
+      getAllTenants({ page: 1, limit: 1, status: 'SUSPENDED' as any }).catch(() => ({ meta: { total: 0 } })),
+    ]).then(([all, starter, growth, enterprise, active, trial, suspended]) => {
+      setCounts({
+        ALL: all.meta.total, STARTER: starter.meta.total, GROWTH: growth.meta.total,
+        ENTERPRISE: enterprise.meta.total, ACTIVE: active.meta.total,
+        TRIAL: trial.meta.total, SUSPENDED: suspended.meta.total,
+      });
+    });
+  }, []);
 
   const getRecipientCount = () => {
-    if (form.audienceType === 'ALL') return 200;
-    if (form.audienceType === 'PLAN') {
-      return form.audiencePlan === 'ENTERPRISE' ? 24 : form.audiencePlan === 'GROWTH' ? 87 : 89;
-    }
-    return form.audienceStatus === 'TRIAL' ? 12 : form.audienceStatus === 'ACTIVE' ? 178 : 10;
+    if (form.audienceType === 'ALL')    return tenantCounts.ALL || 0;
+    if (form.audienceType === 'PLAN')   return tenantCounts[form.audiencePlan] || 0;
+    return tenantCounts[form.audienceStatus] || 0;
   };
 
-  const handleSend = () => {
+  const handleSend = async () => {
+    if (!form.title || !form.body) return;
     setSending(true);
-    setTimeout(() => { setSending(false); setSent(true); setTimeout(() => { setSent(false); setShowCompose(false); }, 2000); }, 1500);
+    try {
+      const audience = form.audienceType === 'ALL'    ? 'ALL'
+                     : form.audienceType === 'PLAN'   ? `PLAN:${form.audiencePlan}`
+                     : `STATUS:${form.audienceStatus}`;
+      const result = await createAnnouncement({
+        title      : form.title,
+        body       : form.body,
+        type       : form.type,
+        audience,
+        scheduledAt: !form.scheduleNow && form.scheduledAt ? form.scheduledAt : undefined,
+      });
+      setSent(true);
+      setHistory(prev => [{
+        id      : result.id ?? `ann_${Date.now()}`,
+        title   : form.title,
+        body    : form.body,
+        type    : form.type,
+        audience: audience.replace(':', ': '),
+        sentTo  : result.sentTo ?? getRecipientCount(),
+        sentAt  : new Date().toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        sentBy  : 'Super Admin',
+      }, ...prev]);
+      setTimeout(() => {
+        setSent(false);
+        setShowCompose(false);
+        setForm({ type: 'INFO', title: '', body: '', audienceType: 'ALL', audiencePlan: 'ENTERPRISE', audienceStatus: 'TRIAL', scheduleNow: true, scheduledAt: '' });
+      }, 1500);
+    } catch (err: any) {
+      import('react-hot-toast').then(({ default: toast }) => toast.error(err?.response?.data?.message || 'Failed to send announcement'));
+    } finally { setSending(false); }
   };
 
   return (
@@ -131,10 +183,10 @@ export default function AnnouncementsPage() {
       {/* Stats row */}
       <div className="grid grid-cols-4 gap-4">
         {[
-          { label: 'Total Sent', value: '28', sub: 'All time' },
-          { label: 'This Month', value: '4', sub: 'Apr 2026' },
-          { label: 'Avg Reach', value: '85', sub: 'tenants / blast' },
-          { label: 'Open Rate', value: '94%', sub: 'In-app notification' },
+          { label: 'Total Sent',   value: history.length,                                    sub: 'All time'            },
+          { label: 'This Month',   value: history.filter(a => a.sentAt?.includes('2026')).length, sub: 'Apr 2026'       },
+          { label: 'All Tenants',  value: tenantCounts.ALL || '…',                           sub: 'On platform'         },
+          { label: 'Open Rate',    value: '94%',                                             sub: 'In-app notification' },
         ].map((s) => (
           <div key={s.label} className="bg-white rounded-2xl border border-slate-100 p-4">
             <p className="text-xs text-slate-500 font-medium">{s.label}</p>
@@ -147,7 +199,7 @@ export default function AnnouncementsPage() {
       {/* Past announcements */}
       <div className="space-y-3">
         <h3 className="font-semibold text-slate-900">Recent Announcements</h3>
-        {PAST_ANNOUNCEMENTS.map((ann) => (
+        {history.map((ann) => (
           <AnnouncementCard key={ann.id} ann={ann} />
         ))}
       </div>
@@ -228,17 +280,17 @@ export default function AnnouncementsPage() {
                 {form.audienceType === 'PLAN' && (
                   <select value={form.audiencePlan} onChange={(e) => setForm(f => ({ ...f, audiencePlan: e.target.value }))}
                     className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 bg-slate-50 outline-none">
-                    <option value="STARTER">Starter (89 tenants)</option>
-                    <option value="GROWTH">Growth (87 tenants)</option>
-                    <option value="ENTERPRISE">Enterprise (24 tenants)</option>
+                    <option value="STARTER">Starter ({tenantCounts.STARTER ?? '…'} tenants)</option>
+                    <option value="GROWTH">Growth ({tenantCounts.GROWTH ?? '…'} tenants)</option>
+                    <option value="ENTERPRISE">Enterprise ({tenantCounts.ENTERPRISE ?? '…'} tenants)</option>
                   </select>
                 )}
                 {form.audienceType === 'STATUS' && (
                   <select value={form.audienceStatus} onChange={(e) => setForm(f => ({ ...f, audienceStatus: e.target.value }))}
                     className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 bg-slate-50 outline-none">
-                    <option value="ACTIVE">Active (178 tenants)</option>
-                    <option value="TRIAL">Trial (12 tenants)</option>
-                    <option value="SUSPENDED">Suspended (10 tenants)</option>
+                    <option value="ACTIVE">Active ({tenantCounts.ACTIVE ?? '…'} tenants)</option>
+                    <option value="TRIAL">Trial ({tenantCounts.TRIAL ?? '…'} tenants)</option>
+                    <option value="SUSPENDED">Suspended ({tenantCounts.SUSPENDED ?? '…'} tenants)</option>
                   </select>
                 )}
 
