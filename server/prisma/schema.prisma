@@ -540,6 +540,21 @@ model Invoice {
   pdfUrl          String?       @map("pdf_url")
   notes           String?
 
+  // Insurance / TPA fields
+  insuranceProvider   String?   @map("insurance_provider")
+  insurancePolicyNo   String?   @map("insurance_policy_no")
+  tpaName             String?   @map("tpa_name")
+  preAuthNumber       String?   @map("pre_auth_number")
+  preAuthStatus       String?   @map("pre_auth_status")  // PENDING | APPROVED | REJECTED
+  preAuthAmount       Int?      @map("pre_auth_amount")   // paise
+  claimNumber         String?   @map("claim_number")
+  claimStatus         String?   @map("claim_status")      // DRAFT | SUBMITTED | PROCESSING | APPROVED | REJECTED | SETTLED
+  claimAmount         Int?      @map("claim_amount")       // paise
+  settledAmount       Int?      @map("settled_amount")     // paise
+  claimSubmittedAt    DateTime? @map("claim_submitted_at")
+  claimSettledAt      DateTime? @map("claim_settled_at")
+  isTpaBill           Boolean   @default(false) @map("is_tpa_bill")
+
   createdAt       DateTime      @default(now()) @map("created_at")
   updatedAt       DateTime      @updatedAt @map("updated_at")
 
