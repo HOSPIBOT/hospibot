@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { Check, Edit3, TrendingUp, Users, Building2, Zap } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Check, Edit3, TrendingUp, Users, Building2, Zap, RefreshCw } from 'lucide-react';
+import { getAllTenants } from '@/lib/super-admin-api';
 
 const plans = [
   {
@@ -97,14 +98,39 @@ function EditModal({ plan, onClose }: { plan: typeof plans[0]; onClose: () => vo
 
 export default function PlansPage() {
   const [editing, setEditing] = useState<typeof plans[0] | null>(null);
+  const [liveCounts, setLiveCounts] = useState<Record<string, number>>({});
+  const [loading, setLoading] = useState(true);
 
-  const totalMrr = plans.reduce((sum, p) => sum + p.mrr, 0);
+  useEffect(() => {
+    Promise.all(
+      plans.map(p =>
+        getAllTenants({ page: 1, limit: 1, plan: p.key as any, status: 'ALL' })
+          .then(r => ({ key: p.key, count: r.meta.total }))
+          .catch(() => ({ key: p.key, count: 0 }))
+      )
+    ).then(results => {
+      const counts: Record<string, number> = {};
+      results.forEach(r => { counts[r.key] = r.count; });
+      setLiveCounts(counts);
+    }).finally(() => setLoading(false));
+  }, []);
+
+  const getPlanTenants = (key: string) => liveCounts[key] ?? plans.find(p => p.key === key)?.tenants ?? 0;
+  const getPlanMrr = (key: string) => {
+    const plan = plans.find(p => p.key === key);
+    if (!plan) return 0;
+    return getPlanTenants(key) * plan.price;
+  };
+  const totalMrr = plans.reduce((sum, p) => sum + getPlanMrr(p.key), 0);
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">Plans & Billing</h1>
-        <p className="text-sm text-slate-500 mt-0.5">Manage subscription plans and pricing</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Plans & Billing</h1>
+          <p className="text-sm text-slate-500 mt-0.5">Manage subscription plans and pricing</p>
+        </div>
+        {loading && <RefreshCw className="w-4 h-4 text-slate-400 animate-spin" />}
       </div>
 
       {/* MRR summary */}
@@ -122,8 +148,10 @@ export default function PlansPage() {
               <span className="w-2.5 h-2.5 rounded-full" style={{ background: p.color }} />
               <span className="text-xs text-slate-500 font-medium">{p.name} MRR</span>
             </div>
-            <p className="text-2xl font-bold text-slate-900">₹{(p.mrr / 1000).toFixed(1)}K</p>
-            <p className="text-xs text-slate-400 mt-0.5">{p.tenants} tenants</p>
+            <p className="text-2xl font-bold text-slate-900">₹{(getPlanMrr(p.key) / 1000).toFixed(1)}K</p>
+            <p className="text-xs text-slate-400 mt-0.5">
+              {loading ? '…' : getPlanTenants(p.key)} tenants
+            </p>
           </div>
         ))}
       </div>
@@ -154,11 +182,11 @@ export default function PlansPage() {
             <div className="px-5 py-4 border-b border-slate-100">
               <div className="grid grid-cols-2 gap-3">
                 <div className="text-center bg-slate-50 rounded-xl py-2.5">
-                  <p className="text-lg font-bold text-slate-900">{plan.tenants}</p>
+                  <p className="text-lg font-bold text-slate-900">{loading ? '…' : getPlanTenants(plan.key)}</p>
                   <p className="text-xs text-slate-400">Tenants</p>
                 </div>
                 <div className="text-center bg-slate-50 rounded-xl py-2.5">
-                  <p className="text-lg font-bold text-slate-900">₹{(plan.mrr / 1000).toFixed(0)}K</p>
+                  <p className="text-lg font-bold text-slate-900">₹{(getPlanMrr(plan.key) / 1000).toFixed(0)}K</p>
                   <p className="text-xs text-slate-400">MRR</p>
                 </div>
               </div>
