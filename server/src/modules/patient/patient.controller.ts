@@ -54,6 +54,7 @@ export class PatientController {
     return this.patientService.findById(tenantId, id);
   }
 
+  @Patch(':id')
   @Put(':id')
   @ApiOperation({ summary: 'Update patient details' })
   async update(@CurrentTenant() tenantId: string, @Param('id') id: string, @Body() dto: UpdatePatientDto) {
