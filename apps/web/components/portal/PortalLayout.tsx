@@ -28,6 +28,7 @@ interface NavItem {
 const NAV_BY_PORTAL: Record<string, NavItem[]> = {
   clinical: [
     { href: 'dashboard',    label: 'Dashboard',      icon: LayoutDashboard, always: true },
+    { href: 'my-schedule',  label: 'My Schedule',    icon: Stethoscope,     flag: 'patients' },
     { href: 'whatsapp',     label: 'WhatsApp Inbox', icon: MessageSquare,   flag: 'whatsapp', badge: true },
     { href: 'appointments', label: 'Appointments',   icon: Calendar,        flag: 'appointments' },
     { href: 'prescriptions',label: 'Prescriptions',  icon: Pill,            flag: 'patients' },

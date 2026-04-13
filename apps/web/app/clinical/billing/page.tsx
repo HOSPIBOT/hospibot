@@ -7,8 +7,7 @@ import toast from 'react-hot-toast';
 import {
   Plus, Search, Download, RefreshCw, X, Loader2, ChevronLeft, ChevronRight, Printer,
   TrendingUp, CreditCard, AlertCircle, CheckCircle2, FileText, Trash2,
-  Send, IndianRupee, Percent,
-} from 'lucide-react';
+  Send, IndianRupee, Percent,, TrendingDown} from 'lucide-react'';
 
 const STATUS_COLORS: Record<string, string> = {
   DRAFT: 'bg-slate-100 text-slate-600', SENT: 'bg-blue-100 text-blue-700',
@@ -194,6 +193,10 @@ export default function BillingPage() {
           <button onClick={() => load(meta.page)} className="p-2 border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50 transition-colors">
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
+          <a href="/clinical/billing/aging"
+            className="flex items-center gap-2 border border-red-200 text-red-600 text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-red-50 transition-colors">
+            <TrendingDown className="w-4 h-4" /> Aging
+          </a>
           <button onClick={() => setShowCreate(true)}
             className="flex items-center gap-2 bg-[#0D7C66] hover:bg-[#0A5E4F] text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors shadow-sm">
             <Plus className="w-4 h-4" /> Create Invoice
