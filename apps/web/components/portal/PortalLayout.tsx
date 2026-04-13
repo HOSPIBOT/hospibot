@@ -13,6 +13,7 @@ import {
   FlaskConical, Package, ShoppingCart, Home, Truck, Heart,
   Briefcase, ClipboardList, FileText, Pill, Dumbbell,
   ChevronRight, Building2, TrendingUp, Shield, Globe, Star, Lock,
+  AlertTriangle, UserCheck, Layers2,
 } from 'lucide-react';
 
 // ── Feature-flag → nav item map ───────────────────────────────────────────────
@@ -63,6 +64,7 @@ const NAV_BY_PORTAL: Record<string, NavItem[]> = {
     { href: 'whatsapp',        label: 'WhatsApp Inbox',  icon: MessageSquare,   badge: true, always: true },
     { href: 'products',        label: 'Drug Catalogue',  icon: Pill,            always: true },
     { href: 'inventory',       label: 'Inventory',       icon: Package,         always: true },
+    { href: 'alerts',          label: 'Alerts',          icon: AlertTriangle,   always: true },
     { href: 'orders',          label: 'Dispensing',      icon: ShoppingCart,    always: true },
     { href: 'purchase-orders', label: 'Purchase Orders', icon: Truck,           always: true },
     { href: 'marketplace',     label: 'Marketplace',     icon: Globe,           always: true },
