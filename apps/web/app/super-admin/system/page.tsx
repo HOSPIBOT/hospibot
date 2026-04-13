@@ -8,11 +8,13 @@ import {
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { getSystemHealth, type SystemHealth } from '@/lib/super-admin-api';
 
-const STATIC_SERVICES = [
-  { name: 'Web App',         description: 'Next.js on Vercel',             icon: Globe,        statusKey: 'web'   },
-  { name: 'WhatsApp Gateway',description: 'Meta Business API connector',   icon: MessageSquare,statusKey: 'wa'    },
-  { name: 'Automation Engine',description: 'Background job processor',     icon: Zap,          statusKey: 'jobs'  },
-  { name: 'Email Service',   description: 'Transactional email (Resend)',  icon: Activity,     statusKey: 'email' },
+const SERVICES_CONFIG = [
+  { name: 'Web App (Vercel)',  description: 'Next.js frontend deployment',     icon: Globe,         statusKey: 'web'   },
+  { name: 'API Server',        description: 'NestJS on Railway',               icon: Server,        statusKey: 'api'   },
+  { name: 'WhatsApp Gateway',  description: 'Meta Business API connector',     icon: MessageSquare, statusKey: 'wa'    },
+  { name: 'Automation Engine', description: 'Background job processor',        icon: Zap,           statusKey: 'jobs'  },
+  { name: 'Scheduler',         description: 'Cron jobs (reminders, refills)',  icon: Clock,         statusKey: 'cron'  },
+  { name: 'Database',          description: 'PostgreSQL on Railway',           icon: Database,      statusKey: 'db'    },
 ];
 
 const RECENT_INCIDENTS = [
@@ -159,11 +161,11 @@ export default function SystemPage() {
       {/* Service grid — API (live) + static services */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         <ServiceCard name="API Server" description="NestJS REST API (Railway)" icon={Server}
-          status={health ? (health.database.status === 'operational' ? 'operational' : 'degraded') : 'operational'}
+          status={s.statusKey === 'db' ? (health?.database?.status || 'operational') : s.statusKey === 'api' ? (health ? 'operational' : 'degraded') : 'operational'}
           latency={health?.database.latencyMs} />
         <ServiceCard name="Database" description="PostgreSQL on Supabase" icon={Database}
           status={health?.database.status || 'operational'} latency={health?.database.latencyMs} />
-        {STATIC_SERVICES.map((s) => (
+        {SERVICES_CONFIG.map((s) => (
           <ServiceCard key={s.name} {...s} status={s.statusKey === 'jobs' ? 'degraded' : 'operational'} />
         ))}
       </div>
