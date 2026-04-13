@@ -13,7 +13,7 @@ import {
   FlaskConical, Package, ShoppingCart, Home, Truck, Heart,
   Briefcase, ClipboardList, FileText, Pill, Dumbbell,
   ChevronRight, Building2, TrendingUp, Shield, Globe, Star, Lock,
-  AlertTriangle, UserCheck, Layers2,
+  AlertTriangle, UserCheck, Layers2, BedDouble,
 } from 'lucide-react';
 
 // ── Feature-flag → nav item map ───────────────────────────────────────────────
@@ -46,6 +46,7 @@ const NAV_BY_PORTAL: Record<string, NavItem[]> = {
     { href: 'staff',        label: 'Staff',          icon: UserCheck,       always: true },
     { href: 'branches',     label: 'Branches',       icon: Building2,       always: true },
     { href: 'departments',  label: 'Departments',    icon: Layers2,         always: true },
+    { href: 'beds',         label: 'Bed Management', icon: BedDouble,       always: true },
     { href: 'analytics',    label: 'Analytics',      icon: BarChart3,       always: true },
     { href: 'settings',     label: 'Settings',       icon: Settings,        always: true },
   ],
