@@ -29,3 +29,31 @@ export class TenantService {
     });
   }
 }
+
+  async updateSettings(tenantId: string, dto: any): Promise<any> {
+    // Deep-merge settings — preserve existing keys, overwrite provided ones
+    const existing = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { settings: true },
+    });
+    const currentSettings = (existing?.settings as any) || {};
+    const mergedSettings = { ...currentSettings, ...dto };
+
+    return this.prisma.tenant.update({
+      where: { id: tenantId },
+      data: { settings: mergedSettings },
+      select: { id: true, name: true, settings: true },
+    });
+  }
+
+  async update(tenantId: string, dto: any): Promise<any> {
+    const allowed = [
+      'name', 'phone', 'email', 'website', 'address', 'city',
+      'state', 'pincode', 'gstNumber', 'logoUrl', 'settings',
+    ];
+    const data: any = {};
+    for (const key of allowed) {
+      if (dto[key] !== undefined) data[key] = dto[key];
+    }
+    return this.prisma.tenant.update({ where: { id: tenantId }, data });
+  }

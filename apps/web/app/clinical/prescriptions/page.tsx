@@ -296,6 +296,62 @@ function PrescriptionCard({ rx, onSend }: { rx: any; onSend: (id: string) => voi
   );
 }
 
+
+function StandaloneWriteModal({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
+  const [patSearch, setPatSearch] = useState('');
+  const [patients, setPatients]   = useState<any[]>([]);
+  const [selected, setSelected]   = useState<any>(null);
+
+  useEffect(() => {
+    if (patSearch.length < 2) { setPatients([]); return; }
+    const t = setTimeout(() =>
+      api.get('/patients', { params: { search: patSearch, limit: 6 } })
+        .then(r => setPatients(r.data.data || [])).catch(() => {}), 300);
+    return () => clearTimeout(t);
+  }, [patSearch]);
+
+  if (!selected) {
+    return (
+      <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={e => e.target === e.currentTarget && onClose()}>
+        <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-slate-900">Select Patient</h2>
+            <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl"><X className="w-4 h-4"/></button>
+          </div>
+          <div className="relative">
+            <input className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#0D7C66] outline-none transition-all placeholder:text-slate-400"
+              placeholder="Search by name or phone…"
+              value={patSearch} onChange={e => setPatSearch(e.target.value)} autoFocus />
+            {patients.length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-10 overflow-hidden">
+                {patients.map(p => (
+                  <button key={p.id} onClick={() => setSelected(p)}
+                    className="w-full text-left px-4 py-3 hover:bg-slate-50 border-b border-slate-50 last:border-0 transition-colors">
+                    <p className="text-sm font-semibold text-slate-900">{p.firstName} {p.lastName || ''}</p>
+                    <p className="text-xs text-slate-400">{p.phone} · {p.healthId}</p>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          {patSearch.length > 1 && patients.length === 0 && (
+            <p className="text-xs text-slate-400 mt-3 text-center">No patients found. <a href="/clinical/patients" className="text-[#0D7C66] underline">Register new patient</a></p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <WritePrescriptionModal
+      patientId={selected.id}
+      patientName={`${selected.firstName} ${selected.lastName || ''}`.trim()}
+      doctorId=""
+      onClose={onClose}
+      onCreated={onCreated} />
+  );
+}
+
 export default function PrescriptionsPage() {
   const [prescriptions, setPrescriptions] = useState<any[]>([]);
   const [meta, setMeta]   = useState({ page: 1, limit: 20, total: 0, totalPages: 1 });
@@ -401,8 +457,7 @@ export default function PrescriptionsPage() {
       )}
 
       {showWrite && (
-        <WritePrescriptionModal
-          patientId="" patientName="Select Patient" doctorId=""
+        <StandaloneWriteModal
           onClose={() => setShowWrite(false)}
           onCreated={() => load(1)} />
       )}
