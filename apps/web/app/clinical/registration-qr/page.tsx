@@ -17,6 +17,10 @@ export default function RegistrationQRPage() {
     ? `${window.location.origin}/register-patient`
     : 'https://hospibot-web.vercel.app/register-patient';
 
+  const checkInUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}/check-in`
+    : 'https://hospibot-web.vercel.app/check-in';
+
   const registrationUrl = tenant?.slug
     ? `${baseUrl}?clinic=${tenant.slug}`
     : baseUrl;
