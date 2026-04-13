@@ -32,7 +32,7 @@ export default function ServicesBillingPage() {
     try {
       const res = await api.get('/billing/invoices', { params: { limit: 50 } });
       const data = res.data?.data ?? res.data ?? [];
-      setInvoices(Array.isArray(data) && data.length > 0 ? data : SEED_INVOICES);
+      setInvoices(Array.isArray(data) ? data : []);
     } catch {
       setInvoices(SEED_INVOICES);
     } finally {

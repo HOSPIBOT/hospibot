@@ -16,8 +16,13 @@ export default function DoctorsPage() {
       try {
         const params: any = { limit: 50 };
         if (search) params.search = search;
-        const res = await api.get('/doctors', { params });
-        setDoctors(res.data.data);
+        const [docRes, todayRes] = await Promise.all([
+          api.get('/doctors', { params }),
+          api.get('/appointments', { params: { limit: 200, from: new Date().toISOString().slice(0,10), to: new Date().toISOString().slice(0,10) } }).catch(() => ({ data: { data: [] } })),
+        ]);
+        const apptCounts: Record<string,number> = {};
+        (todayRes.data.data ?? []).forEach((a: any) => { if (a.doctorId) apptCounts[a.doctorId] = (apptCounts[a.doctorId]||0)+1; });
+        setDoctors((docRes.data.data ?? []).map((d: any) => ({ ...d, todayAppointments: apptCounts[d.id] || 0 })));
       } catch { toast.error('Failed to load doctors'); }
       finally { setLoading(false); }
     };

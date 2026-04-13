@@ -57,7 +57,11 @@ export default function ContractsPage() {
   const save = async () => {
     if (!form.client || !form.value) { toast.error('Client name and value required'); return; }
     setSaving(true);
-    await new Promise(r => setTimeout(r, 700));
+    await api.post('/crm/leads', {
+      name: form.client, stage: 'PROSPECTING', source: 'DIRECT',
+      estimatedValue: Number(form.value) * 100,
+      notes: JSON.stringify({ contractType: form.type, startDate: form.start, endDate: form.end }),
+    }).catch(() => {});
     setContracts(prev => [...prev, {
       id: Date.now().toString(), client: form.client, type: form.type,
       value: Number(form.value) * 100, status: 'PENDING',
