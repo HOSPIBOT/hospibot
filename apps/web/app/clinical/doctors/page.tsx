@@ -6,7 +6,7 @@ import { formatINR } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import {
   Stethoscope, Plus, Search, RefreshCw, X, Loader2, Clock,
-  CheckCircle2, XCircle, Edit3, Phone, Mail, Award, Calendar,
+  CheckCircle2, XCircle, Edit3, Phone, Mail, Award, Calendar, Download,
 } from 'lucide-react';
 
 const SPECIALTIES = [
@@ -150,7 +150,25 @@ export default function DoctorsPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const toggleAvailability = (id: string, available: boolean) => {
+  const exportCSV = () => {
+    const header = ['Name', 'Specialties', 'Phone', 'Email', 'Reg. No.', 'Available', 'Departments'];
+    const rows = doctors.map(d => [
+      `Dr. ${d.user?.firstName ?? ''} ${d.user?.lastName ?? ''}`.trim(),
+      (d.specialties as string[])?.join('; ') ?? '',
+      d.user?.phone ?? '',
+      d.user?.email ?? '',
+      d.registrationNumber ?? '',
+      d.isAvailable ? 'Yes' : 'No',
+      (d.departments as any[])?.map((dep: any) => dep.name).join('; ') ?? '',
+    ]);
+    const csv  = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = `doctors-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click(); URL.revokeObjectURL(url);
+    toast.success(`Exported ${doctors.length} doctors`);
+  };
     setDoctors(d => d.map(doc => doc.id === id ? { ...doc, isAvailable: available } : doc));
   };
 
@@ -214,6 +232,10 @@ export default function DoctorsPage() {
         <div className="flex items-center gap-2">
           <button onClick={load} className="p-2 border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50 transition-colors">
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+          <button onClick={exportCSV} disabled={loading || doctors.length === 0}
+            className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm font-medium px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50">
+            <Download className="w-4 h-4" /> Export
           </button>
           <button onClick={() => setShowAdd(true)}
             className="flex items-center gap-2 bg-[#0D7C66] hover:bg-[#0A5E4F] text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors shadow-sm">

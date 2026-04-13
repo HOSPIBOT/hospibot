@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
 import { formatDate } from '@/lib/utils';
 import toast from 'react-hot-toast';
-import { FlaskConical, Plus, Search, RefreshCw, X, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { FlaskConical, Plus, Search, RefreshCw, X, Loader2, ChevronLeft, ChevronRight, Download } from 'lucide-react';
 
 const STATUS_COLORS: Record<string,string> = {
   ORDERED:          'bg-blue-100 text-blue-700',
@@ -25,6 +25,37 @@ export default function ClinicalLabPage() {
   const [showOrder, setShow]    = useState(false);
   const [statusFilter, setStatusFilter] = useState('');
   const [priorityFilter, setPriorityFilter] = useState('');
+  const [exporting, setExporting] = useState(false);
+
+  const exportCSV = async () => {
+    setExporting(true);
+    try {
+      const params: any = { limit: 5000 };
+      if (deb)            params.search   = deb;
+      if (statusFilter)   params.status   = statusFilter;
+      if (priorityFilter) params.priority = priorityFilter;
+      const res = await api.get('/lab/orders', { params });
+      const all: any[] = res.data.data ?? orders;
+      const header = ['Order #', 'Patient', 'Phone', 'Tests', 'Priority', 'Status', 'Date'];
+      const rows = all.map(o => [
+        o.id?.slice(0, 8).toUpperCase() ?? '',
+        `${o.patient?.firstName ?? ''} ${o.patient?.lastName ?? ''}`.trim(),
+        o.patient?.phone ?? '',
+        (o.tests as any[])?.map((t: any) => t.testName).join('; ') ?? '',
+        o.priority ?? 'ROUTINE',
+        o.status ?? '',
+        o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN') : '',
+      ]);
+      const csv  = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url; a.download = `lab-orders-${new Date().toISOString().slice(0,10)}.csv`;
+      a.click(); URL.revokeObjectURL(url);
+      toast.success(`Exported ${all.length} lab orders`);
+    } catch { toast.error('Export failed'); }
+    finally { setExporting(false); }
+  };
 
   // New order form state
   const [patSearch, setPatSearch] = useState('');
@@ -96,6 +127,10 @@ export default function ClinicalLabPage() {
         <div className="flex items-center gap-2">
           <button onClick={()=>load(meta.page)} className="p-2 border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50">
             <RefreshCw className={`w-4 h-4 ${loading?'animate-spin':''}`}/>
+          </button>
+          <button onClick={exportCSV} disabled={exporting}
+            className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm font-medium px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50">
+            <Download className="w-4 h-4"/> {exporting ? 'Exporting…' : 'Export'}
           </button>
           <button onClick={()=>setShow(true)}
             className="flex items-center gap-2 bg-[#0D7C66] text-white text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-[#0A5E4F]">
