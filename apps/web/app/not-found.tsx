@@ -1,4 +1,3 @@
-import Link from 'next/link';
 
 export default function NotFound() {
   return (
@@ -14,14 +13,14 @@ export default function NotFound() {
           Please check the URL or navigate back to the dashboard.
         </p>
         <div className="flex items-center justify-center gap-3">
-          <Link href="/clinical/dashboard"
+          <a href="/clinical/dashboard"
             className="bg-[#0D7C66] text-white font-semibold px-6 py-2.5 rounded-xl hover:bg-[#0A5E4F] transition-colors text-sm">
             Go to Dashboard
-          </Link>
-          <Link href="/"
+          </a>
+          <a href="/"
             className="border border-slate-200 text-slate-600 font-semibold px-6 py-2.5 rounded-xl hover:bg-slate-50 transition-colors text-sm">
             Home
-          </Link>
+          </a>
         </div>
       </div>
     </div>
