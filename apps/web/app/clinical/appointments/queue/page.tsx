@@ -7,7 +7,7 @@ import { formatTime } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import {
   Users, Clock, Activity, CheckCircle2, RefreshCw, ArrowLeft,
-  Play, UserCheck, ChevronRight, Maximize2, Monitor, AlertCircle, Stethoscope,
+  Play, UserCheck, ChevronRight, Maximize2, Monitor, AlertCircle, Stethoscope, Printer,
 } from 'lucide-react';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; ring: string }> = {
@@ -73,11 +73,17 @@ function QueueCard({ apt, position, onStatusChange }: {
       {/* Action buttons */}
       <div className="flex gap-2">
         {apt.status === 'CONFIRMED' && (
-          <button onClick={() => onStatusChange(apt.id, 'CHECKED_IN')}
-            className="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold text-white py-2 rounded-xl transition-all hover:opacity-90"
-            style={{ background: '#8B5CF6' }}>
-            <UserCheck className="w-3.5 h-3.5" /> Check In
-          </button>
+          <>
+            <button onClick={() => onStatusChange(apt.id, 'CHECKED_IN')}
+              className="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold text-white py-2 rounded-xl transition-all hover:opacity-90"
+              style={{ background: '#8B5CF6' }}>
+              <UserCheck className="w-3.5 h-3.5" /> Check In
+            </button>
+            <a href={`/clinical/queue-token?id=${apt.id}`} target="_blank"
+              className="flex items-center justify-center p-2 border border-slate-200 text-slate-400 rounded-xl hover:bg-slate-50 transition-colors" title="Print Token">
+              <Printer className="w-3.5 h-3.5" />
+            </a>
+          </>
         )}
         {apt.status === 'CHECKED_IN' && (
           <button onClick={() => { onStatusChange(apt.id, 'IN_PROGRESS'); }}
