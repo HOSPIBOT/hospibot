@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -119,6 +119,48 @@ export default function PortalLayout({ children, portalSlug }: PortalLayoutProps
   const pathname = usePathname();
   const { user, tenant, isAuthenticated, loadFromStorage, logout, featureFlags, hasFlag } = useAuthStore();
   const [assets, setAssets] = useState<PlatformAssets | null>(null);
+
+  // ── Notification bell ─────────────────────────────────────────────────────
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [showNotifs,    setShowNotifs]     = useState(false);
+  const notifRef = useRef<HTMLDivElement>(null);
+
+  // Close on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+        setShowNotifs(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  // Load notifications from analytics dashboard on mount
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    import('@/lib/api').then(({ api }) => {
+      api.get('/analytics/notifications').catch(() =>
+        api.get('/analytics/dashboard')
+      ).then((res: any) => {
+        const d = res.data ?? {};
+        const notifs: any[] = [];
+        if (d.urgentLabOrders > 0)
+          notifs.push({ id: 'lab-urgent', type: 'danger',   title: `${d.urgentLabOrders} urgent lab order${d.urgentLabOrders > 1 ? 's' : ''}`, subtitle: 'Requires immediate attention', href: '/clinical/lab' });
+        if (d.pendingAppointments > 0)
+          notifs.push({ id: 'appt-pending', type: 'warning', title: `${d.pendingAppointments} appointment${d.pendingAppointments > 1 ? 's' : ''} pending`, subtitle: 'Awaiting confirmation', href: `/${portalSlug}/appointments` });
+        if (d.unreadMessages > 0)
+          notifs.push({ id: 'wa-unread', type: 'whatsapp', title: `${d.unreadMessages} unread WhatsApp message${d.unreadMessages > 1 ? 's' : ''}`, subtitle: 'Tap to open inbox', href: `/${portalSlug}/whatsapp` });
+        if (d.pendingInvoices > 0)
+          notifs.push({ id: 'inv-pending', type: 'info',    title: `${d.pendingInvoices} unpaid invoice${d.pendingInvoices > 1 ? 's' : ''}`, subtitle: 'Pending payment collection', href: '/clinical/billing' });
+        if (notifs.length === 0)
+          notifs.push({ id: 'all-clear', type: 'success', title: 'All caught up!', subtitle: 'No pending items right now' });
+        setNotifications(notifs);
+      }).catch(() => {
+        setNotifications([{ id: 'all-clear', type: 'success', title: 'All caught up!', subtitle: 'No pending items right now' }]);
+      });
+    });
+  }, [isAuthenticated, portalSlug]);
 
   const theme: PortalTheme = FALLBACK_THEMES[portalSlug] || FALLBACK_THEMES.clinical;
   const navItems = NAV_BY_PORTAL[portalSlug] || NAV_BY_PORTAL.clinical;
