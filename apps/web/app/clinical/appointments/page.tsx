@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import {
   Calendar, Plus, Search, Clock, User, CheckCircle2, XCircle,
   RefreshCw, ChevronLeft, ChevronRight, X, Loader2, Filter,
-  ArrowRight, Phone, Hash, Stethoscope, AlertCircle, Activity, Download,
+  ArrowRight, Phone, Hash, Stethoscope, AlertCircle, Activity, Download, Printer,
 } from 'lucide-react';
 
 const STATUS_COLORS: Record<string, string> = {
@@ -239,6 +239,10 @@ export default function AppointmentsPage() {
           <button onClick={() => load(meta.page)} className="p-2 border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50 transition-colors">
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
+          <a href={`/clinical/appointments/daysheet`} target="_blank"
+            className="flex items-center gap-2 border border-slate-200 text-slate-600 text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-slate-50 transition-colors">
+            <Printer className="w-4 h-4" /> Day Sheet
+          </a>
           <button onClick={exportCSV}
             className="flex items-center gap-2 border border-slate-200 text-slate-600 text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-slate-50 transition-colors">
             <Download className="w-4 h-4" /> Export CSV
