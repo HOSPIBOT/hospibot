@@ -7,7 +7,175 @@ import toast from 'react-hot-toast';
 import {
   TrendingUp, Plus, RefreshCw, Search, X, Loader2,
   CheckCircle2, Package, ChevronLeft, ChevronRight, Truck, Users,
+  ClipboardCheck, AlertTriangle,
 } from 'lucide-react';
+
+// ─── Receive Goods Modal ───────────────────────────────────────────────────────
+function ReceiveGoodsModal({ po, onClose, onReceived }: {
+  po: any; onClose: () => void; onReceived: () => void;
+}) {
+  const defaultExpiry = () => {
+    const d = new Date(); d.setFullYear(d.getFullYear() + 2);
+    return d.toISOString().slice(0, 10);
+  };
+
+  const [items, setItems] = useState<any[]>(() =>
+    (po.items ?? []).map((item: any) => ({
+      productId   : item.productId,
+      productName : item.productName ?? item.product?.name ?? 'Product',
+      orderedQty  : item.quantity ?? 0,
+      receivedQty : item.quantity ?? 0,
+      batchNumber : `BATCH-${Date.now().toString().slice(-6)}`,
+      expiryDate  : defaultExpiry(),
+      costPrice   : item.unitCost ?? 0,
+      sellingPrice: (item.unitCost ?? 0) * 1.2,
+    }))
+  );
+  const [submitting, setSubmitting] = useState(false);
+
+  const update = (idx: number, key: string, val: any) =>
+    setItems(prev => prev.map((it, i) => i === idx ? { ...it, [key]: val } : it));
+
+  const handleSubmit = async () => {
+    const payload = items
+      .filter(it => Number(it.receivedQty) > 0)
+      .map(it => ({
+        productId   : it.productId,
+        quantity    : Number(it.receivedQty),
+        batchNumber : it.batchNumber,
+        expiryDate  : it.expiryDate,
+        costPrice   : Number(it.costPrice),
+        sellingPrice: Number(it.sellingPrice),
+      }));
+    if (!payload.length) { toast.error('Enter quantity for at least one item'); return; }
+    setSubmitting(true);
+    try {
+      await api.post(`/pharmacy/purchase-orders/${po.id}/receive`, { items: payload });
+      toast.success('Goods received — inventory updated!');
+      onReceived(); onClose();
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Failed to receive goods');
+    } finally { setSubmitting(false); }
+  };
+
+  const smallInput = 'text-center border border-slate-200 rounded-lg px-2 py-1 text-xs outline-none focus:border-[#166534] transition-colors bg-white w-full';
+
+  return (
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
+      onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="bg-white rounded-2xl w-full max-w-3xl shadow-2xl flex flex-col max-h-[90vh]">
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 flex-shrink-0">
+          <div>
+            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <ClipboardCheck className="w-5 h-5 text-emerald-600" /> Receive Goods
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5">PO {po.orderNumber} · {po.supplier?.name}</p>
+          </div>
+          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Info banner */}
+        <div className="mx-6 mt-4 flex items-start gap-2.5 bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 flex-shrink-0">
+          <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+          <p className="text-xs text-amber-700">
+            Enter actual quantities received. Stock will be updated immediately.
+            Partial receipts are allowed — PO will be marked <strong>PARTIAL</strong>.
+          </p>
+        </div>
+
+        {/* Items table */}
+        <div className="flex-1 overflow-y-auto px-6 py-4">
+          {items.length === 0 ? (
+            <div className="py-10 text-center text-slate-400 text-sm">
+              No line items found on this PO.<br />
+              <span className="text-xs">Items may have been added without product mapping.</span>
+            </div>
+          ) : (
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="bg-slate-50 rounded-xl">
+                  {['Product', 'Ordered', 'Received', 'Batch No.', 'Expiry', 'Cost (₹)', 'MRP (₹)'].map(h => (
+                    <th key={h} className="px-3 py-2.5 text-left font-semibold text-slate-500 uppercase tracking-wide first:rounded-l-xl last:rounded-r-xl">
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {items.map((it, idx) => {
+                  const variance = Number(it.receivedQty) - Number(it.orderedQty);
+                  return (
+                    <tr key={it.productId} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="px-3 py-3">
+                        <p className="font-semibold text-slate-900 truncate max-w-[140px]">{it.productName}</p>
+                        {variance !== 0 && (
+                          <p className={`text-[10px] font-bold mt-0.5 ${variance < 0 ? 'text-red-500' : 'text-emerald-600'}`}>
+                            {variance > 0 ? `+${variance}` : variance} vs ordered
+                          </p>
+                        )}
+                      </td>
+                      <td className="px-3 py-3 text-center font-medium text-slate-600">{it.orderedQty}</td>
+                      <td className="px-3 py-3 w-20">
+                        <input type="number" min={0} className={smallInput}
+                          value={it.receivedQty}
+                          onChange={e => update(idx, 'receivedQty', e.target.value)} />
+                      </td>
+                      <td className="px-3 py-3 w-32">
+                        <input type="text" className={smallInput}
+                          value={it.batchNumber}
+                          onChange={e => update(idx, 'batchNumber', e.target.value)} />
+                      </td>
+                      <td className="px-3 py-3 w-32">
+                        <input type="date" className={smallInput}
+                          value={it.expiryDate}
+                          onChange={e => update(idx, 'expiryDate', e.target.value)} />
+                      </td>
+                      <td className="px-3 py-3 w-24">
+                        <input type="number" min={0} step={0.01} className={smallInput}
+                          value={it.costPrice}
+                          onChange={e => update(idx, 'costPrice', e.target.value)} />
+                      </td>
+                      <td className="px-3 py-3 w-24">
+                        <input type="number" min={0} step={0.01} className={smallInput}
+                          value={it.sellingPrice}
+                          onChange={e => update(idx, 'sellingPrice', e.target.value)} />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 bg-slate-50/50 rounded-b-2xl flex-shrink-0">
+          <div className="text-xs text-slate-400">
+            {items.filter(it => Number(it.receivedQty) > 0).length} of {items.length} items will be received
+          </div>
+          <div className="flex items-center gap-3">
+            <button onClick={onClose}
+              className="text-sm text-slate-500 px-4 py-2 rounded-xl hover:bg-slate-100 transition-colors">
+              Cancel
+            </button>
+            <button onClick={handleSubmit} disabled={submitting}
+              className="flex items-center gap-2 text-white text-sm font-semibold px-6 py-2.5 rounded-xl disabled:opacity-50 transition-all"
+              style={{ background: '#166534' }}>
+              {submitting
+                ? <Loader2 className="w-4 h-4 animate-spin" />
+                : <CheckCircle2 className="w-4 h-4" />}
+              Confirm Receipt & Update Stock
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const NAV_COLOR = '#166534';
 const STATUS_COLORS: Record<string, string> = {
@@ -228,8 +396,9 @@ export default function PurchaseOrdersPage() {
   const [meta, setMeta]           = useState({ page: 1, limit: 20, total: 0, totalPages: 1 });
   const [loading, setLoading]     = useState(true);
   const [statusFilter, setStatus] = useState('');
-  const [showCreatePO, setCreatePO] = useState(false);
+  const [showCreatePO, setCreatePO]     = useState(false);
   const [showAddSupplier, setAddSupplier] = useState(false);
+  const [receivePO, setReceivePO]       = useState<any>(null);
   const [activeView, setView]     = useState<'orders' | 'suppliers'>('orders');
 
   const load = useCallback(async (page = 1) => {
@@ -353,6 +522,14 @@ export default function PurchaseOrdersPage() {
                   <div className="text-right">
                     <p className="text-lg font-bold text-slate-900">{formatINR(po.totalAmount)}</p>
                     <p className="text-xs text-slate-400">{formatDate(po.createdAt)}</p>
+                    {(po.status === 'SENT' || po.status === 'PARTIAL') && (
+                      <button
+                        onClick={() => setReceivePO(po)}
+                        className="mt-2 flex items-center gap-1.5 text-xs font-bold text-white px-3 py-1.5 rounded-xl transition-colors ml-auto"
+                        style={{ background: '#166534' }}>
+                        <ClipboardCheck className="w-3 h-3" /> Receive Goods
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -363,6 +540,7 @@ export default function PurchaseOrdersPage() {
 
       {showCreatePO && <CreatePOModal suppliers={suppliers} onClose={() => setCreatePO(false)} onCreated={() => load(1)} />}
       {showAddSupplier && <AddSupplierModal onClose={() => setAddSupplier(false)} onCreated={() => load(1)} />}
+      {receivePO && <ReceiveGoodsModal po={receivePO} onClose={() => setReceivePO(null)} onReceived={() => load(1)} />}
     </div>
   );
 }
