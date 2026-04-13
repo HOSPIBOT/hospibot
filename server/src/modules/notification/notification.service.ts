@@ -157,15 +157,67 @@ export class NotificationService {
         }
         return this.whatsappService.sendTextMessage(payload.tenantId, payload.phone, payload.message || '');
 
-      case 'sms':
-        // TODO: Integrate SMS provider (MSG91, Twilio)
-        this.logger.log(`SMS to ${payload.phone}: ${payload.message}`);
-        return { success: true, channel: 'sms', message: 'SMS integration pending' };
+      case 'sms': {
+        // MSG91 SMS (India) — configure MSG91_AUTH_KEY in environment
+        const msg91Key     = this.config.get('MSG91_AUTH_KEY', '');
+        const msg91SenderId= this.config.get('MSG91_SENDER_ID', 'HSPBOT');
+        const mobile       = payload.phone.replace(/\D/g, '').slice(-10);
+        if (!msg91Key) {
+          this.logger.log(`SMS (demo): to ${mobile}: ${payload.message}`);
+          return { success: true, channel: 'sms', delivered: false, message: 'Configure MSG91_AUTH_KEY for live SMS' };
+        }
+        const smsRes = await fetch('https://api.msg91.com/api/v5/flow/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'authkey': msg91Key },
+          body: JSON.stringify({
+            template_id: this.config.get('MSG91_TEMPLATE_ID', ''),
+            short_url: '0',
+            recipients: [{ mobiles: `91${mobile}`, var1: payload.message || '' }],
+          }),
+        }).catch(() => null);
+        const delivered = smsRes?.ok || false;
+        this.logger.log(`SMS to ${mobile}: ${delivered ? 'sent' : 'failed'}`);
+        return { success: delivered, channel: 'sms', delivered };
+      }
 
-      case 'email':
-        // TODO: Integrate email provider (SendGrid, SES)
-        this.logger.log(`Email notification for ${payload.phone}`);
-        return { success: true, channel: 'email', message: 'Email integration pending' };
+      case 'email': {
+        // SMTP email via Nodemailer — configure SMTP_* in environment
+        const smtpHost = this.config.get('SMTP_HOST', '');
+        const smtpUser = this.config.get('SMTP_USER', '');
+        const smtpPass = this.config.get('SMTP_PASS', '');
+        const smtpPort = Number(this.config.get('SMTP_PORT', '587'));
+        const emailTo  = payload.email || '';
+
+        if (!smtpHost || !smtpUser || !emailTo) {
+          this.logger.log(`Email (demo): to ${emailTo}: ${payload.subject || 'HospiBot Notification'}`);
+          return { success: true, channel: 'email', delivered: false, message: 'Configure SMTP_HOST, SMTP_USER, SMTP_PASS for live email' };
+        }
+
+        try {
+          // Dynamic nodemailer import (optional dependency)
+          const nodemailer = await import('nodemailer').catch(() => null);
+          if (!nodemailer) {
+            this.logger.warn('nodemailer not installed — run: npm install nodemailer');
+            return { success: false, channel: 'email', message: 'nodemailer not installed' };
+          }
+          const transporter = nodemailer.createTransport({
+            host: smtpHost, port: smtpPort, secure: smtpPort === 465,
+            auth: { user: smtpUser, pass: smtpPass },
+          });
+          await transporter.sendMail({
+            from:    `"HospiBot" <${smtpUser}>`,
+            to:      emailTo,
+            subject: payload.subject || 'HospiBot Notification',
+            text:    payload.message || '',
+            html:    payload.html || `<p>${payload.message || ''}</p>`,
+          });
+          this.logger.log(`Email sent to ${emailTo}`);
+          return { success: true, channel: 'email', delivered: true };
+        } catch (err: any) {
+          this.logger.error(`Email failed: ${err.message}`);
+          return { success: false, channel: 'email', message: err.message };
+        }
+      }
 
       default:
         return { success: false, message: 'Unknown channel' };

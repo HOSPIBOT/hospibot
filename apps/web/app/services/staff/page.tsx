@@ -55,10 +55,10 @@ export default function ServicesStaffPage() {
           contracts: d._count?.appointments ?? 0,
         })));
       } else {
-        setStaff(SEED);
+        setStaff([]);
       }
     } catch {
-      setStaff(SEED);
+      setStaff([]);
     } finally {
       setLoading(false);
     }

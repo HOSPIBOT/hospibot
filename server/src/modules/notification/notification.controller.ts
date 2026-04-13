@@ -41,3 +41,34 @@ export class NotificationController {
     });
   }
 }
+
+  @Post('send-email')
+  @ApiOperation({ summary: 'Send an email notification via SMTP' })
+  async sendEmail(
+    @CurrentTenant() tenantId: string,
+    @Body() dto: { email: string; subject: string; message: string; html?: string },
+  ) {
+    return this.notificationService.send({
+      tenantId,
+      phone: '',
+      email: dto.email,
+      message: dto.message,
+      subject: dto.subject,
+      html: dto.html,
+      channel: 'email',
+    });
+  }
+
+  @Post('send-sms')
+  @ApiOperation({ summary: 'Send an SMS via MSG91 (India)' })
+  async sendSMS(
+    @CurrentTenant() tenantId: string,
+    @Body() dto: { phone: string; message: string },
+  ) {
+    return this.notificationService.send({
+      tenantId,
+      phone: dto.phone,
+      message: dto.message,
+      channel: 'sms',
+    });
+  }
