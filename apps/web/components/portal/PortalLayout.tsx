@@ -133,6 +133,18 @@ interface PortalLayoutProps {
 export default function PortalLayout({ children, portalSlug }: PortalLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
+
+  // Login and public pages — render with NO sidebar/chrome
+  const isPublicPage = pathname?.endsWith('/login') ||
+    pathname?.includes('/register') ||
+    pathname?.includes('/queue-display') ||
+    pathname?.includes('/queue-token') ||
+    pathname?.includes('/check-in') ||
+    pathname?.includes('/book') ||
+    pathname?.includes('/track');
+
+  if (isPublicPage) return <>{children}</>;
+
   const { user, tenant, isAuthenticated, loadFromStorage, logout, featureFlags, hasFlag } = useAuthStore();
   const [assets, setAssets] = useState<PlatformAssets | null>(null);
 
