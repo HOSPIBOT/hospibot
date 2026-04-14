@@ -247,11 +247,13 @@ export class SuperAdminService {
     const skip = (page - 1) * limit;
     const where: any = {};
     if (action) where.action = { contains: action, mode: 'insensitive' };
+    // AuditLog.tenantId is required (non-nullable) — only filter if a specific tenantId is provided
+    // SUPER_ADMIN passes no tenantId → returns all logs across all tenants
     if (tenantId) where.tenantId = tenantId;
     try {
       const [data, total] = await Promise.all([
         this.prisma.auditLog.findMany({ where, orderBy: { createdAt: 'desc' }, skip, take: Number(limit) }),
-        this.prisma.auditLog.count({ where }),
+        this.prisma.auditLog.count(where && Object.keys(where).length > 0 ? { where } : undefined),
       ]);
       return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
     } catch {
