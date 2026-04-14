@@ -124,7 +124,13 @@ export default function PatientDetailPage() {
     );
   }
 
-  if (!patient) return null;
+  if (!patient) return (
+    <div className="p-6">
+      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
+        Patient not found or failed to load. <a href="/clinical/patients" className="underline font-medium">Back to patients</a>
+      </div>
+    </div>
+  );
 
   const p = patient;
   const age = p.dateOfBirth ? ageFromDOB(p.dateOfBirth) : null;

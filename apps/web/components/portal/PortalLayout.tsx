@@ -222,18 +222,25 @@ export default function PortalLayout({ children, portalSlug }: PortalLayoutProps
   }, [globalSearch]);
   const navItems = NAV_BY_PORTAL[portalSlug] || NAV_BY_PORTAL.clinical;
 
-  useEffect(() => { loadFromStorage(); }, []);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    loadFromStorage();
+    setHydrated(true);
+  }, []);
   useEffect(() => {
     getPlatformAssets().then(setAssets).catch(() => {});
   }, []);
 
   useEffect(() => {
+    if (!hydrated) return;
     if (!isAuthenticated && typeof window !== 'undefined') {
       const token = localStorage.getItem('hospibot_access_token');
       if (!token) router.push(`/${portalSlug}/login`);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, hydrated]);
 
+  if (!hydrated) return null;
   if (!isAuthenticated) return null;
 
   const visibleNav = navItems.filter(item =>
