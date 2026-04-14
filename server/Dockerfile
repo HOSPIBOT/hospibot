@@ -14,10 +14,10 @@ RUN npx prisma generate
 
 RUN npm run build
 
-RUN ls -la dist/ && echo "dist built OK"
+RUN ls -la dist/src/main.js && echo "✅ dist/src/main.js exists"
 
 RUN npm prune --production
 
 EXPOSE 4000
 
-CMD ["node", "dist/main"]
+CMD ["node", "dist/src/main"]
