@@ -1,3 +1,4 @@
+# Build: 2026-04-14T14:42:06.828601
 FROM node:18-bullseye-slim
 
 RUN apt-get update && apt-get install -y openssl libssl-dev ca-certificates && rm -rf /var/lib/apt/lists/*
