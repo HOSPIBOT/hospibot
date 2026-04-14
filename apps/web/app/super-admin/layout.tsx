@@ -53,12 +53,14 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
   const router = useRouter();
   const pathname = usePathname();
   const [adminName, setAdminName] = useState('Super Admin');
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('hospibot_access_token') : null;
     const userStr = typeof window !== 'undefined' ? localStorage.getItem('hospibot_user') : null;
     if (!token) {
       router.push('/auth/login');
+      setHydrated(true);
       return;
     }
     if (userStr) {
@@ -66,11 +68,13 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
         const user = JSON.parse(userStr);
         if (user.role !== 'SUPER_ADMIN') {
           router.push('/dashboard');
+          setHydrated(true);
           return;
         }
         setAdminName(`${user.firstName} ${user.lastName || ''}`.trim());
       } catch { /* ignore */ }
     }
+    setHydrated(true);
   }, []);
 
   const isActive = (href: string, exact = false) => {
@@ -78,9 +82,11 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
     return pathname?.startsWith(href);
   };
 
+  if (!hydrated) return null;
+
   const handleLogout = () => {
-    localStorage.removeItem('hospibot_super_token');
-    localStorage.removeItem('hospibot_super_user');
+    ['hospibot_access_token','hospibot_refresh_token','hospibot_user','hospibot_tenant'].forEach(k => localStorage.removeItem(k));
+    document.cookie = 'hospibot_token=; path=/; max-age=0';
     window.location.href = '/auth/login';
   };
 
