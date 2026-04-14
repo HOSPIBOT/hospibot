@@ -79,27 +79,31 @@ export class LabService {
   // ── Test Catalog CRUD ──────────────────────────────────────────────────────
 
   async listCatalog(tenantId: string, search?: string, category?: string) {
-    const where: any = { tenantId, isActive: true };
-    if (category) where.category = category;
-    if (search) {
-      where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { code: { contains: search, mode: 'insensitive' } },
-      ];
+    try {
+      const where: any = { tenantId, isActive: true };
+      if (category) where.category = category;
+      if (search) {
+        where.OR = [
+          { name: { contains: search, mode: 'insensitive' } },
+          { code: { contains: search, mode: 'insensitive' } },
+        ];
+      }
+      const tests = await this.prisma.testCatalog.findMany({
+        where,
+        orderBy: [{ category: 'asc' }, { name: 'asc' }],
+      });
+
+      const grouped = tests.reduce((acc: any, t) => {
+        if (!acc[t.category]) acc[t.category] = [];
+        acc[t.category].push(t);
+        return acc;
+      }, {});
+
+      return { data: tests, grouped, total: tests.length };
+    } catch (err) {
+      this.logger.error('listCatalog failed', err?.message);
+      return { data: [], grouped: {}, total: 0 };
     }
-    const tests = await this.prisma.testCatalog.findMany({
-      where,
-      orderBy: [{ category: 'asc' }, { name: 'asc' }],
-    });
-
-    // Group by category
-    const grouped = tests.reduce((acc: any, t) => {
-      if (!acc[t.category]) acc[t.category] = [];
-      acc[t.category].push(t);
-      return acc;
-    }, {});
-
-    return { data: tests, grouped, total: tests.length };
   }
 
   async createTest(tenantId: string, dto: any) {
@@ -159,39 +163,45 @@ export class LabService {
   }
 
   async listOrders(tenantId: string, filters: any) {
-    const { page = 1, limit = 20, status, priority, search, date } = filters;
-    const skip = (page - 1) * limit;
-    const where: any = { tenantId };
+    try {
+      const { page = 1, limit = 20, status, priority, search, date } = filters;
+      const skip = (page - 1) * limit;
+      const where: any = { tenantId };
 
-    if (status) where.status = status;
-    if (priority) where.priority = priority;
-    if (date) {
-      const d = new Date(date);
-      where.createdAt = {
-        gte: new Date(d.setHours(0, 0, 0, 0)),
-        lte: new Date(d.setHours(23, 59, 59, 999)),
-      };
+      if (status) where.status = status;
+      if (priority) where.priority = priority;
+      if (date) {
+        const d = new Date(date);
+        where.createdAt = {
+          gte: new Date(d.setHours(0, 0, 0, 0)),
+          lte: new Date(d.setHours(23, 59, 59, 999)),
+        };
+      }
+      if (search) {
+        where.OR = [
+          { orderNumber: { contains: search, mode: 'insensitive' } },
+          { patient: { firstName: { contains: search, mode: 'insensitive' } } },
+          { patient: { phone: { contains: search } } },
+        ];
+      }
+
+      const [data, total] = await Promise.all([
+        this.prisma.labOrder.findMany({
+          where, skip, take: limit,
+          orderBy: [{ priority: 'asc' }, { createdAt: 'desc' }],
+          include: {
+            patient: { select: { firstName: true, lastName: true, phone: true, healthId: true } },
+          },
+        }),
+        this.prisma.labOrder.count({ where }),
+      ]);
+
+      return { data, meta: { page: +page, limit: +limit, total, totalPages: Math.ceil(total / limit) } };
+    } catch (err) {
+      this.logger.error('listOrders failed', err?.message);
+      return { data: [], meta: { page: 1, limit: 20, total: 0, totalPages: 0 } };
     }
-    if (search) {
-      where.OR = [
-        { orderNumber: { contains: search, mode: 'insensitive' } },
-        { patient: { firstName: { contains: search, mode: 'insensitive' } } },
-        { patient: { phone: { contains: search } } },
-      ];
-    }
-
-    const [data, total] = await Promise.all([
-      this.prisma.labOrder.findMany({
-        where, skip, take: limit,
-        orderBy: [{ priority: 'asc' }, { createdAt: 'desc' }],
-        include: {
-          patient: { select: { firstName: true, lastName: true, phone: true, healthId: true } },
-        },
-      }),
-      this.prisma.labOrder.count({ where }),
-    ]);
-
-    return { data, meta: { page: +page, limit: +limit, total, totalPages: Math.ceil(total / limit) } };
+  }
   }
 
   async getOrderById(tenantId: string, id: string) {
@@ -305,26 +315,31 @@ export class LabService {
   // ── Dashboard Analytics ────────────────────────────────────────────────────
 
   async getDashboardStats(tenantId: string) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayEnd = new Date(today.getTime() + 86400000 - 1);
+    try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const todayEnd = new Date(today.getTime() + 86400000 - 1);
 
-    const [todayOrders, pending, processing, completed, urgent, revenue] = await Promise.all([
-      this.prisma.labOrder.count({ where: { tenantId, createdAt: { gte: today, lte: todayEnd } } }),
-      this.prisma.labOrder.count({ where: { tenantId, status: { in: ['ORDERED', 'SAMPLE_COLLECTED'] } } }),
-      this.prisma.labOrder.count({ where: { tenantId, status: 'PROCESSING' } }),
-      this.prisma.labOrder.count({ where: { tenantId, status: { in: ['COMPLETED', 'DELIVERED'] }, reportedAt: { gte: today } } }),
-      this.prisma.labOrder.count({ where: { tenantId, priority: 'urgent', status: { not: 'CANCELLED' } } }),
-      this.prisma.invoice.aggregate({
-        where: { tenantId, createdAt: { gte: today } },
-        _sum: { totalAmount: true },
-      }),
-    ]);
+      const [todayOrders, pending, processing, completed, urgent, revenue] = await Promise.all([
+        this.prisma.labOrder.count({ where: { tenantId, createdAt: { gte: today, lte: todayEnd } } }),
+        this.prisma.labOrder.count({ where: { tenantId, status: { in: ['ORDERED', 'SAMPLE_COLLECTED'] } } }),
+        this.prisma.labOrder.count({ where: { tenantId, status: 'PROCESSING' } }),
+        this.prisma.labOrder.count({ where: { tenantId, status: { in: ['COMPLETED', 'DELIVERED'] }, reportedAt: { gte: today } } }),
+        this.prisma.labOrder.count({ where: { tenantId, priority: 'urgent', status: { not: 'CANCELLED' } } }),
+        this.prisma.invoice.aggregate({
+          where: { tenantId, createdAt: { gte: today } },
+          _sum: { totalAmount: true },
+        }),
+      ]);
 
-    return {
-      todayOrders, pending, processing, completed, urgent,
-      todayRevenue: revenue._sum.totalAmount || 0,
-    };
+      return {
+        todayOrders, pending, processing, completed, urgent,
+        todayRevenue: revenue._sum.totalAmount || 0,
+      };
+    } catch (err) {
+      this.logger.error('getDashboardStats failed', err?.message);
+      return { todayOrders: 0, pending: 0, processing: 0, completed: 0, urgent: 0, todayRevenue: 0 };
+    }
   }
 
   async getTrend(tenantId: string, days = 14) {
@@ -386,26 +401,31 @@ export class LabService {
   }
 
   async listHomeCollections(tenantId: string, filters: any) {
-    const { page = 1, limit = 20, status, date } = filters;
-    const skip = (page - 1) * limit;
-    const where: any = { tenantId };
-    if (status) where.status = status;
-    if (date) {
-      const d = new Date(date);
-      where.scheduledAt = {
-        gte: new Date(d.setHours(0, 0, 0, 0)),
-        lte: new Date(d.setHours(23, 59, 59, 999)),
-      };
+    try {
+      const { page = 1, limit = 20, status, date } = filters;
+      const skip = (page - 1) * limit;
+      const where: any = { tenantId };
+      if (status) where.status = status;
+      if (date) {
+        const d = new Date(date);
+        where.scheduledAt = {
+          gte: new Date(d.setHours(0, 0, 0, 0)),
+          lte: new Date(d.setHours(23, 59, 59, 999)),
+        };
+      }
+      const [data, total] = await Promise.all([
+        this.prisma.homeCollection.findMany({
+          where, skip, take: limit,
+          orderBy: { scheduledAt: 'asc' },
+          include: { patient: { select: { firstName: true, lastName: true, phone: true } } },
+        }),
+        this.prisma.homeCollection.count({ where }),
+      ]);
+      return { data, meta: { page: +page, limit: +limit, total, totalPages: Math.ceil(total / limit) } };
+    } catch (err) {
+      this.logger.error('listHomeCollections failed', err?.message);
+      return { data: [], meta: { page: 1, limit: 20, total: 0, totalPages: 0 } };
     }
-    const [data, total] = await Promise.all([
-      this.prisma.homeCollection.findMany({
-        where, skip, take: limit,
-        orderBy: { scheduledAt: 'asc' },
-        include: { patient: { select: { firstName: true, lastName: true, phone: true } } },
-      }),
-      this.prisma.homeCollection.count({ where }),
-    ]);
-    return { data, meta: { page: +page, limit: +limit, total, totalPages: Math.ceil(total / limit) } };
   }
 
   async updateCollectionStatus(tenantId: string, id: string, status: string, technicianName?: string) {
