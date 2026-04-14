@@ -121,7 +121,14 @@ export default function TenantDetailPage() {
     );
   }
 
-  if (!tenant) return null;
+  if (!tenant) return (
+    <div className="p-6">
+      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800 flex items-center gap-3">
+        <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0" />
+        <div>Tenant not found or failed to load. <Link href="/super-admin/tenants" className="underline font-medium">Back to tenants list</Link></div>
+      </div>
+    </div>
+  );
 
   const mrr = PLAN_MRR[tenant.plan] || 0;
 

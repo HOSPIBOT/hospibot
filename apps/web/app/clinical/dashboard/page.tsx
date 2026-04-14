@@ -33,6 +33,50 @@ function KpiCard({ label, value, sub, change, icon: Icon, color, positive = true
   );
 }
 
+
+function SetupChecklist({ totalPatients, hasQueue }: { totalPatients: number; hasQueue: boolean }) {
+  const steps = [
+    { done: false, label: 'Add your first doctor', href: '/clinical/doctors', desc: 'Set up doctor profiles and schedules' },
+    { done: false, label: 'Create departments', href: '/clinical/departments', desc: 'Organise by Cardiology, OPD, etc.' },
+    { done: totalPatients > 0, label: 'Register first patient', href: '/clinical/patients', desc: 'Add a patient to get started' },
+    { done: false, label: 'Configure WhatsApp number', href: '/clinical/settings', desc: 'Connect your WhatsApp Business number' },
+    { done: false, label: 'Set up automation rules', href: '/clinical/automation', desc: 'Enable follow-up reminders' },
+  ];
+  const doneCount = steps.filter(s => s.done).length;
+  if (doneCount === steps.length) return null;
+  return (
+    <div className="bg-gradient-to-br from-[#E8F5F0] to-[#F0FDF4] rounded-2xl border border-[#0D7C66]/20 p-5 mb-2">
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h2 className="font-semibold text-slate-900 flex items-center gap-2">
+            <Zap className="w-4 h-4 text-[#0D7C66]" /> Complete your setup
+          </h2>
+          <p className="text-xs text-slate-500 mt-0.5">{doneCount}/{steps.length} steps done — get your clinic ready in minutes</p>
+        </div>
+        <div className="text-right">
+          <div className="text-2xl font-bold text-[#0D7C66]">{Math.round((doneCount/steps.length)*100)}%</div>
+          <div className="text-[10px] text-slate-400">complete</div>
+        </div>
+      </div>
+      <div className="w-full bg-white rounded-full h-1.5 mb-4">
+        <div className="bg-[#0D7C66] h-1.5 rounded-full transition-all" style={{ width: `${(doneCount/steps.length)*100}%` }} />
+      </div>
+      <div className="grid grid-cols-1 gap-2">
+        {steps.filter(s => !s.done).slice(0, 3).map((step, i) => (
+          <a key={i} href={step.href} className="flex items-center gap-3 bg-white rounded-xl px-4 py-3 hover:bg-[#E8F5F0] transition-colors group border border-transparent hover:border-[#0D7C66]/20">
+            <div className="w-5 h-5 rounded-full border-2 border-slate-200 flex-shrink-0 group-hover:border-[#0D7C66] transition-colors" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-slate-900">{step.label}</p>
+              <p className="text-xs text-slate-400">{step.desc}</p>
+            </div>
+            <ArrowUpRight className="w-4 h-4 text-slate-300 group-hover:text-[#0D7C66] transition-colors flex-shrink-0" />
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function ClinicalDashboard() {
   const { user } = useAuthStore();
   const [kpis, setKpis]       = useState<any>(null);
@@ -81,6 +125,9 @@ export default function ClinicalDashboard() {
         </div>
       </div>
 
+      {/* Onboarding checklist — hides when complete */}
+      {!loading && <SetupChecklist totalPatients={kpis?.patients?.total ?? 0} hasQueue={queue.length > 0} />}
+
       {/* KPIs */}
       {loading ? (
         <div className="grid grid-cols-4 gap-4">
@@ -88,15 +135,15 @@ export default function ClinicalDashboard() {
         </div>
       ) : (
         <div className="grid grid-cols-4 gap-4">
-          <KpiCard label="Today's Appointments" value={kpis?.todayAppointments ?? queue.length}
+          <KpiCard label="Today's Appointments" value={kpis?.appointments?.today ?? queue.length}
             sub={`${inProgress} in progress`} icon={Calendar} color="#0D7C66" />
-          <KpiCard label="Total Patients" value={(kpis?.totalPatients ?? 0).toLocaleString('en-IN')}
-            sub={kpis?.newPatientsThisMonth ? `+${kpis.newPatientsThisMonth} this month` : 'registered'}
+          <KpiCard label="Total Patients" value={(kpis?.patients?.total ?? 0).toLocaleString('en-IN')}
+            sub={kpis?.patients?.newThisMonth ? `+${kpis.patients.newThisMonth} this month` : 'registered'}
             icon={Users} color="#3B82F6" />
-          <KpiCard label="Month Revenue" value={formatINR(kpis?.monthRevenue ?? 0)}
-            change={kpis?.revenueGrowth ? `${kpis.revenueGrowth > 0 ? '+' : ''}${kpis.revenueGrowth}%` : undefined}
+          <KpiCard label="Month Revenue" value={formatINR((kpis?.revenue?.today ?? 0))}
+            change={kpis?.revenue?.changePercent ? `${kpis.revenue.changePercent > 0 ? '+' : ''}${kpis.revenueGrowth}%` : undefined}
             icon={TrendingUp} color="#8B5CF6" />
-          <KpiCard label="WhatsApp Messages" value={(kpis?.whatsappMessagesSent ?? 0).toLocaleString('en-IN')}
+          <KpiCard label="WhatsApp Messages" value={(kpis?.whatsapp?.messagesToday ?? 0).toLocaleString('en-IN')}
             sub="all time sent" icon={MessageSquare} color="#25D366" />
         </div>
       )}
