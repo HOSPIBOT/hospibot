@@ -1153,8 +1153,106 @@ function switchAuthTab(tab) {
   }
 }
 
-function handleAuth(type) {
-  alert((type === 'login' ? '✅ Login' : '✅ Registration') + ' submitted for ' + (currentPortal ? currentPortal.name : 'Portal') + '.\n\nThis is a demo. Integration with backend coming soon!');
+const API_BASE = 'https://hospibotserver-production.up.railway.app/api/v1';
+
+// Portal → dashboard URL mapping
+const PORTAL_DASHBOARDS = {
+  'hospital-admin': '/dashboard',
+  'doctor':         '/clinical/dashboard',
+  'patient':        '/patient-portal',
+  'receptionist':   '/clinical/dashboard',
+  'nurse':          '/clinical/dashboard',
+  'lab':            '/diagnostic/dashboard',
+  'pharmacist':     '/pharmacy/dashboard',
+  'billing':        '/billing/dashboard',
+  'marketing':      '/crm/dashboard'
+};
+
+async function handleAuth(type) {
+  if (!currentPortal) return;
+  const formEl = document.getElementById('auth-' + type + '-form');
+  const inputs = formEl.querySelectorAll('.fi, .fi-sel');
+  const btn = formEl.querySelector('.btn-submit');
+
+  // Collect form values
+  const vals = Array.from(inputs).map(i => i.value.trim());
+  if (vals.some(v => !v)) {
+    showFormMsg(formEl, '⚠️ Please fill in all fields.', '#f59e0b');
+    return;
+  }
+
+  // Show loading
+  const origText = btn.textContent;
+  btn.textContent = type === 'login' ? 'Logging in...' : 'Creating account...';
+  btn.style.opacity = '0.7';
+  btn.disabled = true;
+
+  try {
+    if (type === 'login') {
+      const email = vals[0], password = vals[1];
+      const res = await fetch(API_BASE + '/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (res.ok && data.access_token) {
+        localStorage.setItem('hb_token', data.access_token);
+        localStorage.setItem('hb_portal', currentPortal.id);
+        btn.textContent = '✅ Success! Redirecting...';
+        btn.style.background = '#16a34a';
+        const dest = PORTAL_DASHBOARDS[currentPortal.id] || '/dashboard';
+        setTimeout(() => { window.location.href = dest; }, 1200);
+      } else {
+        btn.textContent = origText;
+        btn.style.opacity = '1';
+        btn.disabled = false;
+        showFormMsg(formEl, '❌ ' + (data.message || 'Invalid email or password.'), '#ef4444');
+      }
+    } else {
+      // Registration
+      const regData = {};
+      formEl.querySelectorAll('.fi, .fi-sel').forEach((inp, i) => {
+        const label = formEl.querySelectorAll('.fl')[i];
+        if (label) regData[label.textContent.trim()] = inp.value.trim();
+      });
+      const res = await fetch(API_BASE + '/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...regData, portalType: currentPortal.id })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        btn.textContent = '✅ Registered! Check your email.';
+        btn.style.background = '#16a34a';
+        showFormMsg(formEl, '✅ Account created! You can now login.', '#16a34a');
+      } else {
+        btn.textContent = origText;
+        btn.style.opacity = '1';
+        btn.disabled = false;
+        showFormMsg(formEl, '❌ ' + (data.message || 'Registration failed. Try again.'), '#ef4444');
+      }
+    }
+  } catch (err) {
+    btn.textContent = origText;
+    btn.style.opacity = '1';
+    btn.disabled = false;
+    showFormMsg(formEl, '⚠️ Cannot reach server. Please try again later.', '#f59e0b');
+  }
+}
+
+function showFormMsg(container, msg, color) {
+  let el = container.querySelector('.form-api-msg');
+  if (!el) {
+    el = document.createElement('div');
+    el.className = 'form-api-msg';
+    el.style.cssText = 'margin-top:12px;padding:10px 14px;border-radius:8px;font-size:.83rem;font-weight:500;text-align:center;';
+    container.appendChild(el);
+  }
+  el.style.background = color + '18';
+  el.style.color = color;
+  el.style.border = '1px solid ' + color + '44';
+  el.textContent = msg;
 }
 
 // ===== RENDER PORTAL CARDS =====
