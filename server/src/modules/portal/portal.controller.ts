@@ -49,6 +49,18 @@ export class PortalController {
     return this.portalService.getPlatformAssets();
   }
 
+  @Get('subtypes')
+  @ApiOperation({ summary: 'List all sub-types (optionally filter by familyId)' })
+  getAllSubTypes(@Query('familyId') familyId?: string) {
+    return this.portalService.getAllSubTypes(familyId);
+  }
+
+  @Get('themes')
+  @ApiOperation({ summary: 'List all portal themes' })
+  getAllThemes() {
+    return this.portalService.getAllThemes();
+  }
+
   // ── Super Admin only ──────────────────────────────────────────────────────
 
   @Post('families')

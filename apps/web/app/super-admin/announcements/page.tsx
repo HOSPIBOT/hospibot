@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Megaphone, Plus, Send, Building2, Users, AlertTriangle, Info, CheckCircle2, X, Clock } from 'lucide-react';
-import { createAnnouncement, getAllTenants } from '@/lib/super-admin-api';
+import { createAnnouncement, getAllTenants, getAnnouncements } from '@/lib/super-admin-api';
 
 type AnnouncementType = 'INFO' | 'WARNING' | 'SUCCESS' | 'MAINTENANCE';
 type AudienceType = 'ALL' | 'PLAN' | 'STATUS';
@@ -107,6 +107,14 @@ export default function AnnouncementsPage() {
   const [history, setHistory] = useState(PAST_ANNOUNCEMENTS as any[]);
 
   // Load real tenant counts for recipient preview
+  const [liveAnnouncements, setLiveAnnouncements] = useState<any[]>([]);
+
+  useEffect(() => {
+    getAnnouncements(1, 50)
+      .then(res => { if (res?.data?.length > 0) setLiveAnnouncements(res.data); })
+      .catch(() => {});
+  }, []);
+
   useEffect(() => {
     Promise.all([
       getAllTenants({ page: 1, limit: 1, status: 'ALL' }).catch(() => ({ meta: { total: 0 } })),

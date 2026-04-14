@@ -98,6 +98,22 @@ export class PortalService {
 
   // ── Platform Assets (logo, tagline) ───────────────────────────────────────
 
+
+  async getAllSubTypes(familyId?: string) {
+    return this.prisma.portalSubType.findMany({
+      where: familyId ? { portalFamilyId: familyId } : {},
+      include: { portalFamily: { select: { id: true, name: true, slug: true } } },
+      orderBy: [{ portalFamilyId: 'asc' }, { sortOrder: 'asc' }],
+    });
+  }
+
+  async getAllThemes() {
+    return this.prisma.portalTheme.findMany({
+      include: { family: { select: { id: true, name: true, slug: true } } },
+      orderBy: { createdAt: 'asc' },
+    });
+  }
+
   async getPlatformAssets() {
     return this.prisma.platformAsset.upsert({
       where: { id: 'singleton' },

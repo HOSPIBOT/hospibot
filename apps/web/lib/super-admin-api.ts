@@ -197,10 +197,15 @@ export const getSystemHealth = (): Promise<SystemHealth> =>
 // ── Portal Families & Sub-Types ──────────────────────────────────────────────
 
 export const getPortalFamilies = () =>
-  api.get('/portal/families?includeInactive=true').then(r => r.data);
+  api.get('/portal/families?includeInactive=true').then(r => Array.isArray(r.data) ? r.data : (r.data?.data ?? []));
 
-export const getPortalSubTypes = () =>
-  api.get('/portal/subtypes').then(r => r.data);
+export const getPortalSubTypes = (familyId?: string) => {
+  const url = familyId ? `/portal/subtypes?familyId=${familyId}` : '/portal/subtypes';
+  return api.get(url).then(r => Array.isArray(r.data) ? r.data : (r.data?.data ?? []));
+};
 
 export const getPortalThemes = () =>
-  api.get('/portal/themes').then(r => r.data);
+  api.get('/portal/themes').then(r => Array.isArray(r.data) ? r.data : (r.data?.data ?? []));
+
+export const getAnnouncements = (page = 1, limit = 20) =>
+  api.get(`/super-admin/announcements?page=${page}&limit=${limit}`).then(r => r.data);

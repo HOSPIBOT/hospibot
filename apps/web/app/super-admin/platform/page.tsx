@@ -72,7 +72,13 @@ export default function PlatformAssetsPage() {
     );
   }
 
-  if (!assets) return null;
+  if (!assets) return (
+    <div className="max-w-2xl space-y-4">
+      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
+        Could not load platform assets. The server may be deploying — please refresh in a moment.
+      </div>
+    </div>
+  );
 
   return (
     <div className="max-w-2xl space-y-6">

@@ -195,6 +195,21 @@ export class SuperAdminService {
 
   // ─── Announcements ────────────────────────────────────────────────────────
 
+
+  async getAnnouncements(page = 1, limit = 20) {
+    const skip = (page - 1) * limit;
+    const [data, total] = await Promise.all([
+      this.prisma.notification.findMany({
+        where: { type: 'ANNOUNCEMENT' },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: Number(limit),
+      }).catch(() => []),
+      this.prisma.notification.count({ where: { type: 'ANNOUNCEMENT' } }).catch(() => 0),
+    ]);
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+  }
+
   async createAnnouncement(dto: CreateAnnouncementDto, adminId: string) {
     // Determine target tenants based on audience
     let tenantWhere: any = {};
@@ -227,6 +242,24 @@ export class SuperAdminService {
   }
 
   // ─── Platform Settings ────────────────────────────────────────────────────
+
+
+  async getAuditLogs({ page = 1, limit = 50, action, tenantId }: { page?: number; limit?: number; action?: string; tenantId?: string }) {
+    const skip = (page - 1) * limit;
+    const where: any = {};
+    if (action) where.action = { contains: action, mode: 'insensitive' };
+    if (tenantId) where.tenantId = tenantId;
+    try {
+      const [data, total] = await Promise.all([
+        this.prisma.auditLog.findMany({ where, orderBy: { createdAt: 'desc' }, skip, take: Number(limit),
+          include: { user: { select: { email: true, firstName: true, role: true } } } }),
+        this.prisma.auditLog.count({ where }),
+      ]);
+      return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+    } catch {
+      return { data: [], meta: { total: 0, page, limit, totalPages: 0 } };
+    }
+  }
 
   async getPlatformSettings() {
     // In production, these would be stored in a PlatformConfig table

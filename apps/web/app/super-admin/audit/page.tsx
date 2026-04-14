@@ -24,7 +24,7 @@ export default function SuperAdminAuditPage() {
       const params: any = { page, limit: 50 };
       if (filters.action) params.action = filters.action;
       if (filters.entity) params.entity = filters.entity;
-      const res = await api.get('/security/audit-logs', { params });
+      const res = await api.get('/super-admin/audit-logs', { params });
       setLogs(res.data.data ?? []);
       setMeta(res.data.meta ?? { page: 1, limit: 50, total: 0, totalPages: 1 });
     } catch { toast.error('Failed to load audit logs'); }
@@ -41,7 +41,7 @@ export default function SuperAdminAuditPage() {
       const params: any = { limit: 5000 };
       if (filters.action) params.action = filters.action;
       if (filters.entity) params.entity = filters.entity;
-      const res = await api.get('/security/audit-logs', { params });
+      const res = await api.get('/super-admin/audit-logs', { params });
       const all: any[] = res.data.data ?? logs;
       const header = ['Timestamp', 'Tenant ID', 'User', 'Action', 'Entity', 'IP Address', 'Details'];
       const rows = all.map(l => [

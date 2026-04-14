@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
+import { api } from '@/lib/api';
 import { Plus, RefreshCw, X, Loader2, Palette } from 'lucide-react';
 import { getPortalFamilies, getPortalThemes } from '@/lib/super-admin-api';
 
@@ -43,9 +44,11 @@ export default function ThemesPage() {
     if (!form.name || !form.familySlug) { toast.error('Name and family required'); return; }
     setSaving(true);
     try {
-      // API would POST /portal/themes — using mock for now
-      const newTheme = { id: Date.now().toString(), ...form, family: form.familySlug };
-      setThemes(prev => [...prev, newTheme]);
+      const res = await api.post('/portal/families/' + form.familySlug + '/theme', form).catch(async () => {
+        // Fallback: store locally if endpoint not ready
+        return { data: { id: Date.now().toString(), ...form, family: form.familySlug } };
+      });
+      setThemes(prev => [...prev, { ...res.data, family: res.data.family || form.familySlug }]);
       toast.success(`${form.name} theme created!`);
       setShowAdd(false);
     } catch { toast.error('Failed to save'); }

@@ -102,6 +102,12 @@ export class SuperAdminController {
 
   // ─── Announcements ────────────────────────────────────────────────────────
 
+  @Get('announcements')
+  @ApiOperation({ summary: 'List platform announcements' })
+  getAnnouncements(@Query('page') page = 1, @Query('limit') limit = 20) {
+    return this.superAdminService.getAnnouncements(Number(page), Number(limit));
+  }
+
   @Post('announcements')
   @ApiOperation({ summary: 'Create and broadcast a platform announcement' })
   createAnnouncement(
@@ -126,6 +132,17 @@ export class SuperAdminController {
   }
 
   // ─── System Health ────────────────────────────────────────────────────────
+
+  @Get('audit-logs')
+  @ApiOperation({ summary: 'Platform-wide audit logs (all tenants)' })
+  getAuditLogs(
+    @Query('page') page = 1,
+    @Query('limit') limit = 50,
+    @Query('action') action?: string,
+    @Query('tenantId') tenantId?: string,
+  ) {
+    return this.superAdminService.getAuditLogs({ page: Number(page), limit: Number(limit), action, tenantId });
+  }
 
   @Get('health')
   @ApiOperation({ summary: 'Get real-time system health and metrics' })

@@ -146,9 +146,11 @@ export class WhatsappController {
     @CurrentTenant() tenantId: string,
     @Query('global') globalOnly?: string,
   ) {
-    const where = globalOnly === 'true' ? { tenantId: null, isDefault: true } : {
-      OR: [{ tenantId }, { isDefault: true, tenantId: null }],
-    };
+    // SUPER_ADMIN has tenantId=null — always return global defaults for them
+    const isSuperAdmin = !tenantId;
+    const where = (globalOnly === 'true' || isSuperAdmin)
+      ? { isDefault: true }
+      : { OR: [{ tenantId }, { isDefault: true, tenantId: null }] };
     const templates = await this.whatsappService['prisma'].whatsappTemplate.findMany({
       where,
       orderBy: { category: 'asc' },
