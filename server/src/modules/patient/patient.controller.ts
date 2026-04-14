@@ -5,13 +5,14 @@ import { ApiTags, ApiBearerAuth, ApiOperation, ApiParam, ApiQuery } from '@nestj
 import { PatientService } from './patient.service';
 import { CreatePatientDto, UpdatePatientDto, ListPatientsDto, AddTagsDto } from './dto/patient.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { TenantGuard } from '../../common/guards/tenant.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/current-user.decorator';
 import { CurrentTenant } from '../../common/decorators/current-user.decorator';
 
 @ApiTags('Patients')
 @Controller('patients')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, TenantGuard)
 @ApiBearerAuth()
 export class PatientController {
   constructor(private patientService: PatientService) {}

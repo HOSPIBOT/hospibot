@@ -235,7 +235,8 @@ export default function WhatsAppTemplatesPage() {
     setLoading(true);
     try {
       const res = await api.get('/whatsapp/templates?global=true');
-      setTemplates(res.data ?? []);
+      // Backend returns { data: [...] } shape
+      setTemplates(Array.isArray(res.data) ? res.data : (res.data?.data ?? []));
     } catch { toast.error('Failed to load templates'); }
     finally { setLoading(false); }
   }, []);

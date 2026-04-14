@@ -7,11 +7,12 @@ import {
   CreateAppointmentDto, UpdateAppointmentStatusDto, RescheduleDto, ListAppointmentsDto,
 } from './dto/appointment.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { TenantGuard } from '../../common/guards/tenant.guard';
 import { CurrentTenant } from '../../common/decorators/current-user.decorator';
 
 @ApiTags('Appointments')
 @Controller('appointments')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, TenantGuard)
 @ApiBearerAuth()
 export class AppointmentController {
   constructor(private appointmentService: AppointmentService) {}

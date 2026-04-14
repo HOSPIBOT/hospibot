@@ -3,12 +3,13 @@ import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AutomationService } from './automation.service';
 import { CreateRuleDto, UpdateRuleDto, ListRulesDto } from './dto/automation.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { TenantGuard } from '../../common/guards/tenant.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles, CurrentTenant } from '../../common/decorators/current-user.decorator';
 
 @ApiTags('Automation / Revenue Engine')
 @Controller('automation')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, TenantGuard)
 @ApiBearerAuth()
 export class AutomationController {
   constructor(private automationService: AutomationService) {}

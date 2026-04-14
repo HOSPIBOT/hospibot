@@ -1,7 +1,8 @@
 import {
   Controller,
-  Post,
   Get,
+  Post,
+  Query,
   Body,
   UseGuards,
   HttpCode,
@@ -47,6 +48,21 @@ export class AuthController {
   @ApiOperation({ summary: 'Get current user profile' })
   async getProfile(@CurrentUser('id') userId: string) {
     return this.authService.getProfile(userId);
+  }
+
+  @Get('users')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('TENANT_ADMIN', 'BRANCH_ADMIN', 'SUPER_ADMIN')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'List all users in this tenant' })
+  async listUsers(
+    @CurrentTenant() tenantId: string,
+    @Query('role') role?: string,
+    @Query('search') search?: string,
+    @Query('page') page = 1,
+    @Query('limit') limit = 50,
+  ) {
+    return this.authService.listTenantUsers(tenantId, { role, search, page: +page, limit: +limit });
   }
 
   @Post('users')

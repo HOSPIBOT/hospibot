@@ -5,12 +5,13 @@ import { ApiTags, ApiBearerAuth, ApiOperation, ApiParam, ApiQuery } from '@nestj
 import { DoctorService } from './doctor.service';
 import { CreateDoctorDto, UpdateDoctorDto, SetScheduleDto, ListDoctorsDto } from './dto/doctor.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { TenantGuard } from '../../common/guards/tenant.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles, CurrentTenant } from '../../common/decorators/current-user.decorator';
 
 @ApiTags('Doctors')
 @Controller('doctors')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, TenantGuard)
 @ApiBearerAuth()
 export class DoctorController {
   constructor(private doctorService: DoctorService) {}

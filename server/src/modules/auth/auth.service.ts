@@ -243,6 +243,30 @@ export class AuthService {
 
   // ── Create user (tenant admin action) ─────────────────────────────────────
 
+
+  async listTenantUsers(tenantId: string, query: { role?: string; search?: string; page?: number; limit?: number }) {
+    const { role, search, page = 1, limit = 50 } = query;
+    const skip = (page - 1) * limit;
+    const where: any = { tenantId, isActive: true };
+    if (role) where.role = role;
+    if (search) {
+      where.OR = [
+        { firstName: { contains: search, mode: 'insensitive' } },
+        { lastName:  { contains: search, mode: 'insensitive' } },
+        { email:     { contains: search, mode: 'insensitive' } },
+      ];
+    }
+    const [data, total] = await Promise.all([
+      this.prisma.user.findMany({
+        where, skip, take: limit,
+        select: { id: true, email: true, firstName: true, lastName: true, role: true, isActive: true, createdAt: true, lastLoginAt: true, branchId: true },
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.user.count({ where }),
+    ]);
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+  }
+
   async createUser(tenantId: string, dto: CreateUserDto) {
     const existing = await this.prisma.user.findFirst({
       where: { tenantId, email: dto.email },

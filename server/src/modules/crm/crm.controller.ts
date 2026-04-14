@@ -3,11 +3,12 @@ import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { CrmService } from './crm.service';
 import { CreateLeadDto, UpdateLeadDto, ListLeadsDto, CreateCampaignDto, ListCampaignsDto } from './dto/crm.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { TenantGuard } from '../../common/guards/tenant.guard';
 import { CurrentTenant } from '../../common/decorators/current-user.decorator';
 
 @ApiTags('CRM')
 @Controller('crm')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, TenantGuard)
 @ApiBearerAuth()
 export class CrmController {
   constructor(private crmService: CrmService) {}

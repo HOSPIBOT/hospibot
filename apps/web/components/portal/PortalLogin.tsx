@@ -51,21 +51,36 @@ export default function PortalLogin({ portalSlug, features }: PortalLoginProps) 
       const user = res.data.user;
       const tenant = res.data.tenant;
 
-      // Verify portal family matches
-      const tenantPortal = tenant?.portalFamily?.slug || portalSlug;
-      if (user.role !== 'SUPER_ADMIN' && tenantPortal !== portalSlug) {
-        toast.error(`This account belongs to the ${PORTAL_LABELS[tenantPortal] || tenantPortal}. Please use the correct login page.`);
+      // ── Security Rule 1: Super Admin MUST use /auth/login, never portal pages ──
+      if (user.role === 'SUPER_ADMIN') {
+        toast.error('Super Admin accounts must sign in at the main login page.');
+        setLoading(false);
+        return;
+      }
+
+      // ── Security Rule 2: User must belong to this portal family ──
+      // If tenant has a portalFamily set, it must match this portal's slug
+      const tenantPortalSlug = tenant?.portalFamily?.slug;
+      if (tenantPortalSlug && tenantPortalSlug !== portalSlug) {
+        toast.error(
+          `This account belongs to the ${PORTAL_LABELS[tenantPortalSlug] || tenantPortalSlug} portal. ` +
+          `Please sign in at the correct portal.`
+        );
+        setLoading(false);
+        return;
+      }
+
+      // ── Security Rule 3: Must be a tenant user (has tenantId) ──
+      if (!tenant || !user.id) {
+        toast.error('Invalid account configuration. Please contact support.');
+        setLoading(false);
         return;
       }
 
       setAuth(user, tenant, res.data.accessToken, res.data.refreshToken);
       toast.success(`Welcome back, ${user.firstName}!`);
+      router.push(`/${portalSlug}/dashboard`);
 
-      if (user.role === 'SUPER_ADMIN') {
-        router.push('/super-admin');
-      } else {
-        router.push(`/${portalSlug}/dashboard`);
-      }
     } catch (err: any) {
       toast.error(err?.response?.data?.message || 'Login failed. Please check your credentials.');
     } finally {

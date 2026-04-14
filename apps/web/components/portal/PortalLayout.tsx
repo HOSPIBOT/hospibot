@@ -248,12 +248,28 @@ export default function PortalLayout({ children, portalSlug }: PortalLayoutProps
     if (!hydrated) return;
     if (!isAuthenticated && typeof window !== 'undefined') {
       const token = localStorage.getItem('hospibot_access_token');
-      if (!token) router.push(`/${portalSlug}/login`);
+      if (!token) { router.push(`/${portalSlug}/login`); return; }
     }
-  }, [isAuthenticated, hydrated]);
+    if (!isAuthenticated) return;
+
+    // ── Security: block Super Admin from portal pages ──
+    if (user?.role === 'SUPER_ADMIN') {
+      router.push('/super-admin');
+      return;
+    }
+
+    // ── Security: block wrong-portal access ──
+    const tenantPortalSlug = tenant?.portalFamily?.slug;
+    if (tenantPortalSlug && tenantPortalSlug !== portalSlug) {
+      router.push(`/${tenantPortalSlug}/dashboard`);
+      return;
+    }
+  }, [isAuthenticated, hydrated, user, tenant, portalSlug]);
 
   if (!hydrated) return null;
   if (!isAuthenticated) return null;
+  // Extra guard: Super Admin should never see portal layout
+  if (user?.role === 'SUPER_ADMIN') return null;
 
   const visibleNav = navItems.filter(item =>
     item.always || (item.flag ? hasFlag(item.flag) : true)
