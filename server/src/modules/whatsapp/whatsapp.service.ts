@@ -228,9 +228,10 @@ export class WhatsappService {
       where: { tenantId, waContactPhone: from },
     });
 
+    let patient: any = null;
     if (!conversation) {
       // Try to find existing patient by phone
-      const patient = await this.prisma.patient.findFirst({
+      patient = await this.prisma.patient.findFirst({
         where: { tenantId, phone: { contains: from.slice(-10) }, deletedAt: null },
       });
 

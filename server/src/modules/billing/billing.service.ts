@@ -1,10 +1,12 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../database/prisma.service';
 import { CreateInvoiceDto, RecordPaymentDto, ListInvoicesDto } from './dto/billing.dto';
 
 @Injectable()
 export class BillingService {
+  private readonly logger = new Logger(BillingService.name);
+
   constructor(
     private prisma: PrismaService,
     private config: ConfigService,
@@ -355,9 +357,8 @@ export class BillingService {
         .sort((a, b) => a.date.localeCompare(b.date)),
     };
   }
-}
 
-  // ── Razorpay Webhook Handler ────────────────────────────────────────────────
+// ── Razorpay Webhook Handler ────────────────────────────────────────────────
 
   async handleRazorpayWebhook(payload: any, signature: string): Promise<void> {
     const secret = this.config.get('RAZORPAY_WEBHOOK_SECRET', '');
@@ -631,3 +632,10 @@ ${voucherXml}
 
     return { data, meta: { page, limit, total, totalPages: Math.ceil(total / limit) } };
   }
+
+  async sendPaymentLink(tenantId: string, invoiceId: string) {
+    const invoice = await this.prisma.invoice.findFirst({ where: { id: invoiceId, tenantId } });
+    if (!invoice) throw new Error('Invoice not found');
+    return { success: true, message: 'Payment link feature requires Razorpay configuration' };
+  }
+}

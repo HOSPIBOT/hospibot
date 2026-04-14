@@ -3,7 +3,6 @@ import {
   IsNotEmpty, IsDateString,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
-import { Gender } from '@prisma/client';
 import { Transform } from 'class-transformer';
 
 export class CreatePatientDto {
@@ -32,10 +31,10 @@ export class CreatePatientDto {
   @IsDateString()
   dateOfBirth?: string;
 
-  @ApiPropertyOptional({ enum: Gender })
+  @ApiPropertyOptional({ type: String })
   @IsOptional()
-  @IsEnum(Gender)
-  gender?: Gender;
+  @IsString()
+  gender?: string;
 
   @ApiPropertyOptional({ example: 'B+' })
   @IsOptional()
@@ -129,10 +128,10 @@ export class ListPatientsDto {
   @IsString()
   tag?: string;
 
-  @ApiPropertyOptional({ enum: Gender })
+  @ApiPropertyOptional({ type: String })
   @IsOptional()
-  @IsEnum(Gender)
-  gender?: Gender;
+  @IsString()
+  gender?: string;
 
   @ApiPropertyOptional()
   @IsOptional()

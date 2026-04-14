@@ -351,9 +351,8 @@ export class AppointmentService {
       completionRate: total > 0 ? Math.round((completed / total) * 100) : 0,
     };
   }
-}
 
-  async update(tenantId: string, id: string, dto: any) {
+async update(tenantId: string, id: string, dto: any) {
     const appointment = await this.prisma.appointment.findFirst({ where: { id, tenantId } });
     if (!appointment) throw new NotFoundException('Appointment not found');
     const { status, ...rest } = dto;
@@ -367,3 +366,4 @@ export class AppointmentService {
       },
     });
   }
+}

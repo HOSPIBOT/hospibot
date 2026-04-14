@@ -2,7 +2,6 @@ import {
   IsString, IsOptional, IsEnum, IsInt, IsNotEmpty, IsDateString, Min, Max,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { AppointmentType, AppointmentStatus } from '@prisma/client';
 import { Transform } from 'class-transformer';
 
 export class CreateAppointmentDto {
@@ -26,9 +25,9 @@ export class CreateAppointmentDto {
   @IsString()
   departmentId?: string;
 
-  @ApiProperty({ enum: AppointmentType, default: 'SCHEDULED' })
-  @IsEnum(AppointmentType)
-  type: AppointmentType;
+  @ApiProperty({ type: String, default: 'SCHEDULED' })
+  @IsString()
+  type: string;
 
   @ApiProperty({ example: '2026-04-15T10:00:00.000Z' })
   @IsDateString()
@@ -52,9 +51,9 @@ export class CreateAppointmentDto {
 }
 
 export class UpdateAppointmentStatusDto {
-  @ApiProperty({ enum: AppointmentStatus })
-  @IsEnum(AppointmentStatus)
-  status: AppointmentStatus;
+  @ApiProperty({ type: String })
+  @IsString()
+  status: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -109,13 +108,13 @@ export class ListAppointmentsDto {
   @IsString()
   branchId?: string;
 
-  @ApiPropertyOptional({ enum: AppointmentStatus })
+  @ApiPropertyOptional({ type: String })
   @IsOptional()
-  @IsEnum(AppointmentStatus)
-  status?: AppointmentStatus;
+  @IsString()
+  status?: string;
 
-  @ApiPropertyOptional({ enum: AppointmentType })
+  @ApiPropertyOptional({ type: String })
   @IsOptional()
-  @IsEnum(AppointmentType)
-  type?: AppointmentType;
+  @IsString()
+  type?: string;
 }

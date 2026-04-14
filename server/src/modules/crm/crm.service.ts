@@ -339,8 +339,8 @@ export class CrmService {
 
     return where;
   }
-}
 
-  async estimateCampaignReach(tenantId: string, filters: Record<string, any>): Promise<number> {
+async estimateCampaignReach(tenantId: string, filters: Record<string, any>): Promise<number> {
     return this.countTargetPatients(tenantId, filters);
   }
+}

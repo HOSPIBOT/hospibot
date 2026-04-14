@@ -283,9 +283,8 @@ export class AnalyticsService {
       avgMessagesPerConversation: activeConversations > 0 ? Math.round(totalMessages / activeConversations) : 0,
     };
   }
-}
 
-  // ── Actionable notifications ─────────────────────────────────────────────────
+// ── Actionable notifications ─────────────────────────────────────────────────
 
   async getNotifications(tenantId: string): Promise<any[]> {
     const now = new Date();
@@ -380,3 +379,4 @@ export class AnalyticsService {
 
     return notifications;
   }
+}

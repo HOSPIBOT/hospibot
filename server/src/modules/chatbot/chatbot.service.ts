@@ -258,7 +258,7 @@ export class ChatbotService {
     else if (flow === 'BILLING') await this.continueBilling(tenantId, conversationId, patientPhone, patientId, text, step, data);
     else {
       await this.clearState(conversationId);
-      await this.sendReply(tenantId, patientPhone, `Something went wrong. Let me restart.\n\n${mainMenu(facilityName, lang)}`);
+      await this.sendReply(tenantId, patientPhone, `Something went wrong. Let me restart.\n\n${mainMenu(facilityName, 'en')}`);
     }
   }
 

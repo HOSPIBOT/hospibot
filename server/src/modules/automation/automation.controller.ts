@@ -72,9 +72,8 @@ export class AutomationController {
   async getStats(@CurrentTenant() tenantId: string) {
     return this.automationService.getStats(tenantId);
   }
-}
 
-  @Get('logs')
+@Get('logs')
   @ApiOperation({ summary: 'Get automation activity logs' })
   getLogs(
     @CurrentTenant() tenantId: string,
@@ -92,3 +91,4 @@ export class AutomationController {
   ) {
     return this.automationService.deleteRule(tenantId, id);
   }
+}

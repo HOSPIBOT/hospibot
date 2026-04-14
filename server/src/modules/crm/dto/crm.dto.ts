@@ -2,7 +2,6 @@ import {
   IsString, IsOptional, IsEnum, IsInt, IsArray, IsNotEmpty, IsObject, Min, Max,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
-import { LeadStage, LeadSource } from '@prisma/client';
 import { Transform } from 'class-transformer';
 
 export class CreateLeadDto {
@@ -21,9 +20,9 @@ export class CreateLeadDto {
   @IsString()
   email?: string;
 
-  @ApiProperty({ enum: LeadSource, default: 'WHATSAPP' })
-  @IsEnum(LeadSource)
-  source: LeadSource;
+  @ApiProperty({ type: String, default: 'WHATSAPP' })
+  @IsString()
+  source: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -48,10 +47,10 @@ export class CreateLeadDto {
 }
 
 export class UpdateLeadDto {
-  @ApiPropertyOptional({ enum: LeadStage })
+  @ApiPropertyOptional({ type: String })
   @IsOptional()
-  @IsEnum(LeadStage)
-  stage?: LeadStage;
+  @IsString()
+  stage?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -101,15 +100,15 @@ export class ListLeadsDto {
   @IsString()
   search?: string;
 
-  @ApiPropertyOptional({ enum: LeadStage })
+  @ApiPropertyOptional({ type: String })
   @IsOptional()
-  @IsEnum(LeadStage)
-  stage?: LeadStage;
+  @IsString()
+  stage?: string;
 
-  @ApiPropertyOptional({ enum: LeadSource })
+  @ApiPropertyOptional({ type: String })
   @IsOptional()
-  @IsEnum(LeadSource)
-  source?: LeadSource;
+  @IsString()
+  source?: string;
 
   @ApiPropertyOptional()
   @IsOptional()

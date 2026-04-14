@@ -133,9 +133,8 @@ export class WhatsappController {
   async switchToBot(@CurrentTenant() tenantId: string, @Param('id') conversationId: string) {
     return this.whatsappService.switchToBot(tenantId, conversationId);
   }
-}
 
-  // ==========================================
+// ==========================================
   // TEMPLATE MANAGEMENT
   // ==========================================
 
@@ -185,3 +184,4 @@ export class WhatsappController {
     // Seeds are handled by the seed.ts file at startup
     return { seeded: true, message: 'Default templates are seeded via database seed file' };
   }
+}

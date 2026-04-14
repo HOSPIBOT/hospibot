@@ -2,7 +2,6 @@ import {
   IsString, IsOptional, IsEnum, IsInt, IsBoolean, IsNotEmpty, IsObject, IsArray, Min,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { AutomationTrigger } from '@prisma/client';
 import { Transform } from 'class-transformer';
 
 export class CreateRuleDto {
@@ -16,9 +15,9 @@ export class CreateRuleDto {
   @IsString()
   description?: string;
 
-  @ApiProperty({ enum: AutomationTrigger })
-  @IsEnum(AutomationTrigger)
-  trigger: AutomationTrigger;
+  @ApiProperty({ type: String })
+  @IsString()
+  trigger: string;
 
   @ApiProperty({
     example: { diagnosisCodes: ['E11'], tags: ['diabetic'] },
@@ -101,8 +100,8 @@ export class ListRulesDto {
   @Transform(({ value }) => value === 'true')
   activeOnly?: boolean;
 
-  @ApiPropertyOptional({ enum: AutomationTrigger })
+  @ApiPropertyOptional({ type: String })
   @IsOptional()
-  @IsEnum(AutomationTrigger)
-  trigger?: AutomationTrigger;
+  @IsString()
+  trigger?: string;
 }

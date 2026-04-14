@@ -375,9 +375,8 @@ export class AutomationService {
       recentActivity: recentLogs,
     };
   }
-}
 
-  // ==========================================
+// ==========================================
   // LOGS
   // ==========================================
 
@@ -399,3 +398,4 @@ export class AutomationService {
     await this.prisma.automationRule.delete({ where: { id } });
     return { deleted: true };
   }
+}

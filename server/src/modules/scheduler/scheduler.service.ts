@@ -1,3 +1,4 @@
+import { Cron } from '@nestjs/schedule';
 import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { WhatsappService } from '../whatsapp/whatsapp.service';
@@ -319,9 +320,8 @@ export class SchedulerService implements OnModuleInit, OnModuleDestroy {
   private personalise(template: string, vars: Record<string, string>): string {
     return template.replace(/\{\{(\w+)\}\}/g, (_, key) => vars[key] || `[${key}]`);
   }
-}
 
-  // ── Daily Appointment Reminder Job ──────────────────────────────────────────
+// ── Daily Appointment Reminder Job ──────────────────────────────────────────
   // Runs every day at 8:00 AM IST — sends WhatsApp reminders for next-day appointments
 
   @Cron('0 0 2 * * *', { timeZone: 'Asia/Kolkata' }) // 2:30 AM UTC = 8:00 AM IST
@@ -497,3 +497,4 @@ export class SchedulerService implements OnModuleInit, OnModuleDestroy {
 
     this.logger.log(`Sent ${sent} feedback requests`);
   }
+}

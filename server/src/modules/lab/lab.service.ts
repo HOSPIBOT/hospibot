@@ -418,9 +418,8 @@ export class LabService {
 
     return this.prisma.homeCollection.update({ where: { id }, data: updateData });
   }
-}
 
-  // ── Update order fields ────────────────────────────────────────────────────
+// ── Update order fields ────────────────────────────────────────────────────
 
   async updateOrder(tenantId: string, id: string, dto: { reportUrl?: string; remarks?: string; notes?: string }) {
     const order = await this.prisma.labOrder.findFirst({ where: { id, tenantId } });
@@ -456,3 +455,4 @@ export class LabService {
     await this.uploadReport(tenantId, id, order.reportUrl).catch(() => {});
     return { delivered: true, to: order.patient?.phone };
   }
+}

@@ -186,9 +186,8 @@ export class DoctorService {
       availableSlots: slots.filter(s => s.available).length,
     };
   }
-}
 
-  // ── Department management ─────────────────────────────────────────────────
+// ── Department management ─────────────────────────────────────────────────
 
   async listDepartments(tenantId: string, limit = 100) {
     return this.prisma.department.findMany({
@@ -210,3 +209,4 @@ export class DoctorService {
     await this.prisma.department.update({ where: { id }, data: { isActive: false } });
     return { deleted: true };
   }
+}

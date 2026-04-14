@@ -3,7 +3,7 @@ import {
   Body, Param, Query, UseGuards, Request,
 } from '@nestjs/common';
 import { BedService } from './bed.service';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 
 @UseGuards(JwtAuthGuard)
 @Controller('beds')

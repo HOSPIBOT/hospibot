@@ -1,5 +1,6 @@
 import {
-  Controller, Get, Post, Body, Param, Query, UseGuards,
+  Controller, Get, Post, Patch, Body, Param, Query, Res, UseGuards,
+  NotFoundException, HttpCode, HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { BillingService } from './billing.service';
@@ -57,9 +58,8 @@ export class BillingController {
   ) {
     return this.billingService.getRevenueStats(tenantId, period || 'month');
   }
-}
 
-  @Post('invoices/:id/send')
+@Post('invoices/:id/send')
   @ApiOperation({ summary: 'Send invoice to patient via WhatsApp' })
   async sendInvoice(
     @CurrentTenant() tenantId: string,
@@ -103,7 +103,7 @@ export class BillingController {
   @ApiOperation({ summary: 'Razorpay webhook handler (no auth — called by Razorpay)' })
   async razorpayWebhook(
     @Body() payload: any,
-    @Headers('x-razorpay-signature') signature: string,
+      @Body('razorpay_signature') signature: string,
   ) {
     await this.billingService.handleRazorpayWebhook(payload, signature);
     return { received: true };
@@ -334,3 +334,4 @@ export class BillingController {
       status: 'DEMO_MODE',
     };
   }
+}

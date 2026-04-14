@@ -30,9 +30,8 @@ export class VisitController {
   getById(@CurrentTenant() tenantId: string, @Param('id') id: string) {
     return this.visitService.getById(tenantId, id);
   }
-}
 
-  @Post(':id/feedback')
+@Post(':id/feedback')
   @ApiOperation({ summary: 'Submit patient feedback and rating for a visit' })
   async submitFeedback(
     @CurrentTenant() tenantId: string,
@@ -60,7 +59,8 @@ export class VisitController {
         doctor:  { include: { user: { select: { firstName: true, lastName: true } } } },
       },
     });
-  
+  }
+
   @Patch(':id')
   @ApiOperation({ summary: 'Update visit clinical notes, vitals, diagnosis' })
   update(

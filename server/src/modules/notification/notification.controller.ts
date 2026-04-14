@@ -40,9 +40,8 @@ export class NotificationController {
       channel: dto.channel || 'whatsapp',
     });
   }
-}
 
-  @Post('send-email')
+@Post('send-email')
   @ApiOperation({ summary: 'Send an email notification via SMTP' })
   async sendEmail(
     @CurrentTenant() tenantId: string,
@@ -72,3 +71,4 @@ export class NotificationController {
       channel: 'sms',
     });
   }
+}

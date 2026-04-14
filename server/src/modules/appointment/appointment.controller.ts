@@ -1,5 +1,5 @@
 import {
-  Controller, Get, Post, Put, Body, Param, Query, UseGuards,
+  Controller, Get, Post, Put, Patch, Delete, Body, Param, Query, UseGuards, HttpCode, HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { AppointmentService } from './appointment.service';
@@ -78,7 +78,7 @@ export class AppointmentController {
     @Param('id') id: string,
     @Body('status') status: string,
   ) {
-    return this.appointmentService.updateStatus(tenantId, id, status);
+    return this.appointmentService.updateStatus(tenantId, id, { status } as any);
   }
 
   @Patch(':id')

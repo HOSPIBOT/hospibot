@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../database/prisma.service';
 import { WhatsappService } from '../whatsapp/whatsapp.service';
 
@@ -17,6 +18,9 @@ interface NotificationPayload {
   mediaUrl?: string;
   mediaType?: string;
   caption?: string;
+  email?: string;
+  subject?: string;
+  html?: string;
 }
 
 @Injectable()
@@ -26,6 +30,7 @@ export class NotificationService {
   constructor(
     private prisma: PrismaService,
     private whatsappService: WhatsappService,
+    private config: ConfigService,
   ) {}
 
   /**
@@ -195,6 +200,7 @@ export class NotificationService {
 
         try {
           // Dynamic nodemailer import (optional dependency)
+          // @ts-ignore
           const nodemailer = await import('nodemailer').catch(() => null);
           if (!nodemailer) {
             this.logger.warn('nodemailer not installed — run: npm install nodemailer');

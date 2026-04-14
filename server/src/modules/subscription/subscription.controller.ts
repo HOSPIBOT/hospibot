@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Param, Headers, UseGuards, RawBodyRequest, Req } from '@nestjs/common';
 import { SubscriptionService } from './subscription.service';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CurrentTenant } from '../auth/decorators/current-tenant.decorator';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { CurrentTenant } from '../../common/decorators/current-user.decorator';
 
 @Controller('subscriptions')
 export class SubscriptionController {

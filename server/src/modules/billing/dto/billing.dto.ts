@@ -4,7 +4,6 @@ import {
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type, Transform } from 'class-transformer';
-import { InvoiceStatus, PaymentMethod } from '@prisma/client';
 
 export class InvoiceItemDto {
   @ApiProperty({ example: 'Consultation - Dr. Ananya Rao' })
@@ -73,9 +72,9 @@ export class RecordPaymentDto {
   @Min(1)
   amount: number;
 
-  @ApiProperty({ enum: PaymentMethod })
-  @IsEnum(PaymentMethod)
-  method: PaymentMethod;
+  @ApiProperty({ type: String })
+  @IsString()
+  method: string;
 
   @ApiPropertyOptional({ description: 'Razorpay order ID' })
   @IsOptional()
@@ -114,10 +113,10 @@ export class ListInvoicesDto {
   @IsString()
   patientId?: string;
 
-  @ApiPropertyOptional({ enum: InvoiceStatus })
+  @ApiPropertyOptional({ type: String })
   @IsOptional()
-  @IsEnum(InvoiceStatus)
-  status?: InvoiceStatus;
+  @IsString()
+  status?: string;
 
   @ApiPropertyOptional({ description: 'From date (YYYY-MM-DD)' })
   @IsOptional()
