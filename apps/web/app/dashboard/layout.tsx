@@ -34,7 +34,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   useEffect(() => {
     if (!isAuthenticated && typeof window !== 'undefined') {
       const token = localStorage.getItem('hospibot_access_token');
-      if (!token) router.push('/auth/login');
+      if (!token) {
+        // Redirect to the portal's own login page, not super-admin login
+        const slug = localStorage.getItem('hospibot_portal_slug') ?? 'clinical';
+        router.push(`/${slug}/login`);
+      }
     }
   }, [isAuthenticated]);
 

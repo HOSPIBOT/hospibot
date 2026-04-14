@@ -40,12 +40,16 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return api(originalRequest);
       } catch {
-        // Refresh failed - force logout
-        localStorage.removeItem('hospibot_access_token');
-        localStorage.removeItem('hospibot_refresh_token');
-        localStorage.removeItem('hospibot_user');
-        localStorage.removeItem('hospibot_tenant');
-        window.location.href = '/auth/login';
+        // Refresh failed - force logout to the correct portal login page
+        const slug = localStorage.getItem('hospibot_portal_slug') ?? 'clinical';
+        const userStr = localStorage.getItem('hospibot_user');
+        const isSuperAdmin = userStr ? JSON.parse(userStr)?.role === 'SUPER_ADMIN' : false;
+        ['hospibot_access_token','hospibot_refresh_token','hospibot_user',
+         'hospibot_tenant','hospibot_portal_slug'].forEach(k => localStorage.removeItem(k));
+        if (typeof document !== 'undefined') {
+          document.cookie = 'hospibot_token=; path=/; max-age=0';
+        }
+        window.location.href = isSuperAdmin ? '/auth/login' : `/${slug}/login`;
         return Promise.reject(error);
       }
     }
