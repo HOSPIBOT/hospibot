@@ -136,6 +136,33 @@ export class AuthService {
   // ── Login ──────────────────────────────────────────────────────────────────
 
   async login(dto: LoginDto) {
+    // Check platform_admins table first
+    const platformAdmin = await this.prisma.platformAdmin.findFirst({
+      where: { email: dto.email, isActive: true },
+    });
+
+    if (platformAdmin) {
+      const isValid = await bcrypt.compare(dto.password, platformAdmin.passwordHash);
+      if (!isValid) throw new UnauthorizedException('Invalid email or password');
+      await this.prisma.platformAdmin.update({
+        where: { id: platformAdmin.id },
+        data: { lastLoginAt: new Date() },
+      });
+      const tokens = await this.generateTokens(platformAdmin.id, null, 'SUPER_ADMIN');
+      return {
+        user: {
+          id: platformAdmin.id,
+          email: platformAdmin.email,
+          firstName: platformAdmin.firstName,
+          lastName: platformAdmin.lastName,
+          role: 'SUPER_ADMIN',
+          tenantId: null,
+        },
+        tenant: null,
+        ...tokens,
+      };
+    }
+
     const user = await this.prisma.user.findFirst({
       where: { email: dto.email, isActive: true },
       include: {

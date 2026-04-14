@@ -52,21 +52,21 @@ export class BootstrapController {
     }
 
     // 2. Create super admin if not present
-    const existingAdmin = await this.prisma.user.findFirst({ where: { role: 'SUPER_ADMIN' } });
+    const existingAdmin = await this.prisma.platformAdmin.findFirst({ where: { role: 'SUPER_ADMIN' } });
     if (existingAdmin) {
-      results.push(`Super admin already exists: ${existingAdmin.email}`);
+      results.push(`Super admin already exists: ${existingAdmin?.email}`);
     } else {
       const passwordHash = await bcrypt.hash(body.password, 12);
-      // Use raw SQL to bypass Prisma relation validation (SUPER_ADMIN has no tenant)
-      await this.prisma.$executeRawUnsafe(
-        `INSERT INTO users (id, email, password_hash, first_name, last_name, role, is_active, created_at, updated_at)
-         VALUES (gen_random_uuid()::text, $1, $2, $3, $4, 'SUPER_ADMIN', true, NOW(), NOW())
-         ON CONFLICT (email) DO NOTHING`,
-        body.email,
-        passwordHash,
-        body.name || 'Super',
-        'Admin'
-      );
+      await this.prisma.platformAdmin.create({
+        data: {
+          email: body.email,
+          passwordHash,
+          firstName: body.name || 'Super',
+          lastName: 'Admin',
+          role: 'SUPER_ADMIN',
+          isActive: true,
+        },
+      });
       results.push(`Super admin created: ${body.email}`);
     }
 
