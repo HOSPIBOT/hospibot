@@ -40,10 +40,10 @@ export default function UsersPage() {
     setLoading(true);
     try {
       const res = await getAllUsers({ page, limit: perPage, search: debSearch || undefined, role: roleFilter });
-      setUsers(res.data);
-      setTotal(res.meta.total);
-      setTotalPages(res.meta.totalPages);
-    } catch { /* empty */ } finally { setLoading(false); }
+      setUsers(res?.data ?? []);
+      setTotal(res?.meta?.total ?? 0);
+      setTotalPages(res?.meta?.totalPages ?? 1);
+    } catch { setUsers([]); } finally { setLoading(false); }
   }, [page, debSearch, roleFilter]);
 
   useEffect(() => { setPage(1); }, [debSearch, roleFilter]);

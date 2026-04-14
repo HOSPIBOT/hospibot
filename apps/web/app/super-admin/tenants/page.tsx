@@ -64,10 +64,10 @@ export default function TenantsPage() {
         status: statusFilter,
         plan: planFilter,
       });
-      setTenants(res.data);
-      setTotal(res.meta.total);
-      setTotalPages(res.meta.totalPages);
-    } catch { /* show empty state */ }
+      setTenants(res?.data ?? []);
+      setTotal(res?.meta?.total ?? 0);
+      setTotalPages(res?.meta?.totalPages ?? 1);
+    } catch { setTenants([]); }
     finally { setLoading(false); }
   }, [page, debouncedSearch, statusFilter, planFilter]);
 

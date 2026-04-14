@@ -100,17 +100,17 @@ export class PortalService {
 
 
   async getAllSubTypes(familyId?: string) {
-    return this.prisma.portalSubType.findMany({
+    return this.prisma.tenantSubType.findMany({
       where: familyId ? { portalFamilyId: familyId } : {},
       include: { portalFamily: { select: { id: true, name: true, slug: true } } },
-      orderBy: [{ portalFamilyId: 'asc' }, { sortOrder: 'asc' }],
+      orderBy: { portalFamilyId: 'asc' },
     });
   }
 
   async getAllThemes() {
     return this.prisma.portalTheme.findMany({
-      include: { family: { select: { id: true, name: true, slug: true } } },
-      orderBy: { createdAt: 'asc' },
+      include: { portalFamily: { select: { id: true, name: true, slug: true } } },
+      orderBy: { updatedAt: 'desc' },
     });
   }
 

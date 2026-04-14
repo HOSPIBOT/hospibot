@@ -199,13 +199,12 @@ export class SuperAdminService {
   async getAnnouncements(page = 1, limit = 20) {
     const skip = (page - 1) * limit;
     const [data, total] = await Promise.all([
-      this.prisma.notification.findMany({
-        where: { type: 'ANNOUNCEMENT' },
+      this.prisma.announcement.findMany({
         orderBy: { createdAt: 'desc' },
         skip,
         take: Number(limit),
       }).catch(() => []),
-      this.prisma.notification.count({ where: { type: 'ANNOUNCEMENT' } }).catch(() => 0),
+      this.prisma.announcement.count().catch(() => 0),
     ]);
     return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
   }
@@ -251,8 +250,7 @@ export class SuperAdminService {
     if (tenantId) where.tenantId = tenantId;
     try {
       const [data, total] = await Promise.all([
-        this.prisma.auditLog.findMany({ where, orderBy: { createdAt: 'desc' }, skip, take: Number(limit),
-          include: { user: { select: { email: true, firstName: true, role: true } } } }),
+        this.prisma.auditLog.findMany({ where, orderBy: { createdAt: 'desc' }, skip, take: Number(limit) }),
         this.prisma.auditLog.count({ where }),
       ]);
       return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };

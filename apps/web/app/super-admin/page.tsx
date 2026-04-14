@@ -130,7 +130,7 @@ export default function SuperAdminDashboard() {
         getAllTenants({ limit: 5 }),
       ]);
       setStats(statsData);
-      setRecentTenants(tenantsData.data);
+      setRecentTenants(tenantsData?.data ?? []);
       setLastRefresh(new Date());
     } catch (err: any) {
       if (err?.response?.status === 403) router.push('/dashboard');

@@ -74,7 +74,17 @@ export default function SettingsPage() {
     );
   }
 
-  if (!settings) return null;
+  if (!settings) return (
+    <div className="max-w-2xl">
+      <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 flex items-start gap-3">
+        <svg className="w-5 h-5 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
+        <div>
+          <p className="font-semibold text-amber-800 text-sm">Could not load platform settings</p>
+          <p className="text-amber-700 text-xs mt-1">The server may still be deploying. <button onClick={load} className="underline font-medium">Click to retry</button></p>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="max-w-2xl space-y-6">
