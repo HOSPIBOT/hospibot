@@ -8,11 +8,24 @@ export class PortalService {
   // ── Portal Families ────────────────────────────────────────────────────────
 
   async getAllFamilies(includeInactive = false) {
-    return this.prisma.portalFamily.findMany({
-      where: includeInactive ? {} : { isActive: true },
-      include: { theme: true, _count: { select: { subTypes: true, tenants: true } } },
-      orderBy: { sortOrder: 'asc' },
-    });
+    try {
+      return await this.prisma.portalFamily.findMany({
+        where: includeInactive ? {} : { isActive: true },
+        include: { theme: true, _count: { select: { subTypes: true, tenants: true } } },
+        orderBy: { sortOrder: 'asc' },
+      });
+    } catch (err: any) {
+      // Gracefully handle missing columns/tables during migration
+      // Try simpler query without relations
+      try {
+        return await this.prisma.portalFamily.findMany({
+          where: includeInactive ? {} : { isActive: true },
+          orderBy: { sortOrder: 'asc' },
+        });
+      } catch {
+        return [];
+      }
+    }
   }
 
   async getFamilyBySlug(slug: string) {
@@ -100,18 +113,26 @@ export class PortalService {
 
 
   async getAllSubTypes(familyId?: string) {
-    return this.prisma.tenantSubType.findMany({
-      where: familyId ? { portalFamilyId: familyId } : {},
-      include: { portalFamily: { select: { id: true, name: true, slug: true } } },
-      orderBy: { portalFamilyId: 'asc' },
-    });
+    try {
+      return await this.prisma.tenantSubType.findMany({
+        where: familyId ? { portalFamilyId: familyId } : {},
+        include: { portalFamily: { select: { id: true, name: true, slug: true } } },
+        orderBy: { portalFamilyId: 'asc' },
+      });
+    } catch {
+      return [];
+    }
   }
 
   async getAllThemes() {
-    return this.prisma.portalTheme.findMany({
-      include: { portalFamily: { select: { id: true, name: true, slug: true } } },
-      orderBy: { updatedAt: 'desc' },
-    });
+    try {
+      return await this.prisma.portalTheme.findMany({
+        include: { portalFamily: { select: { id: true, name: true, slug: true } } },
+        orderBy: { updatedAt: 'desc' },
+      });
+    } catch {
+      return [];
+    }
   }
 
   async getPlatformAssets() {
