@@ -6,7 +6,7 @@ import { PrismaService } from '../../database/prisma.service';
 
 interface JwtPayload {
   sub: string;
-  tenantId: string;
+  tenantId: string | null;
   role: string;
 }
 
@@ -24,6 +24,29 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload) {
+    // SUPER_ADMIN tokens are issued with role='SUPER_ADMIN' and tenantId=null
+    // Their IDs live in platform_admins, not users
+    if (payload.role === 'SUPER_ADMIN') {
+      const admin = await this.prisma.platformAdmin.findUnique({
+        where: { id: payload.sub },
+        select: { id: true, email: true, firstName: true, lastName: true, role: true, isActive: true },
+      });
+      if (!admin || !admin.isActive) {
+        throw new UnauthorizedException('Account is inactive or not found');
+      }
+      return {
+        id: admin.id,
+        tenantId: null,
+        branchId: null,
+        email: admin.email,
+        firstName: admin.firstName,
+        lastName: admin.lastName,
+        role: admin.role,
+        permissions: [],
+      };
+    }
+
+    // Regular tenant users
     const user = await this.prisma.user.findUnique({
       where: { id: payload.sub },
       select: {
@@ -43,7 +66,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Account is inactive or not found');
     }
 
-    // Return user object - attached to request.user
     return {
       id: user.id,
       tenantId: user.tenantId,
@@ -56,3 +78,4 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     };
   }
 }
+

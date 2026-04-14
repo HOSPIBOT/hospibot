@@ -220,6 +220,17 @@ export class AuthService {
       const payload = this.jwt.verify(refreshToken, {
         secret: this.config.get('JWT_REFRESH_SECRET'),
       });
+
+      // SUPER_ADMIN refresh — look up platform_admins
+      if (payload.role === 'SUPER_ADMIN') {
+        const admin = await this.prisma.platformAdmin.findUnique({
+          where: { id: payload.sub, isActive: true },
+        });
+        if (!admin) throw new UnauthorizedException('Invalid refresh token');
+        return this.generateTokens(admin.id, null, admin.role);
+      }
+
+      // Regular tenant user refresh
       const user = await this.prisma.user.findUnique({
         where: { id: payload.sub, isActive: true },
       });
