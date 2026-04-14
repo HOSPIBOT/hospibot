@@ -45,7 +45,7 @@ function InviteModal({ onClose, onInvited }: { onClose: () => void; onInvited: (
         email: form.email, phone: form.phone || undefined,
         role: form.role, password: form.password,
       });
-      toast.success(`${form.firstName} invited as ${form.role}. They can log in at /auth/login.`);
+      toast.success(`${form.firstName} invited as ${form.role}. They can log in at /${typeof window !== 'undefined' ? (localStorage.getItem('hospibot_portal_slug') ?? 'clinical') : 'clinical'}/login`);
       onInvited(); onClose();
     } catch (err: any) {
       toast.error(err?.response?.data?.message || 'Failed to invite staff member');

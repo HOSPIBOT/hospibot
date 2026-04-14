@@ -2,15 +2,15 @@
   "name": "hospibot",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "npm@10.9.2",
   "description": "HospiBot - Global WhatsApp-Driven Healthcare Operating System",
   "workspaces": [
     "apps/*",
-    "server",
     "packages/*"
   ],
   "scripts": {
     "dev": "turbo dev",
-    "build": "turbo build",
+    "build": "turbo run build --filter=@hospibot/web",
     "lint": "turbo lint",
     "dev:web": "cd apps/web && npm run dev",
     "dev:server": "cd server && npm run start:dev",

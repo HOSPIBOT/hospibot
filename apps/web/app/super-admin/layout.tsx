@@ -85,7 +85,8 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
   if (!hydrated) return null;
 
   const handleLogout = () => {
-    ['hospibot_access_token','hospibot_refresh_token','hospibot_user','hospibot_tenant'].forEach(k => localStorage.removeItem(k));
+    ['hospibot_access_token','hospibot_refresh_token','hospibot_user',
+     'hospibot_tenant','hospibot_portal_slug'].forEach(k => localStorage.removeItem(k));
     document.cookie = 'hospibot_token=; path=/; max-age=0';
     window.location.href = '/auth/login';
   };
