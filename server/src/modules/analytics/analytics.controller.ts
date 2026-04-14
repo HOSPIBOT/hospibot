@@ -70,7 +70,7 @@ export class AnalyticsController {
     if (body.visitId) {
       await this.analyticsService['prisma']?.visit?.update({
         where: { id: body.visitId },
-        data: { feedbackScore: body.score, feedbackComment: body.comment },
+        data: { rating: body.score, feedback: body.comment, npsScore: body.score },
       }).catch(() => null);
     }
     return { success: true, message: 'Feedback recorded. Thank you!' };
