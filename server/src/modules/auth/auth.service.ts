@@ -153,7 +153,7 @@ export class AuthService {
 
     if (!user) throw new UnauthorizedException('Invalid email or password');
 
-    if (user.role !== 'SUPER_ADMIN') {
+    if (user.role !== 'SUPER_ADMIN' && user.tenant) {
       if (user.tenant.status === 'SUSPENDED' || user.tenant.status === 'CANCELLED') {
         throw new UnauthorizedException('Your account is inactive. Contact support@hospibot.in');
       }

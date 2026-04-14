@@ -289,7 +289,7 @@ model Branch {
 
 model User {
   id            String    @id @default(uuid())
-  tenantId      String    @map("tenant_id")
+  tenantId      String?   @map("tenant_id")
   branchId      String?   @map("branch_id")
   email         String
   phone         String?
