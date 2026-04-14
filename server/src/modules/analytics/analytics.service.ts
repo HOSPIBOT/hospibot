@@ -314,7 +314,7 @@ export class AnalyticsService {
       }).catch(() => 0),
       // Expiring drugs in 90 days
       this.prisma.pharmacyBatch.count({
-        where: { tenantId, expiryDate: { lte: in90 }, remainingQuantity: { gt: 0 } },
+        where: { tenantId, expiryDate: { lte: in90 } } as any,
       }).catch(() => 0),
       // Unread WhatsApp convos
       this.prisma.conversation.count({

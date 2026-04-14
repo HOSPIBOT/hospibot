@@ -22,7 +22,7 @@ export class AutomationService {
         tenantId,
         name: dto.name,
         description: dto.description,
-        trigger: dto.trigger,
+        trigger: dto.trigger as any,
         conditions: dto.conditions,
         waitDays: dto.waitDays,
         actions: dto.actions,

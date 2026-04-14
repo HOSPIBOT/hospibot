@@ -28,7 +28,7 @@ export class TenantService {
         phone:    dto.phone,
         email:    dto.email,
         isActive: true,
-        isMain:   dto.isMain || false,
+        // isMain removed - not in schema
       },
     });
   }

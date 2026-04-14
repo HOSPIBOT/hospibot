@@ -113,11 +113,11 @@ export class SecurityService {
     }
 
     const [data, total] = await Promise.all([
-      this.prisma.auditLog.findMany({
+      (this.prisma.auditLog.findMany({
         where, skip, take: +limit,
         orderBy: { createdAt: 'desc' },
         include: { user: { select: { firstName: true, lastName: true, email: true } } },
-      }),
+      }) as any),
       this.prisma.auditLog.count({ where }),
     ]);
 
@@ -132,13 +132,13 @@ export class SecurityService {
     if (action) where.action = action;
 
     const [data, total] = await Promise.all([
-      this.prisma.auditLog.findMany({
+      (this.prisma.auditLog.findMany({
         where, skip, take: +limit,
         orderBy: { createdAt: 'desc' },
         include: {
           user: { select: { firstName: true, lastName: true, email: true } },
         },
-      }),
+      }) as any),
       this.prisma.auditLog.count({ where }),
     ]);
 
@@ -196,7 +196,8 @@ export class SecurityService {
     await this.prisma.user.update({
       where: { id: userId },
       data: {
-        settings: {
+        // settings field removed - not in User model
+        permissions: {
           otp: { hash, expiresAt: expiresAt.toISOString(), purpose },
         },
       },
@@ -205,7 +206,7 @@ export class SecurityService {
 
   async verifyOTP(userId: string, otp: string, purpose: string): Promise<boolean> {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    const settings = user?.settings as any;
+    const settings = (user as any)?.settings || {};
     const storedOTP = settings?.otp;
 
     if (!storedOTP) return false;

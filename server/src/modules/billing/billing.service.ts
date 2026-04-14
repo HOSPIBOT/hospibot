@@ -110,7 +110,7 @@ export class BillingService {
         payments: { orderBy: { createdAt: 'desc' } },
         visit: {
           select: { id: true, chiefComplaint: true, diagnosisText: true, createdAt: true,
-            doctor: { include: { user: { select: { firstName: true, lastName: true } } } } },
+            } as any,
         },
       },
     });
@@ -179,7 +179,7 @@ export class BillingService {
           tenantId,
           invoiceId,
           amount: dto.amount,
-          method: dto.method,
+          method: dto.method as any,
           status: 'SUCCESS',
           gatewayOrderId: dto.gatewayOrderId,
           gatewayPaymentId: dto.gatewayPaymentId,

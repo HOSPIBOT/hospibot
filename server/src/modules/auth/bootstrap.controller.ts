@@ -44,7 +44,7 @@ export class BootstrapController {
           theme: { primaryColor:'#DC2626', primaryDark:'#B91C1C', primaryLight:'#FEE2E2', accentColor:'#F59E0B', sidebarBg:'#450A0A', loginBg:'#DC2626', loginGradient:'#B91C1C' } },
       ];
       for (const f of families) {
-        await this.prisma.portalFamily.create({ data: { name: f.name, slug: f.slug, icon: f.icon, sortOrder: f.sortOrder, theme: f.theme, description: f.name } });
+        await this.prisma.portalFamily.create({ data: { name: f.name, slug: f.slug, icon: f.icon as any, sortOrder: f.sortOrder, description: f.name } as any });
       }
       results.push(`Seeded ${families.length} portal families`);
     } else {

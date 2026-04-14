@@ -75,7 +75,7 @@ export class SubscriptionService {
     if (!cfg) throw new BadRequestException(`Invalid plan: ${plan}`);
     if (!this.isLive) {
       const demoId = `sub_demo_${Date.now()}`;
-      await this.prisma.tenant.update({ where:{id:tenantId}, data:{ plan, status:'ACTIVE',
+      await this.prisma.tenant.update({ where:{id:tenantId}, data:{ plan: plan as any, status:'ACTIVE' as any,
         settings:{ ...((await this.prisma.tenant.findUnique({where:{id:tenantId},select:{settings:true}}))?.settings as any||{}),
           razorpaySubscriptionId:demoId, razorpayStatus:'active' } as any } });
       return { subscriptionId:demoId, isDemoMode:true,
@@ -93,7 +93,7 @@ export class SubscriptionService {
       plan_id: `plan_${plan.toLowerCase()}`, customer_notify:1, quantity:1, total_count:12,
       customer_id: customerId, notes:{tenantId,plan,email},
     });
-    await this.prisma.tenant.update({ where:{id:tenantId}, data:{ plan,
+    await this.prisma.tenant.update({ where:{id:tenantId}, data:{ plan: plan as any,
       settings:{...s, razorpayCustomerId:customerId, razorpaySubscriptionId:sub.id, razorpayStatus:sub.status} as any } });
     return { subscriptionId:sub.id, shortUrl:sub.short_url, status:sub.status };
   }
@@ -115,13 +115,13 @@ export class SubscriptionService {
     switch (event.event) {
       case 'subscription.activated':
       case 'subscription.charged':
-        if (plan) await this.prisma.tenant.update({ where:{id:tenantId}, data:{ plan, status:'ACTIVE',
+        if (plan) await this.prisma.tenant.update({ where:{id:tenantId}, data:{ plan: plan as any, status:'ACTIVE' as any,
           settings:{ ...((await this.prisma.tenant.findUnique({where:{id:tenantId},select:{settings:true}}))?.settings as any||{}),
             razorpaySubscriptionId:entity?.id, razorpayStatus:'active',
             currentPeriodEnd:entity?.current_end ? new Date(entity.current_end*1000).toISOString() : null } as any } });
         break;
       case 'subscription.cancelled': case 'subscription.completed':
-        await this.prisma.tenant.update({ where:{id:tenantId}, data:{plan:'FREE',status:'CANCELLED'} }).catch(()=>{});
+        await this.prisma.tenant.update({ where:{id:tenantId}, data:{plan:'FREE' as any,status:'CANCELLED' as any} }).catch(()=>{});
         break;
       case 'subscription.halted':
         await this.prisma.tenant.update({ where:{id:tenantId}, data:{status:'SUSPENDED'} }).catch(()=>{});

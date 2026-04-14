@@ -37,7 +37,7 @@ export class PatientService {
         phone: dto.phone,
         email: dto.email,
         dateOfBirth: dto.dateOfBirth ? new Date(dto.dateOfBirth) : undefined,
-        gender: dto.gender,
+        gender: dto.gender as any,
         bloodGroup: dto.bloodGroup,
         address: dto.address,
         city: dto.city,
@@ -74,7 +74,7 @@ export class PatientService {
               firstName: dto.firstName,
               lastName: dto.lastName,
               dateOfBirth: dto.dateOfBirth ? new Date(dto.dateOfBirth) : undefined,
-              gender: dto.gender,
+              gender: dto.gender as any,
               bloodGroup: dto.bloodGroup,
               allergies: dto.allergies || [],
               chronicConditions: dto.chronicConditions || [],
@@ -193,7 +193,7 @@ export class PatientService {
 
     return this.prisma.patient.update({
       where: { id },
-      data: { ...dto, dateOfBirth: dto.dateOfBirth ? new Date(dto.dateOfBirth) : undefined },
+      data: { ...dto, dateOfBirth: dto.dateOfBirth ? new Date(dto.dateOfBirth) : undefined } as any,
     });
   }
 

@@ -75,7 +75,7 @@ export class AppointmentService {
         doctorId: dto.doctorId,
         branchId: dto.branchId,
         departmentId: dto.departmentId || doctor.departmentId,
-        type: dto.type,
+        type: dto.type as any,
         status: 'CONFIRMED',
         scheduledAt,
         duration,
@@ -101,7 +101,7 @@ export class AppointmentService {
         doctor: { include: { user: { select: { firstName: true, lastName: true } } } },
         department: { select: { name: true } },
         branch: { select: { name: true } },
-        visit: true,
+        // visit: true, // removed - not in AppointmentInclude
       },
     });
     if (!appointment) throw new NotFoundException('Appointment not found');

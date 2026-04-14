@@ -36,7 +36,7 @@ export class CrmService {
         name: dto.name,
         phone: dto.phone,
         email: dto.email,
-        source: dto.source,
+        source: dto.source as any,
         stage: 'NEW',
         campaignId: dto.campaignId,
         tags: dto.tags || [],

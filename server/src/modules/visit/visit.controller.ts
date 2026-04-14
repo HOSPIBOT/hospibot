@@ -56,7 +56,7 @@ export class VisitController {
       orderBy: { createdAt: 'desc' },
       include: {
         patient: { select: { firstName: true, lastName: true, phone: true } },
-        doctor:  { include: { user: { select: { firstName: true, lastName: true } } } },
+        // doctor removed - not in VisitInclude
       },
     });
   }

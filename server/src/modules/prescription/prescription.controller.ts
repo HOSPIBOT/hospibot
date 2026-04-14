@@ -65,7 +65,7 @@ export class PrescriptionController {
         patientId: rx.patientId,
         doctorId: rx.doctorId,
         medications: rx.medications as any,
-        instructions: rx.instructions,
+        // instructions removed (not in Prescription schema)
         refillDueDate,
         isActive: true,
         originalPrescriptionId: id,
