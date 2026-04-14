@@ -1,8 +1,10 @@
 FROM node:18-alpine
 
+# Install OpenSSL for Prisma compatibility
+RUN apk add --no-cache openssl libc6-compat
+
 WORKDIR /app
 
-# Build context is server/ directory
 COPY package*.json ./
 COPY prisma ./prisma/
 
@@ -20,5 +22,4 @@ RUN npm prune --production
 
 EXPOSE 4000
 
-# Run migrations then start
-CMD sh -c "npx prisma migrate deploy 2>/dev/null || npx prisma db push --accept-data-loss && node dist/src/main"
+CMD sh -c "npx prisma db push --accept-data-loss 2>&1 | tail -5 && node dist/src/main"
