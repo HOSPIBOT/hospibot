@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HospiBot — WhatsApp-First Healthcare Operating System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:#fff;color:#0a1628;line-height:1.6;overflow-x:hidden}
+:root{
+  --p:#0d9488;--pd:#0f766e;--pl:#ccfbf1;
+  --wa:#25D366;--wad:#1da851;
+  --dark:#0a1628;--darker:#060d18;--navy:#1e3a5f;
+  --surf:#f8fafc;--brd:#e2e8f0;--txt:#0a1628;--muted:#64748b;
+  --fh:'Plus Jakarta Sans',sans-serif;--fb:'DM Sans',sans-serif;
+  --r:12px;--rl:20px;
+  --sh:0 4px 24px rgba(0,0,0,.08);--shl:0 8px 48px rgba(0,0,0,.12)
+}
+h1,h2,h3,h4,h5{font-family:var(--fh);font-weight:700;line-height:1.2}
+h1{font-size:clamp(2.2rem,5vw,4.2rem);font-weight:800}
+h2{font-size:clamp(1.7rem,3.5vw,2.6rem)}
+h3{font-size:clamp(1.1rem,2.5vw,1.5rem)}
+p{color:var(--muted)}
+a{text-decoration:none;color:inherit}
+img{max-width:100%}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;height:68px;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;background:rgba(6,13,24,.96);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.07);transition:all .3s}
+.nav-logo{display:flex;align-items:center;gap:10px;font-family:var(--fh);font-weight:800;font-size:1.35rem;color:#fff;cursor:pointer}
+.nav-logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--p),var(--wa));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.9rem}
+.nav-logo span{color:var(--wa)}
+.nav-links{display:flex;align-items:center;gap:1.8rem;list-style:none}
+.nav-links a{color:rgba(255,255,255,.65);font-size:.88rem;font-weight:500;transition:color .2s;cursor:pointer}
+.nav-links a:hover{color:#fff}
+.nav-cta{display:flex;gap:10px;align-items:center}
+.nav-mobile-btn{display:none;background:none;border:none;color:#fff;font-size:1.4rem;cursor:pointer;padding:4px}
+.mobile-menu{display:none;position:fixed;top:68px;left:0;right:0;background:rgba(6,13,24,.98);padding:20px;z-index:999;border-bottom:1px solid rgba(255,255,255,.1)}
+.mobile-menu.open{display:block}
+.mobile-menu a{display:block;color:rgba(255,255,255,.7);padding:12px 0;font-size:.95rem;border-bottom:1px solid rgba(255,255,255,.07);cursor:pointer}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:8px;font-family:var(--fh);font-weight:600;font-size:.88rem;cursor:pointer;transition:all .2s;border:none;text-decoration:none}
+.btn-wa{background:var(--wa);color:#fff}.btn-wa:hover{background:var(--wad);transform:translateY(-1px)}
+.btn-teal{background:var(--p);color:#fff}.btn-teal:hover{background:var(--pd);transform:translateY(-1px)}
+.btn-outline{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.3)}.btn-outline:hover{background:rgba(255,255,255,.1)}
+.btn-dark{background:var(--dark);color:#fff}.btn-dark:hover{background:#1e2d40;transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--p);border:1.5px solid var(--p)}.btn-ghost:hover{background:var(--pl)}
+.btn-lg{padding:14px 32px;font-size:.98rem;border-radius:10px}
+.btn-sm{padding:8px 16px;font-size:.8rem;border-radius:6px}
+
+/* PAGES */
+.page{display:none;animation:fadeIn .3s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* HERO */
+.hero{min-height:100vh;background:var(--darker);display:flex;align-items:center;justify-content:center;padding:100px 2rem 60px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(13,148,136,.35) 0%,transparent 70%),radial-gradient(ellipse 50% 40% at 85% 85%,rgba(37,211,102,.18) 0%,transparent 60%),radial-gradient(ellipse 40% 30% at 10% 70%,rgba(30,58,95,.5) 0%,transparent 60%);pointer-events:none}
+.hero-inner{position:relative;z-index:1;max-width:1100px;margin:0 auto;width:100%}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(37,211,102,.12);border:1px solid rgba(37,211,102,.3);color:var(--wa);padding:6px 18px;border-radius:100px;font-size:.8rem;font-weight:600;margin-bottom:24px;letter-spacing:.02em}
+.hero h1{color:#fff;max-width:900px;margin:0 auto 20px}
+.hero h1 .hl{background:linear-gradient(135deg,var(--p),var(--wa));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:1.15rem;color:rgba(255,255,255,.6);max-width:580px;margin:0 auto 36px;line-height:1.7}
+.hero-ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:56px}
+.hero-stats{display:flex;gap:32px;justify-content:center;flex-wrap:wrap}
+.hero-stat{text-align:center}
+.hero-stat-num{font-family:var(--fh);font-size:2rem;font-weight:800;color:#fff;display:block;line-height:1}
+.hero-stat-num span{color:var(--wa)}
+.hero-stat-label{font-size:.75rem;color:rgba(255,255,255,.5);margin-top:4px;text-transform:uppercase;letter-spacing:.05em}
+
+/* WA CHAT VISUAL */
+.hero-visual{margin-top:60px;display:flex;gap:24px;justify-content:center;align-items:flex-start;flex-wrap:wrap}
+.wa-phone{background:#1a2535;border-radius:20px;border:1px solid rgba(255,255,255,.1);padding:16px;width:320px;box-shadow:0 32px 80px rgba(0,0,0,.4)}
+.wa-header{display:flex;align-items:center;gap:10px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:14px}
+.wa-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--wa));display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.wa-name{color:#fff;font-weight:600;font-size:.85rem}
+.wa-status{color:var(--wa);font-size:.7rem;display:flex;align-items:center;gap:4px}
+.wa-dot{width:6px;height:6px;background:var(--wa);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.3)}}
+.wa-msgs{display:flex;flex-direction:column;gap:8px}
+.wa-msg{max-width:82%;padding:8px 12px;border-radius:12px;font-size:.78rem;line-height:1.45;position:relative}
+.wa-msg.in{background:#2a3547;color:rgba(255,255,255,.85);align-self:flex-start;border-radius:4px 12px 12px 12px}
+.wa-msg.out{background:#025C4C;color:rgba(255,255,255,.9);align-self:flex-end;border-radius:12px 4px 12px 12px}
+.wa-time{font-size:.6rem;color:rgba(255,255,255,.35);text-align:right;margin-top:3px}
+.wa-qrs{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.wa-qr{background:rgba(13,148,136,.2);border:1px solid rgba(13,148,136,.5);color:#2dd4bf;padding:3px 10px;border-radius:100px;font-size:.7rem;cursor:pointer}
+.wa-typing{display:flex;align-items:center;gap:4px;padding:8px 12px;background:#2a3547;border-radius:12px;align-self:flex-start;margin-top:4px}
+.typing-dot{width:5px;height:5px;background:rgba(255,255,255,.4);border-radius:50%;animation:typing 1.2s infinite}
+.typing-dot:nth-child(2){animation-delay:.2s}
+.typing-dot:nth-child(3){animation-delay:.4s}
+@keyframes typing{0%,80%,100%{transform:scale(1)}40%{transform:scale(1.4)}}
+
+.hero-cards{display:flex;flex-direction:column;gap:12px;align-self:center}
+.hero-float-card{background:rgba(255,255,255,.07);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px 16px;color:#fff;font-size:.8rem;display:flex;align-items:center;gap:10px;animation:float 4s ease-in-out infinite}
+.hero-float-card:nth-child(2){animation-delay:1.5s}
+.hero-float-card:nth-child(3){animation-delay:3s}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.hfc-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.hfc-num{font-family:var(--fh);font-size:1.1rem;font-weight:800}
+.hfc-sub{font-size:.7rem;color:rgba(255,255,255,.5)}
+
+/* TRUST BAR */
+.trust-bar{background:#fff;padding:28px 2rem;border-bottom:1px solid var(--brd);text-align:center}
+.trust-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px}
+.trust-logos{display:flex;align-items:center;justify-content:center;gap:40px;flex-wrap:wrap;opacity:.45}
+.trust-logo{font-family:var(--fh);font-weight:700;font-size:1rem;color:var(--txt);letter-spacing:-.5px}
+
+/* SECTIONS */
+.sec{padding:80px 2rem}
+.sec-inner{max-width:1200px;margin:0 auto}
+.sec-hd{text-align:center;margin-bottom:60px}
+.sec-tag{display:inline-block;background:var(--pl);color:var(--p);padding:4px 14px;border-radius:100px;font-size:.75rem;font-weight:700;margin-bottom:14px;text-transform:uppercase;letter-spacing:.06em}
+.sec-hd h2{margin-bottom:14px;color:var(--txt)}
+.sec-hd p{font-size:1.05rem;max-width:600px;margin:0 auto}
+.bg-surf{background:var(--surf)}
+.bg-dark{background:var(--darker)}
+
+/* FEATURE CARDS */
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+.feat-card{background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:32px;transition:all .3s;cursor:pointer}
+.feat-card:hover{border-color:var(--p);box-shadow:0 8px 40px rgba(13,148,136,.12);transform:translateY(-4px)}
+.feat-icon{width:54px;height:54px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:20px}
+.feat-card h3{margin-bottom:10px;color:var(--txt);font-size:1.15rem}
+
+/* STEPS */
+.steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:32px}
+.step-card{text-align:center;padding:32px 20px}
+.step-num{width:54px;height:54px;background:linear-gradient(135deg,var(--p),var(--wa));border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-weight:800;font-size:1.2rem;color:#fff;margin:0 auto 18px}
+.step-card h3{margin-bottom:10px;color:var(--txt)}
+
+/* STAKEHOLDERS */
+.stake-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px}
+.stake-card{background:#fff;border:1px solid var(--brd);border-radius:var(--r);padding:24px 16px;text-align:center;transition:all .2s;cursor:pointer}
+.stake-card:hover{border-color:var(--p);background:#f0fdfa;transform:translateY(-3px)}
+.stake-icon{font-size:2rem;margin-bottom:10px;display:block}
+.stake-name{font-family:var(--fh);font-weight:700;font-size:.9rem;color:var(--txt);margin-bottom:5px}
+.stake-desc{font-size:.75rem;color:var(--muted);line-height:1.4}
+
+/* TESTIMONIALS */
+.test-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+.test-card{background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:28px}
+.test-stars{color:#f59e0b;font-size:.9rem;margin-bottom:14px}
+.test-q{font-size:.95rem;color:var(--txt);line-height:1.7;margin-bottom:20px;font-style:italic}
+.test-author{display:flex;align-items:center;gap:12px}
+.test-av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--wa));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-family:var(--fh);font-size:.9rem;flex-shrink:0}
+.test-name{font-family:var(--fh);font-weight:600;font-size:.88rem;color:var(--txt)}
+.test-role{font-size:.75rem;color:var(--muted)}
+
+/* PRICING */
+.price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;align-items:start}
+.price-card{background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:34px;transition:all .3s}
+.price-card.featured{border:2px solid var(--p);transform:scale(1.03);box-shadow:0 12px 48px rgba(13,148,136,.2)}
+.price-badge{display:inline-block;background:var(--p);color:#fff;padding:3px 12px;border-radius:100px;font-size:.72rem;font-weight:700;margin-bottom:10px}
+.price-name{font-family:var(--fh);font-weight:700;font-size:1.1rem;color:var(--txt);margin-bottom:4px}
+.price-desc{font-size:.82rem;color:var(--muted);margin-bottom:16px}
+.price-amt{font-family:var(--fh);font-size:2.8rem;font-weight:800;color:var(--txt);line-height:1;margin-bottom:4px}
+.price-period{font-size:.8rem;color:var(--muted);margin-bottom:24px}
+.price-feats{list-style:none;margin-bottom:28px}
+.price-feats li{font-size:.85rem;padding:6px 0;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;gap:8px;color:var(--txt)}
+.price-feats li:last-child{border:none}
+.price-feats .ck{color:var(--wa);font-weight:700;flex-shrink:0}
+
+/* CTA SECTION */
+.cta-sec{background:var(--darker);padding:80px 2rem;text-align:center;position:relative;overflow:hidden}
+.cta-sec::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 50%,rgba(13,148,136,.25) 0%,transparent 70%)}
+.cta-sec h2{color:#fff;margin-bottom:14px;position:relative}
+.cta-sec p{color:rgba(255,255,255,.6);font-size:1.05rem;margin-bottom:32px;position:relative}
+.cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative}
+
+/* FOOTER */
+footer{background:var(--darker);padding:56px 2rem 28px;color:rgba(255,255,255,.55)}
+.foot-grid{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:40px;max-width:1200px;margin:0 auto 40px}
+.foot-brand p{font-size:.85rem;margin-top:10px;line-height:1.6;max-width:280px}
+.foot-col h4{font-family:var(--fh);font-weight:600;font-size:.88rem;color:#fff;margin-bottom:14px}
+.foot-links{list-style:none}
+.foot-links li{margin-bottom:7px}
+.foot-links a{font-size:.82rem;color:rgba(255,255,255,.45);transition:color .2s;cursor:pointer}
+.foot-links a:hover{color:#fff}
+.foot-bot{border-top:1px solid rgba(255,255,255,.08);padding-top:22px;text-align:center;font-size:.78rem;max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.foot-bot a{color:var(--wa)}
+
+/* PAGE HERO */
+.pg-hero{background:var(--darker);padding:110px 2rem 56px;text-align:center;position:relative;overflow:hidden}
+.pg-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(13,148,136,.3) 0%,transparent 70%)}
+.pg-hero h1{color:#fff;font-size:clamp(2rem,4vw,3.2rem);margin-bottom:14px;position:relative}
+.pg-hero p{color:rgba(255,255,255,.6);font-size:1.05rem;max-width:560px;margin:0 auto;position:relative}
+
+/* FEATURES TABS */
+.tabs-nav{display:flex;gap:4px;background:var(--surf);border-radius:12px;padding:4px;margin-bottom:36px;overflow-x:auto;flex-wrap:wrap}
+.tab-item{padding:9px 18px;border-radius:8px;font-family:var(--fh);font-weight:600;font-size:.83rem;cursor:pointer;transition:all .2s;white-space:nowrap;color:var(--muted);background:transparent;border:none}
+.tab-item.active{background:#fff;color:var(--txt);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+.feat-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:24px}
+.feat-li{background:#fff;border:1px solid var(--brd);border-radius:var(--r);padding:20px;display:flex;gap:12px;align-items:flex-start}
+.feat-li-icon{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0}
+.feat-li h4{font-size:.9rem;font-family:var(--fh);font-weight:600;color:var(--txt);margin-bottom:4px}
+.feat-li p{font-size:.78rem;line-height:1.5}
+
+/* SOLUTIONS */
+.sol-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px}
+.sol-card{border-radius:var(--rl);overflow:hidden;border:1px solid var(--brd);transition:all .3s}
+.sol-card:hover{transform:translateY(-6px);box-shadow:var(--shl)}
+.sol-hd{padding:30px 26px;color:#fff}
+.sol-hd h3{margin-bottom:8px;font-size:1.15rem}
+.sol-hd p{color:rgba(255,255,255,.7);font-size:.82rem;line-height:1.5}
+.sol-bd{background:#fff;padding:22px 26px}
+.sol-feats{list-style:none}
+.sol-feats li{font-size:.83rem;padding:5px 0;color:var(--muted);display:flex;align-items:center;gap:8px}
+.sol-feats li::before{content:'→';color:var(--p);font-weight:700;flex-shrink:0}
+
+/* COMPARISON TABLE */
+.cmp-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--brd)}
+.cmp-table{width:100%;border-collapse:collapse;font-size:.87rem}
+.cmp-table th{padding:14px 20px;background:var(--dark);color:#fff;text-align:left;font-family:var(--fh);font-weight:600;white-space:nowrap}
+.cmp-table th:first-child{min-width:200px}
+.cmp-table td{padding:12px 20px;border-bottom:1px solid var(--brd)}
+.cmp-table tr:last-child td{border:none}
+.cmp-table tr:hover td{background:#f8fafc}
+.cy{color:var(--wa);font-weight:700}
+.cn{color:#cbd5e1}
+.ch{background:rgba(13,148,136,.06)}
+
+/* ABOUT */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.prob-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;margin-top:40px}
+.prob-card{background:#fff;border:1px solid var(--brd);border-radius:var(--r);padding:22px;border-left:4px solid var(--p)}
+.prob-card h4{font-family:var(--fh);font-size:.92rem;margin-bottom:6px;color:var(--txt)}
+
+/* CONTACT */
+.cont-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:60px;align-items:start}
+.cont-item{display:flex;align-items:flex-start;gap:14px;margin-bottom:22px}
+.cont-icon{width:42px;height:42px;background:var(--pl);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.cont-item h4{font-family:var(--fh);font-size:.88rem;margin-bottom:3px;color:var(--txt)}
+
+/* FORMS */
+.form-card{background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:36px;box-shadow:var(--sh)}
+.fg{margin-bottom:16px}
+.fl{display:block;font-size:.82rem;font-weight:600;color:var(--txt);margin-bottom:6px}
+.fi{width:100%;padding:11px 15px;border:1.5px solid var(--brd);border-radius:8px;font-family:var(--fb);font-size:.88rem;color:var(--txt);transition:border-color .2s;outline:none;background:#fff}
+.fi:focus{border-color:var(--p)}
+.fi::placeholder{color:#94a3b8}
+.fi-sel{width:100%;padding:11px 15px;border:1.5px solid var(--brd);border-radius:8px;font-family:var(--fb);font-size:.88rem;color:var(--txt);background:#fff;outline:none;transition:border-color .2s;cursor:pointer}
+.fi-sel:focus{border-color:var(--p)}
+textarea.fi{resize:vertical;min-height:100px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn-submit{width:100%;padding:13px;border-radius:9px;font-family:var(--fh);font-weight:700;font-size:.95rem;color:#fff;border:none;cursor:pointer;transition:all .2s;margin-top:6px}
+.btn-submit:hover{filter:brightness(.9);transform:translateY(-1px)}
+
+/* ===== PORTALS PAGE ===== */
+.portals-intro{text-align:center;padding:56px 2rem 0}
+.portals-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px;max-width:1200px;margin:0 auto;padding:40px 2rem 80px}
+
+.pcrd{background:#fff;border:1px solid var(--brd);border-radius:var(--rl);overflow:hidden;transition:all .3s;box-shadow:var(--sh)}
+.pcrd:hover{transform:translateY(-6px);box-shadow:var(--shl)}
+.pcrd-hd{height:154px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;position:relative;overflow:hidden}
+.pcrd-hd::after{content:'';position:absolute;bottom:-20px;left:-10%;right:-10%;height:40px;background:#fff;border-radius:50%}
+.pcrd-hd-icon{font-size:3rem;position:relative;z-index:1}
+.pcrd-hd-name{font-family:var(--fh);font-weight:700;font-size:.9rem;color:rgba(255,255,255,.9);position:relative;z-index:1}
+.pcrd-bd{padding:20px 22px}
+.pcrd-title{font-family:var(--fh);font-weight:700;font-size:1.08rem;color:var(--txt);margin-bottom:6px}
+.pcrd-desc{font-size:.8rem;color:var(--muted);margin-bottom:14px;line-height:1.5}
+.pcrd-feats{list-style:none;margin-bottom:18px}
+.pcrd-feats li{font-size:.78rem;color:var(--muted);padding:2px 0;display:flex;align-items:center;gap:7px}
+.pcrd-feats li::before{content:'✓';font-weight:700;font-size:.72rem;flex-shrink:0}
+.pcrd-btns{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.pcrd-btn{padding:9px;border-radius:8px;font-family:var(--fh);font-weight:600;font-size:.8rem;text-align:center;cursor:pointer;transition:all .2s;border:none}
+.pcrd-btn.login{color:#fff}
+.pcrd-btn.login:hover{filter:brightness(.9);transform:translateY(-1px)}
+.pcrd-btn.register{background:transparent;border:1.5px solid}
+.pcrd-btn.register:hover{transform:translateY(-1px)}
+
+/* ===== PORTAL LOGIN PAGE ===== */
+.plog-page{min-height:100vh;display:flex;flex-direction:column}
+.plog-hd{height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:20px}
+.plog-hd::after{content:'';position:absolute;bottom:-30px;left:-5%;right:-5%;height:60px;background:var(--surf);border-radius:50%}
+.plog-back{position:absolute;top:80px;left:24px;display:flex;align-items:center;gap:6px;color:rgba(255,255,255,.7);font-size:.82rem;cursor:pointer;transition:color .2s;z-index:2}
+.plog-back:hover{color:#fff}
+.plog-icon{font-size:2.8rem;position:relative;z-index:1;margin-bottom:8px}
+.plog-name{font-family:var(--fh);font-weight:700;font-size:1.1rem;color:rgba(255,255,255,.9);position:relative;z-index:1}
+.plog-body{flex:1;background:var(--surf);display:flex;align-items:flex-start;justify-content:center;padding:40px 24px 60px}
+.plog-box{background:#fff;border-radius:var(--rl);border:1px solid var(--brd);padding:36px;width:100%;max-width:420px;box-shadow:var(--shl);margin-top:-30px}
+.tab-sw{display:grid;grid-template-columns:1fr 1fr;background:var(--surf);border-radius:9px;padding:3px;margin-bottom:26px}
+.tsw{padding:9px;border-radius:7px;font-family:var(--fh);font-weight:600;font-size:.88rem;text-align:center;cursor:pointer;transition:all .2s;border:none;background:transparent;color:var(--muted)}
+.tsw.active{background:#fff;color:var(--txt);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.form-hint{font-size:.75rem;color:var(--muted);margin-top:20px;text-align:center}
+.form-hint a{cursor:pointer}
+.form-divider{text-align:center;font-size:.78rem;color:var(--muted);margin:14px 0;position:relative}
+.form-divider::before,.form-divider::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:var(--brd)}
+.form-divider::before{left:0}
+.form-divider::after{right:0}
+
+/* ABOUT MISSION */
+.mission-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px}
+.mission-card{background:#fff;border:1px solid var(--brd);border-radius:var(--rl);padding:28px}
+.mission-card h3{margin-bottom:12px;color:var(--txt)}
+.mission-icon{font-size:2rem;margin-bottom:14px;display:block}
+
+/* NUMBER PILLS */
+.num-pill{display:inline-flex;align-items:center;gap:6px;background:var(--pl);color:var(--p);padding:4px 12px;border-radius:100px;font-size:.8rem;font-weight:700}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .foot-grid{grid-template-columns:1fr 1fr}
+  .about-grid,.cont-grid{grid-template-columns:1fr}
+  .mission-grid{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  nav{padding:0 1rem}
+  .nav-links,.nav-cta{display:none}
+  .nav-mobile-btn{display:block}
+  .hero{padding:90px 1.5rem 48px}
+  .hero-visual{flex-direction:column;align-items:center}
+  .hero-cards{flex-direction:row;flex-wrap:wrap;justify-content:center}
+  .hero-float-card{flex:1;min-width:200px}
+  .foot-grid{grid-template-columns:1fr}
+  .foot-bot{flex-direction:column;text-align:center}
+  .price-card.featured{transform:none}
+  .form-row{grid-template-columns:1fr}
+  .plog-box{margin-top:0}
+  .portals-grid{padding:24px 1rem 60px}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== NAVIGATION ===== -->
+<nav id="navbar">
+  <div class="nav-logo" onclick="navigate('home')">
+    <div class="nav-logo-icon">🏥</div>
+    Hospi<span>Bot</span>
+  </div>
+  <ul class="nav-links">
+    <li><a onclick="navigate('solutions')">Solutions</a></li>
+    <li><a onclick="navigate('features')">Features</a></li>
+    <li><a onclick="navigate('pricing')">Pricing</a></li>
+    <li><a onclick="navigate('about')">About</a></li>
+    <li><a onclick="navigate('contact')">Contact</a></li>
+    <li><a onclick="navigate('portals')" style="color:var(--wa);font-weight:700">All Portals</a></li>
+  </ul>
+  <div class="nav-cta">
+    <button class="btn btn-outline btn-sm" onclick="navigate('portals')">Login</button>
+    <button class="btn btn-wa btn-sm" onclick="navigate('contact')">Get Demo</button>
+  </div>
+  <button class="nav-mobile-btn" onclick="toggleMenu()">☰</button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a onclick="navigate('solutions');toggleMenu()">Solutions</a>
+  <a onclick="navigate('features');toggleMenu()">Features</a>
+  <a onclick="navigate('pricing');toggleMenu()">Pricing</a>
+  <a onclick="navigate('about');toggleMenu()">About</a>
+  <a onclick="navigate('contact');toggleMenu()">Contact</a>
+  <a onclick="navigate('portals');toggleMenu()" style="color:var(--wa);font-weight:700">All Portals →</a>
+</div>
+
+<!-- ===== HOME PAGE ===== -->
+<div class="page active" id="page-home">
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">
+        <div class="wa-dot"></div>
+        Now live in India, UAE & GCC
+      </div>
+      <h1>The <span class="hl">WhatsApp-First</span><br>Healthcare Operating System</h1>
+      <p class="hero-sub">Unify patient communication, revenue automation, CRM, and hospital operations — all in one platform. Zero training required.</p>
+      <div class="hero-ctas">
+        <button class="btn btn-wa btn-lg" onclick="navigate('contact')">🚀 Get Free Demo</button>
+        <button class="btn btn-outline btn-lg" onclick="navigate('portals')">View All Portals →</button>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><span class="hero-stat-num">98<span>%</span></span><div class="hero-stat-label">WhatsApp open rate</div></div>
+        <div class="hero-stat"><span class="hero-stat-num">60<span>%</span></span><div class="hero-stat-label">No-show reduction</div></div>
+        <div class="hero-stat"><span class="hero-stat-num">&lt;7</span><div class="hero-stat-label">Days to go live</div></div>
+        <div class="hero-stat"><span class="hero-stat-num">$49</span><div class="hero-stat-label">Starting per month</div></div>
+      </div>
+      <div class="hero-visual">
+        <div class="wa-phone">
+          <div class="wa-header">
+            <div class="wa-avatar">🏥</div>
+            <div>
+              <div class="wa-name">Apollo Clinic Hyderabad</div>
+              <div class="wa-status"><div class="wa-dot"></div> Online — AI Receptionist</div>
+            </div>
+          </div>
+          <div class="wa-msgs">
+            <div class="wa-msg in">Hi! I'd like to see a dermatologist 🙏<div class="wa-time">10:23 AM</div></div>
+            <div class="wa-msg out">Hello! I'm your AI assistant 😊 Dr. Priya Sharma has slots available today. Choose a time:<div class="wa-time">10:23 AM</div>
+              <div class="wa-qrs">
+                <span class="wa-qr">11:00 AM</span>
+                <span class="wa-qr">2:30 PM</span>
+                <span class="wa-qr">4:00 PM</span>
+              </div>
+            </div>
+            <div class="wa-msg in">4:00 PM please!<div class="wa-time">10:24 AM</div></div>
+            <div class="wa-msg out">✅ Confirmed! Dr. Priya Sharma — Today 4:00 PM<br>📍 Apollo Clinic, Banjara Hills<br>Your QR code is attached.<div class="wa-time">10:24 AM</div></div>
+            <div class="wa-typing"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>
+          </div>
+        </div>
+        <div class="hero-cards">
+          <div class="hero-float-card">
+            <div class="hfc-icon" style="background:rgba(37,211,102,.15)">💊</div>
+            <div><div class="hfc-num" style="color:var(--wa)">Refill Due</div><div class="hfc-sub">Auto-reminder sent to 312 patients</div></div>
+          </div>
+          <div class="hero-float-card">
+            <div class="hfc-icon" style="background:rgba(13,148,136,.15)">📊</div>
+            <div><div class="hfc-num" style="color:#2dd4bf">₹2.4L Revenue</div><div class="hfc-sub">Collected today via WhatsApp Pay</div></div>
+          </div>
+          <div class="hero-float-card">
+            <div class="hfc-icon" style="background:rgba(139,92,246,.15)">🔬</div>
+            <div><div class="hfc-num" style="color:#a78bfa">48 Reports</div><div class="hfc-sub">Auto-delivered via WhatsApp</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust Bar -->
+  <div class="trust-bar">
+    <div class="trust-label">Trusted by healthcare providers across India, UAE & Middle East</div>
+    <div class="trust-logos">
+      <span class="trust-logo">Apollo Health</span>
+      <span class="trust-logo">LifeCare DX</span>
+      <span class="trust-logo">MedCity Clinics</span>
+      <span class="trust-logo">CarePlus IVF</span>
+      <span class="trust-logo">HealthFirst Labs</span>
+      <span class="trust-logo">CityPharm</span>
+    </div>
+  </div>
+
+  <!-- 5 Pillars -->
+  <section class="sec">
+    <div class="sec-inner">
+      <div class="sec-hd">
+        <span class="sec-tag">Core Platform</span>
+        <h2>Five pillars. One platform.</h2>
+        <p>HospiBot unifies what no other product offers — WhatsApp communication, revenue automation, CRM, clinical operations, and enterprise multi-tenancy — in a single coherent system.</p>
+      </div>
+      <div class="feat-grid">
+        <div class="feat-card">
+          <div class="feat-icon" style="background:#dcfce7">💬</div>
+          <h3>WhatsApp-First OS</h3>
+          <p>Every patient touchpoint — bookings, reports, bills, reminders — flows through WhatsApp. No app downloads, no portals. 98% open rates vs 21% for email.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="background:#fef9c3">🔄</div>
+          <h3>Recurring Revenue Engine</h3>
+          <p>Automated, rule-based follow-ups for medicine refills, diagnostic tests, chronic care, and preventive screenings. Closed-loop from reminder to booking to payment.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="background:#ede9fe">📈</div>
+          <h3>Healthcare CRM</h3>
+          <p>Full patient lifecycle from first inquiry to loyal patient. Lead sources, conversion funnels, segmentation, bulk campaigns, and ROI attribution — purpose-built for healthcare.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="background:#dbeafe">🏥</div>
+          <h3>Operations OS</h3>
+          <p>Department management, doctor scheduling, bed management, billing with GST, lab orders, pharmacy, and multi-payment integration — all in one screen.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="background:#fce7f3">🔒</div>
+          <h3>Enterprise Multi-Tenancy</h3>
+          <p>Complete data isolation per tenant, role-based access control, multi-branch support, HIPAA/DPDPA compliance, and automated provisioning under 7 days.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="background:#ccfbf1">🎙️</div>
+          <h3>AI Clinical Tools</h3>
+          <p>Speech-to-text prescriptions in English, Hindi, Telugu, Tamil & more. Drug interaction alerts, dosage validation, Universal Health Vault, and portable Health ID.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="sec bg-surf">
+    <div class="sec-inner">
+      <div class="sec-hd">
+        <span class="sec-tag">Simple Setup</span>
+        <h2>Live in 3 simple steps</h2>
+        <p>From signup to first patient booking — in less than a week. No IT team, no training required.</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <h3>Onboard & Configure</h3>
+          <p>Sign up, set up your departments, add doctors, and configure billing rules through our guided wizard. Your dedicated WhatsApp number is provisioned automatically.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <h3>Connect & Go Live</h3>
+          <p>Share your WhatsApp number with patients. The AI chatbot handles bookings, routing, and confirmations from day one. Staff access their role-specific portal instantly.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <h3>Grow & Automate</h3>
+          <p>Activate pre-built clinical protocols. Automate follow-ups, refill reminders, and campaigns. Watch your revenue grow while no-show rates drop by 60%.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stakeholders -->
+  <section class="sec">
+    <div class="sec-inner">
+      <div class="sec-hd">
+        <span class="sec-tag">Who It's For</span>
+        <h2>Built for every healthcare provider</h2>
+        <p>From solo practitioners to 500-bed hospital chains — HospiBot scales to fit your practice.</p>
+      </div>
+      <div class="stake-grid">
+        <div class="stake-card" onclick="navigate('solutions')"><span class="stake-icon">🏥</span><div class="stake-name">Hospitals</div><div class="stake-desc">10–5000+ beds, multi-specialty, multi-branch</div></div>
+        <div class="stake-card" onclick="navigate('solutions')"><span class="stake-icon">🩺</span><div class="stake-name">Clinics</div><div class="stake-desc">1–10 doctor practices with full automation</div></div>
+        <div class="stake-card" onclick="navigate('solutions')"><span class="stake-icon">👨‍⚕️</span><div class="stake-name">Solo Doctors</div><div class="stake-desc">Personal WhatsApp CRM & scheduling</div></div>
+        <div class="stake-card" onclick="navigate('solutions')"><span class="stake-icon">🔬</span><div class="stake-name">Diagnostic Centers</div><div class="stake-desc">Auto report delivery & test reminders</div></div>
+        <div class="stake-card" onclick="navigate('solutions')"><span class="stake-icon">🧬</span><div class="stake-name">IVF Centers</div><div class="stake-desc">Protocol tracking & cycle management</div></div>
+        <div class="stake-card" onclick="navigate('solutions')"><span class="stake-icon">💊</span><div class="stake-name">Pharmacies</div><div class="stake-desc">Prescription-to-refill automation</div></div>
+        <div class="stake-card" onclick="navigate('solutions')"><span class="stake-icon">🏠</span><div class="stake-name">Home Healthcare</div><div class="stake-desc">Field team coordination via WhatsApp</div></div>
+        <div class="stake-card" onclick="navigate('solutions')"><span class="stake-icon">🛠️</span><div class="stake-name">Equipment Vendors</div><div class="stake-desc">Service reminders & warranty tracking</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="sec bg-surf">
+    <div class="sec-inner">
+      <div class="sec-hd">
+        <span class="sec-tag">Customer Stories</span>
+        <h2>What our customers say</h2>
+      </div>
+      <div class="test-grid">
+        <div class="test-card">
+          <div class="test-stars">★★★★★</div>
+          <p class="test-q">"HospiBot replaced 5 disconnected systems. Our no-show rate dropped from 30% to 11% in 60 days. The WhatsApp billing alone recovered ₹3L in outstanding payments in the first month."</p>
+          <div class="test-author"><div class="test-av">RM</div><div><div class="test-name">Rajesh Mehta</div><div class="test-role">Admin, 200-bed Multi-specialty Hospital, Pune</div></div></div>
+        </div>
+        <div class="test-card">
+          <div class="test-stars">★★★★★</div>
+          <p class="test-q">"As a solo dermatologist I was spending 2 hours a day on appointment calls. HospiBot automated everything. Patients love the WhatsApp experience. My revenue is up 40% from follow-up visits alone."</p>
+          <div class="test-author"><div class="test-av">PM</div><div><div class="test-name">Dr. Priya Meera</div><div class="test-role">Dermatologist, Hyderabad</div></div></div>
+        </div>
+        <div class="test-card">
+          <div class="test-stars">★★★★★</div>
+          <p class="test-q">"The voice prescription feature is a game-changer. I dictate in Hinglish and it creates the perfect prescription in seconds. Drug interaction alerts have already prevented two serious errors."</p>
+          <div class="test-author"><div class="test-av">SK</div><div><div class="test-name">Dr. Suresh Kumar</div><div class="test-role">General Physician, Bangalore</div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Preview -->
+  <section class="sec">
+    <div class="sec-inner">
+      <div class="sec-hd">
+        <span class="sec-tag">Pricing</span>
+        <h2>Simple, transparent pricing</h2>
+        <p>No implementation fees. No per-booking charges. Pay one monthly subscription and get everything.</p>
+      </div>
+      <div class="price-grid">
+        <div class="price-card">
+          <div class="price-name">Starter</div>
+          <div class="price-desc">For solo doctors & small clinics</div>
+          <div class="price-amt">$49<span style="font-size:1rem;font-weight:400;color:var(--muted)">/mo</span></div>
+          <div class="price-period">Up to 2 doctors · 1 branch</div>
+          <ul class="price-feats">
+            <li><span class="ck">✓</span> WhatsApp appointment booking</li>
+            <li><span class="ck">✓</span> AI chatbot receptionist</li>
+            <li><span class="ck">✓</span> Patient profiles & history</li>
+            <li><span class="ck">✓</span> Billing & payment links</li>
+            <li><span class="ck">✓</span> Basic CRM</li>
+          </ul>
+          <button class="btn btn-ghost" style="width:100%" onclick="navigate('contact')">Get Started</button>
+        </div>
+        <div class="price-card featured">
+          <span class="price-badge">MOST POPULAR</span>
+          <div class="price-name">Growth</div>
+          <div class="price-desc">For hospitals & multi-doctor clinics</div>
+          <div class="price-amt">$99<span style="font-size:1rem;font-weight:400;color:var(--muted)">/mo</span></div>
+          <div class="price-period">Up to 15 doctors · 3 branches</div>
+          <ul class="price-feats">
+            <li><span class="ck">✓</span> Everything in Starter</li>
+            <li><span class="ck">✓</span> Recurring Revenue Engine</li>
+            <li><span class="ck">✓</span> Advanced CRM & campaigns</li>
+            <li><span class="ck">✓</span> Bed & department management</li>
+            <li><span class="ck">✓</span> Lab & pharmacy modules</li>
+            <li><span class="ck">✓</span> GST billing & TPA claims</li>
+          </ul>
+          <button class="btn btn-teal" style="width:100%" onclick="navigate('contact')">Start Free Trial</button>
+        </div>
+        <div class="price-card">
+          <div class="price-name">Enterprise</div>
+          <div class="price-desc">For hospital chains & large groups</div>
+          <div class="price-amt">$199<span style="font-size:1rem;font-weight:400;color:var(--muted)">/mo</span></div>
+          <div class="price-period">Unlimited doctors · Unlimited branches</div>
+          <ul class="price-feats">
+            <li><span class="ck">✓</span> Everything in Growth</li>
+            <li><span class="ck">✓</span> Speech-to-text prescriptions</li>
+            <li><span class="ck">✓</span> Universal Health Vault</li>
+            <li><span class="ck">✓</span> ABHA/ABDM integration</li>
+            <li><span class="ck">✓</span> Custom branding & API access</li>
+            <li><span class="ck">✓</span> Dedicated success manager</li>
+          </ul>
+          <button class="btn btn-dark" style="width:100%" onclick="navigate('contact')">Contact Sales</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="cta-sec">
+    <div style="max-width:700px;margin:0 auto;position:relative">
+      <h2>Ready to transform your patient experience?</h2>
+      <p>Join 1,000+ healthcare providers using HospiBot to automate care, reduce no-shows, and grow revenue — starting at $49/month.</p>
+      <div class="cta-btns">
+        <button class="btn btn-wa btn-lg" onclick="navigate('contact')">🚀 Book a Free Demo</button>
+        <button class="btn btn-outline btn-lg" onclick="navigate('portals')">Explore Portals →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <div class="nav-logo" style="cursor:default"><div class="nav-logo-icon">🏥</div>Hospi<span style="color:var(--wa)">Bot</span></div>
+        <p>The WhatsApp-First Healthcare Operating System. Democratizing healthcare technology for providers worldwide.</p>
+        <div style="display:flex;gap:10px;margin-top:16px">
+          <span style="background:rgba(37,211,102,.15);color:var(--wa);padding:3px 10px;border-radius:6px;font-size:.72rem;font-weight:600">HIPAA</span>
+          <span style="background:rgba(37,211,102,.15);color:var(--wa);padding:3px 10px;border-radius:6px;font-size:.72rem;font-weight:600">DPDPA</span>
+          <span style="background:rgba(37,211,102,.15);color:var(--wa);padding:3px 10px;border-radius:6px;font-size:.72rem;font-weight:600">GDPR</span>
+          <span style="background:rgba(37,211,102,.15);color:var(--wa);padding:3px 10px;border-radius:6px;font-size:.72rem;font-weight:600">NABH</span>
+        </div>
+      </div>
+      <div class="foot-col">
+        <h4>Product</h4>
+        <ul class="foot-links">
+          <li><a onclick="navigate('features')">Features</a></li>
+          <li><a onclick="navigate('solutions')">Solutions</a></li>
+          <li><a onclick="navigate('pricing')">Pricing</a></li>
+          <li><a onclick="navigate('portals')">All Portals</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h4>Company</h4>
+        <ul class="foot-links">
+          <li><a onclick="navigate('about')">About Us</a></li>
+          <li><a onclick="navigate('contact')">Contact</a></li>
+          <li><a>Careers</a></li>
+          <li><a>Blog</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h4>Legal</h4>
+        <ul class="foot-links">
+          <li><a>Privacy Policy</a></li>
+          <li><a>Terms of Service</a></li>
+          <li><a>HIPAA Compliance</a></li>
+          <li><a>Security</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bot">
+      <span>© 2026 HospiBot. All rights reserved.</span>
+      <span>Made with ❤️ for healthcare providers worldwide | <a>support@hospibot.com</a></span>
+    </div>
+  </footer>
+</div>
+
+<!-- ===== FEATURES PAGE ===== -->
+<div class="page" id="page-features">
+  <div class="pg-hero">
+    <h1>Every feature your hospital needs</h1>
+    <p>From WhatsApp communication to AI clinical tools — HospiBot covers the complete care journey.</p>
+  </div>
+  <section class="sec">
+    <div class="sec-inner">
+      <div class="tabs-nav">
+        <button class="tab-item active" onclick="switchTab(this,'tab-wa')">💬 WhatsApp OS</button>
+        <button class="tab-item" onclick="switchTab(this,'tab-rev')">🔄 Revenue Engine</button>
+        <button class="tab-item" onclick="switchTab(this,'tab-crm')">📈 CRM & Leads</button>
+        <button class="tab-item" onclick="switchTab(this,'tab-ops')">🏥 Operations</button>
+        <button class="tab-item" onclick="switchTab(this,'tab-ai')">🤖 AI & Intelligence</button>
+      </div>
+      <div class="tab-panel active" id="tab-wa">
+        <div class="sec-hd" style="text-align:left;margin-bottom:24px"><h3>WhatsApp-First Communication System</h3><p>WhatsApp is the core interaction layer — not an add-on. Every patient touchpoint flows through it.</p></div>
+        <div class="feat-list">
+          <div class="feat-li"><div class="feat-li-icon" style="background:#dcfce7">📱</div><div><h4>Dedicated WhatsApp Number</h4><p>Each tenant gets their own WhatsApp Business number with Green Tick verification assistance.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#dcfce7">🤖</div><div><h4>AI Chatbot Receptionist</h4><p>24/7 AI handles bookings, department routing, FAQs. Escalates to humans seamlessly when needed.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#dcfce7">📅</div><div><h4>Appointment Booking</h4><p>Patients book via WhatsApp interactive menus. Confirmation, QR code, and reminders auto-sent.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#dcfce7">📄</div><div><h4>Report Delivery</h4><p>Lab reports auto-delivered as WhatsApp PDFs. Abnormal values flagged for doctor review.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#dcfce7">💳</div><div><h4>Bill & Payment via WhatsApp</h4><p>Invoice sent via WhatsApp with UPI/card payment link. Receipt delivered instantly on payment.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#dcfce7">🌐</div><div><h4>Multi-language Support</h4><p>Auto-detects patient language: English, Hindi, Telugu, Tamil, Arabic + more.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#dcfce7">🏷️</div><div><h4>Department Routing</h4><p>"I have chest pain" → Cardiology. Smart routing to the right department and doctor.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#dcfce7">🔔</div><div><h4>Smart Reminders</h4><p>Automated reminders at 24h, 2h, and 30min before appointments. One-tap reschedule buttons.</p></div></div>
+        </div>
+      </div>
+      <div class="tab-panel" id="tab-rev">
+        <div class="sec-hd" style="text-align:left;margin-bottom:24px"><h3>Recurring Revenue Engine</h3><p>The industry's only automated system that drives patients back for follow-up care — closed loop from reminder to booking to payment.</p></div>
+        <div class="feat-list">
+          <div class="feat-li"><div class="feat-li-icon" style="background:#fef9c3">⚙️</div><div><h4>Visual Workflow Builder</h4><p>No-code rule builder. Define trigger → condition → wait → action → escalation with drag and drop.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#fef9c3">💊</div><div><h4>Medicine Refill Automation</h4><p>Auto-reminder for chronic medications at 30/60/90 day intervals. Direct booking link included.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#fef9c3">🩸</div><div><h4>Diagnostic Test Reminders</h4><p>HbA1c every 90 days, lipid panel annually — auto-triggered based on diagnosis codes.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#fef9c3">🏃</div><div><h4>Post-Visit Follow-Up</h4><p>Surgery follow-ups, wound checks, suture removal — all automated on pre-configured schedules.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#fef9c3">🔁</div><div><h4>Closed-Loop Response</h4><p>Patient replies "Book Now" → slots shown → booked → CRM updated. Full automation, no staff needed.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#fef9c3">📋</div><div><h4>Pre-Built Protocols</h4><p>Diabetes, Hypertension, Pregnancy, Oncology, Dental — activate in one click. Backed by clinical evidence.</p></div></div>
+        </div>
+      </div>
+      <div class="tab-panel" id="tab-crm">
+        <div class="sec-hd" style="text-align:left;margin-bottom:24px"><h3>Healthcare CRM & Lead Management</h3><p>Full patient lifecycle — from first inquiry to loyal patient with measurable ROI at every stage.</p></div>
+        <div class="feat-list">
+          <div class="feat-li"><div class="feat-li-icon" style="background:#ede9fe">🎯</div><div><h4>Multi-Source Lead Attribution</h4><p>Track leads from WhatsApp, Meta ads, Google, referrals, walk-ins, and third-party aggregators.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#ede9fe">👤</div><div><h4>Patient 360 Profile</h4><p>Demographics, clinical summary, communication history, financial history, lifecycle stage, tags.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#ede9fe">📢</div><div><h4>Bulk WhatsApp Campaigns</h4><p>Send pre-approved template messages to filtered segments — diabetics, lapsed patients, insurance renewals.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#ede9fe">🧪</div><div><h4>A/B Campaign Testing</h4><p>Test message variants. Optimize open rates, response rates, and appointment conversions over time.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#ede9fe">📊</div><div><h4>Campaign Analytics</h4><p>Delivery, read rate, response, conversions, and revenue attributed per campaign. Full ROAS tracking.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#ede9fe">🏷️</div><div><h4>Smart Segmentation</h4><p>Auto-segments by behavior, diagnosis, visit history, location, insurance. Manual tags for VIP, corporate.</p></div></div>
+        </div>
+      </div>
+      <div class="tab-panel" id="tab-ops">
+        <div class="sec-hd" style="text-align:left;margin-bottom:24px"><h3>Hospital Operations Management</h3><p>Complete operational core — departments, doctors, beds, billing, lab, and pharmacy in one dashboard.</p></div>
+        <div class="feat-list">
+          <div class="feat-li"><div class="feat-li-icon" style="background:#dbeafe">🏢</div><div><h4>Department Management</h4><p>Unlimited clinical and administrative departments, each with its own staff, billing rules, and analytics.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#dbeafe">👨‍⚕️</div><div><h4>Doctor Scheduling</h4><p>Per-doctor slot management, multi-branch assignment, leave calendar, and performance analytics.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#dbeafe">🛏️</div><div><h4>Bed Management</h4><p>Real-time floor map, automated allocation, bed-to-billing integration, discharge planning workflow.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#dbeafe">💰</div><div><h4>GST Billing & Payments</h4><p>Multi-line invoices, GST auto-calculation, package billing, insurance/TPA, UPI/card/WhatsApp Pay.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#dbeafe">🔬</div><div><h4>Lab Integration</h4><p>Test orders, sample lifecycle, result entry, report PDF generation, and WhatsApp delivery.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#dbeafe">💊</div><div><h4>Pharmacy Management</h4><p>Prescription fulfillment, inventory control, dispensing workflow, and refill tracking automation.</p></div></div>
+        </div>
+      </div>
+      <div class="tab-panel" id="tab-ai">
+        <div class="sec-hd" style="text-align:left;margin-bottom:24px"><h3>AI & Clinical Intelligence</h3><p>Cutting-edge AI features built specifically for healthcare — not generic tools retrofitted for medicine.</p></div>
+        <div class="feat-list">
+          <div class="feat-li"><div class="feat-li-icon" style="background:#ccfbf1">🎙️</div><div><h4>Speech-to-Text Prescriptions</h4><p>Doctor dictates in English/Hindi/Hinglish. AI extracts medications, dosages, diagnoses, follow-ups.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#ccfbf1">🗄️</div><div><h4>Universal Health Vault</h4><p>Single persistent health record per patient, accessible across all HospiBot providers with consent.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#ccfbf1">🪪</div><div><h4>Portable Health ID</h4><p>Mobile number = universal health identity. No cards, no apps. Just share your phone number.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#ccfbf1">⚠️</div><div><h4>Drug Interaction Alerts</h4><p>Real-time check against patient's existing medications. Allergy cross-check and dosage validation.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#ccfbf1">🏛️</div><div><h4>ABHA Integration</h4><p>Link patient records to India's ABHA Health ID. ABDM-compliant HIP and HRP certified.</p></div></div>
+          <div class="feat-li"><div class="feat-li-icon" style="background:#ccfbf1">👨‍👩‍👧</div><div><h4>Family Health Management</h4><p>Manage dependents' records from one WhatsApp number. Ideal for parents & elderly care.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Comparison Table -->
+  <section class="sec bg-surf">
+    <div class="sec-inner">
+      <div class="sec-hd">
+        <span class="sec-tag">Competitive Analysis</span>
+        <h2>How HospiBot compares</h2>
+      </div>
+      <div class="cmp-wrap">
+        <table class="cmp-table">
+          <thead><tr><th>Capability</th><th>Epic/Cerner</th><th>Practo</th><th>MocDoc</th><th>Zocdoc</th><th class="ch" style="color:var(--wa)">HospiBot</th></tr></thead>
+          <tbody>
+            <tr><td><strong>WhatsApp-Native</strong></td><td class="cn">✗</td><td class="cn">✗</td><td class="cn">✗</td><td class="cn">✗</td><td class="cy ch">✓ Core</td></tr>
+            <tr><td><strong>Recurring Revenue Engine</strong></td><td class="cn">✗</td><td class="cn">Manual</td><td class="cn">✗</td><td class="cn">✗</td><td class="cy ch">✓ AI-powered</td></tr>
+            <tr><td><strong>Healthcare CRM</strong></td><td>Basic</td><td>Listing</td><td class="cn">✗</td><td class="cn">✗</td><td class="cy ch">✓ Full lifecycle</td></tr>
+            <tr><td><strong>Setup Time</strong></td><td>12-24 months</td><td>3-7 days</td><td>7-14 days</td><td>Self-serve</td><td class="cy ch">✓ &lt;7 days</td></tr>
+            <tr><td><strong>Cost for Small Clinic</strong></td><td>$500K+</td><td>$200-500/mo</td><td>$200-400/mo</td><td>$35-100/booking</td><td class="cy ch">✓ $49/mo</td></tr>
+            <tr><td><strong>Speech-to-Text Rx</strong></td><td>$15-30K/yr add-on</td><td class="cn">✗</td><td class="cn">✗</td><td class="cn">✗</td><td class="cy ch">✓ Included</td></tr>
+            <tr><td><strong>Universal Health ID</strong></td><td>MyChart (Epic-only)</td><td>App required</td><td>Hospital MRD only</td><td class="cn">✗</td><td class="cy ch">✓ Mobile number</td></tr>
+            <tr><td><strong>Multi-tenant SaaS</strong></td><td>Single-tenant</td><td>Limited</td><td>Limited</td><td>Marketplace</td><td class="cy ch">✓ True multi-tenant</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+  <div class="cta-sec">
+    <div style="max-width:600px;margin:0 auto;position:relative">
+      <h2>See all features in action</h2>
+      <p>Book a personalized 30-minute demo with our team. We'll show you the exact features that matter for your practice.</p>
+      <div class="cta-btns"><button class="btn btn-wa btn-lg" onclick="navigate('contact')">Book Demo Now</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SOLUTIONS PAGE ===== -->
+<div class="page" id="page-solutions">
+  <div class="pg-hero">
+    <h1>Solutions for every healthcare provider</h1>
+    <p>Purpose-built workflows for hospitals, clinics, diagnostic centers, pharmacies, and more.</p>
+  </div>
+  <section class="sec">
+    <div class="sec-inner">
+      <div class="sol-grid">
+        <div class="sol-card">
+          <div class="sol-hd" style="background:linear-gradient(135deg,#1e3a5f,#2563eb)">
+            <h3>🏥 Multi-Specialty Hospitals</h3>
+            <p>Replace 5 disconnected systems with one unified platform for departments, doctors, billing, and patients.</p>
+          </div>
+          <div class="sol-bd"><ul class="sol-feats"><li>Department & doctor management</li><li>Bed tracking with visual floor map</li><li>WhatsApp appointment booking</li><li>GST billing & insurance/TPA claims</li><li>Multi-branch consolidated analytics</li></ul></div>
+        </div>
+        <div class="sol-card">
+          <div class="sol-hd" style="background:linear-gradient(135deg,#064e3b,#059669)">
+            <h3>🩺 Clinics & Doctor Groups</h3>
+            <p>From solo practice to 10-doctor clinics — automate bookings, follow-ups, and patient engagement.</p>
+          </div>
+          <div class="sol-bd"><ul class="sol-feats"><li>WhatsApp booking in under 60 seconds</li><li>No-show rate reduced by 60%</li><li>Post-visit follow-up automation</li><li>Patient retention CRM</li><li>Online payment collection</li></ul></div>
+        </div>
+        <div class="sol-card">
+          <div class="sol-hd" style="background:linear-gradient(135deg,#78350f,#d97706)">
+            <h3>🔬 Diagnostic Centers</h3>
+            <p>Eliminate report delays and drive repeat testing with automated delivery and reminder workflows.</p>
+          </div>
+          <div class="sol-bd"><ul class="sol-feats"><li>Auto WhatsApp report delivery</li><li>Abnormal value alerts to doctors</li><li>Repeat test reminders (HbA1c, etc.)</li><li>Sample tracking dashboard</li><li>Lab TAT performance analytics</li></ul></div>
+        </div>
+        <div class="sol-card">
+          <div class="sol-hd" style="background:linear-gradient(135deg,#831843,#db2777)">
+            <h3>🧬 IVF & Fertility Centers</h3>
+            <p>Complex treatment protocols managed seamlessly. Reduce patient anxiety with automated updates.</p>
+          </div>
+          <div class="sol-bd"><ul class="sol-feats"><li>Cycle monitoring automation</li><li>Hormone test reminders</li><li>Medication protocol tracking</li><li>Sensitive patient communication</li><li>Consent & documentation management</li></ul></div>
+        </div>
+        <div class="sol-card">
+          <div class="sol-hd" style="background:linear-gradient(135deg,#134e4a,#0d9488)">
+            <h3>💊 Pharmacies</h3>
+            <p>Turn one-time prescriptions into recurring revenue with refill automation and loyalty programs.</p>
+          </div>
+          <div class="sol-bd"><ul class="sol-feats"><li>Prescription-to-refill automation</li><li>Chronic medication reminders</li><li>Inventory & stock management</li><li>WhatsApp prescription delivery</li><li>Home delivery coordination</li></ul></div>
+        </div>
+        <div class="sol-card">
+          <div class="sol-hd" style="background:linear-gradient(135deg,#4c1d95,#7c3aed)">
+            <h3>🏠 Home Healthcare Providers</h3>
+            <p>Coordinate field teams, manage patient schedules, and communicate care updates via WhatsApp.</p>
+          </div>
+          <div class="sol-bd"><ul class="sol-feats"><li>Field staff scheduling</li><li>Patient visit coordination</li><li>Real-time care updates</li><li>Billing for home visits</li><li>Equipment & supply tracking</li></ul></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="cta-sec">
+    <div style="max-width:600px;margin:0 auto;position:relative">
+      <h2>Find the right plan for your practice</h2>
+      <p>Our team will help you identify the perfect configuration for your specific needs.</p>
+      <div class="cta-btns"><button class="btn btn-wa btn-lg" onclick="navigate('contact')">Talk to an Expert</button><button class="btn btn-outline btn-lg" onclick="navigate('pricing')">View Pricing →</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PRICING PAGE ===== -->
+<div class="page" id="page-pricing">
+  <div class="pg-hero">
+    <h1>Simple, honest pricing</h1>
+    <p>No setup fees. No per-booking charges. One flat monthly subscription. Cancel anytime.</p>
+  </div>
+  <section class="sec">
+    <div class="sec-inner">
+      <div class="price-grid">
+        <div class="price-card">
+          <div class="price-name">Starter</div>
+          <div class="price-desc">Solo doctors & small clinics</div>
+          <div class="price-amt">$49<span style="font-size:1rem;font-weight:400;color:var(--muted)">/mo</span></div>
+          <div class="price-period">₹4,100/month · 2 doctors · 1 branch</div>
+          <ul class="price-feats">
+            <li><span class="ck">✓</span> Dedicated WhatsApp number</li>
+            <li><span class="ck">✓</span> AI chatbot receptionist</li>
+            <li><span class="ck">✓</span> Appointment booking & reminders</li>
+            <li><span class="ck">✓</span> Patient profiles & visit history</li>
+            <li><span class="ck">✓</span> Basic billing & UPI payments</li>
+            <li><span class="ck">✓</span> 5,000 WhatsApp messages/mo</li>
+            <li><span class="ck">✓</span> Email support</li>
+          </ul>
+          <button class="btn btn-ghost btn-lg" style="width:100%" onclick="navigate('contact')">Start Free Trial</button>
+        </div>
+        <div class="price-card featured">
+          <span class="price-badge">MOST POPULAR</span>
+          <div class="price-name">Growth</div>
+          <div class="price-desc">Hospitals & multi-doctor clinics</div>
+          <div class="price-amt">$99<span style="font-size:1rem;font-weight:400;color:var(--muted)">/mo</span></div>
+          <div class="price-period">₹8,300/month · 15 doctors · 3 branches</div>
+          <ul class="price-feats">
+            <li><span class="ck">✓</span> Everything in Starter</li>
+            <li><span class="ck">✓</span> Recurring Revenue Engine</li>
+            <li><span class="ck">✓</span> Advanced CRM & segmentation</li>
+            <li><span class="ck">✓</span> Bulk WhatsApp campaigns</li>
+            <li><span class="ck">✓</span> Bed & department management</li>
+            <li><span class="ck">✓</span> Lab & pharmacy modules</li>
+            <li><span class="ck">✓</span> GST billing, TPA & insurance</li>
+            <li><span class="ck">✓</span> 50,000 WhatsApp messages/mo</li>
+            <li><span class="ck">✓</span> Priority support</li>
+          </ul>
+          <button class="btn btn-teal btn-lg" style="width:100%" onclick="navigate('contact')">Start Free Trial</button>
+        </div>
+        <div class="price-card">
+          <div class="price-name">Enterprise</div>
+          <div class="price-desc">Hospital chains & large groups</div>
+          <div class="price-amt">$199<span style="font-size:1rem;font-weight:400;color:var(--muted)">/mo</span></div>
+          <div class="price-period">₹16,700/month · Unlimited</div>
+          <ul class="price-feats">
+            <li><span class="ck">✓</span> Everything in Growth</li>
+            <li><span class="ck">✓</span> Speech-to-text prescriptions</li>
+            <li><span class="ck">✓</span> Universal Health Vault</li>
+            <li><span class="ck">✓</span> Portable Health ID system</li>
+            <li><span class="ck">✓</span> ABHA/ABDM integration</li>
+            <li><span class="ck">✓</span> Custom branding & white-label</li>
+            <li><span class="ck">✓</span> Full API access & webhooks</li>
+            <li><span class="ck">✓</span> FHIR R4 integration</li>
+            <li><span class="ck">✓</span> Dedicated success manager</li>
+            <li><span class="ck">✓</span> SLA guarantee (99.9% uptime)</li>
+          </ul>
+          <button class="btn btn-dark btn-lg" style="width:100%" onclick="navigate('contact')">Contact Sales</button>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:40px;padding:24px;background:var(--surf);border-radius:var(--rl);border:1px solid var(--brd)">
+        <p style="font-size:.95rem;color:var(--txt)"><strong>All plans include:</strong> 14-day free trial · No setup fees · Cancel anytime · HIPAA & DPDPA compliant · 99.5% uptime SLA</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== ABOUT PAGE ===== -->
+<div class="page" id="page-about">
+  <div class="pg-hero">
+    <h1>Democratizing healthcare technology</h1>
+    <p>HospiBot was built with one mission: make enterprise-grade hospital management accessible to every healthcare provider on Earth.</p>
+  </div>
+  <section class="sec">
+    <div class="sec-inner">
+      <div class="about-grid">
+        <div>
+          <span class="sec-tag">Our Vision</span>
+          <h2 style="margin-top:14px;margin-bottom:16px">The global default OS for healthcare</h2>
+          <p style="margin-bottom:14px">To become the global default operating system for healthcare providers — where every patient conversation, every appointment, every payment, and every follow-up happens through a single, WhatsApp-native platform that requires zero training and drives measurable revenue growth.</p>
+          <p style="margin-bottom:14px">The healthcare SaaS market is projected to reach USD 62.7 billion by 2035. Yet the vast majority of existing solutions remain fundamentally record-keeping and scheduling tools. They lack a conversational engagement layer, have no native mechanism for driving repeat revenue, and offer minimal CRM capabilities.</p>
+          <p>HospiBot addresses this gap by building a platform where every patient touchpoint flows through WhatsApp — the world's most-used messaging platform with over 2 billion users and 98% message open rates.</p>
+        </div>
+        <div style="background:var(--surf);border-radius:var(--rl);padding:36px;border:1px solid var(--brd)">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+            <div style="text-align:center;padding:20px"><div style="font-family:var(--fh);font-size:2.2rem;font-weight:800;color:var(--p)">$62.7B</div><div style="font-size:.8rem;color:var(--muted);margin-top:4px">Healthcare SaaS market by 2035</div></div>
+            <div style="text-align:center;padding:20px"><div style="font-family:var(--fh);font-size:2.2rem;font-weight:800;color:var(--p)">70,000+</div><div style="font-size:.8rem;color:var(--muted);margin-top:4px">Hospitals in India alone</div></div>
+            <div style="text-align:center;padding:20px"><div style="font-family:var(--fh);font-size:2.2rem;font-weight:800;color:var(--p)">&lt;10%</div><div style="font-size:.8rem;color:var(--muted);margin-top:4px">Use any digital management system</div></div>
+            <div style="text-align:center;padding:20px"><div style="font-family:var(--fh);font-size:2.2rem;font-weight:800;color:var(--p)">2B+</div><div style="font-size:.8rem;color:var(--muted);margin-top:4px">WhatsApp users worldwide</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="mission-grid">
+        <div class="mission-card"><span class="mission-icon">🎯</span><h3>Our Mission</h3><p>Democratize healthcare technology by making enterprise-grade hospital management, patient communication, and revenue automation accessible to every healthcare provider — from a solo practitioner in a Tier-3 Indian city to a 500-bed hospital chain in the Middle East.</p></div>
+        <div class="mission-card"><span class="mission-icon">💡</span><h3>Our Insight</h3><p>Healthcare providers don't need more complexity — they need a system that works the way they already communicate. Since patients and doctors both use WhatsApp every day, we built the entire operating system around it. Zero new habits to form. Immediate adoption. Measurable results from day one.</p></div>
+      </div>
+      <div style="margin-top:48px">
+        <div class="sec-hd">
+          <span class="sec-tag">The Problem</span>
+          <h2>Five problems we solve</h2>
+        </div>
+        <div class="prob-cards">
+          <div class="prob-card"><h4>Patient Communication Fragmentation</h4><p>Hospitals use disconnected channels patients don't engage with. No-show rates average 23-34% globally, costing billions annually.</p></div>
+          <div class="prob-card"><h4>Zero Revenue Automation</h4><p>After a patient visit, most hospitals have no systematic mechanism to bring them back. Chronic care follow-ups are left to manual processes.</p></div>
+          <div class="prob-card"><h4>Weak CRM & Lead Management</h4><p>Healthcare providers invest in advertising but have no structured pipeline to track, nurture, and convert leads. Marketing ROI is nearly impossible to measure.</p></div>
+          <div class="prob-card"><h4>Operational Complexity</h4><p>Departments, billing, beds, and appointments managed across multiple disconnected systems, creating data silos and daily inefficiency.</p></div>
+          <div class="prob-card"><h4>Prohibitive Cost & Complexity</h4><p>Enterprise solutions like Epic cost USD 500,000+ with 12-24 month timelines, making them inaccessible to 95% of global healthcare providers.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== CONTACT PAGE ===== -->
+<div class="page" id="page-contact">
+  <div class="pg-hero">
+    <h1>Let's talk healthcare</h1>
+    <p>Book a free 30-minute demo or reach out with any questions. Our team typically responds within 2 hours.</p>
+  </div>
+  <section class="sec">
+    <div class="sec-inner">
+      <div class="cont-grid">
+        <div>
+          <h3 style="margin-bottom:20px;color:var(--txt)">Get in touch</h3>
+          <div class="cont-item"><div class="cont-icon">📧</div><div><h4>Email</h4><p>support@hospibot.com<br>sales@hospibot.com</p></div></div>
+          <div class="cont-item"><div class="cont-icon">📱</div><div><h4>WhatsApp (India)</h4><p>+91 98765 43210</p></div></div>
+          <div class="cont-item"><div class="cont-icon">📍</div><div><h4>Headquarters</h4><p>Hyderabad, Telangana 500032<br>India</p></div></div>
+          <div class="cont-item"><div class="cont-icon">🌏</div><div><h4>Regional Offices</h4><p>Dubai, UAE<br>Bengaluru, India</p></div></div>
+          <div style="background:var(--surf);border-radius:var(--r);padding:20px;border:1px solid var(--brd);margin-top:24px">
+            <div style="font-family:var(--fh);font-weight:700;font-size:.9rem;color:var(--txt);margin-bottom:8px">📅 Demo Availability</div>
+            <p style="font-size:.82rem">Mon–Fri: 9 AM – 7 PM IST<br>Sat: 10 AM – 2 PM IST<br>Average demo duration: 30 minutes</p>
+          </div>
+        </div>
+        <div class="form-card">
+          <h3 style="margin-bottom:6px;color:var(--txt)">Book a free demo</h3>
+          <p style="font-size:.85rem;margin-bottom:24px">We'll show you HospiBot live, customized for your practice type.</p>
+          <div class="form-row">
+            <div class="fg"><label class="fl">First Name</label><input class="fi" type="text" placeholder="Rajesh"></div>
+            <div class="fg"><label class="fl">Last Name</label><input class="fi" type="text" placeholder="Mehta"></div>
+          </div>
+          <div class="fg"><label class="fl">Email Address</label><input class="fi" type="email" placeholder="you@hospital.com"></div>
+          <div class="fg"><label class="fl">WhatsApp / Phone</label><input class="fi" type="tel" placeholder="+91 9876543210"></div>
+          <div class="fg"><label class="fl">Organization Name</label><input class="fi" type="text" placeholder="Apollo Hospital, Hyderabad"></div>
+          <div class="fg"><label class="fl">Provider Type</label>
+            <select class="fi-sel">
+              <option>Multi-specialty Hospital</option>
+              <option>Clinic / Doctor Group</option>
+              <option>Diagnostic Center</option>
+              <option>IVF / Fertility Center</option>
+              <option>Pharmacy</option>
+              <option>Home Healthcare</option>
+              <option>Solo Doctor</option>
+            </select>
+          </div>
+          <div class="fg"><label class="fl">Your Message (optional)</label><textarea class="fi" placeholder="Tell us about your current system and main challenges..."></textarea></div>
+          <button class="btn-submit" style="background:var(--p)" onclick="showDemoConfirm()">Book Free Demo 🚀</button>
+          <p class="form-hint">By submitting, you agree to our Privacy Policy. We'll reach out within 2 hours.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== PORTALS PAGE ===== -->
+<div class="page" id="page-portals">
+  <div class="pg-hero">
+    <div style="position:relative;z-index:1">
+      <span class="sec-tag" style="background:rgba(37,211,102,.15);color:var(--wa)">ACCESS YOUR PORTAL</span>
+      <h1 style="margin-top:12px">All HospiBot Portals</h1>
+      <p>Role-specific portals designed for every member of your healthcare team. Click Login or Register to get started.</p>
+    </div>
+  </div>
+  <div class="portals-grid" id="portalsGrid">
+    <!-- Cards generated by JS -->
+  </div>
+</div>
+
+<!-- ===== PORTAL LOGIN PAGE ===== -->
+<div class="page" id="page-portal-login">
+  <div class="plog-page">
+    <div class="plog-hd" id="ploginHd">
+      <span class="plog-back" onclick="navigate('portals')">← Back to Portals</span>
+      <div class="plog-icon" id="ploginIcon">🏥</div>
+      <div class="plog-name" id="ploginName">Portal</div>
+    </div>
+    <div class="plog-body">
+      <div class="plog-box">
+        <div class="tab-sw">
+          <button class="tsw active" id="tsw-login" onclick="switchAuthTab('login')">Login</button>
+          <button class="tsw" id="tsw-register" onclick="switchAuthTab('register')">Register</button>
+        </div>
+        <div id="auth-login-form"></div>
+        <div id="auth-register-form" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== PORTAL DATA =====
+const portals = [
+  {id:'hospital-admin',name:'Hospital Admin Portal',shortName:'Hospital Admin',desc:'Complete command center for hospital operations, departments, staff, and multi-branch analytics.',icon:'🏥',grad:'linear-gradient(135deg,#1e3a5f,#2563eb)',accent:'#3b82f6',
+  feats:['Multi-branch & department management','Staff roles & permission control','Revenue & performance analytics','Automation rules & workflows'],
+  loginF:[{l:'Admin Email',t:'email',p:'admin@hospital.com'},{l:'Password',t:'password',p:'Enter password'}],
+  regF:[{l:'Hospital Name',t:'text',p:'Apollo Hospital'},{l:'Admin Name',t:'text',p:'John Smith'},{l:'Email',t:'email',p:'admin@hospital.com'},{l:'Phone',t:'tel',p:'+91 9876543210'},{l:'Password',t:'password',p:'Create password'}]},
+  {id:'doctor',name:'Doctor Portal',shortName:'Doctor',desc:'Manage your schedule, patients, and clinical notes with AI voice prescription assistance.',icon:'🩺',grad:'linear-gradient(135deg,#064e3b,#059669)',accent:'#10b981',
+  feats:['Patient history & visit timeline','Voice-to-prescription (AI-powered)','Appointment calendar management','Drug interaction & allergy alerts'],
+  loginF:[{l:'Doctor Email / ID',t:'email',p:'dr.name@hospital.com'},{l:'Password',t:'password',p:'Enter password'}],
+  regF:[{l:'Full Name (with title)',t:'text',p:'Dr. Priya Sharma'},{l:'Specialty',t:'select',opts:['Cardiology','Orthopedics','Pediatrics','Dermatology','Neurology','General Medicine','Gynecology','Other']},{l:'Medical Reg. Number',t:'text',p:'MCI-XXXXXXXX'},{l:'Email',t:'email',p:'dr.name@example.com'},{l:'Password',t:'password',p:'Create password'}]},
+  {id:'patient',name:'Patient Portal',shortName:'Patient',desc:'Access your health records, book appointments, and manage your family\'s care — all via WhatsApp.',icon:'🫀',grad:'linear-gradient(135deg,#7c2d12,#ea580c)',accent:'#f97316',
+  feats:['Book & manage appointments','View complete health records','Download lab reports instantly','Pay bills & view payment history'],
+  loginF:[{l:'Mobile Number',t:'tel',p:'+91 9876543210'},{l:'OTP / Password',t:'password',p:'Enter OTP or password'}],
+  regF:[{l:'Full Name',t:'text',p:'Priya Patel'},{l:'Mobile Number',t:'tel',p:'+91 9876543210'},{l:'Date of Birth',t:'date',p:''},{l:'Gender',t:'select',opts:['Male','Female','Other','Prefer not to say']},{l:'Email (optional)',t:'email',p:'priya@example.com'}]},
+  {id:'receptionist',name:'Receptionist Portal',shortName:'Receptionist',desc:'Streamline patient check-ins, queue management, and real-time appointment coordination.',icon:'📋',grad:'linear-gradient(135deg,#4c1d95,#7c3aed)',accent:'#8b5cf6',
+  feats:['Patient registration & check-in','Live queue & token management','Appointment booking & rescheduling','WhatsApp token & notice delivery'],
+  loginF:[{l:'Staff Email / ID',t:'email',p:'reception@hospital.com'},{l:'Password',t:'password',p:'Enter password'}],
+  regF:[{l:'Full Name',t:'text',p:'Staff Name'},{l:'Email',t:'email',p:'staff@hospital.com'},{l:'Hospital / Clinic ID',t:'text',p:'HB-XXXXXXXX'},{l:'Password',t:'password',p:'Create password'}]},
+  {id:'nurse',name:'Nurse Portal',shortName:'Nurse',desc:'Track patient vitals, medication administration, and care activities in real-time.',icon:'💉',grad:'linear-gradient(135deg,#831843,#db2777)',accent:'#ec4899',
+  feats:['Vitals recording & monitoring','Medication administration tracking','Nurse notes & ward activities','Patient care plan tracking'],
+  loginF:[{l:'Staff Email / ID',t:'email',p:'nurse@hospital.com'},{l:'Password',t:'password',p:'Enter password'}],
+  regF:[{l:'Full Name',t:'text',p:'Nurse Name'},{l:'Nursing Reg. Number',t:'text',p:'INC-XXXXXXXX'},{l:'Email',t:'email',p:'nurse@hospital.com'},{l:'Department',t:'select',opts:['ICU','General Ward','Maternity','Pediatrics','OT','Emergency','Other']},{l:'Password',t:'password',p:'Create password'}]},
+  {id:'lab',name:'Lab Technician Portal',shortName:'Lab Tech',desc:'Manage test orders, track samples, enter results, and deliver reports instantly via WhatsApp.',icon:'🔬',grad:'linear-gradient(135deg,#78350f,#d97706)',accent:'#f59e0b',
+  feats:['Sample collection & lifecycle tracking','Test result entry & validation','Instant WhatsApp report delivery','TAT & performance reporting'],
+  loginF:[{l:'Staff Email / ID',t:'email',p:'lab@hospital.com'},{l:'Password',t:'password',p:'Enter password'}],
+  regF:[{l:'Full Name',t:'text',p:'Lab Tech Name'},{l:'Lab Reg. Number',t:'text',p:'LAB-XXXXXXXX'},{l:'Email',t:'email',p:'lab@hospital.com'},{l:'Laboratory Name',t:'text',p:'Diagnostic Center / Path Lab'},{l:'Password',t:'password',p:'Create password'}]},
+  {id:'pharmacist',name:'Pharmacist Portal',shortName:'Pharmacist',desc:'Manage prescription fulfillment, inventory, and automated refill reminder workflows.',icon:'💊',grad:'linear-gradient(135deg,#134e4a,#0d9488)',accent:'#14b8a6',
+  feats:['Prescription management & dispensing','Inventory & stock level control','Refill reminder automation','Drug interaction verification'],
+  loginF:[{l:'Staff Email / ID',t:'email',p:'pharmacy@hospital.com'},{l:'Password',t:'password',p:'Enter password'}],
+  regF:[{l:'Full Name',t:'text',p:'Pharmacist Name'},{l:'Pharmacy Reg. No.',t:'text',p:'PCI-XXXXXXXX'},{l:'Email',t:'email',p:'pharmacy@hospital.com'},{l:'Pharmacy / Hospital Name',t:'text',p:'ABC Pharmacy'},{l:'Password',t:'password',p:'Create password'}]},
+  {id:'billing',name:'Billing Portal',shortName:'Billing',desc:'GST-ready invoicing, payment tracking, insurance claims, and financial analytics.',icon:'💰',grad:'linear-gradient(135deg,#0c4a6e,#0284c7)',accent:'#0ea5e9',
+  feats:['Invoice generation & GST billing','Multi-method payment tracking','Insurance & TPA claim management','Revenue analytics & data exports'],
+  loginF:[{l:'Staff Email / ID',t:'email',p:'billing@hospital.com'},{l:'Password',t:'password',p:'Enter password'}],
+  regF:[{l:'Full Name',t:'text',p:'Billing Staff Name'},{l:'Email',t:'email',p:'billing@hospital.com'},{l:'Hospital / Clinic ID',t:'text',p:'HB-XXXXXXXX'},{l:'Password',t:'password',p:'Create password'}]},
+  {id:'marketing',name:'Marketing & CRM Portal',shortName:'Marketing',desc:'Acquire, engage, and retain patients at scale with WhatsApp campaigns and CRM intelligence.',icon:'📊',grad:'linear-gradient(135deg,#14532d,#16a34a)',accent:'#22c55e',
+  feats:['Lead pipeline & CRM management','WhatsApp bulk campaigns','Patient segmentation & targeting','Campaign ROI & attribution analytics'],
+  loginF:[{l:'Staff Email / ID',t:'email',p:'marketing@hospital.com'},{l:'Password',t:'password',p:'Enter password'}],
+  regF:[{l:'Full Name',t:'text',p:'Marketing Staff Name'},{l:'Email',t:'email',p:'marketing@hospital.com'},{l:'Hospital / Clinic ID',t:'text',p:'HB-XXXXXXXX'},{l:'Password',t:'password',p:'Create password'}]}
+];
+
+// ===== ROUTER =====
+let currentPage = 'home';
+let currentPortal = null;
+
+function navigate(page, portalId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-' + page);
+  if (target) {
+    target.classList.add('active');
+    currentPage = page;
+    window.scrollTo({top:0, behavior:'smooth'});
+    // Update browser URL
+    let url = '/';
+    if (page === 'home') url = '/';
+    else if (page === 'portal-login' && portalId) url = '/portal/' + portalId;
+    else url = '/' + page;
+    try { history.pushState({page, portalId}, '', url); } catch(e) {}
+  }
+  // Close mobile menu
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+
+function goToPortalLogin(portalId, tab) {
+  currentPortal = portals.find(p => p.id === portalId);
+  if (!currentPortal) return;
+  // Set header
+  const hd = document.getElementById('ploginHd');
+  hd.style.background = currentPortal.grad;
+  document.getElementById('ploginIcon').textContent = currentPortal.icon;
+  document.getElementById('ploginName').textContent = currentPortal.name;
+  // Build login form
+  buildAuthForm('login', currentPortal);
+  buildAuthForm('register', currentPortal);
+  // Set active tab
+  switchAuthTab(tab || 'login', currentPortal.accent);
+  navigate('portal-login', portalId);
+}
+
+function buildAuthForm(type, portal) {
+  const fields = type === 'login' ? portal.loginF : portal.regF;
+  const el = document.getElementById('auth-' + type + '-form');
+  let html = '';
+  fields.forEach(f => {
+    html += `<div class="fg"><label class="fl">${f.l}</label>`;
+    if (f.t === 'select') {
+      html += `<select class="fi-sel"><option value="">Select ${f.l}</option>${f.opts.map(o=>`<option>${o}</option>`).join('')}</select>`;
+    } else {
+      html += `<input class="fi" type="${f.t}" placeholder="${f.p||''}">`;
+    }
+    html += '</div>';
+  });
+  if (type === 'login') {
+    html += `<div style="display:flex;justify-content:flex-end;margin-bottom:16px"><a style="font-size:.8rem;color:var(--p);cursor:pointer">Forgot password?</a></div>`;
+  }
+  html += `<button class="btn-submit" style="background:${portal.accent}" onclick="handleAuth('${type}')">${type==='login'?'Login to '+portal.shortName:'Create Account'}</button>`;
+  if (type === 'register') {
+    html += `<p style="font-size:.72rem;color:var(--muted);text-align:center;margin-top:14px">By registering, you agree to HospiBot's <a style="color:var(--p);cursor:pointer">Terms of Service</a> and <a style="color:var(--p);cursor:pointer">Privacy Policy</a>.</p>`;
+  }
+  el.innerHTML = html;
+}
+
+function switchAuthTab(tab) {
+  document.getElementById('auth-login-form').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('auth-register-form').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('tsw-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tsw-register').classList.toggle('active', tab === 'register');
+  if (currentPortal) {
+    document.getElementById('tsw-login').style.color = tab === 'login' ? currentPortal.accent : '';
+    document.getElementById('tsw-register').style.color = tab === 'register' ? currentPortal.accent : '';
+  }
+}
+
+function handleAuth(type) {
+  alert((type === 'login' ? '✅ Login' : '✅ Registration') + ' submitted for ' + (currentPortal ? currentPortal.name : 'Portal') + '.\n\nThis is a demo. Integration with backend coming soon!');
+}
+
+// ===== RENDER PORTAL CARDS =====
+function renderPortalCards() {
+  const grid = document.getElementById('portalsGrid');
+  if (!grid) return;
+  grid.innerHTML = portals.map(p => `
+    <div class="pcrd">
+      <div class="pcrd-hd" style="background:${p.grad}">
+        <div class="pcrd-hd-icon">${p.icon}</div>
+        <div class="pcrd-hd-name">${p.shortName}</div>
+      </div>
+      <div class="pcrd-bd">
+        <div class="pcrd-title">${p.name}</div>
+        <div class="pcrd-desc">${p.desc}</div>
+        <ul class="pcrd-feats">${p.feats.map(f=>`<li style="--ck:${p.accent}">${f}</li>`).join('')}</ul>
+        <div class="pcrd-btns">
+          <button class="pcrd-btn login" style="background:${p.grad}" onclick="goToPortalLogin('${p.id}','login')">Login</button>
+          <button class="pcrd-btn register" style="border-color:${p.accent};color:${p.accent}" onclick="goToPortalLogin('${p.id}','register')">Register</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  // Fix checkmark colors for feature list
+  document.querySelectorAll('.pcrd-feats li').forEach(li => {
+    li.style.setProperty('--ck', li.getAttribute('style').match(/--ck:([^;]+)/)?.[1] || 'var(--wa)');
+  });
+}
+
+// Apply checkmark colors via CSS custom props
+const style = document.createElement('style');
+style.textContent = '.pcrd-feats li::before { color: var(--ck, var(--wa)); }';
+document.head.appendChild(style);
+
+// ===== TABS for Features Page =====
+function switchTab(btn, panelId) {
+  btn.closest('.tabs-nav').querySelectorAll('.tab-item').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  btn.closest('.sec-inner').querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(panelId).classList.add('active');
+}
+
+// ===== MOBILE MENU =====
+function toggleMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+
+// ===== DEMO CONFIRM =====
+function showDemoConfirm() {
+  alert("🎉 Thank you! Your demo request has been received.\n\nOur team will contact you on WhatsApp within 2 hours to confirm your slot.");
+}
+
+// ===== BROWSER BACK/FORWARD =====
+window.addEventListener('popstate', (e) => {
+  if (e.state) navigate(e.state.page, e.state.portalId);
+});
+
+// ===== INIT =====
+window.addEventListener('DOMContentLoaded', () => {
+  renderPortalCards();
+  // Handle direct URL navigation
+  const path = window.location.pathname;
+  if (path.startsWith('/portal/')) {
+    const id = path.replace('/portal/', '');
+    goToPortalLogin(id, 'login');
+  } else if (path === '/portals') {
+    navigate('portals');
+  } else if (path === '/features') {
+    navigate('features');
+  } else if (path === '/solutions') {
+    navigate('solutions');
+  } else if (path === '/pricing') {
+    navigate('pricing');
+  } else if (path === '/about') {
+    navigate('about');
+  } else if (path === '/contact') {
+    navigate('contact');
+  }
+  // Navbar scroll effect
+  window.addEventListener('scroll', () => {
+    const nav = document.getElementById('navbar');
+    nav.style.background = window.scrollY > 40 ? 'rgba(6,13,24,.98)' : 'rgba(6,13,24,.96)';
+  });
+});
+</script>
+</body>
+</html>
