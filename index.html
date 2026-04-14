@@ -1172,8 +1172,8 @@ function renderPortalCards() {
         <div class="pcrd-desc">${p.desc}</div>
         <ul class="pcrd-feats">${p.feats.map(f=>`<li style="--ck:${p.accent}">${f}</li>`).join('')}</ul>
         <div class="pcrd-btns">
-          <button class="pcrd-btn login" style="background:${p.grad}" onclick="goToPortalLogin('${p.id}','login')">Login</button>
-          <button class="pcrd-btn register" style="border-color:${p.accent};color:${p.accent}" onclick="goToPortalLogin('${p.id}','register')">Register</button>
+          <a href="/portal/${p.id}" class="pcrd-btn login" style="background:${p.grad};text-decoration:none;display:block">Login</a>
+          <a href="/portal/${p.id}?tab=register" class="pcrd-btn register" style="border-color:${p.accent};color:${p.accent};text-decoration:none;display:block">Register</a>
         </div>
       </div>
     </div>
@@ -1217,9 +1217,11 @@ window.addEventListener('DOMContentLoaded', () => {
   renderPortalCards();
   // Handle direct URL navigation
   const path = window.location.pathname;
+  const params = new URLSearchParams(window.location.search);
+  const tab = params.get('tab') || 'login';
   if (path.startsWith('/portal/')) {
-    const id = path.replace('/portal/', '');
-    goToPortalLogin(id, 'login');
+    const id = path.replace('/portal/', '').replace(/\/$/,'');
+    goToPortalLogin(id, tab);
   } else if (path === '/portals') {
     navigate('portals');
   } else if (path === '/features') {
