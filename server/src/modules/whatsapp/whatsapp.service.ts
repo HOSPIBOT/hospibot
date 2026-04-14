@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Inject, forwardRef, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../database/prisma.service';
 import { ChatbotService } from '../chatbot/chatbot.service';
@@ -12,7 +12,7 @@ export class WhatsappService {
   constructor(
     private prisma: PrismaService,
     private config: ConfigService,
-    private chatbotService: ChatbotService,
+    @Inject(forwardRef(() => ChatbotService)) private chatbotService: ChatbotService,
   ) {
     this.apiUrl = config.get('WHATSAPP_API_URL', 'https://graph.facebook.com/v19.0');
   }

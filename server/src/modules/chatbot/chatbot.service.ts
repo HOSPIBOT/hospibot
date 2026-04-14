@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { WhatsappService } from '../whatsapp/whatsapp.service';
 
@@ -108,7 +108,7 @@ export class ChatbotService {
 
   constructor(
     private prisma: PrismaService,
-    private whatsappService: WhatsappService,
+    @Inject(forwardRef(() => WhatsappService)) private whatsappService: WhatsappService,
   ) {}
 
   // ── Main entry point ────────────────────────────────────────────────────────
