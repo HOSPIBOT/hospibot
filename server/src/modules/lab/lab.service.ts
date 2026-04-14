@@ -202,7 +202,6 @@ export class LabService {
       return { data: [], meta: { page: 1, limit: 20, total: 0, totalPages: 0 } };
     }
   }
-  }
 
   async getOrderById(tenantId: string, id: string) {
     const order = await this.prisma.labOrder.findFirst({
