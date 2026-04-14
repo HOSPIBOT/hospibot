@@ -20,4 +20,5 @@ RUN npm prune --production
 
 EXPOSE 4000
 
-CMD ["node", "dist/src/main"]
+# Run migrations then start
+CMD sh -c "npx prisma migrate deploy 2>/dev/null || npx prisma db push --accept-data-loss && node dist/src/main"
