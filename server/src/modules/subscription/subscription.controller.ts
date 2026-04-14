@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Param, Headers, UseGuards, RawBodyRequest, Req } from '@nestjs/common';
 import { SubscriptionService } from './subscription.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { TenantGuard } from '../../common/guards/tenant.guard';
 import { CurrentTenant } from '../../common/decorators/current-user.decorator';
 
 @Controller('subscriptions')
@@ -13,7 +14,7 @@ export class SubscriptionController {
 
   /** GET /subscriptions/current — current tenant subscription */
   @Get('current')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, TenantGuard)
   getCurrent(@CurrentTenant() tenantId: string) { return this.svc.getSubscription(tenantId); }
 
   /**

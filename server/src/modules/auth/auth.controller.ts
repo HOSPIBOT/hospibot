@@ -13,6 +13,7 @@ import { AuthService } from './auth.service';
 import { RegisterTenantDto, LoginDto, RefreshTokenDto, CreateUserDto } from './dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
+import { TenantGuard } from '../../common/guards/tenant.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { CurrentTenant } from '../../common/decorators/current-tenant.decorator';
@@ -51,7 +52,7 @@ export class AuthController {
   }
 
   @Get('users')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, TenantGuard, RolesGuard)
   @Roles('TENANT_ADMIN', 'BRANCH_ADMIN', 'SUPER_ADMIN')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'List all users in this tenant' })
@@ -66,7 +67,7 @@ export class AuthController {
   }
 
   @Post('users')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, TenantGuard, RolesGuard)
   @Roles('TENANT_ADMIN', 'BRANCH_ADMIN')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new user within the tenant' })

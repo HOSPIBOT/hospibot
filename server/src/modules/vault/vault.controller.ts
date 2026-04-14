@@ -5,6 +5,7 @@ import {
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { VaultService } from './vault.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { TenantGuard } from '../../common/guards/tenant.guard';
 import { CurrentTenant, CurrentUser } from '../../common/decorators/current-user.decorator';
 
 @ApiTags('Universal Health Vault')
@@ -15,7 +16,7 @@ export class VaultController {
   // ── Lookup patient by phone ────────────────────────────────────────────────
 
   @Get('lookup')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, TenantGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Look up a patient\'s Universal Health Record by mobile number' })
   lookup(
