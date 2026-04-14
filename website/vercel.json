@@ -1,4 +1,7 @@
 {
+  "buildCommand": null,
+  "outputDirectory": ".",
+  "framework": null,
   "rewrites": [
     { "source": "/portal/:path*", "destination": "/index.html" },
     { "source": "/portals", "destination": "/index.html" },
