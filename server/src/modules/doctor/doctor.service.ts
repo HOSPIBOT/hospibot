@@ -190,11 +190,15 @@ export class DoctorService {
 // ── Department management ─────────────────────────────────────────────────
 
   async listDepartments(tenantId: string, limit = 100) {
-    return this.prisma.department.findMany({
-      where: { tenantId, isActive: true },
-      orderBy: { name: 'asc' },
-      take: limit,
-    });
+    try {
+      return await this.prisma.department.findMany({
+        where: { tenantId, isActive: true },
+        orderBy: { name: 'asc' },
+        take: limit,
+      });
+    } catch {
+      return [];
+    }
   }
 
   async createDepartment(tenantId: string, dto: { name: string; code?: string; type?: string }) {

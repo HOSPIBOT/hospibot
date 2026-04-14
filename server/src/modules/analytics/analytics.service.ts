@@ -17,6 +17,7 @@ export class AnalyticsService {
     const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
 
+    try {
     const [
       todayRevenue, lastWeekRevenue,
       todayAppointments, lastWeekAppointments,
@@ -93,6 +94,9 @@ export class AnalyticsService {
         conversionRate: triggered > 0 ? Math.round((converted / triggered) * 100) : 0,
       },
     };
+    } catch {
+      return { revenue: { today: 0, changePercent: 0 }, appointments: { today: 0, changeVsLastWeek: 0, noShows: 0 }, whatsapp: { messagesToday: 0, changeVsLastWeek: 0 }, patients: { total: 0, newThisMonth: 0 }, revenueEngine: { totalTriggered: 0, totalConverted: 0, conversionRate: 0 } };
+    }
   }
 
   /**

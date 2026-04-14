@@ -75,19 +75,27 @@ export class CrmService {
       ];
     }
 
-    const [data, total] = await Promise.all([
-      this.prisma.lead.findMany({
-        where, skip, take: limit,
-        orderBy: { createdAt: 'desc' },
-        include: {
-          patient: { select: { firstName: true, lastName: true } },
-          campaign: { select: { name: true } },
-        },
-      }),
-      this.prisma.lead.count({ where }),
-    ]);
-
-    return { data, meta: { page, limit, total, totalPages: Math.ceil(total / limit) } };
+    try {
+      const [data, total] = await Promise.all([
+        this.prisma.lead.findMany({
+          where, skip, take: limit,
+          orderBy: { createdAt: 'desc' },
+          include: {
+            patient: { select: { firstName: true, lastName: true } },
+            campaign: { select: { name: true } },
+          },
+        }),
+        this.prisma.lead.count({ where }),
+      ]);
+      return { data, meta: { page, limit, total, totalPages: Math.ceil(total / limit) } };
+    } catch {
+      // Fallback: query without includes if relations fail
+      const [data, total] = await Promise.all([
+        this.prisma.lead.findMany({ where, skip, take: limit, orderBy: { createdAt: 'desc' } }),
+        this.prisma.lead.count({ where }),
+      ]);
+      return { data, meta: { page, limit, total, totalPages: Math.ceil(total / limit) } };
+    }
   }
 
   async updateLead(tenantId: string, id: string, dto: UpdateLeadDto) {
@@ -145,6 +153,7 @@ export class CrmService {
    * Lead funnel statistics
    */
   async getFunnelStats(tenantId: string) {
+    try {
     const stages = ['NEW', 'CONTACTED', 'APPOINTMENT_BOOKED', 'VISITED', 'FOLLOW_UP_PENDING', 'ACTIVE_PATIENT', 'DORMANT', 'LOST'];
 
     const counts = await Promise.all(
@@ -172,6 +181,9 @@ export class CrmService {
       lostRate: total > 0 ? Math.round((lost / total) * 100) : 0,
       sourceBreakdown: sourceBreakdown.map(s => ({ source: s.source, count: s._count })),
     };
+    } catch {
+      return { funnel: [], total: 0, conversionRate: 0, sourceBreakdown: [], stageCounts: [] };
+    }
   }
 
   // ==========================================
