@@ -4,7 +4,5 @@ buildCommand = "npm install && npm run build"
 
 [deploy]
 startCommand = "npm run start:prod"
-healthcheckPath = "/api/v1/health"
+healthcheckPath = "/api/v1/bootstrap/health"
 healthcheckTimeout = 300
-restartPolicyType = "on-failure"
-restartPolicyMaxRetries = 3
