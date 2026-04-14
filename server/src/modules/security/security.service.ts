@@ -135,9 +135,6 @@ export class SecurityService {
       (this.prisma.auditLog.findMany({
         where, skip, take: +limit,
         orderBy: { createdAt: 'desc' },
-        include: {
-          user: { select: { firstName: true, lastName: true, email: true } },
-        },
       }) as any),
       this.prisma.auditLog.count({ where }),
     ]);
