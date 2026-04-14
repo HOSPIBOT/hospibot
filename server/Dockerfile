@@ -1,6 +1,5 @@
 FROM node:18-bullseye-slim
 
-# Install OpenSSL 1.1 (Prisma requirement — bullseye has it natively)
 RUN apt-get update && apt-get install -y openssl libssl-dev && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -12,7 +11,6 @@ RUN npm install
 
 COPY . .
 
-# Generate Prisma client for correct platform (debian/bullseye)
 RUN npx prisma generate
 
 RUN npm run build
@@ -23,4 +21,5 @@ RUN npm prune --production
 
 EXPOSE 4000
 
-CMD sh -c "npx prisma db push --accept-data-loss 2>&1 | tail -3 && node dist/src/main"
+# Run db push (create/update tables) then start server
+CMD sh -c "echo 'Running prisma db push...' && npx prisma db push --accept-data-loss && echo 'Database ready!' && node dist/src/main"
