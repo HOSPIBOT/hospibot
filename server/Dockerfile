@@ -1,17 +1,19 @@
 FROM node:18-bullseye-slim
 
-RUN apt-get update && apt-get install -y openssl libssl-dev && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y openssl libssl-dev ca-certificates && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
 COPY package*.json ./
 COPY prisma ./prisma/
 
+# Install deps including prisma binary
 RUN npm install
 
-COPY . .
+# Generate Prisma client (skip checksum if blocked)
+RUN PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1 npx prisma generate
 
-RUN npx prisma generate
+COPY . .
 
 RUN npm run build
 
@@ -21,5 +23,4 @@ RUN npm prune --production
 
 EXPOSE 4000
 
-# Run db push (create/update tables) then start server
-CMD sh -c "echo 'Running prisma db push...' && npx prisma db push --accept-data-loss && echo 'Database ready!' && node dist/src/main"
+CMD sh -c "echo 'Running prisma db push...' && PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1 npx prisma db push --accept-data-loss && echo 'Database ready!' && node dist/src/main"
