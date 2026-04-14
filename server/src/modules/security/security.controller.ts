@@ -3,13 +3,14 @@ import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, Req 
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { SecurityService } from './security.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { TenantGuard } from '../../common/guards/tenant.guard';
 import { CurrentTenant, CurrentUser } from '../../common/decorators/current-user.decorator';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/current-user.decorator';
 
 @ApiTags('Security & Compliance')
 @Controller('security')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, TenantGuard)
 @ApiBearerAuth()
 export class SecurityController {
   constructor(private securityService: SecurityService) {}

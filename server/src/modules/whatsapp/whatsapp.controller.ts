@@ -7,6 +7,7 @@ import { Request, Response } from 'express';
 import { WhatsappService } from './whatsapp.service';
 import { SendMessageDto, SendTemplateDto, AssignConversationDto } from './dto/whatsapp.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { TenantGuard } from '../../common/guards/tenant.guard';
 import { CurrentTenant } from '../../common/decorators/current-user.decorator';
 
 @ApiTags('WhatsApp')
@@ -64,7 +65,7 @@ export class WhatsappController {
   // ==========================================
 
   @Post('send')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, TenantGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Send a text message to a phone number' })
   async sendMessage(@CurrentTenant() tenantId: string, @Body() dto: SendMessageDto) {

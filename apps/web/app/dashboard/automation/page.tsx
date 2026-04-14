@@ -34,7 +34,7 @@ export default function AutomationPage() {
       await api.post(`/automation/rules/${id}/toggle`);
       toast.success('Rule toggled');
       const res = await api.get('/automation/rules');
-      setRules(res.data.data);
+      setRules(res.data?.data ?? res.data ?? []);
     } catch { toast.error('Failed to toggle rule'); }
   };
 

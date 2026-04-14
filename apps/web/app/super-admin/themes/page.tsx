@@ -44,7 +44,12 @@ export default function ThemesPage() {
     if (!form.name || !form.familySlug) { toast.error('Name and family required'); return; }
     setSaving(true);
     try {
-      const res = await api.post('/portal/families/' + form.familySlug + '/theme', form).catch(async () => {
+      const res = await api.get('/portal/families?includeInactive=true').then(async (r) => {
+        const fams = Array.isArray(r.data) ? r.data : (r.data?.data ?? []);
+        const fam = fams.find((f: any) => f.slug === form.familySlug);
+        if (fam) return api.patch('/portal/families/' + fam.id + '/theme', form);
+        throw new Error('Family not found');
+      }).catch(async () => {
         // Fallback: store locally if endpoint not ready
         return { data: { id: Date.now().toString(), ...form, family: form.familySlug } };
       });

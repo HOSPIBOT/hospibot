@@ -216,7 +216,7 @@ export default function HomeCollectionPage() {
       if (statusFilter) params.status = statusFilter;
       if (dateFilter)   params.date   = dateFilter;
       const res = await api.get('/lab/collection', { params });
-      const data = res.data.data || [];
+      const data = res.data?.data ?? res.data ?? [];
       setCollections(data);
       setStats({
         scheduled: data.filter((c: any) => c.status === 'SCHEDULED').length,

@@ -30,7 +30,7 @@ export default function AbhaPage() {
     setPatSearch(search);
     if (search.length < 2) { setPatients([]); return; }
     const res = await api.get('/patients', { params: { search, limit: 5 } }).catch(() => ({ data: { data: [] } }));
-    setPatients(res.data.data || []);
+    setPatients(res.data?.data ?? res.data ?? []);
   };
 
   const initiateOTP = async () => {

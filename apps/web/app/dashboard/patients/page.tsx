@@ -20,7 +20,7 @@ export default function PatientsPage() {
       const params: any = { page, limit: 20 };
       if (searchTerm) params.search = searchTerm;
       const res = await api.get('/patients', { params });
-      setPatients(res.data.data);
+      setPatients(res.data?.data ?? res.data ?? []);
       setMeta(res.data.meta);
     } catch { toast.error('Failed to load patients'); }
     finally { setLoading(false); }

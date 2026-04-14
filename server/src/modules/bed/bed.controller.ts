@@ -4,8 +4,9 @@ import {
 } from '@nestjs/common';
 import { BedService } from './bed.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { TenantGuard } from '../../common/guards/tenant.guard';
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, TenantGuard)
 @Controller('beds')
 export class BedController {
   constructor(private readonly bedService: BedService) {}
