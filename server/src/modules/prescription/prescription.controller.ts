@@ -68,7 +68,7 @@ export class PrescriptionController {
         // instructions removed (not in Prescription schema)
         refillDueDate,
         isActive: true,
-        originalPrescriptionId: id,
+        // originalPrescriptionId removed - not in Prisma schema
       },
     });
   }

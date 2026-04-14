@@ -116,7 +116,7 @@ export class SecurityService {
       (this.prisma.auditLog.findMany({
         where, skip, take: +limit,
         orderBy: { createdAt: 'desc' },
-        include: { user: { select: { firstName: true, lastName: true, email: true } } },
+        // include removed - AuditLog has no user relation in schema
       }) as any),
       this.prisma.auditLog.count({ where }),
     ]);
