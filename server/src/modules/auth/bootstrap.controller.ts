@@ -57,17 +57,16 @@ export class BootstrapController {
       results.push(`Super admin already exists: ${existingAdmin.email}`);
     } else {
       const passwordHash = await bcrypt.hash(body.password, 12);
-      await this.prisma.user.create({
-        data: {
-          email: body.email,
-          passwordHash,
-          firstName: body.name || 'Super',
-          lastName: 'Admin',
-          role: 'SUPER_ADMIN',
-          isActive: true,
-          tenantId: null,
-        },
-      });
+      // Use raw SQL to bypass Prisma relation validation (SUPER_ADMIN has no tenant)
+      await this.prisma.$executeRawUnsafe(
+        `INSERT INTO users (id, email, password_hash, first_name, last_name, role, is_active, created_at, updated_at)
+         VALUES (gen_random_uuid()::text, $1, $2, $3, $4, 'SUPER_ADMIN', true, NOW(), NOW())
+         ON CONFLICT (email) DO NOTHING`,
+        body.email,
+        passwordHash,
+        body.name || 'Super',
+        'Admin'
+      );
       results.push(`Super admin created: ${body.email}`);
     }
 
