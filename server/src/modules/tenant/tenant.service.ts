@@ -6,7 +6,13 @@ export class TenantService {
   constructor(private prisma: PrismaService) {}
 
   async findById(id: string) {
-    const tenant = await this.prisma.tenant.findUnique({ where: { id } });
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id },
+      include: {
+        portalFamily: { select: { id: true, name: true, slug: true, icon: true } },
+        subType: { select: { id: true, name: true, slug: true, featureFlags: true } },
+      },
+    }).catch(() => this.prisma.tenant.findUnique({ where: { id } }));
     if (!tenant) throw new NotFoundException('Tenant not found');
     return tenant;
   }
