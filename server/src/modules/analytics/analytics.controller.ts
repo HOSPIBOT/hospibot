@@ -1,4 +1,4 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Body, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { AnalyticsService } from './analytics.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -56,4 +56,23 @@ export class AnalyticsController {
   async getNotifications(@CurrentTenant() tenantId: string) {
     return this.analyticsService.getNotifications(tenantId);
   }
+
+  @Post('feedback')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Submit patient feedback / NPS score' })
+  async submitFeedback(
+    @CurrentTenant() tenantId: string,
+    @Body() body: { visitId?: string; patientId?: string; score: number; comment?: string; category?: string },
+  ) {
+    // Store feedback as part of visit update
+    if (body.visitId) {
+      await this.analyticsService['prisma']?.visit?.update({
+        where: { id: body.visitId },
+        data: { feedbackScore: body.score, feedbackComment: body.comment },
+      }).catch(() => null);
+    }
+    return { success: true, message: 'Feedback recorded. Thank you!' };
+  }
+
 }

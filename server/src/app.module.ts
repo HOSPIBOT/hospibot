@@ -14,6 +14,7 @@ import { CrmModule } from './modules/crm/crm.module';
 import { AutomationModule } from './modules/automation/automation.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { HealthController } from './health.controller';
+import { HrmsModule } from './modules/hrms/hrms.module';
 import { SuperAdminModule } from './modules/super-admin/super-admin.module';
 import { PortalModule } from './modules/portal/portal.module';
 import { ChatbotModule } from './modules/chatbot/chatbot.module';
@@ -58,6 +59,7 @@ import { SubscriptionModule } from './modules/subscription/subscription.module';
     CrmModule,
     AutomationModule,
     AnalyticsModule,
+    HrmsModule,
     SuperAdminModule,
     PortalModule,
     ChatbotModule,

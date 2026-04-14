@@ -94,7 +94,7 @@ export default function SettingsPage() {
   const loadDepts = () => {
     setLoadingDepts(true);
     api.get('/doctors/departments', { params: { limit: 100 } })
-      .then(r => setDepts(r.data.data ?? []))
+      .then(r => setDepts(Array.isArray(r.data) ? r.data : (r.data?.data ?? [])))
       .catch(() => toast.error('Failed to load departments'))
       .finally(() => setLoadingDepts(false));
   };
