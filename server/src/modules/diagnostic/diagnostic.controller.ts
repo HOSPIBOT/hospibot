@@ -10,6 +10,7 @@ import { CurrentTenant } from '../../common/decorators/current-user.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { DiagnosticService } from './diagnostic.service';
 import { DiagnosticBillingService } from './diagnostic-billing.service';
+import { DiagnosticReportService } from './diagnostic-report.service';
 import {
   CreateOrderDto, UpdateOrderStatusDto, ListOrdersDto,
   CollectSampleDto, DispatchSampleDto, ReceiveSampleDto, RejectSampleDto,
@@ -30,6 +31,7 @@ export class DiagnosticController {
   constructor(
     private svc: DiagnosticService,
     private billing: DiagnosticBillingService,
+    private reports: DiagnosticReportService,
   ) {}
 
   // ── Dashboard ─────────────────────────────────────────────────────────────
@@ -487,5 +489,26 @@ export class DiagnosticController {
   @ApiOperation({ summary: 'Seed default recharge packs (admin)' })
   seedPacks() {
     return this.billing.seedRechargePacks();
+  }
+
+  // ── Report Generation ─────────────────────────────────────────────────────
+
+  @Post('orders/:id/generate-pdf')
+  @ApiOperation({ summary: 'Generate PDF for a released lab report' })
+  generatePdf(
+    @CurrentTenant() tenantId: string,
+    @Param('id') orderId: string,
+  ) {
+    return this.reports.generateAndUpload(tenantId, orderId);
+  }
+
+  @Get('orders/:id/report-html')
+  @ApiOperation({ summary: 'Get report HTML (for inline preview)' })
+  getReportHtml(
+    @CurrentTenant() tenantId: string,
+    @Param('id') orderId: string,
+    @Query('token') token: string,
+  ) {
+    return this.reports.getReportHtml(tenantId, orderId, token);
   }
 }

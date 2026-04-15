@@ -29,7 +29,8 @@ function AddTestModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
     if (!form.code || !form.name || !form.price) { toast.error('Code, name, and price are required'); return; }
     setSubmitting(true);
     try {
-      await api.post('/lab/catalog', { ...form, price: Number(form.price), turnaroundHrs: Number(form.turnaroundHrs) });
+      await api.post('/diagnostic/catalog', { ...form, price: Number(form.price), turnaroundHrs: Number(form.turnaroundHrs) })
+        .catch(() => api.post('/lab/catalog', { ...form, price: Number(form.price), turnaroundHrs: Number(form.turnaroundHrs) }));
       toast.success(`${form.name} added to catalog`);
       onCreated();
       onClose();
@@ -120,7 +121,7 @@ export default function TestCatalogPage() {
       const params: any = {};
       if (search) params.search = search;
       if (catFilter) params.category = catFilter;
-      const res = await api.get('/lab/catalog', { params });
+      const res = await api.get('/diagnostic/catalog', { params });
       setGrouped(res.data.grouped || {});
       setTotal(res.data.total || 0);
     } catch { toast.error('Failed to load catalog'); }
@@ -132,7 +133,7 @@ export default function TestCatalogPage() {
   const seedCatalog = async () => {
     setSeeding(true);
     try {
-      const res = await api.post('/lab/catalog/seed');
+      const res = await api.post('/diagnostic/catalog/seed');
       toast.success(`${res.data.seeded} standard tests seeded!`);
       load();
     } catch { toast.error('Failed to seed catalog'); }
@@ -142,7 +143,7 @@ export default function TestCatalogPage() {
   const deleteTest = async (id: string, name: string) => {
     if (!window.confirm(`Remove "${name}" from catalog?`)) return;
     try {
-      await api.delete(`/lab/catalog/${id}`);
+      await api.delete(`/diagnostic/catalog/${id}`);
       toast.success(`${name} removed`);
       load();
     } catch { toast.error('Failed to remove test'); }

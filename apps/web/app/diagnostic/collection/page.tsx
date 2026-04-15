@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { formatDate, formatTime } from '@/lib/utils';
 import toast from 'react-hot-toast';
@@ -212,6 +213,11 @@ export default function HomeCollectionPage() {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [showBook, setShowBook] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams?.get('book') === '1') setShowBook(true);
+  }, [searchParams]);
 
   const load = useCallback(async () => {
     setLoading(true);

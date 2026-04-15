@@ -227,3 +227,45 @@ git add -A && git commit -m "..." && git push origin main
 | 9dbe360 | feat: Doctor My Schedule + Invoice Aging Report |
 | ac532dd | feat: Pharmacy dispensing order detail + dashboard live API |
 | ea92373 | feat: Clinical Staff Management + DPDPA Actions + Security |
+
+## ── DIAGNOSTIC PORTAL — Phase 1, 2 & 3 Complete ────────────────────────────
+
+### Migration
+Run: `server/prisma/migrations/20260416_diagnostic_complete/migration.sql` on Supabase
+Then: `npx prisma generate` on Railway
+Then: `npx prisma db seed` for recharge packs
+
+### Backend Modules (server/src/modules/diagnostic/)
+- `diagnostic.service.ts` (1,628 lines) — 8-stage lifecycle, result entry, critical values
+- `diagnostic-billing.service.ts` (368 lines) — Razorpay wallet recharge, invoices
+- `diagnostic-report.service.ts` (305 lines) — HTML report, S3 PDF, patient viewer
+- `diagnostic.controller.ts` (514 lines) — 55+ endpoints at /api/v1/diagnostic/*
+- `dto/diagnostic.dto.ts` — All DTOs
+- Registered in app.module.ts as DiagnosticModule
+
+### Frontend Pages (apps/web/app/diagnostic/)
+20 pages fully built:
+- dashboard, lab-orders, lab-orders/[id], lab-orders/new, lab-orders/worklist
+- results, qc, inventory, collection, collection/new
+- crm/doctors, crm/corporates, automation, billing
+- analytics, catalog, patients, settings, whatsapp, login
+
+Public: /report/[orderId]?token=xxx (patient-facing report viewer)
+
+### New UI Components
+- apps/web/components/ui/DiagnosticRecharge.tsx — Razorpay wallet recharge button
+
+### Scheduler Additions (scheduler.service.ts)
+- processDiagnosticAutomation — every 30 min, fires revenue engine executions
+- escalateTatBreaches — every hour, detects >28h orders
+- checkCriticalValueAcknowledgements — every 15 min, escalates unacked alerts
+
+### WhatsApp Additions (whatsapp.service.ts)
+- ACK <alertId> — acknowledges critical value alerts
+- BOOK/1 — marks automation execution as CONVERTED
+- STOP — opts patient out of re-test reminders
+
+### Required Env Vars (Railway)
+AWS_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, S3_BUCKET,
+RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, RAZORPAY_WEBHOOK_SECRET,
+FRONTEND_URL, HOSPIBOT_GSTIN

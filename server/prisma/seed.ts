@@ -497,10 +497,44 @@ async function migrateExistingTenants() {
   else console.log('ℹ️  No existing tenants needed migration');
 }
 
+
+// ── Diagnostic Recharge Packs seed ──────────────────────────────────────────
+
+const RECHARGE_PACKS = [
+  // WhatsApp
+  { packType: 'WHATSAPP', name: '500 WA Credits',    creditsOrUnits: 500,   priceInclGst: 59000,  priceExclGst: 50000,  gstRate: 0.18, sortOrder: 1, isActive: true },
+  { packType: 'WHATSAPP', name: '2,000 WA Credits',  creditsOrUnits: 2000,  priceInclGst: 199000, priceExclGst: 168644, gstRate: 0.18, sortOrder: 2, isActive: true },
+  { packType: 'WHATSAPP', name: '10,000 WA Credits', creditsOrUnits: 10000, priceInclGst: 799000, priceExclGst: 677966, gstRate: 0.18, sortOrder: 3, isActive: true },
+  // SMS
+  { packType: 'SMS', name: '500 SMS',    creditsOrUnits: 500,   priceInclGst: 29000,  priceExclGst: 24576,  gstRate: 0.18, sortOrder: 1, isActive: true },
+  { packType: 'SMS', name: '2,000 SMS',  creditsOrUnits: 2000,  priceInclGst: 99000,  priceExclGst: 83898,  gstRate: 0.18, sortOrder: 2, isActive: true },
+  { packType: 'SMS', name: '10,000 SMS', creditsOrUnits: 10000, priceInclGst: 399000, priceExclGst: 338136, gstRate: 0.18, sortOrder: 3, isActive: true },
+  // Storage
+  { packType: 'STORAGE', name: '10 GB Extra Storage',  creditsOrUnits: 10,  priceInclGst: 59000,  priceExclGst: 50000,  gstRate: 0.18, sortOrder: 1, isActive: true },
+  { packType: 'STORAGE', name: '50 GB Extra Storage',  creditsOrUnits: 50,  priceInclGst: 199000, priceExclGst: 168644, gstRate: 0.18, sortOrder: 2, isActive: true },
+  { packType: 'STORAGE', name: '200 GB Extra Storage', creditsOrUnits: 200, priceInclGst: 599000, priceExclGst: 507627, gstRate: 0.18, sortOrder: 3, isActive: true },
+];
+
+async function seedRechargePacks() {
+  let seeded = 0;
+  for (const pack of RECHARGE_PACKS) {
+    await (prisma as any).rechargePack.upsert({
+      where: { id: `pack-${pack.packType.toLowerCase()}-${pack.sortOrder}` },
+      create: { id: `pack-${pack.packType.toLowerCase()}-${pack.sortOrder}`, ...pack },
+      update: { priceInclGst: pack.priceInclGst, isActive: true },
+    }).catch(() => {
+      return (prisma as any).rechargePack.create({ data: pack }).catch(() => {});
+    });
+    seeded++;
+  }
+  console.log(`✅ ${seeded} recharge packs seeded`);
+}
+
 async function runAll() {
   await main();
   await migrateExistingTenants();
   await seedWATemplates();
+  await seedRechargePacks();
 }
 
 runAll()

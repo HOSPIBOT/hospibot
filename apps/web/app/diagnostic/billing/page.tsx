@@ -9,6 +9,7 @@ import {
   RefreshCw, TrendingDown, Bell, CheckCircle2, AlertTriangle,
   Loader2, ChevronRight, Package,
 } from 'lucide-react';
+import { DiagnosticRecharge } from '@/components/ui/DiagnosticRecharge';
 
 const NAVY = '#1E3A5F';
 const TEAL = '#0D7C66';
@@ -39,23 +40,23 @@ function WalletCard({ wc, balances }: { wc: typeof WALLET_CARDS[0]; balances: an
   );
 }
 
-function RechargePackCard({ pack, onBuy }: { pack: any; onBuy: (pack: any) => void }) {
+function RechargePackCard({ pack, onSuccess }: { pack: any; onSuccess: () => void }) {
+  const unit = pack.packType === 'WHATSAPP' ? 'credits' : pack.packType === 'SMS' ? 'SMS' : 'GB';
+  const isBest = pack.sortOrder === 2;
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md hover:border-[#1E3A5F]/30 transition-all cursor-pointer" onClick={() => onBuy(pack)}>
+    <div className={`bg-white rounded-2xl border p-5 hover:shadow-md transition-all ${isBest ? 'border-[#1E3A5F]/40 ring-2 ring-[#1E3A5F]/10' : 'border-slate-100'}`}>
       <div className="flex items-start justify-between mb-3">
         <p className="font-bold text-slate-900">{pack.name}</p>
-        {pack.isBestValue && (
+        {isBest && (
           <span className="text-[10px] font-black px-2 py-0.5 rounded-full text-white" style={{ background: TEAL }}>BEST VALUE</span>
         )}
       </div>
-      <p className="text-2xl font-black" style={{ color: NAVY }}>
-        {pack.creditsOrUnits?.toFixed(0)} <span className="text-sm font-normal text-slate-500">{pack.packType === 'WHATSAPP' ? 'credits' : pack.packType === 'SMS' ? 'SMS' : 'GB'}</span>
+      <p className="text-2xl font-black mb-0.5" style={{ color: NAVY }}>
+        {pack.creditsOrUnits?.toFixed(0)}{' '}
+        <span className="text-sm font-normal text-slate-500">{unit}</span>
       </p>
-      <p className="text-sm text-slate-500 mt-1">₹{(pack.priceInclGst / 100).toFixed(0)} incl. GST</p>
-      <button className="w-full mt-4 py-2.5 text-white text-sm font-bold rounded-xl hover:opacity-90 transition-opacity"
-        style={{ background: NAVY }}>
-        Recharge Now →
-      </button>
+      <p className="text-xs text-slate-400 mb-4">₹{(pack.priceInclGst / 100).toFixed(0)} incl. 18% GST</p>
+      <DiagnosticRecharge pack={pack} onSuccess={onSuccess} />
     </div>
   );
 }
@@ -105,11 +106,6 @@ export default function BillingPage() {
     if (tab === 'whatsapp') loadUsage('WHATSAPP');
     else if (tab === 'sms') loadUsage('SMS');
   }, [tab]);
-
-  const buyPack = async (pack: any) => {
-    toast.success('Razorpay integration coming soon! Pack: ' + pack.name);
-    // In production: create Razorpay order, open checkout, verify payment
-  };
 
   const wallet = overview?.wallet ?? {};
   const usageStats = overview?.usage ?? {};
@@ -198,7 +194,7 @@ export default function BillingPage() {
               <div className="text-center py-8 text-slate-400 text-sm">No recharge packs configured. Contact HospiBot support.</div>
             ) : (
               <div className="grid grid-cols-3 gap-4">
-                {packs.map(pack => <RechargePackCard key={pack.id} pack={pack} onBuy={buyPack} />)}
+                {packs.map(pack => <RechargePackCard key={pack.id} pack={pack} onSuccess={() => { setRefreshKey(k => k + 1); load(); }} />)}
               </div>
             )}
           </div>
