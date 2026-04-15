@@ -2,102 +2,66 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
-import { formatDate } from '@/lib/utils';
+import { formatDate, formatINR } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import {
-  Users, Search, RefreshCw, Plus, ChevronLeft, ChevronRight,
-  FlaskConical, Phone, Mail, X, Loader2, CheckCircle2, Download,
+  Users, Search, RefreshCw, Plus, ChevronRight, X, Loader2,
+  FlaskConical, Phone, Calendar, CheckCircle2, AlertTriangle,
 } from 'lucide-react';
 
+const NAVY = '#1E3A5F';
+const TEAL = '#0D7C66';
 const inputCls = 'w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#1E3A5F] focus:ring-2 focus:ring-[#1E3A5F]/10 outline-none transition-all placeholder:text-slate-400';
+const labelCls = 'block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wide';
 
 function AddPatientModal({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
-  const [form, setForm] = useState({
-    firstName: '', lastName: '', phone: '', email: '',
-    gender: '', dateOfBirth: '', bloodGroup: '',
-    allergies: '', chronicConditions: '',
-  });
-  const [submitting, setSubmitting] = useState(false);
-  const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
-    setForm(f => ({ ...f, [k]: e.target.value }));
+  const [form, setForm] = useState({ firstName: '', lastName: '', phone: '', gender: 'Male', dateOfBirth: '', email: '', address: '', bloodGroup: '' });
+  const [saving, setSaving] = useState(false);
+  const setF = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setForm(f => ({ ...f, [k]: e.target.value }));
 
-  const handleSubmit = async () => {
-    if (!form.firstName || !form.phone) { toast.error('Name and phone are required'); return; }
-    setSubmitting(true);
+  const save = async () => {
+    if (!form.firstName || !form.phone) { toast.error('Name and phone required'); return; }
+    setSaving(true);
     try {
-      await api.post('/patients', {
-        ...form,
-        allergies: form.allergies ? form.allergies.split(',').map(s => s.trim()) : [],
-        chronicConditions: form.chronicConditions ? form.chronicConditions.split(',').map(s => s.trim()) : [],
-        dateOfBirth: form.dateOfBirth || undefined,
-      });
-      toast.success('Patient registered!');
-      onCreated();
-      onClose();
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || 'Registration failed');
-    } finally { setSubmitting(false); }
+      await api.post('/patients', form);
+      toast.success('Patient registered!'); onCreated(); onClose();
+    } catch (err: any) { toast.error(err?.response?.data?.message || 'Failed'); }
+    finally { setSaving(false); }
   };
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+      <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl max-h-[92vh] overflow-y-auto">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 sticky top-0 bg-white">
           <h2 className="text-lg font-bold text-slate-900">Register Patient</h2>
-          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"><X className="w-4 h-4" /></button>
+          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl"><X className="w-4 h-4" /></button>
         </div>
         <div className="px-6 py-5 grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">First Name <span className="text-red-500">*</span></label>
-            <input className={inputCls} placeholder="Ramesh" value={form.firstName} onChange={set('firstName')} />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Last Name</label>
-            <input className={inputCls} placeholder="Kumar" value={form.lastName} onChange={set('lastName')} />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Phone <span className="text-red-500">*</span></label>
-            <input className={inputCls} placeholder="+91 98765 43210" value={form.phone} onChange={set('phone')} />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Email</label>
-            <input className={inputCls} type="email" placeholder="ramesh@email.com" value={form.email} onChange={set('email')} />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Date of Birth</label>
-            <input type="date" className={inputCls} value={form.dateOfBirth} onChange={set('dateOfBirth')} />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Gender</label>
-            <select className={inputCls} value={form.gender} onChange={set('gender')}>
-              <option value="">Select</option>
-              <option value="MALE">Male</option>
-              <option value="FEMALE">Female</option>
-              <option value="OTHER">Other</option>
+          <div><label className={labelCls}>First Name *</label><input className={inputCls} placeholder="Ramesh" value={form.firstName} onChange={setF('firstName')} /></div>
+          <div><label className={labelCls}>Last Name</label><input className={inputCls} placeholder="Kumar" value={form.lastName} onChange={setF('lastName')} /></div>
+          <div><label className={labelCls}>Phone *</label><input className={inputCls} type="tel" placeholder="9876543210" value={form.phone} onChange={setF('phone')} /></div>
+          <div><label className={labelCls}>Gender</label>
+            <select className={inputCls} value={form.gender} onChange={setF('gender')}>
+              <option>Male</option><option>Female</option><option>Other</option>
             </select>
           </div>
-          <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Blood Group</label>
-            <select className={inputCls} value={form.bloodGroup} onChange={set('bloodGroup')}>
+          <div><label className={labelCls}>Date of Birth</label><input className={inputCls} type="date" value={form.dateOfBirth} onChange={setF('dateOfBirth')} /></div>
+          <div><label className={labelCls}>Blood Group</label>
+            <select className={inputCls} value={form.bloodGroup} onChange={setF('bloodGroup')}>
               <option value="">Unknown</option>
-              {['A+','A-','B+','B-','AB+','AB-','O+','O-'].map(g => <option key={g} value={g}>{g}</option>)}
+              {['A+','A-','B+','B-','AB+','AB-','O+','O-'].map(bg => <option key={bg}>{bg}</option>)}
             </select>
           </div>
-          <div>
-            <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Allergies</label>
-            <input className={inputCls} placeholder="comma-separated" value={form.allergies} onChange={set('allergies')} />
-          </div>
-          <div className="col-span-2">
-            <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Chronic Conditions</label>
-            <input className={inputCls} placeholder="Diabetes, Hypertension…" value={form.chronicConditions} onChange={set('chronicConditions')} />
-          </div>
+          <div><label className={labelCls}>Email</label><input className={inputCls} type="email" placeholder="optional" value={form.email} onChange={setF('email')} /></div>
+          <div className="col-span-2"><label className={labelCls}>Address</label><input className={inputCls} placeholder="Flat 4B, Kondapur" value={form.address} onChange={setF('address')} /></div>
         </div>
-        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 bg-slate-50/50 rounded-b-2xl">
-          <button onClick={onClose} className="text-sm text-slate-500 hover:text-slate-700 px-4 py-2 rounded-xl hover:bg-slate-100 transition-colors">Cancel</button>
-          <button onClick={handleSubmit} disabled={submitting}
-            className="text-white text-sm font-semibold px-6 py-2.5 rounded-xl hover:opacity-90 disabled:opacity-50 transition-opacity flex items-center gap-2"
-            style={{ background: '#1E3A5F' }}>
-            {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
+        <div className="px-6 pb-6 flex gap-3">
+          <button onClick={onClose} className="flex-1 py-3 border border-slate-200 text-slate-700 font-bold rounded-xl text-sm">Cancel</button>
+          <button onClick={save} disabled={saving}
+            className="flex-[2] flex items-center justify-center gap-2 py-3 text-white font-bold rounded-xl text-sm hover:opacity-90 disabled:opacity-50"
+            style={{ background: NAVY }}>
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
             Register Patient
           </button>
         </div>
@@ -106,194 +70,147 @@ function AddPatientModal({ onClose, onCreated }: { onClose: () => void; onCreate
   );
 }
 
+function PatientCard({ p, onNewOrder }: { p: any; onNewOrder: (p: any) => void }) {
+  const router = useRouter();
+  const name = `${p.firstName} ${p.lastName || ''}`.trim();
+  const age = p.dateOfBirth ? Math.floor((Date.now() - new Date(p.dateOfBirth).getTime()) / (365.25 * 86400000)) : null;
+
+  return (
+    <div className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-all group">
+      <div className="flex items-start gap-3 mb-3">
+        <div className="w-11 h-11 rounded-full flex items-center justify-center text-white font-bold text-base flex-shrink-0"
+          style={{ background: NAVY }}>
+          {name[0]?.toUpperCase()}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-bold text-slate-900">{name}</p>
+          <p className="text-xs text-slate-400 mt-0.5">
+            {p.gender}{age ? ` · ${age}y` : ''}{p.bloodGroup ? ` · ${p.bloodGroup}` : ''}
+          </p>
+        </div>
+      </div>
+      <div className="space-y-1.5 text-xs text-slate-500 mb-4">
+        <p className="flex items-center gap-1.5"><Phone className="w-3 h-3 text-slate-400" />{p.phone}</p>
+        {p.dateOfBirth && <p className="flex items-center gap-1.5"><Calendar className="w-3 h-3 text-slate-400" />{new Date(p.dateOfBirth).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>}
+        {p.healthId && <p className="font-mono text-slate-400">🏥 {p.healthId}</p>}
+      </div>
+      <div className="flex gap-2">
+        <button onClick={() => onNewOrder(p)}
+          className="flex-1 flex items-center justify-center gap-1.5 text-white text-xs font-bold py-2 rounded-xl hover:opacity-90 transition-opacity"
+          style={{ background: NAVY }}>
+          <FlaskConical className="w-3.5 h-3.5" /> New Order
+        </button>
+        <button onClick={() => router.push(`/diagnostic/lab-orders?search=${encodeURIComponent(p.phone)}`)}
+          className="px-3 py-2 text-xs font-bold text-slate-700 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors">
+          History
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function DiagnosticPatientsPage() {
-  const [patients, setPatients]     = useState<any[]>([]);
-  const [meta, setMeta]             = useState({ page: 1, limit: 20, total: 0, totalPages: 1 });
-  const [loading, setLoading]       = useState(true);
-  const [search, setSearch]         = useState('');
-  const [debSearch, setDebSearch]   = useState('');
-  const [showAdd, setShowAdd]       = useState(false);
+  const router = useRouter();
+  const [patients, setPatients] = useState<any[]>([]);
+  const [meta, setMeta] = useState({ total: 0, page: 1, limit: 24, totalPages: 1 });
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const [adding, setAdding] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  useEffect(() => {
-    const t = setTimeout(() => setDebSearch(search), 400);
-    return () => clearTimeout(t);
-  }, [search]);
-
-  const load = useCallback(async (page = 1) => {
+  const load = useCallback(async () => {
     setLoading(true);
     try {
-      const params: any = { page, limit: 20 };
-      if (debSearch) params.search = debSearch;
+      const params: any = { page, limit: 24 };
+      if (search) params.search = search;
       const res = await api.get('/patients', { params });
       setPatients(res.data.data ?? []);
-      setMeta(res.data.meta ?? { page: 1, limit: 20, total: 0, totalPages: 1 });
-    } catch { toast.error('Failed to load patients'); }
-    finally { setLoading(false); }
-  }, [debSearch]);
+      setMeta(res.data.meta ?? { total: 0, page: 1, limit: 24, totalPages: 1 });
+    } finally { setLoading(false); }
+  }, [page, search, refreshKey]);
 
-  useEffect(() => { load(1); }, [load]);
+  useEffect(() => { load(); }, [load]);
 
-  const [exporting, setExporting] = useState(false);
-  const exportCSV = async () => {
-    setExporting(true);
-    try {
-      const res  = await api.get('/patients', { params: { limit: 5000 } });
-      const all: any[] = res.data.data ?? patients;
-      const header = ['Health ID', 'First Name', 'Last Name', 'Phone', 'Email', 'Gender', 'Blood Group', 'Registered'];
-      const rows = all.map(p => [
-        p.healthId ?? '', p.firstName ?? '', p.lastName ?? '',
-        p.phone ?? '', p.email ?? '', p.gender ?? '', p.bloodGroup ?? '',
-        p.createdAt ? new Date(p.createdAt).toLocaleDateString('en-IN') : '',
-      ]);
-      const csv  = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url  = URL.createObjectURL(blob);
-      const a    = document.createElement('a');
-      a.href = url; a.download = `diagnostic-patients-${new Date().toISOString().slice(0,10)}.csv`;
-      a.click(); URL.revokeObjectURL(url);
-      toast.success(`Exported ${all.length} patients`);
-    } catch { toast.error('Export failed'); }
-    finally { setExporting(false); }
+  const handleNewOrder = (p: any) => {
+    router.push(`/diagnostic/lab-orders/new?patientId=${p.id}`);
   };
-
-  const ageFromDOB = (dob: string) =>
-    Math.floor((Date.now() - new Date(dob).getTime()) / (1000 * 60 * 60 * 24 * 365.25));
 
   return (
     <div className="space-y-5">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Patients</h1>
-          <p className="text-sm text-slate-500 mt-0.5">
-            {loading ? 'Loading…' : `${meta.total.toLocaleString('en-IN')} registered patients`}
-          </p>
+          <h1 className="text-xl font-bold text-slate-900">Patients</h1>
+          <p className="text-sm text-slate-500">{meta.total.toLocaleString('en-IN')} registered patients</p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => load(meta.page)} className="p-2 border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50 transition-colors">
+          <button onClick={() => setRefreshKey(k => k + 1)}
+            className="p-2.5 text-slate-500 border border-slate-200 bg-white rounded-xl hover:bg-slate-50 transition-colors">
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
-          <button onClick={exportCSV} disabled={exporting}
-            className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm font-medium px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50">
-            <Download className="w-4 h-4" /> {exporting ? 'Exporting…' : 'Export'}
-          </button>
-          <button onClick={() => setShowAdd(true)}
-            className="flex items-center gap-2 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors shadow-sm"
-            style={{ background: '#1E3A5F' }}>
+          <button onClick={() => setAdding(true)}
+            className="flex items-center gap-2 text-white text-sm font-bold px-4 py-2.5 rounded-xl hover:opacity-90 transition-opacity"
+            style={{ background: NAVY }}>
             <Plus className="w-4 h-4" /> Register Patient
           </button>
         </div>
       </div>
 
       {/* Search */}
-      <div className="bg-white rounded-2xl border border-slate-100 p-4">
-        <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
-          <Search className="w-4 h-4 text-slate-400 flex-shrink-0" />
-          <input className="bg-transparent text-sm outline-none flex-1 placeholder:text-slate-400"
-            placeholder="Search by name, phone, or Health ID…"
-            value={search} onChange={e => setSearch(e.target.value)} />
-          {search && <button onClick={() => setSearch('')}><X className="w-3.5 h-3.5 text-slate-400 hover:text-slate-600" /></button>}
-        </div>
-      </div>
-
-      {/* Table */}
-      <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-slate-50 border-b border-slate-100">
-              {['Patient', 'Health ID', 'Contact', 'Age / Gender', 'Blood Group', 'Last Lab Order', 'Status'].map(h => (
-                <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-50">
-            {loading ? (
-              Array.from({ length: 8 }).map((_, i) => (
-                <tr key={i}>{Array.from({ length: 7 }).map((__, j) => (
-                  <td key={j} className="px-5 py-4"><div className="animate-pulse bg-slate-200 rounded h-4" /></td>
-                ))}</tr>
-              ))
-            ) : patients.length === 0 ? (
-              <tr>
-                <td colSpan={7} className="py-20 text-center">
-                  <Users className="w-12 h-12 text-slate-200 mx-auto mb-3" />
-                  <p className="text-slate-400 text-sm font-medium">No patients found</p>
-                  <p className="text-slate-300 text-xs mt-1">Register your first patient to get started</p>
-                </td>
-              </tr>
-            ) : patients.map(p => (
-              <tr key={p.id} className="hover:bg-slate-50/60 transition-colors group cursor-pointer"
-                onClick={() => window.location.href = `/diagnostic/lab-orders?patientId=${p.id}`}>
-                <td className="px-5 py-3.5">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-[#1E3A5F]/10 text-[#1E3A5F] flex items-center justify-center text-xs font-bold flex-shrink-0">
-                      {p.firstName?.[0]}{p.lastName?.[0] || ''}
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-slate-900 group-hover:text-[#1E3A5F] transition-colors">
-                        {p.firstName} {p.lastName || ''}
-                      </p>
-                      {p.email && <p className="text-xs text-slate-400 truncate max-w-[160px]">{p.email}</p>}
-                    </div>
-                  </div>
-                </td>
-                <td className="px-5 py-3.5">
-                  {p.healthId ? (
-                    <span className="text-xs font-mono font-bold text-[#1E3A5F] bg-[#1E3A5F]/10 px-2 py-0.5 rounded-lg">
-                      {p.healthId}
-                    </span>
-                  ) : <span className="text-slate-300">—</span>}
-                </td>
-                <td className="px-5 py-3.5 text-sm text-slate-700">
-                  <div className="flex items-center gap-1.5">
-                    <Phone className="w-3 h-3 text-slate-400" /> {p.phone}
-                  </div>
-                </td>
-                <td className="px-5 py-3.5 text-sm text-slate-600">
-                  {p.dateOfBirth ? `${ageFromDOB(p.dateOfBirth)} yrs` : '—'}
-                  {p.gender && <span className="text-slate-400 ml-1">· {p.gender}</span>}
-                </td>
-                <td className="px-5 py-3.5">
-                  {p.bloodGroup ? (
-                    <span className="text-xs font-bold bg-red-100 text-red-700 px-2.5 py-0.5 rounded-full">{p.bloodGroup}</span>
-                  ) : <span className="text-slate-300 text-xs">Unknown</span>}
-                </td>
-                <td className="px-5 py-3.5 text-xs text-slate-500">
-                  {p.lastVisitAt ? formatDate(p.lastVisitAt) : 'No orders yet'}
-                </td>
-                <td className="px-5 py-3.5">
-                  {p.chronicConditions?.length > 0 && (
-                    <span className="text-[10px] font-semibold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">
-                      {p.chronicConditions[0]}
-                    </span>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        {!loading && meta.total > 0 && (
-          <div className="px-5 py-3.5 border-t border-slate-100 flex items-center justify-between">
-            <p className="text-xs text-slate-500">
-              Showing {(meta.page - 1) * meta.limit + 1}–{Math.min(meta.page * meta.limit, meta.total)} of {meta.total.toLocaleString('en-IN')}
-            </p>
-            <div className="flex items-center gap-1">
-              <button onClick={() => load(meta.page - 1)} disabled={meta.page === 1}
-                className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed">
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <span className="text-xs text-slate-600 px-3">{meta.page} / {meta.totalPages}</span>
-              <button onClick={() => load(meta.page + 1)} disabled={meta.page >= meta.totalPages}
-                className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed">
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
+      <div className="relative max-w-md">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+        <input className={`${inputCls} pl-10`} placeholder="Search by name, phone, or Health ID…"
+          value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} />
+        {search && (
+          <button className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+            onClick={() => setSearch('')}>
+            <X className="w-4 h-4" />
+          </button>
         )}
       </div>
 
-      {showAdd && <AddPatientModal onClose={() => setShowAdd(false)} onCreated={() => load(1)} />}
+      {/* Grid */}
+      {loading ? (
+        <div className="grid grid-cols-4 gap-4">
+          {Array.from({length:12}).map((_,i) => <div key={i} className="animate-pulse bg-slate-200 rounded-2xl h-40" />)}
+        </div>
+      ) : patients.length === 0 ? (
+        <div className="bg-white rounded-2xl border border-slate-100 p-16 text-center text-slate-400">
+          <Users className="w-12 h-12 mx-auto mb-3 text-slate-200" />
+          <p className="font-semibold text-slate-500">{search ? `No patients found for "${search}"` : 'No patients yet'}</p>
+          {!search && (
+            <button onClick={() => setAdding(true)}
+              className="mt-4 text-white text-sm font-bold px-5 py-2.5 rounded-xl hover:opacity-90 mx-auto flex items-center gap-2"
+              style={{ background: NAVY }}>
+              <Plus className="w-4 h-4" /> Register First Patient
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-4 gap-4">
+          {patients.map(p => <PatientCard key={p.id} p={p} onNewOrder={handleNewOrder} />)}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {meta.totalPages > 1 && (
+        <div className="flex items-center justify-between pt-2">
+          <p className="text-sm text-slate-500">Showing {(page-1)*meta.limit+1}–{Math.min(page*meta.limit, meta.total)} of {meta.total}</p>
+          <div className="flex items-center gap-2">
+            <button disabled={page === 1} onClick={() => setPage(p => p - 1)}
+              className="px-3 py-1.5 text-sm text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 disabled:opacity-40">
+              Previous
+            </button>
+            <span className="text-sm text-slate-500">{page} / {meta.totalPages}</span>
+            <button disabled={page >= meta.totalPages} onClick={() => setPage(p => p + 1)}
+              className="px-3 py-1.5 text-sm text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 disabled:opacity-40">
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+
+      {adding && <AddPatientModal onClose={() => setAdding(false)} onCreated={() => setRefreshKey(k => k + 1)} />}
     </div>
   );
 }

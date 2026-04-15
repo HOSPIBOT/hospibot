@@ -1,13 +1,15 @@
 import {
   Controller, Get, Post, Patch, Put, Delete, Body, Param, Query,
-  UseGuards, HttpCode, HttpStatus,
+  UseGuards, HttpCode, HttpStatus, RawBodyRequest, Req,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { TenantGuard } from '../../common/guards/tenant.guard';
 import { CurrentTenant } from '../../common/decorators/current-user.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { DiagnosticService } from './diagnostic.service';
+import { DiagnosticBillingService } from './diagnostic-billing.service';
 import {
   CreateOrderDto, UpdateOrderStatusDto, ListOrdersDto,
   CollectSampleDto, DispatchSampleDto, ReceiveSampleDto, RejectSampleDto,
@@ -25,7 +27,10 @@ import {
 @UseGuards(JwtAuthGuard, TenantGuard)
 @ApiBearerAuth()
 export class DiagnosticController {
-  constructor(private svc: DiagnosticService) {}
+  constructor(
+    private svc: DiagnosticService,
+    private billing: DiagnosticBillingService,
+  ) {}
 
   // ── Dashboard ─────────────────────────────────────────────────────────────
 
@@ -433,5 +438,54 @@ export class DiagnosticController {
     @Query('limit') limit = 50,
   ) {
     return this.svc.getWalletTransactions(tenantId, walletType, +page, +limit);
+  }
+
+  // ── Razorpay Webhook (public — no auth) ──────────────────────────────────
+
+  @Post('billing/webhook/razorpay')
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Razorpay payment webhook (signed)' })
+  handleWebhook(@Body() payload: any, @Req() req: any) {
+    const sig = req.headers['x-razorpay-signature'] ?? '';
+    return this.billing.handleWebhook(payload, sig);
+  }
+
+  @Post('billing/recharge')
+  @ApiOperation({ summary: 'Create Razorpay order for wallet recharge' })
+  createRechargeOrder(
+    @CurrentTenant() tenantId: string,
+    @Body() dto: { packId: string },
+  ) {
+    return this.billing.createRechargeOrder(tenantId, dto.packId);
+  }
+
+  @Post('billing/verify-payment')
+  @ApiOperation({ summary: 'Verify Razorpay payment and credit wallet' })
+  verifyPayment(
+    @CurrentTenant() tenantId: string,
+    @Body() dto: { razorpayOrderId: string; razorpayPaymentId: string; razorpaySignature: string },
+  ) {
+    return this.billing.verifyPayment(tenantId, dto);
+  }
+
+  @Get('billing/auto-recharge')
+  @ApiOperation({ summary: 'Get auto-recharge configuration' })
+  getAutoRecharge(@CurrentTenant() tenantId: string) {
+    return this.billing.getAutoRechargeConfig(tenantId);
+  }
+
+  @Patch('billing/auto-recharge')
+  @ApiOperation({ summary: 'Configure auto-recharge' })
+  setAutoRecharge(
+    @CurrentTenant() tenantId: string,
+    @Body() dto: { walletType: string; enabled: boolean; threshold?: number; packId?: string },
+  ) {
+    return this.billing.setAutoRechargeConfig(tenantId, dto);
+  }
+
+  @Post('billing/packs/seed')
+  @ApiOperation({ summary: 'Seed default recharge packs (admin)' })
+  seedPacks() {
+    return this.billing.seedRechargePacks();
   }
 }

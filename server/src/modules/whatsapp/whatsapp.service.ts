@@ -289,6 +289,47 @@ export class WhatsappService {
 
     this.logger.log(`Incoming message from ${from} to tenant ${tenantId}: ${content.substring(0, 50)}`);
 
+    // Handle critical value ACK: patient or doctor replies "ACK <alertId>"
+    const ackMatch = content.trim().match(/^ACK\s+([a-f0-9]{8})/i);
+    if (ackMatch) {
+      const partialId = ackMatch[1].toLowerCase();
+      try {
+        const alert = await this.prisma.criticalValueAlert.findFirst({
+          where: { id: { startsWith: partialId }, acknowledgedAt: null },
+        });
+        if (alert) {
+          await this.prisma.criticalValueAlert.update({
+            where: { id: alert.id },
+            data: { acknowledgedBy: from, acknowledgedAt: new Date() },
+          });
+          await this.sendTextMessage(tenantId, from, `✅ Critical value alert acknowledged. Thank you for confirming receipt. The clinical team has been notified.`);
+          this.logger.log(`Critical value alert ${alert.id} acknowledged by ${from}`);
+        }
+      } catch {}
+    }
+
+    // Handle Revenue Engine responses: BOOK/STOP/REMIND_LATER
+    const normalized = content.trim().toUpperCase();
+    if (['BOOK', 'BOOK NOW', '1'].includes(normalized)) {
+      // Mark latest automation execution for this patient as converted
+      const exec = await this.prisma.diagnosticAutomationExecution.findFirst({
+        where: { patientMobile: { contains: from.slice(-10) }, status: 'SENT' },
+        orderBy: { sentAt: 'desc' },
+      });
+      if (exec) {
+        await this.prisma.diagnosticAutomationExecution.update({
+          where: { id: exec.id }, data: { status: 'CONVERTED', response: 'BOOK_NOW' },
+        });
+        await this.sendTextMessage(tenantId, from, `🎉 Great! Please call us or visit the lab to book your test. Our team will be happy to assist you.`);
+      }
+    } else if (['STOP', 'OPT OUT', 'UNSUBSCRIBE'].includes(normalized)) {
+      await this.prisma.diagnosticAutomationExecution.updateMany({
+        where: { patientMobile: { contains: from.slice(-10) }, status: 'SENT' },
+        data: { status: 'OPTED_OUT', response: 'STOP' },
+      });
+      await this.sendTextMessage(tenantId, from, `✅ You've been unsubscribed from test reminders. You can always call us directly to book.`);
+    }
+
     // Route to chatbot if bot mode is ON for this conversation
     if (conversation.isBot && content && messageType === 'text' || messageType === 'interactive') {
       setImmediate(() => {

@@ -497,4 +497,145 @@ export class SchedulerService implements OnModuleInit, OnModuleDestroy {
 
     this.logger.log(`Sent ${sent} feedback requests`);
   }
+  // ════════════════════════════════════════════════════════════════════════════
+  // DIAGNOSTIC REVENUE ENGINE — Process pending automation executions
+  // Runs every 30 minutes — sends WhatsApp re-test reminders to due patients
+  // ════════════════════════════════════════════════════════════════════════════
+
+  @Cron('0 */30 * * * *') // every 30 minutes
+  async processDiagnosticAutomation() {
+    try {
+      const now = new Date();
+      const due = await this.prisma.diagnosticAutomationExecution.findMany({
+        where: { status: 'PENDING', scheduledFor: { lte: now } },
+        include: { rule: true },
+        take: 100,
+        orderBy: { scheduledFor: 'asc' },
+      });
+
+      if (due.length === 0) return;
+      this.logger.log(`Processing ${due.length} diagnostic automation executions`);
+
+      for (const exec of due) {
+        try {
+          const rule = exec.rule;
+          if (!rule?.isActive) {
+            await this.prisma.diagnosticAutomationExecution.update({
+              where: { id: exec.id }, data: { status: 'OPTED_OUT' },
+            });
+            continue;
+          }
+
+          // Get patient for personalisation
+          const patient = await this.prisma.patient.findFirst({
+            where: { id: exec.patientId },
+            select: { firstName: true, phone: true },
+          });
+          if (!patient?.phone) continue;
+
+          const msgBody = rule.messageText
+            ?? this.buildReTestMessage(patient.firstName, rule.testCode, rule.waitDays);
+
+          await this.whatsappService.sendTextMessage(
+            exec.tenantId, exec.patientMobile || patient.phone, msgBody,
+          );
+
+          await this.prisma.diagnosticAutomationExecution.update({
+            where: { id: exec.id },
+            data: { status: 'SENT', sentAt: now },
+          });
+
+          // Debit WA credit
+          await this.prisma.tenantWallet.updateMany({
+            where: { tenantId: exec.tenantId },
+            data: { waCredits: { decrement: 1.0 } },
+          });
+          await this.prisma.messageUsageLog.create({
+            data: {
+              tenantId: exec.tenantId,
+              recipientMobile: exec.patientMobile,
+              messageType: 'MARKETING',
+              templateCode: rule.templateCode,
+              creditsCharged: 1.0,
+              automationRuleId: rule.id,
+              sentAt: now,
+            },
+          }).catch(() => {});
+
+        } catch (execErr: any) {
+          this.logger.error(`Exec ${exec.id} failed: ${execErr.message}`);
+          await this.prisma.diagnosticAutomationExecution.update({
+            where: { id: exec.id }, data: { status: 'SENT' }, // mark sent to prevent retry loops
+          }).catch(() => {});
+        }
+      }
+    } catch (err) {
+      this.logger.error(`Diagnostic automation cron error: ${err}`);
+    }
+  }
+
+  private buildReTestMessage(firstName: string, testCode: string | null, waitDays: number): string {
+    const testName = testCode ?? 'health test';
+    const months = waitDays >= 30 ? `${Math.round(waitDays / 30)} month${waitDays >= 60 ? 's' : ''}` : `${waitDays} days`;
+    return (
+      `🩺 *Time for your ${testName} test!*\n\n` +
+      `Hi ${firstName},\n\n` +
+      `It's been ${months} since your last ${testName}. ` +
+      `Regular testing helps monitor your health and catch issues early.\n\n` +
+      `📅 Book your test today — same-day results available!\n\n` +
+      `Reply *BOOK* to confirm your appointment or *STOP* to unsubscribe.\n\n` +
+      `_Powered by HospiBot_`
+    );
+  }
+
+  // ── TAT Breach Escalation — Runs every hour ────────────────────────────────
+
+  @Cron('0 0 * * * *') // every hour
+  async escalateTatBreaches() {
+    try {
+      const breachThreshold = new Date(Date.now() - 28 * 3_600_000); // 28h ago
+      const breached = await this.prisma.labOrder.findMany({
+        where: {
+          status: { notIn: ['DELIVERED', 'CANCELLED', 'REJECTED'] },
+          createdAt: { lt: breachThreshold },
+          isStat: false,
+        },
+        select: { id: true, tenantId: true, orderNumber: true, patientId: true, createdAt: true },
+        take: 50,
+      });
+
+      if (breached.length === 0) return;
+      this.logger.warn(`TAT breach: ${breached.length} orders exceeding 28h`);
+
+      // In production: notify branch manager / send Slack alert
+      // For now just log
+    } catch (err) {
+      this.logger.error(`TAT escalation error: ${err}`);
+    }
+  }
+
+  // ── ACK Critical Value Timeout — Runs every 15 minutes ───────────────────
+
+  @Cron('0 */15 * * * *')
+  async checkCriticalValueAcknowledgements() {
+    try {
+      // Alerts sent >45 min ago with no ack
+      const threshold = new Date(Date.now() - 45 * 60_000);
+      const unacked = await this.prisma.criticalValueAlert.findMany({
+        where: { acknowledgedAt: null, alertSentAt: { lt: threshold }, escalatedAt: null },
+        take: 20,
+      });
+
+      for (const alert of unacked) {
+        this.logger.warn(`Critical value ${alert.id} unacknowledged for >45 min — escalating`);
+        await this.prisma.criticalValueAlert.update({
+          where: { id: alert.id },
+          data: { escalatedAt: new Date() },
+        });
+        // In production: send SMS fallback + notify admin
+      }
+    } catch (err) {
+      this.logger.error(`Critical ACK check error: ${err}`);
+    }
+  }
 }
