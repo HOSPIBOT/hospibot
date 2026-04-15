@@ -186,10 +186,14 @@ enum AutomationAction {
 enum LabOrderStatus {
   ORDERED
   SAMPLE_COLLECTED
-  PROCESSING
-  COMPLETED
+  DISPATCHED
+  RECEIVED_AT_LAB
+  IN_PROGRESS
+  RESULTED
+  VALIDATED
   DELIVERED
   CANCELLED
+  REJECTED
 }
 
 // ==============================================
@@ -798,20 +802,49 @@ model Bed {
 model LabOrder {
   id              String         @id @default(uuid())
   tenantId        String         @map("tenant_id")
+  branchId        String?        @map("branch_id")
   patientId       String         @map("patient_id")
   doctorId        String?        @map("doctor_id")
   orderNumber     String         @map("order_number")
 
-  tests           Json           @default("[]") // [{testName, testCode, result, normalRange, unit, flag}]
+  // Legacy JSON tests field (kept for backward compat with existing data)
+  tests           Json           @default("[]")
+  // New 8-stage status aligned with blueprint
   status          LabOrderStatus @default(ORDERED)
 
+  // Extended order fields
+  collectionMode  String         @default("WALKIN") @map("collection_mode")   // WALKIN|HOME_COLLECTION|EXTERNAL
+  referringDoctor String?        @map("referring_doctor")
+  referringDoctorCrmId String?   @map("referring_doctor_crm_id")
+  corporateClientId String?      @map("corporate_client_id")
+  clinicalInfo    String?        @map("clinical_info")
+  isStat          Boolean        @default(false) @map("is_stat")
+  isAfterHours    Boolean        @default(false) @map("is_after_hours")
+  version         Int            @default(1)
+  statPremium     Int            @default(0) @map("stat_premium")   // paise
+
+  // Sample barcode (primary barcode for the order)
+  sampleBarcode   String?        @map("sample_barcode")
+
+  // Financial
+  totalAmount     Int            @default(0) @map("total_amount")   // paise
+  paidAmount      Int            @default(0) @map("paid_amount")    // paise
+
+  // Timestamps
   sampleCollectedAt DateTime?    @map("sample_collected_at")
+  dispatchedAt    DateTime?      @map("dispatched_at")
+  receivedAtLabAt DateTime?      @map("received_at_lab_at")
   reportedAt      DateTime?      @map("reported_at")
+  releasedAt      DateTime?      @map("released_at")
+
+  // Legacy report fields (kept for backward compat)
   reportUrl       String?        @map("report_url")
   reportDelivered Boolean        @default(false) @map("report_delivered")
+  waSent          Boolean        @default(false) @map("wa_sent")
 
+  remarks         String?
   notes           String?
-  priority        String         @default("normal") // normal, urgent, stat
+  priority        String         @default("normal")   // normal, urgent, stat
 
   createdAt       DateTime       @default(now()) @map("created_at")
   updatedAt       DateTime       @updatedAt @map("updated_at")
@@ -819,7 +852,16 @@ model LabOrder {
   tenant          Tenant         @relation(fields: [tenantId], references: [id])
   patient         Patient        @relation(fields: [patientId], references: [id])
 
+  // New normalized relations
+  orderItems      OrderItem[]
+  samples         Sample[]
+  diagnosticReports DiagnosticReport[]
+  criticalAlerts  CriticalValueAlert[]
+
   @@unique([tenantId, orderNumber])
+  @@index([tenantId, status])
+  @@index([tenantId, createdAt])
+  @@index([patientId])
   @@map("lab_orders")
 }
 
@@ -1430,3 +1472,647 @@ model PlatformAdmin {
 
   @@map("platform_admins")
 }
+
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║          DIAGNOSTIC PORTAL — COMPLETE SCHEMA EXTENSION                  ║
+// ║          Blueprint v2.1 — All 40 Sections Implemented                   ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
+
+// ── Enums ─────────────────────────────────────────────────────────────────
+
+enum SampleStatus {
+  REGISTERED
+  COLLECTED
+  DISPATCHED
+  RECEIVED
+  IN_PROGRESS
+  RESULTED
+  VALIDATED
+  RELEASED
+  REJECTED
+}
+
+enum ResultFlag {
+  NORMAL
+  LOW
+  HIGH
+  CRITICAL_LOW
+  CRITICAL_HIGH
+  TEXT
+  ABNORMAL
+}
+
+enum CollectionMode {
+  WALKIN
+  HOME_COLLECTION
+  EXTERNAL
+}
+
+enum DeliveryChannel {
+  WHATSAPP
+  SMS
+  EMAIL
+  DOWNLOAD
+}
+
+enum WalletType {
+  SUBSCRIPTION
+  WHATSAPP
+  SMS
+  STORAGE
+}
+
+enum WalletTxType {
+  CREDIT_TOPUP
+  CREDIT_PLAN_ALLOCATION
+  DEBIT_USAGE
+  DEBIT_RENEWAL
+  DEBIT_ADJUSTMENT
+  REFUND
+}
+
+// ── Order Items (individual test per order) ───────────────────────────────
+
+model OrderItem {
+  id            String      @id @default(uuid())
+  tenantId      String      @map("tenant_id")
+  labOrderId    String      @map("lab_order_id")
+  testId        String?     @map("test_id")        // FK to TestCatalog
+  testCode      String      @map("test_code")
+  testName      String      @map("test_name")
+  department    String?
+  status        SampleStatus @default(REGISTERED)
+  isOutsourced  Boolean     @default(false) @map("is_outsourced")
+  outsourcedTo  String?     @map("outsourced_to")  // reference lab name
+  isStat        Boolean     @default(false) @map("is_stat")
+  tatDeadline   DateTime?   @map("tat_deadline")
+  price         Int         @default(0)            // in paise
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+
+  labOrder      LabOrder    @relation(fields: [labOrderId], references: [id])
+  resultEntries ResultEntry[]
+
+  @@index([labOrderId])
+  @@index([tenantId, status])
+  @@map("order_items")
+}
+
+// ── Sample Tracking ───────────────────────────────────────────────────────
+
+model Sample {
+  id                String      @id @default(uuid())
+  tenantId          String      @map("tenant_id")
+  labOrderId        String      @map("lab_order_id")
+  barcode           String      @unique
+  tubeType          String?     @map("tube_type")   // EDTA, Plain, Fluoride, Urine
+  containerType     String?     @map("container_type")
+  collectedAt       DateTime?   @map("collected_at")
+  collectedBy       String?     @map("collected_by") // user_id
+  status            SampleStatus @default(REGISTERED)
+  rejectionReason   String?     @map("rejection_reason")
+  coldChainRequired Boolean     @default(false) @map("cold_chain_required")
+  storageLocation   String?     @map("storage_location") // rack-shelf-position
+  retainUntil       DateTime?   @map("retain_until")
+  disposedAt        DateTime?   @map("disposed_at")
+  photoUrl          String?     @map("photo_url")   // agent uploads tube photo
+  createdAt         DateTime    @default(now()) @map("created_at")
+  updatedAt         DateTime    @updatedAt @map("updated_at")
+
+  labOrder          LabOrder    @relation(fields: [labOrderId], references: [id])
+  statusLogs        SampleStatusLog[]
+
+  @@index([labOrderId])
+  @@index([barcode])
+  @@index([tenantId, status])
+  @@map("samples")
+}
+
+model SampleStatusLog {
+  id          String      @id @default(uuid())
+  sampleId    String      @map("sample_id")
+  fromStatus  String?     @map("from_status")
+  toStatus    String      @map("to_status")
+  userId      String?     @map("user_id")
+  notes       String?
+  location    String?
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  sample      Sample      @relation(fields: [sampleId], references: [id])
+
+  @@index([sampleId])
+  @@map("sample_status_logs")
+}
+
+// ── Reference Ranges ─────────────────────────────────────────────────────
+
+model ReferenceRange {
+  id             String   @id @default(uuid())
+  tenantId       String   @map("tenant_id")
+  testCode       String   @map("test_code")
+  ageMinYears    Int?     @map("age_min_years")
+  ageMaxYears    Int?     @map("age_max_years")
+  gender         String?  // MALE, FEMALE, ALL
+  lowerNormal    Float?   @map("lower_normal")
+  upperNormal    Float?   @map("upper_normal")
+  lowerCritical  Float?   @map("lower_critical")
+  upperCritical  Float?   @map("upper_critical")
+  unit           String?
+  interpretation String?  // text guide for pathologist
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@index([tenantId, testCode])
+  @@map("reference_ranges")
+}
+
+// ── Result Entry ─────────────────────────────────────────────────────────
+
+model ResultEntry {
+  id              String      @id @default(uuid())
+  tenantId        String      @map("tenant_id")
+  orderItemId     String      @map("order_item_id")
+  labOrderId      String      @map("lab_order_id")
+  numericValue    Float?      @map("numeric_value")
+  textValue       String?     @map("text_value")
+  unit            String?
+  flag            ResultFlag  @default(NORMAL)
+  lowerNormal     Float?      @map("lower_normal")
+  upperNormal     Float?      @map("upper_normal")
+  lowerCritical   Float?      @map("lower_critical")
+  upperCritical   Float?      @map("upper_critical")
+  interpretation  String?     // pathologist comment
+  isDraft         Boolean     @default(true) @map("is_draft")
+  enteredBy       String?     @map("entered_by")
+  enteredAt       DateTime?   @map("entered_at")
+  validatedBy     String?     @map("validated_by")
+  validatedAt     DateTime?   @map("validated_at")
+  signedBy        String?     @map("signed_by")
+  signedAt        DateTime?   @map("signed_at")
+  version         Int         @default(1)
+  amendReason     String?     @map("amend_reason")
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  orderItem       OrderItem   @relation(fields: [orderItemId], references: [id])
+  criticalAlerts  CriticalValueAlert[]
+
+  @@index([orderItemId])
+  @@index([labOrderId])
+  @@map("result_entries")
+}
+
+// ── Critical Value Alerts ─────────────────────────────────────────────────
+
+model CriticalValueAlert {
+  id              String    @id @default(uuid())
+  tenantId        String    @map("tenant_id")
+  resultEntryId   String    @map("result_entry_id")
+  labOrderId      String    @map("lab_order_id")
+  patientId       String    @map("patient_id")
+  doctorId        String?   @map("doctor_id")
+  testCode        String    @map("test_code")
+  testName        String    @map("test_name")
+  criticalValue   String    @map("critical_value")
+  threshold       String
+  alertSentAt     DateTime? @map("alert_sent_at")
+  acknowledgedBy  String?   @map("acknowledged_by")
+  acknowledgedAt  DateTime? @map("acknowledged_at")
+  escalatedTo     String?   @map("escalated_to")
+  escalatedAt     DateTime? @map("escalated_at")
+  smsFallbackSent Boolean   @default(false) @map("sms_fallback_sent")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  resultEntry     ResultEntry @relation(fields: [resultEntryId], references: [id])
+
+  @@index([labOrderId])
+  @@index([tenantId])
+  @@map("critical_value_alerts")
+}
+
+// ── Reports ───────────────────────────────────────────────────────────────
+
+model DiagnosticReport {
+  id              String    @id @default(uuid())
+  tenantId        String    @map("tenant_id")
+  labOrderId      String    @map("lab_order_id")
+  pdfUrl          String?   @map("pdf_url")
+  s3Key           String?   @map("s3_key")
+  generatedAt     DateTime? @map("generated_at")
+  releasedAt      DateTime? @map("released_at")
+  signedBy        String?   @map("signed_by")
+  signatureHash   String?   @map("signature_hash")
+  reportType      String    @default("lab") @map("report_type") // lab|scan|comprehensive
+  version         Int       @default(1)
+  isAmended       Boolean   @default(false) @map("is_amended")
+  amendReason     String?   @map("amend_reason")
+  supersedesId    String?   @map("supersedes_id")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  labOrder        LabOrder  @relation(fields: [labOrderId], references: [id])
+  deliveries      ReportDelivery[]
+
+  @@index([labOrderId])
+  @@index([tenantId])
+  @@map("diagnostic_reports")
+}
+
+model ReportDelivery {
+  id              String          @id @default(uuid())
+  tenantId        String          @map("tenant_id")
+  reportId        String          @map("report_id")
+  labOrderId      String          @map("lab_order_id")
+  channel         DeliveryChannel
+  recipientType   String          @map("recipient_type") // patient|doctor|corporate
+  recipientMobile String?         @map("recipient_mobile")
+  deliveredAt     DateTime?       @map("delivered_at")
+  readAt          DateTime?       @map("read_at")
+  status          String          @default("PENDING") // PENDING|SENT|DELIVERED|READ|FAILED
+  failureReason   String?         @map("failure_reason")
+  createdAt       DateTime        @default(now()) @map("created_at")
+
+  report          DiagnosticReport @relation(fields: [reportId], references: [id])
+
+  @@index([reportId])
+  @@index([tenantId])
+  @@map("report_deliveries")
+}
+
+// ── Collection Agents & Runners ────────────────────────────────────────────
+
+model CollectionAgent {
+  id              String    @id @default(uuid())
+  tenantId        String    @map("tenant_id")
+  userId          String    @map("user_id")
+  zones           Json      @default("[]")   // array of zone names/pincodes
+  vehicleType     String?   @map("vehicle_type") // bike|car|bicycle
+  dailyCapacity   Int       @default(20) @map("daily_capacity")
+  earningsRate    Int       @default(5000) @map("earnings_rate") // paise per collection
+  isActive        Boolean   @default(true) @map("is_active")
+  currentLat      Float?    @map("current_lat")
+  currentLng      Float?    @map("current_lng")
+  lastLocationAt  DateTime? @map("last_location_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  @@index([tenantId])
+  @@map("collection_agents")
+}
+
+model Runner {
+  id            String    @id @default(uuid())
+  tenantId      String    @map("tenant_id")
+  userId        String    @map("user_id")
+  vehicleNumber String?   @map("vehicle_number")
+  isActive      Boolean   @default(true) @map("is_active")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  manifests     RunnerManifest[]
+
+  @@index([tenantId])
+  @@map("runners")
+}
+
+model RunnerManifest {
+  id             String    @id @default(uuid())
+  tenantId       String    @map("tenant_id")
+  runnerId       String    @map("runner_id")
+  routeDate      DateTime  @map("route_date")
+  pickupPoints   Json      @default("[]") @map("pickup_points") // [{branchId, address, expectedCount}]
+  expectedCount  Int       @default(0) @map("expected_count")
+  actualCount    Int       @default(0) @map("actual_count")
+  status         String    @default("PENDING") // PENDING|IN_TRANSIT|DELIVERED
+  departedAt     DateTime? @map("departed_at")
+  arrivedAt      DateTime? @map("arrived_at")
+  notes          String?
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  runner         Runner    @relation(fields: [runnerId], references: [id])
+
+  @@index([tenantId, routeDate])
+  @@map("runner_manifests")
+}
+
+// ── Doctor CRM ────────────────────────────────────────────────────────────
+
+model DoctorCRM {
+  id                String    @id @default(uuid())
+  tenantId          String    @map("tenant_id")
+  doctorId          String?   @map("doctor_id") // FK to Doctor table if exists
+  name              String
+  specialty         String?
+  clinicName        String?   @map("clinic_name")
+  clinicAddress     String?   @map("clinic_address")
+  mobile            String
+  mciNumber         String?   @map("mci_number")
+  email             String?
+  rateCardId        String?   @map("rate_card_id")
+  incentiveRate     Int?      @map("incentive_rate") // paise per referral
+  referralVolumeMtd Int       @default(0) @map("referral_volume_mtd")
+  lastContactDate   DateTime? @map("last_contact_date")
+  notes             String?
+  isActive          Boolean   @default(true) @map("is_active")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  @@index([tenantId, mobile])
+  @@map("doctor_crm")
+}
+
+// ── Corporate Clients ─────────────────────────────────────────────────────
+
+model CorporateClient {
+  id              String    @id @default(uuid())
+  tenantId        String    @map("tenant_id")
+  companyName     String    @map("company_name")
+  gstin           String?
+  billingAddress  String?   @map("billing_address")
+  hrContactName   String?   @map("hr_contact_name")
+  hrContactMobile String    @map("hr_contact_mobile")
+  hrContactEmail  String?   @map("hr_contact_email")
+  rateCardId      String?   @map("rate_card_id")
+  creditLimit     Int       @default(0) @map("credit_limit") // paise
+  creditDays      Int       @default(30) @map("credit_days")
+  contractExpiry  DateTime? @map("contract_expiry")
+  isActive        Boolean   @default(true) @map("is_active")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@index([tenantId])
+  @@map("corporate_clients")
+}
+
+// ── Reagent Inventory ─────────────────────────────────────────────────────
+
+model ReagentInventory {
+  id              String    @id @default(uuid())
+  tenantId        String    @map("tenant_id")
+  branchId        String?   @map("branch_id")
+  name            String
+  manufacturer    String?
+  lotNumber       String?   @map("lot_number")
+  expiryDate      DateTime? @map("expiry_date")
+  storageTemp     String?   @map("storage_temp") // 2-8C, -20C, RT
+  currentStock    Float     @default(0) @map("current_stock")
+  minStockLevel   Float     @default(0) @map("min_stock_level")
+  unit            String    @default("units")
+  linkedTestCodes Json      @default("[]") @map("linked_test_codes")
+  supplier        String?
+  isActive        Boolean   @default(true) @map("is_active")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@index([tenantId])
+  @@index([tenantId, expiryDate])
+  @@map("reagent_inventory")
+}
+
+model ReagentTransaction {
+  id              String    @id @default(uuid())
+  tenantId        String    @map("tenant_id")
+  reagentId       String    @map("reagent_id")
+  txType          String    @map("tx_type") // IN|OUT|ADJUST|DISCARD
+  quantity        Float
+  balanceAfter    Float     @map("balance_after")
+  referenceType   String?   @map("reference_type") // result_entry|manual|receive
+  referenceId     String?   @map("reference_id")
+  userId          String?   @map("user_id")
+  notes           String?
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  @@index([reagentId])
+  @@index([tenantId])
+  @@map("reagent_transactions")
+}
+
+// ── Equipment Log ─────────────────────────────────────────────────────────
+
+model EquipmentLog {
+  id              String    @id @default(uuid())
+  tenantId        String    @map("tenant_id")
+  branchId        String?   @map("branch_id")
+  equipmentName   String    @map("equipment_name")
+  model           String?
+  serialNumber    String?   @map("serial_number")
+  department      String?
+  eventType       String    @map("event_type") // BREAKDOWN|MAINTENANCE|CALIBRATION|QC|INSTALLATION
+  eventDate       DateTime  @map("event_date")
+  resolvedAt      DateTime? @map("resolved_at")
+  reportedBy      String?   @map("reported_by")
+  description     String?
+  downtimeHours   Float?    @map("downtime_hours")
+  nextCalibration DateTime? @map("next_calibration")
+  certificateUrl  String?   @map("certificate_url")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  @@index([tenantId])
+  @@map("equipment_logs")
+}
+
+// ── QC Results ────────────────────────────────────────────────────────────
+
+model QcResult {
+  id              String    @id @default(uuid())
+  tenantId        String    @map("tenant_id")
+  branchId        String?   @map("branch_id")
+  testCode        String    @map("test_code")
+  analyserId      String?   @map("analyser_id")
+  lotNumber       String?   @map("lot_number")
+  controlLevel    String    @map("control_level") // NORMAL|ABNORMAL|CRITICAL
+  expectedValue   Float     @map("expected_value")
+  actualValue     Float     @map("actual_value")
+  mean            Float?
+  sd              Float?
+  cvPercent       Float?    @map("cv_percent")
+  westgardFlags   Json      @default("[]") @map("westgard_flags")
+  isPass          Boolean   @default(true) @map("is_pass")
+  runDate         DateTime  @map("run_date")
+  technicianId    String?   @map("technician_id")
+  capaId          String?   @map("capa_id")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  @@index([tenantId, testCode])
+  @@index([tenantId, runDate])
+  @@map("qc_results")
+}
+
+// ── Automation Rules (Revenue Engine) ─────────────────────────────────────
+
+model DiagnosticAutomationRule {
+  id              String    @id @default(uuid())
+  tenantId        String    @map("tenant_id")
+  name            String
+  testCode        String?   @map("test_code")   // which test triggers this
+  triggerEvent    String    @map("trigger_event") // TEST_COMPLETED|ABNORMAL_RESULT|ANNIVERSARY
+  conditionJson   Json?     @map("condition_json") // {ageMin, ageMax, valueAbove, valueBelow, gender}
+  waitDays        Int       @default(90) @map("wait_days")
+  templateCode    String    @map("template_code") // T15, T16, etc.
+  messageText     String?   @map("message_text")
+  isActive        Boolean   @default(true) @map("is_active")
+  createdBy       String?   @map("created_by")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  executions      DiagnosticAutomationExecution[]
+
+  @@index([tenantId])
+  @@map("diagnostic_automation_rules")
+}
+
+model DiagnosticAutomationExecution {
+  id              String    @id @default(uuid())
+  tenantId        String    @map("tenant_id")
+  ruleId          String    @map("rule_id")
+  patientId       String    @map("patient_id")
+  patientMobile   String    @map("patient_mobile")
+  triggeredAt     DateTime  @map("triggered_at")
+  scheduledFor    DateTime  @map("scheduled_for")
+  sentAt          DateTime? @map("sent_at")
+  response        String?   // BOOK_NOW|REMIND_LATER|STOP|NO_RESPONSE
+  convertedOrderId String?  @map("converted_order_id")
+  status          String    @default("PENDING") // PENDING|SENT|CONVERTED|OPTED_OUT
+
+  rule            DiagnosticAutomationRule @relation(fields: [ruleId], references: [id])
+
+  @@index([tenantId, status])
+  @@index([scheduledFor])
+  @@map("diagnostic_automation_executions")
+}
+
+// ── Tenant Wallets & Billing ───────────────────────────────────────────────
+
+model TenantWallet {
+  id                      String    @id @default(uuid())
+  tenantId                String    @unique @map("tenant_id")
+  subscriptionBalancePaise Int      @default(0) @map("subscription_balance_paise")
+  waCredits               Float     @default(0) @map("wa_credits")    // fractional
+  smsCredits              Int       @default(0) @map("sms_credits")
+  storageGbPurchased      Float     @default(0) @map("storage_gb_purchased")
+  autoRechargeWaEnabled   Boolean   @default(false) @map("auto_recharge_wa_enabled")
+  autoRechargeWaThreshold Int       @default(500) @map("auto_recharge_wa_threshold")
+  autoRechargeWaPackId    String?   @map("auto_recharge_wa_pack_id")
+  autoRechargePmId        String?   @map("auto_recharge_pm_id") // payment method id
+  updatedAt               DateTime  @updatedAt @map("updated_at")
+
+  transactions            WalletTransaction[]
+
+  @@map("tenant_wallets")
+}
+
+model WalletTransaction {
+  id              String        @id @default(uuid())
+  tenantId        String        @map("tenant_id")
+  walletId        String        @map("wallet_id")
+  walletType      WalletType    @map("wallet_type")
+  txType          WalletTxType  @map("tx_type")
+  amount          Float
+  balanceBefore   Float         @map("balance_before")
+  balanceAfter    Float         @map("balance_after")
+  referenceType   String?       @map("reference_type")
+  referenceId     String?       @map("reference_id")
+  description     String
+  createdAt       DateTime      @default(now()) @map("created_at")
+
+  wallet          TenantWallet  @relation(fields: [walletId], references: [id])
+
+  @@index([tenantId, walletType])
+  @@index([createdAt])
+  @@map("wallet_transactions")
+}
+
+model RechargePack {
+  id              String    @id @default(uuid())
+  packType        WalletType @map("pack_type")
+  name            String
+  creditsOrUnits  Float     @map("credits_or_units")
+  priceInclGst    Int       @map("price_incl_gst")   // in paise
+  priceExclGst    Int       @map("price_excl_gst")   // in paise
+  gstRate         Float     @default(0.18) @map("gst_rate")
+  isActive        Boolean   @default(true) @map("is_active")
+  sortOrder       Int       @default(0) @map("sort_order")
+  planRestriction Json?     @map("plan_restriction") // null = all plans
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@map("recharge_packs")
+}
+
+model HospibotInvoice {
+  id              String    @id @default(uuid())
+  invoiceNumber   String    @unique @map("invoice_number") // HB-INV-YYYY-MM-NNNN
+  tenantId        String    @map("tenant_id")
+  invoiceType     String    @map("invoice_type") // SUBSCRIPTION|WA_TOPUP|SMS_TOPUP|STORAGE|UPGRADE
+  lineItems       Json      @map("line_items")
+  subtotalPaise   Int       @map("subtotal_paise")
+  gstPaise        Int       @map("gst_paise")
+  totalPaise      Int       @map("total_paise")
+  hospibotGstin   String?   @map("hospibot_gstin")
+  tenantGstin     String?   @map("tenant_gstin")
+  irn             String?
+  paidAt          DateTime? @map("paid_at")
+  paymentId       String?   @map("payment_id")
+  pdfUrl          String?   @map("pdf_url")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  @@index([tenantId])
+  @@map("hospibot_invoices")
+}
+
+model RazorpayPayment {
+  id              String    @id @default(uuid())
+  tenantId        String    @map("tenant_id")
+  razorpayOrderId String    @unique @map("razorpay_order_id")
+  razorpayPaymentId String? @unique @map("razorpay_payment_id")
+  razorpaySignature String? @map("razorpay_signature")
+  amountPaise     Int       @map("amount_paise")
+  currency        String    @default("INR")
+  packId          String?   @map("pack_id")
+  walletType      WalletType? @map("wallet_type")
+  status          String    @default("CREATED") // CREATED|CAPTURED|FAILED|REFUNDED
+  failureReason   String?   @map("failure_reason")
+  paymentMethod   String?   @map("payment_method") // upi|card|netbanking
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@index([tenantId])
+  @@map("razorpay_payments")
+}
+
+model SavedPaymentMethod {
+  id              String    @id @default(uuid())
+  tenantId        String    @map("tenant_id")
+  methodType      String    @map("method_type") // UPI_AUTOPAY|CARD
+  razorpayToken   String?   @map("razorpay_token")
+  mandateId       String?   @map("mandate_id")
+  displayName     String    @map("display_name") // "GPay — 9876543210@okaxis"
+  isDefault       Boolean   @default(false) @map("is_default")
+  expiresAt       DateTime? @map("expires_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  @@index([tenantId])
+  @@map("saved_payment_methods")
+}
+
+model MessageUsageLog {
+  id              String          @id @default(uuid())
+  tenantId        String          @map("tenant_id")
+  branchId        String?         @map("branch_id")
+  messageType     String          @map("message_type") // UTILITY|MARKETING|AUTHENTICATION|SERVICE
+  templateCode    String?         @map("template_code")
+  recipientMobile String          @map("recipient_mobile")
+  direction       String          @default("OUTBOUND")
+  creditsCharged  Float           @map("credits_charged")
+  waDeliveryStatus String?        @map("wa_delivery_status") // SENT|DELIVERED|READ|FAILED
+  failureReason   String?         @map("failure_reason")
+  smsFallbackSent Boolean         @default(false) @map("sms_fallback_sent")
+  labOrderId      String?         @map("lab_order_id")
+  automationRuleId String?        @map("automation_rule_id")
+  sentAt          DateTime        @default(now()) @map("sent_at")
+
+  @@index([tenantId, messageType])
+  @@index([tenantId, sentAt])
+  @@map("message_usage_logs")
+}
+
+// ── Lab Orders — extended relations ────────────────────────────────────────
+// (extends existing LabOrder model via separate migration)
+

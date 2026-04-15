@@ -29,6 +29,7 @@ import { VisitModule } from './modules/visit/visit.module';
 import { BedModule } from './modules/bed/bed.module';
 import { FhirModule } from './modules/fhir/fhir.module';
 import { SubscriptionModule } from './modules/subscription/subscription.module';
+import { DiagnosticModule } from './modules/diagnostic/diagnostic.module';
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { SubscriptionModule } from './modules/subscription/subscription.module';
     SchedulerModule,
     VaultModule,
     LabModule,
+    DiagnosticModule,
     PharmacyModule,
     MarketplaceModule,
     SecurityModule,

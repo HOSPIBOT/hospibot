@@ -66,14 +66,29 @@ const NAV_BY_PORTAL: Record<string, NavItem[]> = {
     { href: 'settings',     label: 'Settings',       icon: Settings,        always: true },
   ],
   diagnostic: [
-    { href: 'dashboard',   label: 'Dashboard',       icon: LayoutDashboard, always: true },
-    { href: 'whatsapp',    label: 'WhatsApp Inbox',  icon: MessageSquare,   badge: true, always: true },
-    { href: 'lab-orders',  label: 'Lab Orders',      icon: FlaskConical,    always: true },
-    { href: 'collection',  label: 'Home Collection', icon: Home,            always: true },
-    { href: 'patients',    label: 'Patients',        icon: Users,           always: true },
-    { href: 'catalog',     label: 'Test Catalog',    icon: ClipboardList,   always: true },
-    { href: 'analytics',   label: 'Analytics',       icon: BarChart3,       always: true },
-    { href: 'settings',    label: 'Settings',        icon: Settings,        always: true },
+    // ── Core Operations ──
+    { href: 'dashboard',        label: 'Dashboard',          icon: LayoutDashboard, always: true },
+    { href: 'lab-orders',       label: 'Lab Orders',         icon: FlaskConical,    always: true },
+    { href: 'lab-orders/worklist', label: 'Worklist',        icon: ClipboardList,   always: true },
+    { href: 'collection',       label: 'Home Collection',    icon: Home,            always: true },
+    { href: 'patients',         label: 'Patients',           icon: Users,           always: true },
+    // ── Lab Tools ──
+    { href: 'catalog',          label: 'Test Catalog',       icon: ClipboardList,   always: true },
+    { href: 'results',          label: 'Result Entry',       icon: Activity,        always: true },
+    { href: 'qc',               label: 'Quality Control',    icon: Shield,          always: true },
+    { href: 'inventory',        label: 'Reagent Inventory',  icon: Package,         always: true },
+    // ── CRM & Revenue ──
+    { href: 'crm/doctors',      label: 'Doctor CRM',         icon: Stethoscope,     always: true },
+    { href: 'crm/corporates',   label: 'Corporate Clients',  icon: Building2,       always: true },
+    { href: 'automation',       label: 'Revenue Engine',     icon: Zap,             always: true },
+    // ── Communication ──
+    { href: 'whatsapp',         label: 'WhatsApp Inbox',     icon: MessageSquare,   badge: true, always: true },
+    // ── Finance ──
+    { href: 'billing',          label: 'Billing & Wallet',   icon: IndianRupee,     always: true },
+    // ── Reports & Analytics ──
+    { href: 'analytics',        label: 'Analytics',          icon: BarChart3,       always: true },
+    // ── Settings ──
+    { href: 'settings',         label: 'Settings',           icon: Settings,        always: true },
   ],
   pharmacy: [
     { href: 'dashboard',       label: 'Dashboard',       icon: LayoutDashboard, always: true },
