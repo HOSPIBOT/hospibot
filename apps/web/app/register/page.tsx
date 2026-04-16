@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { Suspense } from 'react';
 import { Eye, EyeOff, CheckCircle2, ArrowLeft, Send, Phone } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { api } from '@/lib/api';
@@ -148,10 +149,8 @@ function ProgressBar({ step, total, color }: { step:number; total:number; color:
 }
 
 /* ─── MAIN COMPONENT ─────────────────────────────────────────────────────────── */
-export default function RegisterPage() {
+function RegisterWizard() {
   const router = useRouter();
-  const params = useSearchParams();
-
   const [step, setStep] = useState(0);      // 0=portal, 1=subtype, 2=org, 3=admin
   const [dir, setDir] = useState(1);        // 1=forward, -1=back
   const [portal, setPortal] = useState('');
@@ -505,5 +504,13 @@ export default function RegisterPage() {
         ::-webkit-scrollbar { width:5px; } ::-webkit-scrollbar-thumb { background:#CBD5E1; border-radius:99px; }
       `}</style>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"Poppins,sans-serif",color:"#64748B"}}>Loading…</div>}>
+      <RegisterWizard />
+    </Suspense>
   );
 }
