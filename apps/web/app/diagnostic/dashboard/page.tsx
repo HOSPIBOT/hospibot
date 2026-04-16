@@ -146,6 +146,27 @@ export default function DiagnosticDashboard() {
         </button>
       </div>
 
+      {/* Wallet low balance warning */}
+      {s.walletCredits !== undefined && s.walletCredits < 200 && (
+        <div className="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-2xl px-5 py-3.5">
+          <div className="flex items-center gap-3">
+            <span className="text-amber-600">⚠️</span>
+            <div>
+              <p className="text-sm font-bold text-amber-900">
+                Low WhatsApp Credits — {Math.round(s.walletCredits)} remaining
+              </p>
+              <p className="text-xs text-amber-600">
+                {s.walletCredits < 50 ? 'Critical: sending may pause soon' : 'Recharge to avoid report delivery interruption'}
+              </p>
+            </div>
+          </div>
+          <a href="/diagnostic/billing"
+            className="text-xs font-bold text-amber-900 bg-amber-200 hover:bg-amber-300 px-4 py-2 rounded-xl transition-colors whitespace-nowrap">
+            Recharge Now →
+          </a>
+        </div>
+      )}
+
       {/* Critical value alert */}
       {(s.criticalUnacked ?? 0) > 0 && (
         <Link href="/diagnostic/lab-orders?critical=true">

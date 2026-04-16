@@ -580,4 +580,10 @@ export class DiagnosticController {
   ) {
     return this.svc.updateRateCard(tenantId, id, dto);
   }
+
+  @Post('automation/rules/seed')
+  @ApiOperation({ summary: 'Seed 7 default Revenue Engine rules for this tenant' })
+  seedAutomationRules(@CurrentTenant() tenantId: string) {
+    return this.svc.seedDefaultAutomationRules(tenantId);
+  }
 }

@@ -166,12 +166,11 @@ export default function AutomationPage() {
   const seedDefaults = async () => {
     setSeeding(true);
     try {
-      for (const rule of DEFAULT_RULES) {
-        await api.post('/diagnostic/automation/rules', rule).catch(() => {});
-      }
-      toast.success(`${DEFAULT_RULES.length} default rules created!`);
+      const res = await api.post('/diagnostic/automation/rules/seed');
+      toast.success(`${res.data?.seeded ?? DEFAULT_RULES.length} Revenue Engine rules created!`);
       setRefreshKey(k => k + 1);
-    } finally { setSeeding(false); }
+    } catch { toast.error('Seed failed'); }
+    finally { setSeeding(false); }
   };
 
   const activeRules = rules.filter(r => r.isActive).length;

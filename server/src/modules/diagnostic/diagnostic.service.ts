@@ -1477,6 +1477,32 @@ export class DiagnosticService {
   }
 
 
+
+  async seedDefaultAutomationRules(tenantId: string) {
+    const DEFAULT_RULES = [
+      { name: 'Diabetic Follow-Up (HbA1c)',  testCode: 'HBA1C',   triggerEvent: 'TEST_COMPLETED', waitDays: 90,  templateCode: 'T15', messageText: null },
+      { name: 'Thyroid Annual Check',          testCode: 'THYROID', triggerEvent: 'TEST_COMPLETED', waitDays: 365, templateCode: 'T17', messageText: null },
+      { name: 'Lipid Profile Follow-Up',       testCode: 'LIPID',   triggerEvent: 'TEST_COMPLETED', waitDays: 180, templateCode: 'T15', messageText: null },
+      { name: 'Abnormal HbA1c Alert',          testCode: 'HBA1C',   triggerEvent: 'ABNORMAL_RESULT',waitDays: 30,  templateCode: 'T16', messageText: null },
+      { name: 'Annual CBC Reminder',           testCode: 'CBC',     triggerEvent: 'TEST_COMPLETED', waitDays: 365, templateCode: 'T17', messageText: null },
+      { name: 'Vitamin D Yearly',              testCode: 'VITD',    triggerEvent: 'TEST_COMPLETED', waitDays: 365, templateCode: 'T17', messageText: null },
+      { name: 'Birthday Health Offer',         testCode: null,      triggerEvent: 'BIRTHDAY',       waitDays: 0,   templateCode: 'T20', messageText: null },
+    ];
+    let seeded = 0;
+    for (const rule of DEFAULT_RULES) {
+      const exists = await this.prisma.diagnosticAutomationRule.findFirst({
+        where: { tenantId, name: rule.name },
+      });
+      if (!exists) {
+        await this.prisma.diagnosticAutomationRule.create({
+          data: { tenantId, ...rule, isActive: false },
+        });
+        seeded++;
+      }
+    }
+    return { seeded };
+  }
+
   // ════════════════════════════════════════════════════════════════════════════
   // RATE CARDS
   // ════════════════════════════════════════════════════════════════════════════
