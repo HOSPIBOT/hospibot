@@ -355,11 +355,11 @@ export class SuperAdminService {
     // Audit log
     await this.prisma.auditLog.create({
       data: {
-        userId: adminId, tenantId: null,
+        userId: adminId, tenantId: 'PLATFORM',
         action: 'ADMIN_WALLET_CREDIT',
-        resource: 'TenantWallet',
-        resourceId: tenantId,
-        newValues: { walletType, amount, reason, tenantId },
+        entity: 'TenantWallet',
+        entityId: tenantId,
+        changes: { walletType, amount, reason },
       },
     }).catch(() => {});
 

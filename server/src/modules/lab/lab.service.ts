@@ -44,9 +44,11 @@ const DEFAULT_TESTS = [
 
 const VALID_TRANSITIONS: Record<string, string[]> = {
   ORDERED:          ['SAMPLE_COLLECTED', 'CANCELLED'],
-  SAMPLE_COLLECTED: ['PROCESSING', 'CANCELLED'],
-  PROCESSING:       ['COMPLETED', 'CANCELLED'],
-  COMPLETED:        ['DELIVERED'],
+  SAMPLE_COLLECTED: ['IN_PROGRESS', 'CANCELLED'],
+  IN_PROGRESS:      ['RESULTED', 'CANCELLED'],
+  RESULTED:         ['DELIVERED'],
+  COMPLETED:        ['DELIVERED'], // legacy
+  PROCESSING:       ['IN_PROGRESS', 'COMPLETED', 'CANCELLED'], // legacy
   DELIVERED:        [],
   CANCELLED:        [],
 };
@@ -227,7 +229,7 @@ export class LabService {
 
     const updateData: any = { status: newStatus };
     if (newStatus === 'SAMPLE_COLLECTED') updateData.sampleCollectedAt = new Date();
-    if (newStatus === 'COMPLETED') updateData.reportedAt = new Date();
+    if (['COMPLETED', 'RESULTED', 'VALIDATED', 'DELIVERED'].includes(newStatus)) updateData.reportedAt = new Date();
 
     const updated = await this.prisma.labOrder.update({
       where: { id },
@@ -322,8 +324,8 @@ export class LabService {
       const [todayOrders, pending, processing, completed, urgent, revenue] = await Promise.all([
         this.prisma.labOrder.count({ where: { tenantId, createdAt: { gte: today, lte: todayEnd } } }),
         this.prisma.labOrder.count({ where: { tenantId, status: { in: ['ORDERED', 'SAMPLE_COLLECTED'] } } }),
-        this.prisma.labOrder.count({ where: { tenantId, status: 'PROCESSING' } }),
-        this.prisma.labOrder.count({ where: { tenantId, status: { in: ['COMPLETED', 'DELIVERED'] }, reportedAt: { gte: today } } }),
+        this.prisma.labOrder.count({ where: { tenantId, status: 'IN_PROGRESS' as any } }),
+        this.prisma.labOrder.count({ where: { tenantId, status: { in: ['VALIDATED', 'DELIVERED'] as any[] }, reportedAt: { gte: today } } }),
         this.prisma.labOrder.count({ where: { tenantId, priority: 'urgent', status: { not: 'CANCELLED' } } }),
         this.prisma.invoice.aggregate({
           where: { tenantId, createdAt: { gte: today } },
@@ -362,7 +364,7 @@ export class LabService {
       const key = o.createdAt.toISOString().split('T')[0];
       if (byDate[key]) {
         byDate[key].orders++;
-        if (['COMPLETED', 'DELIVERED'].includes(o.status)) byDate[key].completed++;
+        if (['VALIDATED', 'DELIVERED', 'RESULTED'].includes(o.status)) byDate[key].completed++;
       }
     }
 

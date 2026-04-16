@@ -220,8 +220,10 @@ export class DiagnosticReportService {
   private async htmlToPdf(html: string): Promise<Buffer | null> {
     try {
       // Try to use puppeteer if available
-      const puppeteer = await import('puppeteer-core').catch(() => null)
-        ?? await import('puppeteer' as any).catch(() => null);
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      let puppeteer: any = null;
+      try { puppeteer = require('puppeteer-core'); } catch {}
+      if (!puppeteer) { try { puppeteer = require('puppeteer'); } catch {} }
 
       if (!puppeteer) {
         this.logger.warn('Puppeteer not installed — PDF skipped');

@@ -184,6 +184,10 @@ enum AutomationAction {
 }
 
 enum LabOrderStatus {
+  // ── Legacy (clinical portal — still in DB) ──
+  PROCESSING     // = old IN_PROGRESS
+  COMPLETED      // = old VALIDATED/RESULTED
+  // ── Diagnostic 8-stage lifecycle ──
   ORDERED
   SAMPLE_COLLECTED
   DISPATCHED

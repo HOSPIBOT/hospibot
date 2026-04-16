@@ -403,7 +403,7 @@ export class ChatbotService {
     }
 
     const reports = await this.prisma.labOrder.findMany({
-      where: { tenantId, patientId, status: { in: ['COMPLETED', 'DELIVERED'] } },
+      where: { tenantId, patientId, status: { in: ['DELIVERED', 'VALIDATED', 'RESULTED'] } },
       orderBy: { createdAt: 'desc' },
       take: 5,
     });
