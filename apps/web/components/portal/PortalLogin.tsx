@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuthStore } from '@/lib/store';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, ArrowRight } from 'lucide-react';
