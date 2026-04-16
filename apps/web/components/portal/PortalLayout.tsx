@@ -89,6 +89,8 @@ const NAV_BY_PORTAL: Record<string, NavItem[]> = {
     { href: 'analytics',        label: 'Analytics',          icon: BarChart3,       always: true },
     // ── Team ──
     { href: 'staff',            label: 'Staff & Users',      icon: UserCheck,       always: true },
+    // ── Compliance ──
+    { href: 'equipment',        label: 'Equipment Log',      icon: Shield,          always: true },
     // ── Settings ──
     { href: 'settings',         label: 'Settings',           icon: Settings,        always: true },
   ],

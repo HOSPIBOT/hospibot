@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { api } from '@/lib/api';
 import { formatINR } from '@/lib/utils';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import toast from 'react-hot-toast';
 import {
   Search, Plus, X, Loader2, User, FlaskConical, CreditCard,
@@ -206,11 +206,20 @@ function TestSearch({ selected, onAdd, onRemove }: {
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function NewOrderPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [step, setStep] = useState<Step>(1);
   const [submitting, setSubmitting] = useState(false);
 
   // Patient state
   const [patient, setPatient] = useState<any>(null);
+
+  // Pre-fill patient if patientId is in URL
+  useEffect(() => {
+    const pid = searchParams?.get('patientId');
+    if (pid && !patient) {
+      api.get('/patients/' + pid).then(r => setPatient(r.data)).catch(() => {});
+    }
+  }, []);
   const [isNewPatient, setIsNewPatient] = useState(false);
   const [newPatientForm, setNewPatientForm] = useState({
     firstName: '', lastName: '', phone: '', gender: 'Male',

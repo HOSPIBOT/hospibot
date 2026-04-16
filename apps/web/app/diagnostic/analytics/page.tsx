@@ -237,6 +237,66 @@ export default function DiagnosticAnalyticsPage() {
           </div>
         ))}
       </div>
+
+      {/* Test volume by department + TAT */}
+      <div className="grid grid-cols-2 gap-5">
+        {/* TAT Analysis */}
+        <div className="bg-white rounded-2xl border border-slate-100 p-5">
+          <h3 className="font-bold text-slate-900 mb-4">Turnaround Time Analysis</h3>
+          <div className="space-y-3">
+            {[
+              { label: '< 4 hours',    pct: 22, color: '#10B981' },
+              { label: '4 – 12 hours', pct: 48, color: '#1E3A5F' },
+              { label: '12 – 24 hours',pct: 20, color: '#F59E0B' },
+              { label: '> 24 hours',   pct: 10, color: '#EF4444' },
+            ].map(t => (
+              <div key={t.label} className="flex items-center gap-3">
+                <span className="text-xs text-slate-600 w-28 flex-shrink-0">{t.label}</span>
+                <div className="flex-1 h-3 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-full rounded-full transition-all" style={{ width: `${t.pct}%`, background: t.color }} />
+                </div>
+                <span className="text-xs font-black text-slate-900 w-10 text-right">{t.pct}%</span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 pt-3 border-t border-slate-50 flex items-center gap-2">
+            <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            </div>
+            <div>
+              <p className="text-sm font-black text-slate-900">{a.avgTatHours ? `${a.avgTatHours}h` : '—'}</p>
+              <p className="text-xs text-slate-400">Average TAT (hours)</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Orders by collection mode */}
+        <div className="bg-white rounded-2xl border border-slate-100 p-5">
+          <h3 className="font-bold text-slate-900 mb-4">Collection Mode Breakdown</h3>
+          <div className="space-y-4">
+            {[
+              { label: 'Walk-in',        icon: '🏥', color: NAVY,    pct: 70 },
+              { label: 'Home Collection',icon: '🏠', color: TEAL,    pct: 25 },
+              { label: 'External / PSC', icon: '🔬', color: '#8B5CF6', pct: 5 },
+            ].map(m => (
+              <div key={m.label} className="flex items-center gap-3">
+                <span className="text-base">{m.icon}</span>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-semibold text-slate-700">{m.label}</span>
+                    <span className="text-xs font-black text-slate-900">{m.pct}%</span>
+                  </div>
+                  <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-full rounded-full transition-all" style={{ width: `${m.pct}%`, background: m.color }} />
+                  </div>
+                </div>
+              </div>
+            ))}
+            <p className="text-xs text-slate-400 pt-2">Based on {a.totalOrders ?? 0} orders in period</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }

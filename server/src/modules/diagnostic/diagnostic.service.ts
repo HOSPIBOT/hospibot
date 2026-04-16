@@ -1425,6 +1425,46 @@ export class DiagnosticService {
     return { data, meta: { page: +page, limit: +limit, total } };
   }
 
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // EQUIPMENT LOG
+  // ════════════════════════════════════════════════════════════════════════════
+
+  async listEquipmentLogs(tenantId: string, eventType?: string) {
+    const where: any = { tenantId };
+    if (eventType) where.eventType = eventType;
+    const logs = await this.prisma.equipmentLog.findMany({
+      where, orderBy: { eventDate: 'desc' }, take: 100,
+    });
+    const now = new Date();
+    return logs.map(l => ({
+      ...l,
+      isCalibrationOverdue: l.nextCalibration ? l.nextCalibration < now : false,
+      isCalibrationSoon: l.nextCalibration
+        ? l.nextCalibration >= now && l.nextCalibration < new Date(now.getTime() + 30 * 86_400_000)
+        : false,
+    }));
+  }
+
+  async createEquipmentLog(tenantId: string, userId: string, dto: {
+    equipmentName: string; model?: string; serialNumber?: string; department?: string;
+    eventType: string; eventDate: string; description?: string;
+    downtimeHours?: number; nextCalibration?: string; certificateUrl?: string;
+  }) {
+    return this.prisma.equipmentLog.create({
+      data: {
+        tenantId, reportedBy: userId,
+        equipmentName: dto.equipmentName, model: dto.model,
+        serialNumber: dto.serialNumber, department: dto.department,
+        eventType: dto.eventType, eventDate: new Date(dto.eventDate),
+        description: dto.description,
+        downtimeHours: dto.downtimeHours,
+        nextCalibration: dto.nextCalibration ? new Date(dto.nextCalibration) : undefined,
+        certificateUrl: dto.certificateUrl,
+      },
+    });
+  }
+
   // ════════════════════════════════════════════════════════════════════════════
   // PRIVATE HELPERS
   // ════════════════════════════════════════════════════════════════════════════

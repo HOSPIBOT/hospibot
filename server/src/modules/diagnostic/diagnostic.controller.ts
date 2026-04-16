@@ -511,4 +511,25 @@ export class DiagnosticController {
   ) {
     return this.reports.getReportHtml(tenantId, orderId, token);
   }
+
+  // ── Equipment Log ─────────────────────────────────────────────────────────
+
+  @Get('equipment')
+  @ApiOperation({ summary: 'List equipment logs (calibration, maintenance, breakdowns)' })
+  listEquipment(
+    @CurrentTenant() tenantId: string,
+    @Query('eventType') eventType?: string,
+  ) {
+    return this.svc.listEquipmentLogs(tenantId, eventType);
+  }
+
+  @Post('equipment')
+  @ApiOperation({ summary: 'Log an equipment event' })
+  createEquipmentLog(
+    @CurrentTenant() tenantId: string,
+    @CurrentUser() user: any,
+    @Body() dto: any,
+  ) {
+    return this.svc.createEquipmentLog(tenantId, user.id, dto);
+  }
 }

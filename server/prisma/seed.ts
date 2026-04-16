@@ -498,6 +498,128 @@ async function migrateExistingTenants() {
 }
 
 
+
+// ── Diagnostic-specific WhatsApp Templates (T01–T20) ─────────────────────────
+
+const DIAGNOSTIC_WA_TEMPLATES = [
+  // Core lifecycle
+  { name: 'lab_order_confirmed',      displayName: 'T01 — Lab Order Confirmed',      category: 'UTILITY',
+    bodyText: 'Hi {{name}}, your lab test order has been confirmed. Order: {{order_id}}. Tests: {{tests}}. Barcode: {{barcode}}. We will notify you at every step. Questions? Reply here.',
+    variables: ['name', 'order_id', 'tests', 'barcode'] },
+  { name: 'sample_collected',         displayName: 'T02 — Sample Collected',          category: 'UTILITY',
+    bodyText: 'Hi {{name}}, your sample for order {{order_id}} has been collected. Barcode: {{barcode}}. Expected report: {{expected_time}}. We will notify you when your report is ready.',
+    variables: ['name', 'order_id', 'barcode', 'expected_time'] },
+  { name: 'sample_dispatched',        displayName: 'T03 — Sample in Transit',         category: 'UTILITY',
+    bodyText: 'Your sample for order {{order_id}} is now in transit to the lab. You will receive your report by {{expected_time}}.',
+    variables: ['order_id', 'expected_time'] },
+  { name: 'sample_rejected',          displayName: 'T04 — Sample Rejected / Recollect', category: 'UTILITY',
+    bodyText: 'Hi {{name}}, your sample for order {{order_id}} could not be processed. Reason: {{reason}}. Please visit us for re-collection. No additional charge. Reply REBOOK for home collection.',
+    variables: ['name', 'order_id', 'reason'] },
+  { name: 'report_ready_normal',      displayName: 'T05 — Report Ready (Normal)',     category: 'UTILITY',
+    bodyText: 'Hi {{name}}, your lab report for order {{order_id}} is ready. All values are within normal range. Download: {{report_link}}. This link is valid for 30 days.',
+    variables: ['name', 'order_id', 'report_link'] },
+  { name: 'report_ready_abnormal',    displayName: 'T06 — Report Ready (Abnormal)',   category: 'UTILITY',
+    bodyText: 'Hi {{name}}, your lab report for order {{order_id}} is ready. ⚠️ Some values are outside the normal range — please consult your doctor. Download: {{report_link}}.',
+    variables: ['name', 'order_id', 'report_link'] },
+  { name: 'critical_value_alert',     displayName: 'T07 — Critical Value Alert',      category: 'UTILITY',
+    bodyText: '🚨 CRITICAL VALUE ALERT
+
+Patient: {{patient_name}}
+Order: {{order_id}}
+Test: {{test_name}}
+Critical Value: {{value}} ({{threshold}})
+
+Immediate clinical attention required.
+
+Reply ACK {{alert_id}} to acknowledge.',
+    variables: ['patient_name', 'order_id', 'test_name', 'value', 'threshold', 'alert_id'] },
+  { name: 'sample_at_lab',            displayName: 'T08 — Sample Received at Lab',    category: 'UTILITY',
+    bodyText: 'Hi {{name}}, your sample for order {{order_id}} has been received at the lab and processing has begun. Expected report by {{expected_time}}.',
+    variables: ['name', 'order_id', 'expected_time'] },
+  { name: 'report_amended',           displayName: 'T09 — Report Amended',            category: 'UTILITY',
+    bodyText: 'Hi {{name}}, your lab report for order {{order_id}} has been updated. Reason: {{reason}}. Please download the latest version: {{report_link}}.',
+    variables: ['name', 'order_id', 'reason', 'report_link'] },
+  { name: 'test_in_progress',         displayName: 'T10 — Tests In Progress',         category: 'UTILITY',
+    bodyText: 'Your tests for order {{order_id}} are currently being processed in our lab. We expect your report to be ready by {{expected_time}}.',
+    variables: ['order_id', 'expected_time'] },
+  // Home collection
+  { name: 'home_collection_booked',   displayName: 'T11 — Home Collection Booked',   category: 'UTILITY',
+    bodyText: 'Hi {{name}}, your home sample collection is confirmed!
+
+📅 Date: {{date}}
+⏰ Time: {{time}}
+📍 Address: {{address}}
+
+Our trained phlebotomist will arrive at your location.
+Please keep a valid ID ready.
+
+Reply CANCEL to cancel (up to 2h before slot).',
+    variables: ['name', 'date', 'time', 'address'] },
+  { name: 'agent_assigned',           displayName: 'T12 — Collection Agent Assigned', category: 'UTILITY',
+    bodyText: 'Hi {{name}}, your collection agent has been assigned for your home visit on {{date}} at {{time}}. Agent: {{agent_name}}. You will receive a notification 30 minutes before arrival.',
+    variables: ['name', 'date', 'time', 'agent_name'] },
+  { name: 'collection_reminder',      displayName: 'T13 — Collection Reminder',       category: 'UTILITY',
+    bodyText: 'Reminder: Your home sample collection is today at {{time}}. Please be available at {{address}}.
+
+Fasting required: {{fasting_required}}',
+    variables: ['time', 'address', 'fasting_required'] },
+  // Corporate
+  { name: 'corporate_wellness_invite',displayName: 'T14 — Corporate Wellness Invite', category: 'UTILITY',
+    bodyText: 'Hi {{name}}, your company {{company}} has arranged a health check-up for you. Please book your slot by {{deadline}} at {{booking_link}}.',
+    variables: ['name', 'company', 'deadline', 'booking_link'] },
+  // Revenue Engine
+  { name: 'retest_reminder_90d',      displayName: 'T15 — Re-test Reminder (90 days)', category: 'MARKETING',
+    bodyText: 'Hi {{name}}, it has been 90 days since your last {{test_name}} test. Regular testing helps monitor your health. Book now and get results same day!
+
+Reply BOOK to confirm · STOP to unsubscribe',
+    variables: ['name', 'test_name'],
+    buttons: [{ type: 'QUICK_REPLY', text: 'Book Now' }, { type: 'QUICK_REPLY', text: 'Remind Later' }, { type: 'QUICK_REPLY', text: 'Stop' }] },
+  { name: 'abnormal_followup',        displayName: 'T16 — Abnormal Result Follow-Up', category: 'UTILITY',
+    bodyText: 'Hi {{name}}, your recent {{test_name}} showed abnormal values. It is important to monitor your health. Would you like to schedule a follow-up test in 30 days?
+
+Reply BOOK to confirm',
+    variables: ['name', 'test_name'],
+    buttons: [{ type: 'QUICK_REPLY', text: 'Book Follow-up' }, { type: 'QUICK_REPLY', text: 'I Have a Doctor' }] },
+  { name: 'annual_health_package',    displayName: 'T17 — Annual Health Package',     category: 'MARKETING',
+    bodyText: 'Hi {{name}}, it is time for your annual health check! Our {{package_name}} package ({{tests}} tests) is available at ₹{{price}}. Book now at {{booking_link}}',
+    variables: ['name', 'package_name', 'tests', 'price', 'booking_link'] },
+  { name: 'loyalty_offer',            displayName: 'T18 — Loyalty Discount',          category: 'MARKETING',
+    bodyText: 'Hi {{name}}, thank you for being a valued patient! As our loyal customer ({{visit_count}} visits), enjoy {{discount}}% off on your next test. Valid until {{expiry}}.',
+    variables: ['name', 'visit_count', 'discount', 'expiry'] },
+  { name: 'doctor_report_delivery',   displayName: 'T19 — Report to Doctor',          category: 'UTILITY',
+    bodyText: 'Lab Report Ready — Patient: {{patient_name}}
+
+Order: {{order_id}}
+{{abnormal_flag}}
+
+View report: {{report_link}}',
+    variables: ['patient_name', 'order_id', 'abnormal_flag', 'report_link'] },
+  { name: 'birthday_health_offer',    displayName: 'T20 — Birthday Health Offer',     category: 'MARKETING',
+    bodyText: '🎂 Happy Birthday, {{name}}! Wishing you great health! As a birthday gift, enjoy 20% off any health check-up package this month.
+
+Book at {{booking_link}}',
+    variables: ['name', 'booking_link'] },
+];
+
+async function seedDiagnosticWATemplates() {
+  let seeded = 0;
+  for (const tmpl of DIAGNOSTIC_WA_TEMPLATES) {
+    await prisma.whatsappTemplate.upsert({
+      where: { name_tenantId: { name: tmpl.name, tenantId: null } } as any,
+      create: {
+        ...(tmpl as any),
+        tenantId: null,
+        isDefault: true,
+        status: 'APPROVED',
+        buttons: (tmpl as any).buttons ?? [],
+      },
+      update: { status: 'APPROVED' },
+    }).catch(() => {});
+    seeded++;
+  }
+  console.log(`✅ ${seeded} diagnostic WhatsApp templates seeded`);
+}
+
 // ── Diagnostic Recharge Packs seed ──────────────────────────────────────────
 
 const RECHARGE_PACKS = [
@@ -535,6 +657,7 @@ async function runAll() {
   await migrateExistingTenants();
   await seedWATemplates();
   await seedRechargePacks();
+  await seedDiagnosticWATemplates();
 }
 
 runAll()
