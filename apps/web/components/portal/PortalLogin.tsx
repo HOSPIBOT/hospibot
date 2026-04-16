@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useAuthStore } from '@/lib/store';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, ArrowRight } from 'lucide-react';
@@ -29,6 +30,26 @@ const DEFAULT_FEATURES: Record<string, string[]> = {
 
 export default function PortalLogin({ portalSlug, features }: PortalLoginProps) {
   const router = useRouter();
+  const { isAuthenticated, loadFromStorage, logout, tenant } = useAuthStore();
+
+  // On mount: load auth state. If already logged into THIS portal, redirect to dashboard.
+  // If logged into a different portal, clear state so a fresh login can happen.
+  useEffect(() => {
+    loadFromStorage();
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const storedPortalSlug = tenant?.portalFamily?.slug
+      ?? localStorage.getItem('hospibot_portal_slug');
+    if (storedPortalSlug === portalSlug) {
+      // Already logged in to THIS portal — go straight to dashboard
+      router.push(\`/\${portalSlug}/dashboard\`);
+    } else if (storedPortalSlug) {
+      // Logged in to a DIFFERENT portal — clear stale auth so fresh login works
+      logout();
+    }
+  }, [isAuthenticated, portalSlug, tenant]);
   const { setAuth } = useAuthStore();
   const [form, setForm] = useState({ email: '', password: '' });
   const [showPass, setShowPass] = useState(false);

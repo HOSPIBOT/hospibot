@@ -41,9 +41,19 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch {
         // Refresh failed - force logout to the correct portal login page
-        const slug = localStorage.getItem('hospibot_portal_slug') ?? 'clinical';
+        const TYPE_TO_SLUG: Record<string,string> = {
+          HOSPITAL:'clinical', CLINIC:'clinical', DOCTOR:'clinical',
+          DIAGNOSTIC_CENTER:'diagnostic', IVF_CENTER:'clinical',
+          PHARMACY:'pharmacy', HOME_HEALTHCARE:'homecare', EQUIPMENT_VENDOR:'equipment',
+        };
         const userStr = localStorage.getItem('hospibot_user');
+        const tenantStr = localStorage.getItem('hospibot_tenant');
         const isSuperAdmin = userStr ? JSON.parse(userStr)?.role === 'SUPER_ADMIN' : false;
+        const storedTenant = tenantStr ? JSON.parse(tenantStr) : null;
+        const slug = storedTenant?.portalFamily?.slug
+          ?? (storedTenant?.type ? TYPE_TO_SLUG[storedTenant.type] : null)
+          ?? localStorage.getItem('hospibot_portal_slug')
+          ?? 'diagnostic';
         ['hospibot_access_token','hospibot_refresh_token','hospibot_user',
          'hospibot_tenant','hospibot_portal_slug'].forEach(k => localStorage.removeItem(k));
         if (typeof document !== 'undefined') {

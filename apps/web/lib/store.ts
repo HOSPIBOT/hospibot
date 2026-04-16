@@ -113,7 +113,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         const tenant = JSON.parse(tenantStr) as Tenant | null;
         // tenant is null for SUPER_ADMIN — guard all property access
         const flags  = tenant?.featureFlags ?? tenant?.subType?.featureFlags ?? {};
-        const slug   = tenant?.portalFamily?.slug
+        const TYPE_TO_SLUG_LS: Record<string,string> = {
+          HOSPITAL:'clinical', CLINIC:'clinical', DOCTOR:'clinical',
+          DIAGNOSTIC_CENTER:'diagnostic', IVF_CENTER:'clinical',
+          PHARMACY:'pharmacy', HOME_HEALTHCARE:'homecare', EQUIPMENT_VENDOR:'equipment',
+        };
+        const slug = tenant?.portalFamily?.slug
+          ?? (tenant?.type ? TYPE_TO_SLUG_LS[tenant.type] : null)
           ?? localStorage.getItem('hospibot_portal_slug')
           ?? 'clinical';
         // Keep stored slug in sync for logout redirect
