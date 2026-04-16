@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "dev": "turbo dev",
-    "build": "turbo run build --filter=@hospibot/web",
+    "build": "cd apps/web && npm install && npm run build",
     "lint": "turbo lint",
     "dev:web": "cd apps/web && npm run dev",
     "dev:server": "cd server && npm run start:dev",
@@ -18,7 +18,8 @@
     "db:migrate": "cd server && npx prisma migrate dev",
     "db:push": "cd server && npx prisma db push",
     "db:seed": "cd server && npx prisma db seed",
-    "db:studio": "cd server && npx prisma studio"
+    "db:studio": "cd server && npx prisma studio",
+    "vercel-build": "cd apps/web && npm install && npm run build"
   },
   "devDependencies": {
     "turbo": "^2.0.0"
