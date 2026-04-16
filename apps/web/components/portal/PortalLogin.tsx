@@ -44,7 +44,7 @@ export default function PortalLogin({ portalSlug, features }: PortalLoginProps) 
       ?? localStorage.getItem('hospibot_portal_slug');
     if (storedPortalSlug === portalSlug) {
       // Already logged in to THIS portal — go straight to dashboard
-      router.push(\`/\${portalSlug}/dashboard\`);
+      router.push(`/${portalSlug}/dashboard`);
     } else if (storedPortalSlug) {
       // Logged in to a DIFFERENT portal — clear stale auth so fresh login works
       logout();
