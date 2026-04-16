@@ -416,12 +416,12 @@ textarea.fi{resize:vertical;min-height:100px}
     Hospi<span>Bot</span>
   </div>
   <ul class="nav-links">
-    <li><a onclick="navigate('solutions')">Solutions</a></li>
-    <li><a onclick="navigate('features')">Features</a></li>
-    
-    <li><a onclick="navigate('about')">About</a></li>
-    <li><a onclick="navigate('contact')">Contact</a></li>
-    <li><a onclick="navigate('portals')" style="color:var(--wa);font-weight:700">All Portals</a></li>
+    <li><a onclick="navigate('home')" id="nav-home">Home</a></li>
+    <li><a onclick="navigate('solutions')" id="nav-solutions">Solutions</a></li>
+    <li><a onclick="navigate('features')" id="nav-features">Features</a></li>
+    <li><a onclick="navigate('about')" id="nav-about">About</a></li>
+    <li><a onclick="navigate('contact')" id="nav-contact">Contact</a></li>
+    <li><a onclick="navigate('portals')" id="nav-portals" style="color:var(--wa);font-weight:700">All Portals</a></li>
   </ul>
   <div class="nav-cta">
     <button class="btn btn-outline btn-sm" onclick="smoothNavigateTo('/auth/login')">Login</button>
@@ -1364,15 +1364,20 @@ function navigate(page, portalId) {
     target.classList.add('active');
     currentPage = page;
     window.scrollTo({top:0, behavior:'smooth'});
-    // Update browser URL
-    let url = '/';
-    if (page === 'home') url = '/';
-    else if (page === 'portal-login' && portalId) url = '/portal/' + portalId;
-    else url = '/' + page;
-    try { history.pushState({page, portalId}, '', url); } catch(e) {}
+  }
+  // Highlight active nav link
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.style.color = 'rgba(255,255,255,0.75)';
+    a.style.fontWeight = '500';
+  });
+  const activeLink = document.getElementById('nav-' + page);
+  if (activeLink) {
+    activeLink.style.color = '#fff';
+    activeLink.style.fontWeight = '700';
   }
   // Close mobile menu
-  document.getElementById('mobileMenu').classList.remove('open');
+  const mm = document.getElementById('mobileMenu');
+  if (mm) mm.classList.remove('open');
 }
 
 function goToPortalLogin(portalId, tab) {
