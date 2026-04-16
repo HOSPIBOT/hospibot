@@ -1476,6 +1476,62 @@ export class DiagnosticService {
     return packages.find((p: any) => p.id === packageId);
   }
 
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // RATE CARDS
+  // ════════════════════════════════════════════════════════════════════════════
+
+  async listRateCards(tenantId: string) {
+    // Using tenant settings as a simple store for now (no dedicated table needed)
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { settings: true },
+    });
+    const settings = (tenant?.settings as any) ?? {};
+    return settings.rateCards ?? [];
+  }
+
+  async createRateCard(tenantId: string, dto: {
+    name: string; type: string; discountPct: number; isDefault: boolean;
+  }) {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { settings: true },
+    });
+    const settings = (tenant?.settings as any) ?? {};
+    const rateCards = settings.rateCards ?? [];
+    const newCard = {
+      id: `rc-${Date.now()}`,
+      name: dto.name, type: dto.type,
+      discountPct: dto.discountPct,
+      isDefault: dto.isDefault,
+      testOverrides: [],
+      createdAt: new Date().toISOString(),
+    };
+    rateCards.push(newCard);
+    await this.prisma.tenant.update({
+      where: { id: tenantId },
+      data: { settings: { ...settings, rateCards } },
+    });
+    return newCard;
+  }
+
+  async updateRateCard(tenantId: string, cardId: string, dto: any) {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { settings: true },
+    });
+    const settings = (tenant?.settings as any) ?? {};
+    const rateCards = (settings.rateCards ?? []).map((c: any) =>
+      c.id === cardId ? { ...c, ...dto } : c
+    );
+    await this.prisma.tenant.update({
+      where: { id: tenantId },
+      data: { settings: { ...settings, rateCards } },
+    });
+    return rateCards.find((c: any) => c.id === cardId);
+  }
+
   // ════════════════════════════════════════════════════════════════════════════
   // EQUIPMENT LOG
   // ════════════════════════════════════════════════════════════════════════════

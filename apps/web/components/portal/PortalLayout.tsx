@@ -85,6 +85,8 @@ const NAV_BY_PORTAL: Record<string, NavItem[]> = {
     { href: 'whatsapp',         label: 'WhatsApp Inbox',     icon: MessageSquare,   badge: true, always: true },
     // ── Finance ──
     { href: 'billing',          label: 'Billing & Wallet',   icon: IndianRupee,     always: true },
+    { href: 'rate-cards',       label: 'Rate Cards',         icon: IndianRupee,     always: true },
+    { href: 'tpa',              label: 'TPA & Insurance',    icon: Shield,          always: true },
     // ── Reports & Analytics ──
     { href: 'analytics',        label: 'Analytics',          icon: BarChart3,       always: true },
     // ── Team ──

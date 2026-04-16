@@ -557,4 +557,28 @@ export class DiagnosticController {
   ) {
     return this.svc.updatePackage(tenantId, id, dto);
   }
+
+  // ── Rate Cards ────────────────────────────────────────────────────────────
+
+  @Get('rate-cards')
+  @ApiOperation({ summary: 'List rate cards (walk-in, doctor, corporate, TPA)' })
+  listRateCards(@CurrentTenant() tenantId: string) {
+    return this.svc.listRateCards(tenantId);
+  }
+
+  @Post('rate-cards')
+  @ApiOperation({ summary: 'Create rate card' })
+  createRateCard(@CurrentTenant() tenantId: string, @Body() dto: any) {
+    return this.svc.createRateCard(tenantId, dto);
+  }
+
+  @Put('rate-cards/:id')
+  @ApiOperation({ summary: 'Update rate card' })
+  updateRateCard(
+    @CurrentTenant() tenantId: string,
+    @Param('id') id: string,
+    @Body() dto: any,
+  ) {
+    return this.svc.updateRateCard(tenantId, id, dto);
+  }
 }
