@@ -8,8 +8,9 @@ import toast from 'react-hot-toast';
 import Link from 'next/link';
 import {
   FlaskConical, Plus, Search, RefreshCw, Loader2,
-  Clock, CheckCircle2, AlertTriangle, ChevronRight, X, Zap,
+  Clock, CheckCircle2, AlertTriangle, ChevronRight, X, Zap, Printer,
 } from 'lucide-react';
+import { SingleBarcodeButton } from '@/components/ui/BarcodePrint';
 
 const NAVY = '#1E3A5F';
 const TEAL = '#0D7C66';

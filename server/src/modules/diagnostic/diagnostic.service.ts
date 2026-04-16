@@ -107,11 +107,16 @@ export class DiagnosticService {
 
       const trend = await this.getOrderTrend(tenantId, 14);
 
+      // Get wallet credits for low-balance warning
+      const wallet = await this.prisma.tenantWallet.findUnique({ where: { tenantId } }).catch(() => null);
+
       return {
         todayOrders, pending, inProgress, resulted, validated, delivered,
         stat, criticalUnacked, tatBreached,
         todayRevenue: todayRevenue._sum.totalAmount ?? 0,
         trend,
+        walletCredits: wallet?.waCredits ?? 0,
+        smsCredits: wallet?.smsCredits ?? 0,
       };
     } catch (err) {
       this.logger.error('getDashboard error', err?.message);
@@ -564,7 +569,7 @@ export class DiagnosticService {
           id: await this.getLatestResultId(orderId, rv.orderItemId) || 'new',
         },
         create: {
-          tenantId, orderId: orderId as any, orderItemId: rv.orderItemId, labOrderId: orderId,
+          tenantId, orderItemId: rv.orderItemId, labOrderId: orderId,
           numericValue: rv.numericValue, textValue: rv.textValue,
           unit: rv.unit ?? ranges?.unit,
           flag: flag as any,

@@ -10,6 +10,7 @@ import {
   Send, Loader2, User, Phone, Zap, Edit3, Shield,
   AlertCircle, ChevronDown, ChevronUp, Download, RefreshCw,
 } from 'lucide-react';
+import { SingleBarcodeButton } from '@/components/ui/BarcodePrint';
 
 const NAVY = '#1E3A5F';
 const TEAL = '#0D7C66';
@@ -242,6 +243,16 @@ export default function OrderDetailPage() {
         <button onClick={load} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">
           <RefreshCw className="w-4 h-4" />
         </button>
+        {order && order.sampleBarcode && (
+          <SingleBarcodeButton label={{
+            barcode: order.sampleBarcode,
+            orderNumber: order.orderNumber,
+            patientName: `${order.patient?.firstName ?? ''} ${order.patient?.lastName ?? ''}`.trim(),
+            testCodes: (order.orderItems ?? order.tests ?? []).map((i: any) => i.testCode ?? i.code ?? i).slice(0, 6),
+            collectedAt: order.sampleCollectedAt,
+            tubeType: order.samples?.[0]?.tubeType,
+          }} />
+        )}
       </div>
 
       {/* Critical value alert */}

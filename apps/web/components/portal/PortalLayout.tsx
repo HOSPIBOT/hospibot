@@ -87,6 +87,8 @@ const NAV_BY_PORTAL: Record<string, NavItem[]> = {
     { href: 'billing',          label: 'Billing & Wallet',   icon: IndianRupee,     always: true },
     // ── Reports & Analytics ──
     { href: 'analytics',        label: 'Analytics',          icon: BarChart3,       always: true },
+    // ── Team ──
+    { href: 'staff',            label: 'Staff & Users',      icon: UserCheck,       always: true },
     // ── Settings ──
     { href: 'settings',         label: 'Settings',           icon: Settings,        always: true },
   ],
