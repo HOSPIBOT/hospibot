@@ -344,7 +344,7 @@ export class DiagnosticService {
     const itemStatus = this.orderStatusToItemStatus(dto.status);
     if (itemStatus) {
       await this.prisma.orderItem.updateMany({
-        where: { labOrderId: id, status: { notIn: ['DELIVERED', 'CANCELLED', 'REJECTED'] } },
+        where: { labOrderId: id, status: { notIn: ['RELEASED', 'REJECTED'] } },
         data: { status: itemStatus as any },
       });
     }
