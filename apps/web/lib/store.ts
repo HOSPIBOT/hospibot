@@ -57,7 +57,16 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   setAuth: (user, tenant, accessToken, refreshToken) => {
     // tenant is null for SUPER_ADMIN — guard all tenant property access
     const flags = tenant?.featureFlags ?? tenant?.subType?.featureFlags ?? {};
-    const portalSlug = tenant?.portalFamily?.slug ?? 'clinical';
+    // Derive portal slug from portalFamily (preferred) or tenant type mapping
+    const TYPE_TO_SLUG: Record<string,string> = {
+      HOSPITAL:'clinical', CLINIC:'clinical', DOCTOR:'clinical',
+      DIAGNOSTIC_CENTER:'diagnostic', IVF_CENTER:'clinical',
+      PHARMACY:'pharmacy', HOME_HEALTHCARE:'homecare',
+      EQUIPMENT_VENDOR:'equipment',
+    };
+    const portalSlug = tenant?.portalFamily?.slug
+      ?? (tenant?.type ? TYPE_TO_SLUG[tenant.type] : null)
+      ?? 'clinical';
 
     localStorage.setItem('hospibot_access_token', accessToken);
     localStorage.setItem('hospibot_refresh_token', refreshToken);
