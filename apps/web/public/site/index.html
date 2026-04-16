@@ -641,7 +641,7 @@ textarea.fi{resize:vertical;min-height:100px}
               <span class="portal-card-tag" style="background:#f0fdfa;color:#0d9488">Specialists</span>
               <span class="portal-card-tag" style="background:#f0fdfa;color:#0d9488">+83 more</span>
             </div>
-            <button class="portal-card-cta" style="background:#0d9488;color:#fff">Login / Register →</button>
+            <button class="portal-card-cta" style="background:#0d9488;color:#fff" onclick="event.stopPropagation();smoothNavigateTo('/clinical/login')">Login / Register →</button>
           </div>
         </div>
 
@@ -658,7 +658,7 @@ textarea.fi{resize:vertical;min-height:100px}
               <span class="portal-card-tag" style="background:#eff6ff;color:#1e3a5f">PCR Labs</span>
               <span class="portal-card-tag" style="background:#eff6ff;color:#1e3a5f">+17 more</span>
             </div>
-            <button class="portal-card-cta" style="background:#1e3a5f;color:#fff">Login / Register →</button>
+            <button class="portal-card-cta" style="background:#1e3a5f;color:#fff" onclick="event.stopPropagation();smoothNavigateTo('/diagnostic/login')">Login / Register →</button>
           </div>
         </div>
 
@@ -675,7 +675,7 @@ textarea.fi{resize:vertical;min-height:100px}
               <span class="portal-card-tag" style="background:#f0fdf4;color:#166534">Wholesale</span>
               <span class="portal-card-tag" style="background:#f0fdf4;color:#166534">+11 more</span>
             </div>
-            <button class="portal-card-cta" style="background:#166534;color:#fff">Login / Register →</button>
+            <button class="portal-card-cta" style="background:#166534;color:#fff" onclick="event.stopPropagation();smoothNavigateTo('/pharmacy/login')">Login / Register →</button>
           </div>
         </div>
 
@@ -692,7 +692,7 @@ textarea.fi{resize:vertical;min-height:100px}
               <span class="portal-card-tag" style="background:#fffbeb;color:#b45309">Elder Care</span>
               <span class="portal-card-tag" style="background:#fffbeb;color:#b45309">+13 more</span>
             </div>
-            <button class="portal-card-cta" style="background:#b45309;color:#fff">Login / Register →</button>
+            <button class="portal-card-cta" style="background:#b45309;color:#fff" onclick="event.stopPropagation();smoothNavigateTo('/homecare/login')">Login / Register →</button>
           </div>
         </div>
 
@@ -709,7 +709,7 @@ textarea.fi{resize:vertical;min-height:100px}
               <span class="portal-card-tag" style="background:#f5f3ff;color:#6d28d9">Surgical</span>
               <span class="portal-card-tag" style="background:#f5f3ff;color:#6d28d9">+15 more</span>
             </div>
-            <button class="portal-card-cta" style="background:#6d28d9;color:#fff">Login / Register →</button>
+            <button class="portal-card-cta" style="background:#6d28d9;color:#fff" onclick="event.stopPropagation();smoothNavigateTo('/equipment/login')">Login / Register →</button>
           </div>
         </div>
 
@@ -726,7 +726,7 @@ textarea.fi{resize:vertical;min-height:100px}
               <span class="portal-card-tag" style="background:#fdf2f8;color:#be185d">Nutrition</span>
               <span class="portal-card-tag" style="background:#fdf2f8;color:#be185d">+15 more</span>
             </div>
-            <button class="portal-card-cta" style="background:#be185d;color:#fff">Login / Register →</button>
+            <button class="portal-card-cta" style="background:#be185d;color:#fff" onclick="event.stopPropagation();smoothNavigateTo('/wellness/login')">Login / Register →</button>
           </div>
         </div>
 
@@ -743,7 +743,7 @@ textarea.fi{resize:vertical;min-height:100px}
               <span class="portal-card-tag" style="background:#f0f9ff;color:#0369a1">Tourism</span>
               <span class="portal-card-tag" style="background:#f0f9ff;color:#0369a1">+17 more</span>
             </div>
-            <button class="portal-card-cta" style="background:#0369a1;color:#fff">Login / Register →</button>
+            <button class="portal-card-cta" style="background:#0369a1;color:#fff" onclick="event.stopPropagation();smoothNavigateTo('/services/login')">Login / Register →</button>
           </div>
         </div>
 
@@ -759,7 +759,7 @@ textarea.fi{resize:vertical;min-height:100px}
               <span class="portal-card-tag" style="background:#f7fee7;color:#65a30d">Livestock</span>
               <span class="portal-card-tag" style="background:#f7fee7;color:#65a30d">+13 more</span>
             </div>
-            <button class="portal-card-cta" style="background:#65a30d;color:#fff">Register Now →</button>
+            <button class="portal-card-cta" style="background:#65a30d;color:#fff" onclick="event.stopPropagation();smoothNavigateTo('/register/veterinary')">Register Now →</button>
           </div>
         </div>
 
@@ -775,7 +775,7 @@ textarea.fi{resize:vertical;min-height:100px}
               <span class="portal-card-tag" style="background:#f0fdfa;color:#0f766e">ABDM</span>
               <span class="portal-card-tag" style="background:#f0fdfa;color:#0f766e">+10 more</span>
             </div>
-            <button class="portal-card-cta" style="background:#0f766e;color:#fff">Register Now →</button>
+            <button class="portal-card-cta" style="background:#0f766e;color:#fff" onclick="event.stopPropagation();smoothNavigateTo('/register/digital')">Register Now →</button>
           </div>
         </div>
 
@@ -1334,7 +1334,6 @@ function handleAuth(type) {
 // ===== SMOOTH PAGE TRANSITION =====
 function smoothNavigateTo(url) {
   const overlay = document.getElementById('pageTransition');
-  // Set color based on portal
   const colors = {
     '/clinical': '#0d9488', '/diagnostic': '#1e3a5f', '/pharmacy': '#166534',
     '/homecare': '#b45309', '/equipment': '#6d28d9', '/wellness': '#be185d',
@@ -1342,9 +1341,23 @@ function smoothNavigateTo(url) {
     '/register/digital': '#0f766e', '/register': '#0d9488',
   };
   const matched = Object.keys(colors).find(k => url.startsWith(k));
-  overlay.style.background = matched ? colors[matched] : '#0d9488';
-  overlay.classList.add('out');
-  setTimeout(() => { window.location.href = url; }, 460);
+  // Show overlay animation
+  if (overlay) {
+    overlay.style.background = matched ? colors[matched] : '#0d9488';
+    overlay.classList.add('out');
+  }
+  // Navigate top window after animation (handles both iframe and direct)
+  setTimeout(() => {
+    try {
+      if (window.top && window.top !== window) {
+        window.top.location.href = url;
+      } else {
+        window.location.href = url;
+      }
+    } catch(e) {
+      window.location.href = url;
+    }
+  }, 450);
 }
 
 // ===== RENDER PORTAL CARDS =====
