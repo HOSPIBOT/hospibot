@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
 import {
@@ -14,13 +15,18 @@ const inputCls = 'w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-20
 const labelCls = 'block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wide';
 const CATEGORIES = ['Haematology', 'Biochemistry', 'Microbiology', 'Serology', 'Urine', 'Hormones', 'Other'];
 
-export default function QCPage() {
+function QCPageInner() {
   const [testCode, setTestCode] = useState('CBC');
   const [days, setDays] = useState(30);
   const [history, setHistory] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams?.get('log') === '1') setShowForm(true);
+  }, []);
   const [form, setForm] = useState({
     testCode: '', analyserId: '', lotNumber: '',
     controlLevel: 'NORMAL', expectedValue: '', actualValue: '',
@@ -282,5 +288,13 @@ export default function QCPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function QCPage() {
+  return (
+    <Suspense fallback={<div className="animate-pulse space-y-4">{Array.from({length:3}).map((_,i) => <div key={i} className="bg-slate-200 rounded-2xl h-24"/>)}</div>}>
+      <QCPageInner />
+    </Suspense>
   );
 }

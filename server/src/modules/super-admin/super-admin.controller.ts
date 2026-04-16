@@ -149,4 +149,28 @@ export class SuperAdminController {
   getSystemHealth() {
     return this.superAdminService.getSystemHealth();
   }
+
+  // ── Diagnostic Wallet Management ─────────────────────────────────────────
+
+  @Get('wallets')
+  @ApiOperation({ summary: 'Overview of all tenant wallet balances' })
+  getAllWalletStats() {
+    return this.superAdminService.getAllWalletStats();
+  }
+
+  @Get('wallets/:tenantId')
+  @ApiOperation({ summary: 'Get wallet details for a specific tenant' })
+  getTenantWallet(@Param('tenantId') tenantId: string) {
+    return this.superAdminService.getTenantWalletOverview(tenantId);
+  }
+
+  @Post('wallets/:tenantId/credit')
+  @ApiOperation({ summary: 'Manually credit wallet (for support/onboarding)' })
+  creditWallet(
+    @Param('tenantId') tenantId: string,
+    @Body() dto: { walletType: string; amount: number; reason: string },
+    @CurrentUser() admin: any,
+  ) {
+    return this.superAdminService.adminCreditWallet(tenantId, dto.walletType, dto.amount, dto.reason, admin.id);
+  }
 }

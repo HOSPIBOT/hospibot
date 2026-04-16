@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { formatDate, formatTime } from '@/lib/utils';
@@ -206,7 +206,7 @@ function CollectionCard({ c, onRefresh }: { c: any; onRefresh: () => void }) {
   );
 }
 
-export default function HomeCollectionPage() {
+function HomeCollectionPageInner() {
   const [collections, setCollections] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState('');
@@ -305,5 +305,13 @@ export default function HomeCollectionPage() {
 
       {showBook && <BookModal onClose={() => setShowBook(false)} onBooked={() => setRefreshKey(k => k+1)} />}
     </div>
+  );
+}
+
+export default function HomeCollectionPage() {
+  return (
+    <Suspense fallback={<div className="animate-pulse space-y-4">{Array.from({length:3}).map((_,i) => <div key={i} className="bg-slate-200 rounded-2xl h-24"/>)}</div>}>
+      <HomeCollectionPageInner />
+    </Suspense>
   );
 }

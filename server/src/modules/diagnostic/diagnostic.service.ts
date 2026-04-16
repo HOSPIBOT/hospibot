@@ -1426,6 +1426,56 @@ export class DiagnosticService {
   }
 
 
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // HEALTH PACKAGES
+  // ════════════════════════════════════════════════════════════════════════════
+
+  async listPackages(tenantId: string) {
+    // Packages stored in TenantSubType settings or as TestCatalog with type='package'
+    // For now use tenant settings JSON store
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { settings: true },
+    });
+    const settings = tenant?.settings as any ?? {};
+    return (settings.healthPackages ?? []) as any[];
+  }
+
+  async createPackage(tenantId: string, dto: {
+    name: string; packageType: string; description?: string;
+    price: number; testCodes: string[]; isActive?: boolean;
+  }) {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { settings: true },
+    });
+    const settings = (tenant?.settings as any) ?? {};
+    const packages = settings.healthPackages ?? [];
+    const newPkg = { id: Date.now().toString(), ...dto, isActive: dto.isActive ?? true, createdAt: new Date().toISOString() };
+    packages.push(newPkg);
+    await this.prisma.tenant.update({
+      where: { id: tenantId },
+      data: { settings: { ...settings, healthPackages: packages } },
+    });
+    return newPkg;
+  }
+
+  async updatePackage(tenantId: string, packageId: string, dto: Partial<{ name: string; price: number; testCodes: string[]; isActive: boolean; description: string; }>) {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId }, select: { settings: true },
+    });
+    const settings = (tenant?.settings as any) ?? {};
+    const packages = (settings.healthPackages ?? []).map((p: any) =>
+      p.id === packageId ? { ...p, ...dto } : p
+    );
+    await this.prisma.tenant.update({
+      where: { id: tenantId },
+      data: { settings: { ...settings, healthPackages: packages } },
+    });
+    return packages.find((p: any) => p.id === packageId);
+  }
+
   // ════════════════════════════════════════════════════════════════════════════
   // EQUIPMENT LOG
   // ════════════════════════════════════════════════════════════════════════════

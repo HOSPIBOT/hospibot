@@ -312,4 +312,69 @@ export class SuperAdminService {
       nodeVersion: process.version,
     };
   }
+
+  // ── Diagnostic Wallet Management (Super Admin) ──────────────────────────────
+
+  async getTenantWalletOverview(tenantId: string) {
+    const wallet = await this.prisma.tenantWallet.findUnique({ where: { tenantId } });
+    const [recentTxns, usageLogs] = await Promise.all([
+      this.prisma.walletTransaction.findMany({
+        where: { tenantId },
+        orderBy: { createdAt: 'desc' }, take: 20,
+      }),
+      this.prisma.messageUsageLog.aggregate({
+        where: { tenantId, sentAt: { gte: new Date(new Date().setDate(1)) } },
+        _sum: { creditsCharged: true },
+        _count: true,
+      }),
+    ]);
+    return { wallet, recentTxns, thisMonthMessages: usageLogs._count, thisMonthCredits: usageLogs._sum.creditsCharged ?? 0 };
+  }
+
+  async adminCreditWallet(tenantId: string, walletType: string, amount: number, reason: string, adminId: string) {
+    let wallet = await this.prisma.tenantWallet.findUnique({ where: { tenantId } });
+    if (!wallet) wallet = await this.prisma.tenantWallet.create({ data: { tenantId } });
+
+    const updateData: any = {};
+    let before = 0;
+    if (walletType === 'WHATSAPP') { before = wallet.waCredits; updateData.waCredits = { increment: amount }; }
+    else if (walletType === 'SMS') { before = wallet.smsCredits; updateData.smsCredits = { increment: amount }; }
+    else if (walletType === 'STORAGE') { before = wallet.storageGbPurchased; updateData.storageGbPurchased = { increment: amount }; }
+
+    await this.prisma.tenantWallet.update({ where: { tenantId }, data: updateData });
+    await this.prisma.walletTransaction.create({
+      data: {
+        tenantId, walletId: wallet.id,
+        walletType: walletType as any, txType: 'CREDIT_TOPUP',
+        amount, balanceBefore: before, balanceAfter: before + amount,
+        referenceType: 'admin_credit', referenceId: adminId,
+        description: `Admin credit: ${reason}`,
+      },
+    });
+
+    // Audit log
+    await this.prisma.auditLog.create({
+      data: {
+        userId: adminId, tenantId: null,
+        action: 'ADMIN_WALLET_CREDIT',
+        resource: 'TenantWallet',
+        resourceId: tenantId,
+        newValues: { walletType, amount, reason, tenantId },
+      },
+    }).catch(() => {});
+
+    return { success: true, credited: amount, walletType };
+  }
+
+  async getAllWalletStats() {
+    const tenants = await this.prisma.tenantWallet.findMany({
+      orderBy: { waCredits: 'asc' }, // low balance first
+      take: 50,
+    });
+    const lowBalance = tenants.filter(w => w.waCredits < 100);
+    const totalWaCredits = tenants.reduce((s, w) => s + w.waCredits, 0);
+    return { tenants, lowBalance: lowBalance.length, totalWaCredits };
+  }
+
+
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { api } from '@/lib/api';
 import { formatINR } from '@/lib/utils';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -204,7 +204,7 @@ function TestSearch({ selected, onAdd, onRemove }: {
 }
 
 // ── Main Page ─────────────────────────────────────────────────────────────────
-export default function NewOrderPage() {
+function NewOrderPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [step, setStep] = useState<Step>(1);
@@ -545,5 +545,13 @@ export default function NewOrderPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function NewOrderPage() {
+  return (
+    <Suspense fallback={<div className="max-w-2xl mx-auto space-y-4">{Array.from({length:3}).map((_,i) => <div key={i} className="animate-pulse bg-slate-200 rounded-2xl h-24"/>)}</div>}>
+      <NewOrderPageInner />
+    </Suspense>
   );
 }

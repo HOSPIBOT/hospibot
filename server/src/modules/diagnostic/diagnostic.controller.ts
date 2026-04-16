@@ -532,4 +532,29 @@ export class DiagnosticController {
   ) {
     return this.svc.createEquipmentLog(tenantId, user.id, dto);
   }
+
+  // ── Health Packages ───────────────────────────────────────────────────────
+
+  @Get('packages')
+  @ApiOperation({ summary: 'List health check packages / bundles' })
+  listPackages(@CurrentTenant() tenantId: string) {
+    return this.svc.listPackages(tenantId);
+  }
+
+  @Post('packages')
+  @ApiOperation({ summary: 'Create health check package' })
+  createPackage(@CurrentTenant() tenantId: string, @Body() dto: any) {
+    return this.svc.createPackage(tenantId, dto);
+  }
+
+  @Put('packages/:id')
+  @Patch('packages/:id')
+  @ApiOperation({ summary: 'Update health check package' })
+  updatePackage(
+    @CurrentTenant() tenantId: string,
+    @Param('id') id: string,
+    @Body() dto: any,
+  ) {
+    return this.svc.updatePackage(tenantId, id, dto);
+  }
 }

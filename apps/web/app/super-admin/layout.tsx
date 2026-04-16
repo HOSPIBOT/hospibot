@@ -28,6 +28,7 @@ const navSections = [
       { href: '/super-admin/billing', label: 'Subscription Mgmt', icon: CreditCard },
       { href: '/super-admin/users', label: 'Platform Users', icon: Users },
       { href: '/super-admin/feature-flags', label: 'Feature Flags', icon: Zap },
+      { href: '/super-admin/wallets', label: 'Wallet Management', icon: Zap },
     ],
   },
   {
