@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;font-size:16.5px}
+html{scroll-behavior:smooth;font-size:17px}
 *, *::before, *::after{font-family:'Poppins',sans-serif}
 body{font-family:'Poppins',sans-serif;background:#fff;color:#0a1628;line-height:1.6;overflow-x:hidden}
 :root{
@@ -24,7 +24,7 @@ h1,h2,h3,h4,h5{font-family:var(--fh);font-weight:700;line-height:1.2}
 h1{font-size:clamp(2.2rem,5vw,4.2rem);font-weight:800}
 h2{font-size:clamp(1.9rem,3vw,2.8rem);font-family:'Poppins',sans-serif;font-weight:700}
 h3{font-size:clamp(1.15rem,2vw,1.55rem);font-family:'Poppins',sans-serif;font-weight:600}
-p{color:var(--muted);font-family:'Poppins',sans-serif;font-size:1rem;line-height:1.7}
+p{color:var(--muted);font-family:'Poppins',sans-serif;font-size:1.05rem;line-height:1.75}
 a{text-decoration:none;color:inherit}
 img{max-width:100%}
 
@@ -224,16 +224,42 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;height:68px;padding:0 2.5re
 .cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative}
 
 /* FOOTER */
-footer{background:var(--darker);padding:56px 2rem 28px;color:rgba(255,255,255,.55)}
-.foot-grid{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:40px;max-width:1400px;margin:0 auto 40px}
-.foot-brand p{font-size:.85rem;margin-top:10px;line-height:1.6;max-width:280px}
-.foot-col h4{font-family:var(--fh);font-weight:600;font-size:.88rem;color:#fff;margin-bottom:14px}
-.foot-links{list-style:none}
-.foot-links li{margin-bottom:7px}
-.foot-links a{font-size:.82rem;color:rgba(255,255,255,.45);transition:color .2s;cursor:pointer}
-.foot-links a:hover{color:#fff}
-.foot-bot{border-top:1px solid rgba(255,255,255,.08);padding-top:22px;text-align:center;font-size:.82rem;max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;font-family:'Poppins',sans-serif}
-.foot-bot a{color:var(--wa)}
+/* ── FOOTER ───────────────────────────────────────────────── */
+footer{background:linear-gradient(175deg,#05111f 0%,#071828 60%,#040e18 100%);padding:0;color:rgba(255,255,255,.6);font-family:'Poppins',sans-serif;position:relative;overflow:hidden}
+footer::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(13,148,136,.6),rgba(37,211,102,.4),rgba(13,148,136,.6),transparent)}
+.foot-top{padding:64px 5vw 48px;max-width:1400px;margin:0 auto}
+.foot-grid{display:grid;grid-template-columns:2.2fr 1fr 1fr 1fr 1.4fr;gap:48px;align-items:start}
+.foot-brand-logo{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.foot-brand-logo-icon{width:44px;height:44px;background:linear-gradient(135deg,#0d9488,#25D366);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;box-shadow:0 4px 16px rgba(13,148,136,.35)}
+.foot-brand-name{font-size:1.4rem;font-weight:800;color:#fff;font-family:'Poppins',sans-serif;letter-spacing:-.02em}
+.foot-brand-name span{color:#25D366}
+.foot-brand-tagline{font-size:.9rem;color:rgba(255,255,255,.55);line-height:1.65;margin-bottom:22px;max-width:300px}
+.foot-cert-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.foot-cert{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.1);font-size:.72rem;font-weight:700;color:rgba(255,255,255,.7);letter-spacing:.04em;background:rgba(255,255,255,.04)}
+.foot-cert-dot{width:6px;height:6px;border-radius:50%;background:#25D366}
+.foot-social{display:flex;gap:10px}
+.foot-social-btn{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:.9rem;text-decoration:none}
+.foot-social-btn:hover{background:rgba(13,148,136,.25);border-color:rgba(13,148,136,.5)}
+.foot-col h4{font-family:'Poppins',sans-serif;font-weight:700;font-size:.82rem;color:#fff;margin-bottom:18px;text-transform:uppercase;letter-spacing:.1em;opacity:.9}
+.foot-links{list-style:none;padding:0;margin:0}
+.foot-links li{margin-bottom:10px}
+.foot-links a{font-family:'Poppins',sans-serif;font-size:.9rem;color:rgba(255,255,255,.5);transition:all .2s;cursor:pointer;display:flex;align-items:center;gap:6px}
+.foot-links a:hover{color:#25D366;padding-left:4px}
+.foot-cta-box{background:linear-gradient(135deg,rgba(13,148,136,.2),rgba(37,211,102,.1));border:1px solid rgba(13,148,136,.3);border-radius:20px;padding:26px;margin-top:4px}
+.foot-cta-box h4{font-family:'Poppins',sans-serif;color:#fff;font-size:.95rem;font-weight:700;margin-bottom:8px;text-transform:none;letter-spacing:0}
+.foot-cta-box p{font-size:.82rem;color:rgba(255,255,255,.6);margin-bottom:16px;line-height:1.55}
+.foot-cta-btn{display:block;width:100%;padding:11px;background:linear-gradient(90deg,#0d9488,#25D366);border:none;border-radius:10px;color:#fff;font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;text-align:center;transition:opacity .2s;margin-bottom:8px}
+.foot-cta-btn:hover{opacity:.9}
+.foot-cta-btn.outline{background:transparent;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7)}
+.foot-cta-btn.outline:hover{border-color:rgba(255,255,255,.4);color:#fff}
+.foot-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);margin:0 5vw}
+.foot-bottom{padding:20px 5vw;max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
+.foot-bottom-left{font-size:.82rem;color:rgba(255,255,255,.35);font-family:'Poppins',sans-serif}
+.foot-bottom-right{display:flex;gap:20px}
+.foot-bottom-right a{font-family:'Poppins',sans-serif;font-size:.82rem;color:rgba(255,255,255,.35);cursor:pointer;transition:color .2s}
+.foot-bottom-right a:hover{color:rgba(255,255,255,.7)}
+.foot-whatsapp-pill{display:inline-flex;align-items:center;gap:7px;background:rgba(37,211,102,.12);border:1px solid rgba(37,211,102,.25);padding:5px 14px;border-radius:20px;font-size:.78rem;font-weight:600;color:#25D366;cursor:pointer;transition:all .2s;margin-top:12px}
+.foot-whatsapp-pill:hover{background:rgba(37,211,102,.2)}
 
 /* PAGE HERO */
 .pg-hero{background:var(--darker);padding:110px 2rem 56px;text-align:center;position:relative;overflow:hidden}
@@ -358,6 +384,7 @@ textarea.fi{resize:vertical;min-height:100px}
 /* RESPONSIVE */
 @media(max-width:900px){
   .foot-grid{grid-template-columns:1fr 1fr}
+  .foot-top{padding:48px 5vw 36px}
   .about-grid,.cont-grid{grid-template-columns:1fr}
   .mission-grid{grid-template-columns:1fr}
 }
@@ -370,7 +397,8 @@ textarea.fi{resize:vertical;min-height:100px}
   .hero-cards{flex-direction:row;flex-wrap:wrap;justify-content:center}
   .hero-float-card{flex:1;min-width:200px}
   .foot-grid{grid-template-columns:1fr}
-  .foot-bot{flex-direction:column;text-align:center}
+  .foot-bottom{flex-direction:column;text-align:center}
+  .foot-bottom-right{flex-wrap:wrap;justify-content:center}
   .price-card.featured{transform:none}
   .form-row{grid-template-columns:1fr}
   .plog-box{margin-top:0}
@@ -826,48 +854,95 @@ textarea.fi{resize:vertical;min-height:100px}
 
   <!-- Footer -->
   <footer>
-    <div class="foot-grid">
-      <div class="foot-brand">
-        <div class="nav-logo" style="cursor:default"><div class="nav-logo-icon">🏥</div>Hospi<span style="color:var(--wa)">Bot</span></div>
-        <p>The WhatsApp-First Healthcare Operating System. Democratizing healthcare technology for providers worldwide.</p>
-        <div style="display:flex;gap:10px;margin-top:16px">
-          <span style="background:rgba(37,211,102,.15);color:var(--wa);padding:3px 10px;border-radius:6px;font-size:.72rem;font-weight:600">HIPAA</span>
-          <span style="background:rgba(37,211,102,.15);color:var(--wa);padding:3px 10px;border-radius:6px;font-size:.72rem;font-weight:600">DPDPA</span>
-          <span style="background:rgba(37,211,102,.15);color:var(--wa);padding:3px 10px;border-radius:6px;font-size:.72rem;font-weight:600">GDPR</span>
-          <span style="background:rgba(37,211,102,.15);color:var(--wa);padding:3px 10px;border-radius:6px;font-size:.72rem;font-weight:600">NABH</span>
+    <div class="foot-top">
+      <div class="foot-grid">
+
+        <!-- Brand column -->
+        <div>
+          <div class="foot-brand-logo">
+            <div class="foot-brand-logo-icon">🏥</div>
+            <div class="foot-brand-name">Hospi<span>Bot</span></div>
+          </div>
+          <p class="foot-brand-tagline">The WhatsApp-First Healthcare Operating System — built for every type of healthcare provider, from solo doctors to 500-bed hospital chains.</p>
+          <div class="foot-cert-row">
+            <div class="foot-cert"><div class="foot-cert-dot"></div>HIPAA</div>
+            <div class="foot-cert"><div class="foot-cert-dot"></div>DPDPA</div>
+            <div class="foot-cert"><div class="foot-cert-dot"></div>GDPR</div>
+            <div class="foot-cert"><div class="foot-cert-dot"></div>NABH</div>
+            <div class="foot-cert"><div class="foot-cert-dot" style="background:#06b6d4"></div>ABDM</div>
+          </div>
+          <div class="foot-social">
+            <a class="foot-social-btn" title="LinkedIn">in</a>
+            <a class="foot-social-btn" title="Twitter">𝕏</a>
+            <a class="foot-social-btn" title="YouTube">▶</a>
+            <a class="foot-social-btn" title="WhatsApp">💬</a>
+          </div>
         </div>
-      </div>
-      <div class="foot-col">
-        <h4>Product</h4>
-        <ul class="foot-links">
-          <li><a onclick="navigate('features')">Features</a></li>
-          <li><a onclick="navigate('solutions')">Solutions</a></li>
-          
-          <li><a onclick="navigate('portals')">All Portals</a></li>
-        </ul>
-      </div>
-      <div class="foot-col">
-        <h4>Company</h4>
-        <ul class="foot-links">
-          <li><a onclick="navigate('about')">About Us</a></li>
-          <li><a onclick="navigate('contact')">Contact</a></li>
-          <li><a>Careers</a></li>
-          <li><a>Blog</a></li>
-        </ul>
-      </div>
-      <div class="foot-col">
-        <h4>Legal</h4>
-        <ul class="foot-links">
-          <li><a>Privacy Policy</a></li>
-          <li><a>Terms of Service</a></li>
-          <li><a>HIPAA Compliance</a></li>
-          <li><a>Security</a></li>
-        </ul>
+
+        <!-- Product -->
+        <div class="foot-col">
+          <h4>Product</h4>
+          <ul class="foot-links">
+            <li><a onclick="navigate('features')">Features</a></li>
+            <li><a onclick="navigate('solutions')">Solutions</a></li>
+            <li><a onclick="navigate('portals')">All Portals</a></li>
+            <li><a onclick="navigate('about')">Security</a></li>
+            <li><a onclick="navigate('contact')">Integrations</a></li>
+          </ul>
+        </div>
+
+        <!-- Portals -->
+        <div class="foot-col">
+          <h4>Portals</h4>
+          <ul class="foot-links">
+            <li><a onclick="smoothNavigateTo('/clinical/login')">Clinical</a></li>
+            <li><a onclick="smoothNavigateTo('/diagnostic/login')">Diagnostic</a></li>
+            <li><a onclick="smoothNavigateTo('/pharmacy/login')">Pharmacy</a></li>
+            <li><a onclick="smoothNavigateTo('/homecare/login')">Home Care</a></li>
+            <li><a onclick="smoothNavigateTo('/wellness/login')">Wellness</a></li>
+            <li><a onclick="smoothNavigateTo('/services/login')">Services</a></li>
+          </ul>
+        </div>
+
+        <!-- Company -->
+        <div class="foot-col">
+          <h4>Company</h4>
+          <ul class="foot-links">
+            <li><a onclick="navigate('about')">About Us</a></li>
+            <li><a onclick="navigate('contact')">Contact</a></li>
+            <li><a>Careers</a></li>
+            <li><a>Blog</a></li>
+            <li><a>Privacy Policy</a></li>
+            <li><a>Terms of Service</a></li>
+          </ul>
+        </div>
+
+        <!-- CTA Box -->
+        <div>
+          <div class="foot-cta-box">
+            <h4>Ready to get started?</h4>
+            <p>Register your portal and go live in under 7 days. No credit card required.</p>
+            <button class="foot-cta-btn" onclick="smoothNavigateTo('/register')">Register Your Portal →</button>
+            <button class="foot-cta-btn outline" onclick="navigate('contact')">Book a Demo</button>
+          </div>
+          <div class="foot-whatsapp-pill" onclick="navigate('contact')">
+            💬 Chat on WhatsApp
+          </div>
+        </div>
+
       </div>
     </div>
-    <div class="foot-bot">
-      <span>© 2026 HospiBot. All rights reserved.</span>
-      <span>Made with ❤️ for healthcare providers worldwide | <a>support@hospibot.com</a></span>
+
+    <div class="foot-divider"></div>
+
+    <div class="foot-bottom">
+      <div class="foot-bottom-left">© 2026 HospiBot Technologies Pvt. Ltd. · Made with ❤️ for healthcare providers worldwide</div>
+      <div class="foot-bottom-right">
+        <a>Privacy Policy</a>
+        <a>Terms of Service</a>
+        <a>HIPAA Compliance</a>
+        <a onclick="navigate('contact')">support@hospibot.in</a>
+      </div>
     </div>
   </footer>
 </div>
@@ -1037,7 +1112,7 @@ textarea.fi{resize:vertical;min-height:100px}
     <div style="max-width:600px;margin:0 auto;position:relative">
       <h2>Find the right plan for your practice</h2>
       <p>Our team will help you identify the perfect configuration for your specific needs.</p>
-      <div class="cta-btns"><button class="btn btn-wa btn-lg" onclick="navigate('contact')">Talk to an Expert</button><button class="btn btn-outline btn-lg" onclick="navigate('contact')">View Pricing →</button></div>
+      <div class="cta-btns"><button class="btn btn-wa btn-lg" onclick="smoothNavigateTo('/register')">Start Free Trial →</button><button class="btn btn-outline btn-lg" onclick="navigate('contact')">Book a Demo →</button></div>
     </div>
   </div>
 </div>
@@ -1375,7 +1450,7 @@ function renderPortalCards() {
         <div class="pcrd-desc">${p.desc}</div>
         <ul class="pcrd-feats">${p.feats.map(f=>`<li style="--ck:${p.accent}">${f}</li>`).join('')}</ul>
         <div class="pcrd-btns">
-          <button class="pcrd-btn login" style="background:${p.grad}" onclick="window.location.href='/${p.id}/login'">Login</button>
+          <button class="pcrd-btn login" style="background:${p.grad}" onclick="smoothNavigateTo('/' + p.id + '/login')">Login</button>
           <button class="pcrd-btn register" style="border-color:${p.accent};color:${p.accent}" onclick="smoothNavigateTo('/register/${p.id}')">Register</button>
         </div>
       </div>
@@ -1407,7 +1482,11 @@ function toggleMenu() {
 
 // ===== DEMO CONFIRM =====
 function showDemoConfirm() {
-  alert("🎉 Thank you! Your demo request has been received.\n\nOur team will contact you on WhatsApp within 2 hours to confirm your slot.");
+  navigate('contact');
+  setTimeout(() => {
+    const el = document.getElementById('demo-form-success');
+    if (el) el.style.display = 'block';
+  }, 200);
 }
 
 // ===== BROWSER BACK/FORWARD =====
