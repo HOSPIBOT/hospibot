@@ -82,7 +82,7 @@ function PackageModal({
     setForm(f => ({
       ...f,
       testCodes: f.testCodes.includes(code)
-        ? f.testCodes.filter(c => c !== code)
+        ? f.testCodes.filter((c: string) => c !== code)
         : [...f.testCodes, code],
     }));
   };

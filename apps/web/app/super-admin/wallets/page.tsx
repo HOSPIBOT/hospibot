@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { api } from '@/lib/super-admin-api';
+import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
 import {
   Zap, MessageSquare, HardDrive, AlertTriangle, CheckCircle2,
