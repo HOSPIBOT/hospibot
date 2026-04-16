@@ -125,8 +125,8 @@ export default function TPAClaimsPage() {
   };
 
   // ── KPI aggregates ────────────────────────────────────────────────────────
-  const totalClaimed  = claims.reduce((s: number, c: any) => s + (c.claimAmount  ?? 0), 0);
-  const totalSettled  = claims.reduce((s: number, c: any) => s + (c.settledAmount ?? 0), 0);
+  const totalClaimed  = claims.reduce((s: any, c: any) => s + (c.claimAmount  ?? 0), 0);
+  const totalSettled  = claims.reduce((s: any, c: any) => s + (c.settledAmount ?? 0), 0);
   const pendingClaims = claims.filter((c: any) => ['SUBMITTED','PROCESSING'].includes(c.claimStatus ?? '')).length;
 
   return (

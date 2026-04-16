@@ -51,7 +51,7 @@ export default function SupplierDetailPage() {
     });
   }, [id]);
 
-  const totalSpend   = orders.filter((o: any) => o.status === 'RECEIVED').reduce((s: number, o: any) => s + (o.totalAmount ?? 0), 0);
+  const totalSpend   = orders.filter((o: any) => o.status === 'RECEIVED').reduce((s: any, o: any) => s + (o.totalAmount ?? 0), 0);
   const pendingOrders = orders.filter((o: any) => ['SENT', 'PARTIAL', 'DRAFT'].includes(o.status)).length;
   const lastOrderDate = orders.length > 0 ? orders[0].createdAt : null;
 

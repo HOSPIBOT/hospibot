@@ -108,7 +108,7 @@ function CartDrawer({ items, onClose, onRemove, onUpdateQty }: {
   const [step, setStep]         = useState<'cart' | 'checkout'>('cart');
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ name: '', phone: '', email: '', address: '', city: '', pincode: '' });
-  const total = items.reduce((s: number, i: any) => s + i.price * i.quantity, 0);
+  const total = items.reduce((s: any, i: any) => s + i.price * i.quantity, 0);
 
   const placeOrder = async () => {
     if (!form.name || !form.phone || !form.address) { toast.error('Name, phone and address required'); return; }
@@ -195,7 +195,7 @@ function CartDrawer({ items, onClose, onRemove, onUpdateQty }: {
         {items.length > 0 && (
           <div className="px-5 py-4 border-t border-slate-100">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-sm text-slate-600">Total ({items.reduce((s: number, i: any) => s + i.quantity, 0)} items)</span>
+              <span className="text-sm text-slate-600">Total ({items.reduce((s: any, i: any) => s + i.quantity, 0)} items)</span>
               <span className="text-lg font-bold text-slate-900">{formatINR(total)}</span>
             </div>
             {step === 'cart' ? (
@@ -272,7 +272,7 @@ export default function MarketplacePage() {
     else setCart(c => c.map((i: any) => i.id === id ? { ...i, quantity: qty } : i));
   };
 
-  const cartCount = cart.reduce((s: number, i: any) => s + i.quantity, 0);
+  const cartCount = cart.reduce((s: any, i: any) => s + i.quantity, 0);
 
   return (
     <div className="min-h-screen bg-slate-50">

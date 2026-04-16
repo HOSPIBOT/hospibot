@@ -37,8 +37,8 @@ export default function ServicesAnalyticsPage() {
       );
 
       const invoices: any[] = invoicesRes.data?.data ?? invoicesRes.data ?? [];
-      const paid  = invoices.filter((i: any) => i.status === 'PAID').reduce((s: number, i: any) => s + (i.totalAmount ?? 0), 0);
-      const total = invoices.reduce((s: number, i: any) => s + (i.totalAmount ?? 0), 0);
+      const paid  = invoices.filter((i: any) => i.status === 'PAID').reduce((s: any, i: any) => s + (i.totalAmount ?? 0), 0);
+      const total = invoices.reduce((s: any, i: any) => s + (i.totalAmount ?? 0), 0);
       const overdue = invoices.filter((i: any) => i.status === 'OVERDUE').length;
       const active  = invoices.filter((i: any) => i.status !== 'CANCELLED').length;
 
@@ -54,7 +54,7 @@ export default function ServicesAnalyticsPage() {
       const perType = CONTRACT_TYPES.map((type, i) => ({
         name  : type,
         value : invoices.length > 0
-          ? invoices.filter((_: any, j: number) => j % CONTRACT_TYPES.length === i).reduce((s: number, iv: any) => s + (iv.totalAmount ?? 0), 0)
+          ? invoices.filter((_: any, j: number) => j % CONTRACT_TYPES.length === i).reduce((s: any, iv: any) => s + (iv.totalAmount ?? 0), 0)
           : [1200000, 350000, 875000, 520000, 280000][i],
       }));
       setTypeDist(perType.filter((t: any) => t.value > 0));

@@ -39,9 +39,9 @@ export default function PatientLedgerPage() {
   if (loading) return <div className="flex items-center justify-center h-screen text-slate-400">Loading…</div>;
   if (!patient) return <div className="text-center py-20 text-slate-400">Patient not found</div>;
 
-  const totalBilled  = invoices.reduce((s: number, i: any) => s + (i.totalAmount || 0), 0);
-  const totalPaid    = invoices.reduce((s: number, i: any) => s + (i.paidAmount  || 0), 0);
-  const totalDue     = invoices.reduce((s: number, i: any) => s + (i.dueAmount   || 0), 0);
+  const totalBilled  = invoices.reduce((s: any, i: any) => s + (i.totalAmount || 0), 0);
+  const totalPaid    = invoices.reduce((s: any, i: any) => s + (i.paidAmount  || 0), 0);
+  const totalDue     = invoices.reduce((s: any, i: any) => s + (i.dueAmount   || 0), 0);
   const patName      = `${patient.firstName} ${patient.lastName || ''}`.trim();
 
   return (

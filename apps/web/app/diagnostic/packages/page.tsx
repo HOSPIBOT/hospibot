@@ -91,7 +91,7 @@ function PackageModal({
     ? catalog.filter((t: any) => t.code?.toLowerCase().includes(search.toLowerCase()) || t.name?.toLowerCase().includes(search.toLowerCase()))
     : catalog;
 
-  const totalRetailPrice = form.testCodes.reduce((sum: number, code: any) => {
+  const totalRetailPrice = form.testCodes.reduce((sum: any, code: any) => {
     const test = catalog.find((t: any) => t.code === code);
     return sum + (test?.price ?? 0);
   }, 0);

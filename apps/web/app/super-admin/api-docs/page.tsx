@@ -203,7 +203,7 @@ export default function APIDocsPage() {
     });
   };
 
-  const totalEndpoints = API_SECTIONS.reduce((s: number, sect: any) =>s+sect.endpoints.length, 0);
+  const totalEndpoints = API_SECTIONS.reduce((s: any, sect: any) =>s+sect.endpoints.length, 0);
 
   return (
     <div className="space-y-5">

@@ -73,8 +73,8 @@ export default function ServicesBillingPage() {
     );
   });
 
-  const collected   = invoices.filter((i: any) => i.status === 'PAID').reduce((s: number, i: any) => s + (i.totalAmount ?? 0), 0);
-  const outstanding = invoices.filter((i: any) => i.status !== 'PAID').reduce((s: number, i: any) => s + (i.totalAmount ?? 0), 0);
+  const collected   = invoices.filter((i: any) => i.status === 'PAID').reduce((s: any, i: any) => s + (i.totalAmount ?? 0), 0);
+  const outstanding = invoices.filter((i: any) => i.status !== 'PAID').reduce((s: any, i: any) => s + (i.totalAmount ?? 0), 0);
   const overdue     = invoices.filter((i: any) => i.status === 'OVERDUE').length;
 
   const clientName = (inv: any) =>

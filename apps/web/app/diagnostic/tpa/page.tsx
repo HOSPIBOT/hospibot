@@ -138,7 +138,7 @@ export default function TPAPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const totalPending = clients.reduce((s: number, c: any) => s + (c.pendingAmount ?? 0), 0);
+  const totalPending = clients.reduce((s: any, c: any) => s + (c.pendingAmount ?? 0), 0);
 
   return (
     <div className="space-y-5">

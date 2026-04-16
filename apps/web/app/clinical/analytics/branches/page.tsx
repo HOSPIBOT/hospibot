@@ -40,9 +40,9 @@ export default function BranchAnalyticsPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const totalRevenue = analytics.reduce((s: number, b: any) => s + (b.revenue||0), 0);
-  const totalAppts   = analytics.reduce((s: number, b: any) => s + (b.appointments||0), 0);
-  const totalPats    = analytics.reduce((s: number, b: any) => s + (b.patients||0), 0);
+  const totalRevenue = analytics.reduce((s: any, b: any) => s + (b.revenue||0), 0);
+  const totalAppts   = analytics.reduce((s: any, b: any) => s + (b.appointments||0), 0);
+  const totalPats    = analytics.reduce((s: any, b: any) => s + (b.patients||0), 0);
 
   return (
     <div className="space-y-5">

@@ -45,7 +45,7 @@ export default function NPSDashboard() {
   // Compute NPS
   const ratingsData = reviews.filter((r: any) => r.rating);
   const avg = ratingsData.length > 0
-    ? (ratingsData.reduce((s: number, r: any) => s + (r.rating || 0), 0) / ratingsData.length).toFixed(1)
+    ? (ratingsData.reduce((s: any, r: any) => s + (r.rating || 0), 0) / ratingsData.length).toFixed(1)
     : '—';
 
   const promoters  = ratingsData.filter((r: any) => r.rating >= 4).length;

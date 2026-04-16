@@ -33,8 +33,8 @@ export default function DoctorAnalyticsPage() {
     revenue: Math.round((d.revenue || d.totalRevenue || 0) / 100),
   }));
 
-  const totalAppts   = topDoctors.reduce((s: number, d: any) => s + (d.appointmentCount||0), 0);
-  const totalRevenue = topDoctors.reduce((s: number, d: any) => s + (d.revenue||d.totalRevenue||0), 0);
+  const totalAppts   = topDoctors.reduce((s: any, d: any) => s + (d.appointmentCount||0), 0);
+  const totalRevenue = topDoctors.reduce((s: any, d: any) => s + (d.revenue||d.totalRevenue||0), 0);
 
   const exportCSV = () => {
     setExporting(true);

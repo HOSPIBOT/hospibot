@@ -174,8 +174,8 @@ export default function AutomationPage() {
   };
 
   const activeRules = rules.filter((r: any) => r.isActive).length;
-  const totalSent = rules.reduce((s: number, r: any) => s + (r.sentTotal ?? 0), 0);
-  const totalConverted = rules.reduce((s: number, r: any) => s + (r.convertedTotal ?? 0), 0);
+  const totalSent = rules.reduce((s: any, r: any) => s + (r.sentTotal ?? 0), 0);
+  const totalConverted = rules.reduce((s: any, r: any) => s + (r.convertedTotal ?? 0), 0);
 
   return (
     <div className="space-y-5">

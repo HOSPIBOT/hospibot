@@ -261,7 +261,7 @@ export default function VisitConsolePage() {
   };
 
   const createInvoice = async () => {
-    const total = billItems.reduce((s: number, i: any) => s + i.total, 0);
+    const total = billItems.reduce((s: any, i: any) => s + i.total, 0);
     setSaving(true);
     try {
       await api.post('/billing/invoices', {
@@ -305,7 +305,7 @@ export default function VisitConsolePage() {
   const patientName = `${patient?.firstName} ${patient?.lastName || ''}`.trim();
   const doctorName = `Dr. ${doctor?.user?.firstName} ${doctor?.user?.lastName || ''}`.trim();
 
-  const totalBill = billItems.reduce((s: number, i: any) => s + i.total, 0);
+  const totalBill = billItems.reduce((s: any, i: any) => s + i.total, 0);
 
   return (
     <div className="space-y-4">

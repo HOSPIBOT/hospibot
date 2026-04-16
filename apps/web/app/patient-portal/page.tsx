@@ -194,7 +194,7 @@ export default function PatientPortalPage() {
               <div className="bg-white rounded-2xl border border-slate-100 p-5">
                 <h3 className="font-bold text-slate-900 mb-3 flex items-center gap-2"><CreditCard className="w-4 h-4 text-[#0D7C66]"/> Outstanding Balance</h3>
                 {(() => {
-                  const totalDue = (patient?.invoices||[]).reduce((s:number,i:any)=>s+(i.dueAmount||0),0);
+                  const totalDue = (patient?.invoices||[]).reduce((s: any, i: any) =>s+(i.dueAmount||0),0);
                   return totalDue > 0 ? (
                     <div className="bg-red-50 rounded-xl p-3">
                       <p className="text-lg font-bold text-red-600">{formatINR(totalDue)}</p>

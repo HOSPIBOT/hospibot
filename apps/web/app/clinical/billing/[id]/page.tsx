@@ -47,8 +47,8 @@ export default function InvoicePrintPage() {
   }
 
   const items = invoice.items as any[];
-  const subtotal = items.reduce((s: number, i: any) => s + (i.unitPrice * i.quantity), 0);
-  const gstTotal = items.reduce((s: number, i: any) => s + (i.gstAmount || 0), 0);
+  const subtotal = items.reduce((s: any, i: any) => s + (i.unitPrice * i.quantity), 0);
+  const gstTotal = items.reduce((s: any, i: any) => s + (i.gstAmount || 0), 0);
   const discount = invoice.discountAmount || 0;
   const total    = invoice.totalAmount;
 

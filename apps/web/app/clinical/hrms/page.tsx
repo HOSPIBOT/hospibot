@@ -116,9 +116,9 @@ export default function HRMSPayrollPage() {
     setExporting(false);
   };
 
-  const totalPayable   = payroll.reduce((s: number, r: any) => s + r.netSalary, 0);
-  const totalDeductions= payroll.reduce((s: number, r: any) => s + r.deductions, 0);
-  const totalBonus     = payroll.reduce((s: number, r: any) => s + r.bonus, 0);
+  const totalPayable   = payroll.reduce((s: any, r: any) => s + r.netSalary, 0);
+  const totalDeductions= payroll.reduce((s: any, r: any) => s + r.deductions, 0);
+  const totalBonus     = payroll.reduce((s: any, r: any) => s + r.bonus, 0);
   const pendingCount   = payroll.filter((r: any) => r.status==='PENDING').length;
 
   return (

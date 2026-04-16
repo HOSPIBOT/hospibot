@@ -81,10 +81,10 @@ export default function WellnessAnalyticsPage() {
   useEffect(() => { load(); }, [period]);
 
   const s = stats ?? {};
-  const renewalsDue = (planDist.reduce((sum: number, p: any) => sum + p.value, 0) * 0.12) | 0;
+  const renewalsDue = (planDist.reduce((sum: any, p: any) => sum + p.value, 0) * 0.12) | 0;
 
   const KPI_CARDS = [
-    { label: 'Active Members',   value: (s.totalPatients ?? planDist.reduce((a: number, p: any) => a + p.value, 0)) || '—', icon: Users,    color: COLOR     },
+    { label: 'Active Members',   value: (s.totalPatients ?? planDist.reduce((a: any, p: any) => a + p.value, 0)) || '—', icon: Users,    color: COLOR     },
     { label: "Sessions This Mo", value: s.monthAppointments ?? s.todayTotal ?? '—',                            icon: Calendar, color: '#8B5CF6' },
     { label: 'Renewals Due',     value: renewalsDue || '—',                                                    icon: Star,     color: '#F59E0B' },
     { label: 'Month Revenue',    value: s.monthRevenue ? formatINR(s.monthRevenue) : '—',                      icon: TrendingUp,color: '#10B981' },

@@ -19,7 +19,7 @@ function buildMrrChart(
   planDistribution: { plan: string; count: number }[]
 ) {
   const MRR_PLAN: Record<string, number> = { STARTER: 500, GROWTH: 1200, ENTERPRISE: 4500 };
-  const currentMrr = planDistribution.reduce((s: number, p: any) => s + p.count * (MRR_PLAN[p.plan] || 0), 0);
+  const currentMrr = planDistribution.reduce((s: any, p: any) => s + p.count * (MRR_PLAN[p.plan] || 0), 0);
 
   // Build last-6-months buckets
   const months: { month: string; mrr: number }[] = [];

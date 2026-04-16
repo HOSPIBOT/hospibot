@@ -33,7 +33,7 @@ export default function DoctorProfilePage() {
 
   // Availability: {Monday: {start:'09:00', end:'17:00', isAvailable: true}, ...}
   const [avail, setAvail] = useState<Record<string, { start: string; end: string; isAvailable: boolean }>>(
-    DAYS.reduce((acc: number, d: any) => ({
+    DAYS.reduce((acc: any, d: any) => ({
       ...acc,
       [d]: { start: '09:00', end: '17:00', isAvailable: d !== 'Sunday' },
     }), {} as any)

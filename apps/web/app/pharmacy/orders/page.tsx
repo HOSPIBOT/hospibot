@@ -58,7 +58,7 @@ function CreateOrderModal({ onClose, onCreated }: { onClose: () => void; onCreat
 
   const removeItem = (productId: string) => setForm(f => ({ ...f, items: f.items.filter((i: any) => i.productId !== productId) }));
 
-  const subtotal = form.items.reduce((s: number, i: any) => s + i.unitPrice * i.quantity, 0);
+  const subtotal = form.items.reduce((s: any, i: any) => s + i.unitPrice * i.quantity, 0);
   const billAmount = subtotal - (form.discount * 100);
 
   const handleSubmit = async () => {

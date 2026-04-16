@@ -123,7 +123,7 @@ export default function PlansPage() {
     if (!plan) return 0;
     return getPlanTenants(key) * plan.price;
   };
-  const totalMrr = plans.reduce((sum: number, p: any) => sum + getPlanMrr(p.key), 0);
+  const totalMrr = plans.reduce((sum: any, p: any) => sum + getPlanMrr(p.key), 0);
 
   return (
     <div className="space-y-6">

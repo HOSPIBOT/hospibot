@@ -415,7 +415,7 @@ export default function PatientDetailPage() {
                 <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
                   <AlertTriangle className="w-4 h-4 text-red-600" />
                   <p className="text-sm font-semibold text-red-800">
-                    Outstanding: {formatINR(p.invoices.reduce((sum: number, i: any) => sum + i.dueAmount, 0))}
+                    Outstanding: {formatINR(p.invoices.reduce((sum: any, i: any) => sum + i.dueAmount, 0))}
                   </p>
                 </div>
               )}

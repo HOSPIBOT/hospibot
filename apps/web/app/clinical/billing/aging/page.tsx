@@ -99,12 +99,12 @@ export default function InvoiceAgingPage() {
     return {
       bracket: b,
       count: items.length,
-      total: items.reduce((s: number, i: any) => s + i.dueAmount, 0),
+      total: items.reduce((s: any, i: any) => s + i.dueAmount, 0),
       ...BRACKET_CONFIG[b],
     };
   });
 
-  const totalDue    = invoices.reduce((s: number, i: any) => s + i.dueAmount, 0);
+  const totalDue    = invoices.reduce((s: any, i: any) => s + i.dueAmount, 0);
   const displayed   = filter === 'all' ? invoices : invoices.filter((i: any) => i.bracket === filter);
 
   return (

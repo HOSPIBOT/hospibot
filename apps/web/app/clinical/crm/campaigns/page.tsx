@@ -473,9 +473,9 @@ export default function CampaignsPage() {
   };
 
   // Overall stats
-  const totalSent      = campaigns.reduce((s: number, c: any) => s + (c.sentCount || 0), 0);
-  const totalRead      = campaigns.reduce((s: number, c: any) => s + (c.readCount || 0), 0);
-  const totalConverted = campaigns.reduce((s: number, c: any) => s + (c.convertedCount || 0), 0);
+  const totalSent      = campaigns.reduce((s: any, c: any) => s + (c.sentCount || 0), 0);
+  const totalRead      = campaigns.reduce((s: any, c: any) => s + (c.readCount || 0), 0);
+  const totalConverted = campaigns.reduce((s: any, c: any) => s + (c.convertedCount || 0), 0);
   const avgReadRate    = totalSent > 0 ? Math.round((totalRead / totalSent) * 100) : 0;
 
   return (

@@ -52,7 +52,7 @@ export default function ContractsPage() {
       }).catch(() => {});
   }, []);
 
-  const totalValue = contracts.filter((c: any) => c.status === 'ACTIVE').reduce((s: number, c: any) => s + c.value, 0);
+  const totalValue = contracts.filter((c: any) => c.status === 'ACTIVE').reduce((s: any, c: any) => s + c.value, 0);
 
   const save = async () => {
     if (!form.client || !form.value) { toast.error('Client name and value required'); return; }

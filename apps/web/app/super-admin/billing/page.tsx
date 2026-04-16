@@ -50,7 +50,7 @@ export default function PlatformBillingPage() {
   useEffect(() => { load(page); }, [page]);
 
   // Billing aggregates
-  const totalMRR    = tenants.reduce((s: number, t: any) => s + (PLANS.find((p: any) =>p.id===t.plan)?.price||0), 0);
+  const totalMRR    = tenants.reduce((s: any, t: any) => s + (PLANS.find((p: any) =>p.id===t.plan)?.price||0), 0);
   const activeCount = tenants.filter((t: any) => t.status === 'ACTIVE').length;
   const trialCount  = tenants.filter((t: any) => t.status === 'TRIAL').length;
   const churnCount  = tenants.filter((t: any) => ['CANCELLED','EXPIRED'].includes(t.status)).length;

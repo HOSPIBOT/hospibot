@@ -61,8 +61,8 @@ export default function ServicesDashboard() {
       const paid      = invoices.filter((i: any) => i.status === 'PAID');
       const pending   = invoices.filter((i: any) => i.status === 'PENDING');
       const overdue   = invoices.filter((i: any) => i.status === 'OVERDUE');
-      const collected = paid.reduce((s: number, i: any) => s + (i.totalAmount ?? 0), 0);
-      const outstanding = [...pending, ...overdue].reduce((s: number, i: any) => s + (i.totalAmount ?? 0), 0);
+      const collected = paid.reduce((s: any, i: any) => s + (i.totalAmount ?? 0), 0);
+      const outstanding = [...pending, ...overdue].reduce((s: any, i: any) => s + (i.totalAmount ?? 0), 0);
 
       setKpis({
         activeContracts : invoices.length,

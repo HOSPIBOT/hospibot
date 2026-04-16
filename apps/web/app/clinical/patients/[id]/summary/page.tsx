@@ -37,7 +37,7 @@ export default function PatientSummaryPage() {
   const recentVisits        = (patient.visits || []).slice(0, 3);
   const recentInvoices      = (patient.invoices || []).slice(0, 5);
   const recentLab           = (patient.labOrders || []).slice(0, 4);
-  const totalDue            = recentInvoices.reduce((s: number, i: any) => s + (i.dueAmount || 0), 0);
+  const totalDue            = recentInvoices.reduce((s: any, i: any) => s + (i.dueAmount || 0), 0);
 
   return (
     <div className="min-h-screen bg-slate-100">
@@ -214,7 +214,7 @@ export default function PatientSummaryPage() {
                 <div className="grid grid-cols-3 gap-3 mb-3">
                   {[
                     { l: 'Total Invoices', v: recentInvoices.length },
-                    { l: 'Total Billed',   v: formatINR(recentInvoices.reduce((s: number, i: any) => s + (i.totalAmount || 0), 0)) },
+                    { l: 'Total Billed',   v: formatINR(recentInvoices.reduce((s: any, i: any) => s + (i.totalAmount || 0), 0)) },
                     { l: 'Balance Due',    v: formatINR(totalDue), highlight: totalDue > 0 },
                   ].map((s: any) => (
                     <div key={s.l} className={`rounded-xl px-3 py-2 border ${s.highlight ? 'bg-red-50 border-red-200' : 'bg-slate-50 border-slate-100'}`}>

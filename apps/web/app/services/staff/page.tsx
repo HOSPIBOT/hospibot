@@ -94,7 +94,7 @@ export default function ServicesStaffPage() {
 
   const active   = staff.filter((s: any) => s.status === 'ACTIVE').length;
   const onLeave  = staff.filter((s: any) => s.status === 'ON_LEAVE').length;
-  const contracts = staff.reduce((a: number, s: any) => a + (s.contracts ?? 0), 0);
+  const contracts = staff.reduce((a: any, s: any) => a + (s.contracts ?? 0), 0);
 
   return (
     <div className="space-y-5">

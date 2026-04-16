@@ -139,7 +139,7 @@ export default function PatientDetailPage() {
   const name = `${patient.firstName} ${patient.lastName ?? ''}`.trim();
   const totalSpend = orders
     .filter((o: any) => o.status === 'DELIVERED')
-    .reduce((s: number, o: any) => s + (o.totalAmount ?? 0), 0);
+    .reduce((s: any, o: any) => s + (o.totalAmount ?? 0), 0);
   const lastOrder = orders[0];
   const criticalOrders = orders.filter((o: any) =>
     (o.criticalAlerts ?? []).some((a: any) => !a.acknowledgedAt)

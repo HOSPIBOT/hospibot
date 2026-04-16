@@ -235,7 +235,7 @@ function NewOrderPageInner() {
   const [notes, setNotes] = useState('');
   const [paymentMode, setPaymentMode] = useState('CASH');
 
-  const totalAmount = selectedTests.reduce((s: number, t: any) => s + t.price, 0);
+  const totalAmount = selectedTests.reduce((s: any, t: any) => s + t.price, 0);
   const statPremium = isStat ? 200 : 0;
   const grandTotal = totalAmount + statPremium;
 

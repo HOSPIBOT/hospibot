@@ -112,8 +112,8 @@ export default function BillingPage() {
   const removeItem = (id: string) => setForm(f => ({ ...f, items: f.items.filter((i: any) => i.id !== id) }));
 
   // Totals
-  const subtotal  = form.items.reduce((s: number, i: any) => s + i.amount, 0);
-  const gstTotal  = form.items.reduce((s: number, i: any) => s + i.gstAmount, 0);
+  const subtotal  = form.items.reduce((s: any, i: any) => s + i.amount, 0);
+  const gstTotal  = form.items.reduce((s: any, i: any) => s + i.gstAmount, 0);
   const discount  = form.discount;
   const total     = subtotal + gstTotal - discount;
 

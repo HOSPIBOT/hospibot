@@ -279,7 +279,7 @@ function CreatePOModal({ suppliers, onClose, onCreated }: { suppliers: any[]; on
     setForm(f => ({ ...f, items: f.items.map((i: any) => i.productId === id ? { ...i, [field]: val } : i) }));
   };
 
-  const total = form.items.reduce((s: number, i: any) => s + i.quantity * i.unitCost, 0);
+  const total = form.items.reduce((s: any, i: any) => s + i.quantity * i.unitCost, 0);
 
   const handleSubmit = async () => {
     if (!form.supplierId || form.items.length === 0) { toast.error('Select supplier and add items'); return; }
