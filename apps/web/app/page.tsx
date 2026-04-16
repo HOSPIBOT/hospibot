@@ -1,13 +1,30 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 /**
  * HospiBot Marketing Website — served at the root URL
- * Full marketing site at /site/index.html rendered full-viewport.
- * All Login/Register buttons wired to real Next.js portal routes.
+ * Renders the full marketing site via iframe.
+ * Listens for postMessage events from the iframe for navigation.
  */
 export default function MarketingHome() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Listen for navigation requests from the marketing site iframe
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data && event.data.type === 'NAVIGATE') {
+        const url = event.data.url as string;
+        if (url && url.startsWith('/')) {
+          router.push(url);
+        }
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [router]);
+
   return (
     <iframe
       src="/site/index.html"

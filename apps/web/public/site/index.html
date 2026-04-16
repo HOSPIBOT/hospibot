@@ -34,8 +34,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;height:68px;padding:0 2.5re
 .nav-logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--p),var(--wa));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.9rem}
 .nav-logo span{color:var(--wa)}
 .nav-links{display:flex;align-items:center;gap:1.8rem;list-style:none}
-.nav-links a{color:rgba(255,255,255,.75);font-size:.92rem;font-weight:500;transition:color .2s;cursor:pointer;font-family:'Poppins',sans-serif}
-.nav-links a:hover{color:#fff}
+.nav-links a{color:rgba(255,255,255,.75);font-size:.92rem;font-weight:500;transition:color .2s;cursor:pointer;font-family:'Poppins',sans-serif;user-select:none}
+.nav-links a:hover{color:#fff;text-decoration:none}
 .nav-cta{display:flex;gap:10px;align-items:center}
 .nav-mobile-btn{display:none;background:none;border:none;color:#fff;font-size:1.4rem;cursor:pointer;padding:4px}
 .mobile-menu{display:none;position:fixed;top:68px;left:0;right:0;background:rgba(6,13,24,.98);padding:20px;z-index:999;border-bottom:1px solid rgba(255,255,255,.1)}
@@ -430,9 +430,9 @@ textarea.fi{resize:vertical;min-height:100px}
   <button class="nav-mobile-btn" onclick="toggleMenu()">☰</button>
 </nav>
 <div class="mobile-menu" id="mobileMenu">
+  <a onclick="navigate('home');toggleMenu()">Home</a>
   <a onclick="navigate('solutions');toggleMenu()">Solutions</a>
   <a onclick="navigate('features');toggleMenu()">Features</a>
-  
   <a onclick="navigate('about');toggleMenu()">About</a>
   <a onclick="navigate('contact');toggleMenu()">Contact</a>
   <a onclick="navigate('portals');toggleMenu()" style="color:var(--wa);font-weight:700">All Portals →</a>
@@ -1413,26 +1413,24 @@ function smoothNavigateTo(url) {
     '/clinical': '#0d9488', '/diagnostic': '#1e3a5f', '/pharmacy': '#166534',
     '/homecare': '#b45309', '/equipment': '#6d28d9', '/wellness': '#be185d',
     '/services': '#0369a1', '/register/veterinary': '#65a30d',
-    '/register/digital': '#0f766e', '/register': '#0d9488',
+    '/register/digital': '#0f766e', '/register': '#0d9488', '/auth': '#1e3a5f',
   };
   const matched = Object.keys(colors).find(k => url.startsWith(k));
-  // Show overlay animation
+  // Show colour overlay animation
   if (overlay) {
     overlay.style.background = matched ? colors[matched] : '#0d9488';
     overlay.classList.add('out');
   }
-  // Navigate top window after animation (handles both iframe and direct)
+  // Use postMessage to parent window — works reliably from inside iframe
   setTimeout(() => {
     try {
-      if (window.top && window.top !== window) {
-        window.top.location.href = url;
-      } else {
-        window.location.href = url;
-      }
+      // Tell parent Next.js page to navigate
+      window.parent.postMessage({ type: 'NAVIGATE', url: url }, '*');
     } catch(e) {
-      window.location.href = url;
+      // Fallback: try direct navigation
+      try { window.top.location.href = url; } catch(e2) { window.location.href = url; }
     }
-  }, 450);
+  }, 440);
 }
 
 // ===== RENDER PORTAL CARDS =====
@@ -1451,7 +1449,7 @@ function renderPortalCards() {
         <ul class="pcrd-feats">${p.feats.map(f=>`<li style="--ck:${p.accent}">${f}</li>`).join('')}</ul>
         <div class="pcrd-btns">
           <button class="pcrd-btn login" style="background:${p.grad}" onclick="smoothNavigateTo('/' + p.id + '/login')">Login</button>
-          <button class="pcrd-btn register" style="border-color:${p.accent};color:${p.accent}" onclick="smoothNavigateTo('/register/${p.id}')">Register</button>
+          <button class="pcrd-btn register" style="border-color:${p.accent};color:${p.accent}" onclick="smoothNavigateTo('/register/' + p.id)">Register</button>
         </div>
       </div>
     </div>
