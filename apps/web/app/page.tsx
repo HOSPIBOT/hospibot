@@ -1,18 +1,26 @@
 'use client';
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 
-export default function Home() {
-  const router = useRouter();
+import { useEffect, useRef } from 'react';
 
-  useEffect(() => {
-    // If the user has a stored portal slug, send them to that portal's login.
-    // Super Admin (no portalSlug stored) goes to /auth/login.
-    const slug = typeof window !== 'undefined'
-      ? localStorage.getItem('hospibot_portal_slug')
-      : null;
-    router.replace(slug ? `/${slug}/login` : '/auth/login');
-  }, []);
-
-  return null;
+/**
+ * HospiBot Marketing Website — served at the root URL
+ * Full marketing site at /site/index.html rendered full-viewport.
+ * All Login/Register buttons wired to real Next.js portal routes.
+ */
+export default function MarketingHome() {
+  return (
+    <iframe
+      src="/site/index.html"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        border: 'none',
+        display: 'block',
+      }}
+      title="HospiBot — WhatsApp-First Healthcare Operating System"
+    />
+  );
 }

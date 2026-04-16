@@ -15,6 +15,11 @@
     --color-border: #E2E8F0;
   }
 
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+
   body {
     @apply bg-surface text-slate-800 antialiased;
   }
