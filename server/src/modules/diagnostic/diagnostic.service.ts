@@ -1295,11 +1295,11 @@ export class DiagnosticService {
       this.prisma.labOrder.count({ where: { tenantId, status: 'DELIVERED', createdAt: { gte: from } } }),
       this.prisma.homeCollection.count({ where: { tenantId, createdAt: { gte: from } } }),
       this.prisma.criticalValueAlert.count({ where: { tenantId, createdAt: { gte: from } } }),
-      this.prisma.diagnosticAutomationExecution.groupBy({
+      (this.prisma as any).diagnosticAutomationExecution?.groupBy({
         by: ['status'],
         where: { tenantId, createdAt: { gte: from } },
         _count: true,
-      }),
+      }) ?? Promise.resolve([]),
     ]);
 
     const totalRevenue = orders.reduce((s, o) => s + (o.totalAmount ?? 0), 0);
