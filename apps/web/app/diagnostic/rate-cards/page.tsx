@@ -60,7 +60,7 @@ function RateCardModal({ card, onClose, onSaved }: { card?: RateCard; onClose: (
     } finally { setSaving(false); }
   };
 
-  const selectedType = RATE_CARD_TYPES.find(t => t.value === form.type);
+  const selectedType = RATE_CARD_TYPES.find((t: any) => t.value === form.type);
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
@@ -85,7 +85,7 @@ function RateCardModal({ card, onClose, onSaved }: { card?: RateCard; onClose: (
           <div>
             <label className={labelCls}>Card Type</label>
             <div className="grid grid-cols-1 gap-2">
-              {RATE_CARD_TYPES.map(t => (
+              {RATE_CARD_TYPES.map((t: any) => (
                 <button key={t.value} onClick={() => setForm(f => ({ ...f, type: t.value }))}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 text-left transition-all ${
                     form.type === t.value ? 'border-[#1E3A5F] bg-[#1E3A5F]/5' : 'border-slate-200 hover:border-slate-300'
@@ -149,7 +149,7 @@ function RateCardModal({ card, onClose, onSaved }: { card?: RateCard; onClose: (
 }
 
 function RateCardCard({ card, onEdit }: { card: RateCard; onEdit: () => void }) {
-  const type = RATE_CARD_TYPES.find(t => t.value === card.type);
+  const type = RATE_CARD_TYPES.find((t: any) => t.value === card.type);
 
   return (
     <div className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-all">
@@ -244,8 +244,8 @@ export default function RateCardsPage() {
 
       {/* Type overview */}
       <div className="grid grid-cols-5 gap-3">
-        {RATE_CARD_TYPES.map(t => {
-          const count = cards.filter(c => c.type === t.value).length;
+        {RATE_CARD_TYPES.map((t: any) => {
+          const count = cards.filter((c: any) => c.type === t.value).length;
           return (
             <div key={t.value} className="bg-white rounded-2xl border border-slate-100 p-4 text-center">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-2"
@@ -279,7 +279,7 @@ export default function RateCardsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-4">
-          {cards.map(card => (
+          {cards.map((card: any) => (
             <RateCardCard
               key={card.id}
               card={card}

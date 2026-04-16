@@ -93,7 +93,7 @@ export default function HomecareDashboard() {
         </div>
       ) : (
         <div className="grid grid-cols-3 lg:grid-cols-6 gap-4">
-          {KPI_CARDS.map(k => (
+          {KPI_CARDS.map((k: any) => (
             <div key={k.label} className="bg-white rounded-2xl border border-slate-100 p-4 hover:shadow-md transition-shadow">
               <div className="flex items-center gap-1.5 mb-2">
                 <k.icon className="w-3.5 h-3.5 flex-shrink-0" style={{ color: k.color }} />
@@ -147,7 +147,7 @@ export default function HomecareDashboard() {
           </div>
           {loading ? (
             <div className="space-y-3">
-              {[1, 2, 3].map(i => <div key={i} className="animate-pulse bg-slate-100 rounded-xl h-14" />)}
+              {[1, 2, 3].map((i: any) => <div key={i} className="animate-pulse bg-slate-100 rounded-xl h-14" />)}
             </div>
           ) : recent.length === 0 ? (
             <div className="py-10 text-center">
@@ -194,7 +194,7 @@ export default function HomecareDashboard() {
           { href: '/homecare/staff',    label: 'Staff Dispatch',icon: Users,   color: '#3B82F6'  },
           { href: '/homecare/visits',   label: 'Home Visits',  icon: Home,     color: '#10B981'  },
           { href: '/homecare/patients', label: 'Clients',      icon: Activity, color: '#F59E0B'  },
-        ].map(l => (
+        ].map((l: any) => (
           <a key={l.href} href={l.href}
             className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-all group flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"

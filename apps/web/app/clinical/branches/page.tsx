@@ -136,7 +136,7 @@ export default function BranchesPage() {
   const toggleActive = async (b: any) => {
     try {
       await api.patch(`/tenants/current/branches/${b.id}`, { isActive: !b.isActive });
-      setBranches(prev => prev.map(x => x.id === b.id ? { ...x, isActive: !x.isActive } : x));
+      setBranches(prev => prev.map((x: any) => x.id === b.id ? { ...x, isActive: !x.isActive } : x));
       toast.success(`${b.name} ${!b.isActive ? 'activated' : 'deactivated'}`);
     } catch { toast.error('Failed to update'); }
   };
@@ -183,7 +183,7 @@ export default function BranchesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-4">
-          {branches.map(b => (
+          {branches.map((b: any) => (
             <div key={b.id} className={`bg-white rounded-2xl border-2 p-5 transition-all ${b.isMain ? 'border-[#0D7C66]/30' : 'border-slate-100'} ${!b.isActive ? 'opacity-60' : ''}`}>
               {/* Header */}
               <div className="flex items-start justify-between mb-4">

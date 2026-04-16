@@ -78,7 +78,7 @@ export default function RegistrationQRPage() {
                 { step: '1', label: 'Scan QR', desc: 'Use your phone camera' },
                 { step: '2', label: 'Fill Details', desc: 'Name, phone, health info' },
                 { step: '3', label: 'Get Health ID', desc: 'Show to reception' },
-              ].map(s => (
+              ].map((s: any) => (
                 <div key={s.step} className="text-center">
                   <div className="w-10 h-10 rounded-2xl bg-[#E8F5F0] text-[#0D7C66] font-black text-lg flex items-center justify-center mx-auto mb-2">
                     {s.step}

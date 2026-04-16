@@ -73,13 +73,13 @@ function AddProductModal({ onClose, onCreated }: { onClose: () => void; onCreate
               <div>
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Form</label>
                 <select className={inputCls} value={form.form} onChange={set('form')}>
-                  {FORMS.map(f => <option key={f} value={f}>{f}</option>)}
+                  {FORMS.map((f: any) => <option key={f} value={f}>{f}</option>)}
                 </select>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Category</label>
                 <select className={inputCls} value={form.category} onChange={set('category')}>
-                  {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                  {CATEGORIES.map((c: any) => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div>
@@ -122,13 +122,13 @@ function AddProductModal({ onClose, onCreated }: { onClose: () => void; onCreate
               <div>
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">GST Rate (%)</label>
                 <select className={inputCls} value={form.gstRate} onChange={set('gstRate')}>
-                  {[0, 5, 12, 18, 28].map(r => <option key={r} value={r}>{r}%</option>)}
+                  {[0, 5, 12, 18, 28].map((r: any) => <option key={r} value={r}>{r}%</option>)}
                 </select>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Unit</label>
                 <select className={inputCls} value={form.unit} onChange={set('unit')}>
-                  {['Strip','Bottle','Vial','Tube','Box','Sachet','Ampule','Patch'].map(u => <option key={u} value={u}>{u}</option>)}
+                  {['Strip','Bottle','Vial','Tube','Box','Sachet','Ampule','Patch'].map((u: any) => <option key={u} value={u}>{u}</option>)}
                 </select>
               </div>
               <div>
@@ -229,8 +229,8 @@ export default function PharmacyProductsPage() {
       const res = await api.get('/pharmacy/products', { params: { limit: 5000 } });
       const all: any[] = res.data.data ?? products;
       const header = ['Name', 'Generic Name', 'Category', 'Form', 'Strength', 'Stock', 'Min Stock', 'Active'];
-      const rows = all.map(p => [p.name??'', p.genericName??'', p.category??'', p.form??'', p.strength??'', p.currentStock??0, p.minimumStock??0, p.isActive!==false?'Yes':'No']);
-      const csv=[header,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const rows = all.map((p: any) => [p.name??'', p.genericName??'', p.category??'', p.form??'', p.strength??'', p.currentStock??0, p.minimumStock??0, p.isActive!==false?'Yes':'No']);
+      const csv=[header,...rows].map((r: any) =>r.map((v: any) =>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
       const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);
       const a=document.createElement('a');a.href=url;a.download=`pharmacy-products-${new Date().toISOString().slice(0,10)}.csv`;
       a.click();URL.revokeObjectURL(url);toast.success(`Exported ${all.length} products`);
@@ -240,7 +240,7 @@ export default function PharmacyProductsPage() {
   const toggleActive = async (id: string, currentlyActive: boolean) => {
     try {
       await api.put(`/pharmacy/products/${id}`, { isActive: !currentlyActive });
-      setProducts(p => p.map(prod => prod.id === id ? { ...prod, isActive: !currentlyActive } : prod));
+      setProducts(p => p.map((prod: any) => prod.id === id ? { ...prod, isActive: !currentlyActive } : prod));
       toast.success(currentlyActive ? 'Product deactivated' : 'Product activated');
     } catch { toast.error('Failed to update'); }
   };
@@ -276,7 +276,7 @@ export default function PharmacyProductsPage() {
         <select value={catFilter} onChange={e => setCat(e.target.value)}
           className="px-3 py-2 text-sm border border-slate-200 rounded-xl bg-slate-50 outline-none cursor-pointer">
           <option value="">All Categories</option>
-          {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+          {CATEGORIES.map((c: any) => <option key={c} value={c}>{c}</option>)}
         </select>
         <button onClick={() => setLowStock(v => !v)}
           className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl border transition-all ${lowStockOnly ? 'bg-amber-100 border-amber-300 text-amber-700' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'}`}>
@@ -289,7 +289,7 @@ export default function PharmacyProductsPage() {
         <table className="w-full">
           <thead>
             <tr className="bg-slate-50 border-b border-slate-100">
-              {['Drug', 'Form / Strength', 'Category', 'MRP', 'Stock', 'Status', ''].map(h => (
+              {['Drug', 'Form / Strength', 'Category', 'MRP', 'Stock', 'Status', ''].map((h: any) => (
                 <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
               ))}
             </tr>
@@ -313,7 +313,7 @@ export default function PharmacyProductsPage() {
                   </button>
                 </td>
               </tr>
-            ) : products.map(p => (
+            ) : products.map((p: any) => (
               <tr key={p.id} className="hover:bg-slate-50/60 transition-colors group">
                 <td className="px-5 py-3.5">
                   <div>

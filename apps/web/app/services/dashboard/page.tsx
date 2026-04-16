@@ -58,9 +58,9 @@ export default function ServicesDashboard() {
       api.get('/whatsapp/conversations', { params: { limit: 1 } }).catch(() => ({ data: { meta: { total: 0 } } })),
     ]).then(([allInv, trendRes, recentInv, waRes]) => {
       const invoices: any[] = allInv.data?.data ?? [];
-      const paid      = invoices.filter(i => i.status === 'PAID');
-      const pending   = invoices.filter(i => i.status === 'PENDING');
-      const overdue   = invoices.filter(i => i.status === 'OVERDUE');
+      const paid      = invoices.filter((i: any) => i.status === 'PAID');
+      const pending   = invoices.filter((i: any) => i.status === 'PENDING');
+      const overdue   = invoices.filter((i: any) => i.status === 'OVERDUE');
       const collected = paid.reduce((s: number, i: any) => s + (i.totalAmount ?? 0), 0);
       const outstanding = [...pending, ...overdue].reduce((s: number, i: any) => s + (i.totalAmount ?? 0), 0);
 
@@ -171,7 +171,7 @@ export default function ServicesDashboard() {
             </a>
           </div>
           {loading ? (
-            <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="animate-pulse bg-slate-100 rounded-xl h-12" />)}</div>
+            <div className="space-y-3">{[1,2,3].map((i: any) => <div key={i} className="animate-pulse bg-slate-100 rounded-xl h-12" />)}</div>
           ) : recent.length === 0 ? (
             <div className="py-10 text-center">
               <FileText className="w-10 h-10 text-slate-200 mx-auto mb-2" />
@@ -201,7 +201,7 @@ export default function ServicesDashboard() {
           { href: '/services/contracts', label: 'Contracts',   icon: FileText,      color: THEME      },
           { href: '/services/billing',   label: 'Billing',     icon: CreditCard,    color: '#10B981'  },
           { href: '/services/staff',     label: 'Field Staff', icon: Users,         color: '#8B5CF6'  },
-        ].map(l => (
+        ].map((l: any) => (
           <a key={l.href} href={l.href}
             className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-all group flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"

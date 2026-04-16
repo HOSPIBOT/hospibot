@@ -47,7 +47,7 @@ export default function WhatsAppBroadcastPage() {
 
   const getEstimate = async () => {
     if (segment === 'CUSTOM_PHONE') {
-      const phones = customPhones.split('\n').filter(p => p.trim()).length;
+      const phones = customPhones.split('\n').filter((p: any) => p.trim()).length;
       setEstimate(phones);
       return;
     }
@@ -77,7 +77,7 @@ export default function WhatsAppBroadcastPage() {
         message: { text: message },
         audience: {
           segment,
-          ...(segment === 'CUSTOM_PHONE' ? { phones: customPhones.split('\n').filter(p => p.trim()) } : {}),
+          ...(segment === 'CUSTOM_PHONE' ? { phones: customPhones.split('\n').filter((p: any) => p.trim()) } : {}),
         },
         scheduledAt: new Date().toISOString(),
         sendImmediately: true,
@@ -122,7 +122,7 @@ export default function WhatsAppBroadcastPage() {
               <Users className="w-4 h-4 text-[#25D366]" /> Target Audience
             </h3>
             <div className="grid grid-cols-2 gap-2">
-              {SEGMENTS.map(s => (
+              {SEGMENTS.map((s: any) => (
                 <button key={s.key} onClick={() => setSegment(s.key)}
                   className={`text-left p-3 rounded-xl border-2 transition-all ${
                     segment === s.key
@@ -179,7 +179,7 @@ export default function WhatsAppBroadcastPage() {
 
             {/* Variable hints */}
             <div className="flex flex-wrap gap-1.5">
-              {['{{patient_name}}', '{{clinic_name}}', '{{appointment_time}}', '{{doctor_name}}'].map(v => (
+              {['{{patient_name}}', '{{clinic_name}}', '{{appointment_time}}', '{{doctor_name}}'].map((v: any) => (
                 <button key={v} onClick={() => setMessage(m => m + v)}
                   className="text-[10px] font-mono bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full hover:bg-[#25D366]/10 hover:text-[#128C7E] transition-colors">
                   {v}
@@ -217,7 +217,7 @@ export default function WhatsAppBroadcastPage() {
             </div>
           ) : (
             <div className="space-y-3">
-              {campaigns.map(c => (
+              {campaigns.map((c: any) => (
                 <div key={c.id} className="bg-slate-50 rounded-xl p-3 border border-slate-100">
                   <div className="flex items-center justify-between mb-1">
                     <p className="text-xs font-semibold text-slate-900 truncate">{c.name}</p>

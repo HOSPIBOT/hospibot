@@ -198,7 +198,7 @@ function AppointmentsPageInner() {
     if (selected.size === appointments.length) {
       setSelected(new Set());
     } else {
-      setSelected(new Set(appointments.map(a => a.id)));
+      setSelected(new Set(appointments.map((a: any) => a.id)));
     }
   };
 
@@ -206,14 +206,14 @@ function AppointmentsPageInner() {
     if (!bulkAction || selected.size === 0) { toast.error('Select an action and at least one appointment'); return; }
     try {
     // @ts-ignore
-      await Promise.all([...selected].map(id =>
+      await Promise.all([...selected].map((id: any) =>
         bulkAction === 'CANCELLED'
           ? api.put(`/appointments/${id}/status`, { status: 'CANCELLED' })
           : bulkAction === 'CONFIRMED'
           ? api.put(`/appointments/${id}/status`, { status: 'CONFIRMED' })
           : bulkAction === 'send-reminder'
           ? api.post('/whatsapp/send', {
-              to: appointments.find(a => a.id === id)?.patient?.phone,
+              to: appointments.find((a: any) => a.id === id)?.patient?.phone,
               message: `Hi, this is a reminder about your appointment at our clinic. Please arrive 10 minutes before your scheduled time. Reply STOP to unsubscribe.`
             }).catch(() => {})
           : Promise.resolve()
@@ -248,7 +248,7 @@ function AppointmentsPageInner() {
       const all: any[] = res.data.data ?? appointments;
       const rows = [
         ['Appointment ID', 'Patient', 'Phone', 'Doctor', 'Department', 'Date', 'Time', 'Status', 'Type'],
-        ...all.map(a => [
+        ...all.map((a: any) => [
           a.id?.slice(0, 8).toUpperCase() || '',
           `${a.patient?.firstName || ''} ${a.patient?.lastName || ''}`.trim(),
           a.patient?.phone || '',
@@ -260,7 +260,7 @@ function AppointmentsPageInner() {
           a.type || '',
         ]),
       ];
-      const csv  = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const csv  = rows.map((r: any) => r.map((v: any) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
       const blob = new Blob([csv], { type: 'text/csv' });
       const url  = URL.createObjectURL(blob);
       const el   = document.createElement('a');
@@ -276,9 +276,9 @@ function AppointmentsPageInner() {
   // Queue stats
   const stats = {
     total:      appointments.length,
-    waiting:    appointments.filter(a => ['PENDING','CONFIRMED','CHECKED_IN'].includes(a.status)).length,
-    inProgress: appointments.filter(a => a.status === 'IN_PROGRESS').length,
-    completed:  appointments.filter(a => a.status === 'COMPLETED').length,
+    waiting:    appointments.filter((a: any) => ['PENDING','CONFIRMED','CHECKED_IN'].includes(a.status)).length,
+    inProgress: appointments.filter((a: any) => a.status === 'IN_PROGRESS').length,
+    completed:  appointments.filter((a: any) => a.status === 'COMPLETED').length,
   };
 
   return (
@@ -323,7 +323,7 @@ function AppointmentsPageInner() {
           { label: 'Waiting',      value: stats.waiting,    color: '#F59E0B' },
           { label: 'In Progress',  value: stats.inProgress, color: '#6366F1' },
           { label: 'Completed',    value: stats.completed,  color: '#10B981' },
-        ].map(s => (
+        ].map((s: any) => (
           <div key={s.label} className="bg-white rounded-2xl border border-slate-100 p-4 text-center">
             <p className="text-3xl font-bold" style={{ color: s.color }}>{s.value}</p>
             <p className="text-xs text-slate-500 mt-0.5">{s.label}</p>
@@ -338,12 +338,12 @@ function AppointmentsPageInner() {
         <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
           className="px-3 py-2 text-sm border border-slate-200 rounded-xl bg-slate-50 outline-none focus:border-[#0D7C66] cursor-pointer">
           <option value="">All Statuses</option>
-          {['PENDING','CONFIRMED','CHECKED_IN','IN_PROGRESS','COMPLETED','CANCELLED','NO_SHOW'].map(s => (
+          {['PENDING','CONFIRMED','CHECKED_IN','IN_PROGRESS','COMPLETED','CANCELLED','NO_SHOW'].map((s: any) => (
             <option key={s} value={s}>{s.replace('_', ' ')}</option>
           ))}
         </select>
         <div className="ml-auto flex items-center gap-1 bg-slate-100 rounded-xl p-1">
-          {(['queue', 'list'] as const).map(v => (
+          {(['queue', 'list'] as const).map((v: any) => (
             <button key={v} onClick={() => setView(v)}
               className={`px-3 py-1.5 text-xs font-medium rounded-lg capitalize transition-all ${view === v ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
               {v}
@@ -366,7 +366,7 @@ function AppointmentsPageInner() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {appointments.map(appt => (
+            {appointments.map((appt: any) => (
               <QueueCard key={appt.id} appt={appt} onStatusChange={() => load(meta.page)} />
             ))}
           </div>
@@ -395,7 +395,7 @@ function AppointmentsPageInner() {
                     <td key={j} className="px-5 py-4"><div className="animate-pulse bg-slate-200 rounded h-4" /></td>
                   ))}</tr>
                 ))
-              ) : appointments.map(appt => (
+              ) : appointments.map((appt: any) => (
                 <tr key={appt.id} className="hover:bg-slate-50/60 transition-colors group">
                   <td className="px-5 py-3.5 font-mono text-sm font-bold text-[#0D7C66]">{appt.tokenNumber || '—'}</td>
                   <td className="px-5 py-3.5">
@@ -515,7 +515,7 @@ function AppointmentsPageInner() {
                       value={patientSearch} onChange={e => setPatientSearch(e.target.value)} />
                     {patientResults.length > 0 && (
                       <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-10 overflow-hidden">
-                        {patientResults.map(p => (
+                        {patientResults.map((p: any) => (
                           <button key={p.id} onClick={() => { setForm(f => ({ ...f, patientId: p.id, patientName: `${p.firstName} ${p.lastName || ''}` })); setPatientSearch(''); setPatientResults([]); }}
                             className="w-full text-left px-4 py-2.5 hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0">
                             <p className="text-sm font-medium text-slate-900">{p.firstName} {p.lastName || ''}</p>
@@ -533,7 +533,7 @@ function AppointmentsPageInner() {
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Doctor <span className="text-red-500">*</span></label>
                 <select className={inputCls} value={form.doctorId} onChange={e => setForm(f => ({ ...f, doctorId: e.target.value }))}>
                   <option value="">Select doctor</option>
-                  {doctors.map(d => (
+                  {doctors.map((d: any) => (
                     <option key={d.id} value={d.id}>
                       Dr. {d.user?.firstName} {d.user?.lastName || ''} {d.department?.name ? `· ${d.department.name}` : ''}
                     </option>
@@ -564,7 +564,7 @@ function AppointmentsPageInner() {
               <div>
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Duration (minutes)</label>
                 <select className={inputCls} value={form.duration} onChange={e => setForm(f => ({ ...f, duration: Number(e.target.value) }))}>
-                  {[10, 15, 20, 30, 45, 60].map(d => <option key={d} value={d}>{d} minutes</option>)}
+                  {[10, 15, 20, 30, 45, 60].map((d: any) => <option key={d} value={d}>{d} minutes</option>)}
                 </select>
               </div>
 

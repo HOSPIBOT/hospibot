@@ -79,7 +79,7 @@ function AdmitModal({ bed, onClose, onDone }: { bed: any; onClose: () => void; o
                 <input className={inputCls} placeholder="Search patient by name or phone…" value={patSearch} onChange={e => setPatSearch(e.target.value)} autoFocus />
                 {patients.length > 0 && (
                   <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-10 overflow-hidden">
-                    {patients.map(p => (
+                    {patients.map((p: any) => (
                       <button key={p.id} onClick={() => { setSelPat(p); setPatSearch(''); setPatients([]); }}
                         className="w-full text-left px-4 py-2.5 hover:bg-slate-50 text-sm">
                         <p className="font-semibold text-slate-900">{p.firstName} {p.lastName || ''}</p>
@@ -193,7 +193,7 @@ export default function BedManagementPage() {
     } catch { toast.error('Failed'); }
   };
 
-  const filtered = beds.filter(b =>
+  const filtered = beds.filter((b: any) =>
     !search || `${b.number} ${b.ward} ${b.patient?.firstName || ''} ${b.patient?.lastName || ''}`.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -224,7 +224,7 @@ export default function BedManagementPage() {
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
-            {(['floor','list'] as const).map(v => (
+            {(['floor','list'] as const).map((v: any) => (
               <button key={v} onClick={() => setView(v)}
                 className={`text-xs font-medium px-3 py-1.5 rounded-lg capitalize transition-all ${view===v?'bg-white text-slate-900 shadow-sm':'text-slate-500 hover:text-slate-700'}`}>
                 {v === 'floor' ? '🗺 Floor Map' : '☰ List'}
@@ -251,7 +251,7 @@ export default function BedManagementPage() {
             { label:'Occupied',        value: stats?.occupied??0,            color:'#EF4444' },
             { label:'Admissions Today',value: stats?.admittedToday??0,       color:'#3B82F6' },
             { label:'Discharges Today',value: stats?.expectedDischarges??0,  color:'#F59E0B' },
-          ].map(k => (
+          ].map((k: any) => (
             <div key={k.label} className="bg-white rounded-2xl border border-slate-100 p-5">
               <p className="text-xs text-slate-500">{k.label}</p>
               <p className="text-3xl font-bold mt-1" style={{color:k.color}}>{k.value}</p>
@@ -275,7 +275,7 @@ export default function BedManagementPage() {
         <select value={wardF} onChange={e=>setWardF(e.target.value)}
           className="px-3 py-2 text-sm border border-slate-200 rounded-xl bg-slate-50 outline-none cursor-pointer">
           <option value="">All Wards</option>
-          {wards.map(w => <option key={w.ward} value={w.ward}>{w.ward} ({w.available}/{w.total} avail)</option>)}
+          {wards.map((w: any) => <option key={w.ward} value={w.ward}>{w.ward} ({w.available}/{w.total} avail)</option>)}
         </select>
         {(statusF || wardF || search) && (
           <button onClick={() => { setStatusF(''); setWardF(''); setSearch(''); }} className="text-xs text-red-500 hover:text-red-700 font-medium flex items-center gap-1">
@@ -287,8 +287,8 @@ export default function BedManagementPage() {
       {/* Floor Map View */}
       {view === 'floor' && (
         <div className="space-y-6">
-          {wards.filter(w => !wardF || w.ward === wardF).map(ward => {
-            const wardBeds = filtered.filter(b => b.ward === ward.ward);
+          {wards.filter((w: any) => !wardF || w.ward === wardF).map((ward: any) => {
+            const wardBeds = filtered.filter((b: any) => b.ward === ward.ward);
             if (wardBeds.length === 0) return null;
             return (
               <div key={ward.ward} className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
@@ -301,7 +301,7 @@ export default function BedManagementPage() {
                   </div>
                 </div>
                 <div className="p-4 grid grid-cols-4 lg:grid-cols-6 gap-3">
-                  {wardBeds.map(bed => {
+                  {wardBeds.map((bed: any) => {
                     const st = STATUS_CONFIG[bed.status] || STATUS_CONFIG.AVAILABLE;
                     const catColor = CATEGORY_COLORS[bed.category] || '#64748B';
                     const StatusIcon = st.icon;
@@ -350,7 +350,7 @@ export default function BedManagementPage() {
           <table className="w-full">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-100">
-                {['Bed #','Ward','Category','Status','Patient','Admitted','Daily Rate','Actions'].map(h => (
+                {['Bed #','Ward','Category','Status','Patient','Admitted','Daily Rate','Actions'].map((h: any) => (
                   <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
                 ))}
               </tr>
@@ -360,7 +360,7 @@ export default function BedManagementPage() {
                 <tr key={i}>{Array.from({length:8}).map((__,j) => <td key={j} className="px-4 py-3"><div className="animate-pulse bg-slate-200 rounded h-4"/></td>)}</tr>
               )) : filtered.length === 0 ? (
                 <tr><td colSpan={8} className="py-16 text-center text-slate-400 text-sm">No beds found</td></tr>
-              ) : filtered.map(bed => {
+              ) : filtered.map((bed: any) => {
                 const st = STATUS_CONFIG[bed.status] || STATUS_CONFIG.AVAILABLE;
                 return (
                   <tr key={bed.id} className="hover:bg-slate-50/60 transition-colors">
@@ -416,7 +416,7 @@ export default function BedManagementPage() {
               <div><label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Bed Number *</label><input className={inputCls} placeholder="101, ICU-01…" value={addForm.number} onChange={e=>setAddForm(f=>({...f,number:e.target.value}))}/></div>
               <div><label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Category</label>
                 <select className={inputCls} value={addForm.category} onChange={e=>setAddForm(f=>({...f,category:e.target.value}))}>
-                  {['ICU','SEMI_ICU','GENERAL','PRIVATE','DELUXE','PEDIATRIC','MATERNITY','ISOLATION'].map(c=><option key={c} value={c}>{c.replace('_',' ')}</option>)}
+                  {['ICU','SEMI_ICU','GENERAL','PRIVATE','DELUXE','PEDIATRIC','MATERNITY','ISOLATION'].map((c: any) =><option key={c} value={c}>{c.replace('_',' ')}</option>)}
                 </select>
               </div>
               <div><label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Daily Rate (₹)</label><input type="number" className={inputCls} placeholder="2000" value={addForm.dailyRate} onChange={e=>setAddForm(f=>({...f,dailyRate:e.target.value}))}/></div>

@@ -56,7 +56,7 @@ export default function MySchedulePage() {
     setUpdating(appt.id);
     try {
       await api.put(`/appointments/${appt.id}/status`, { status: s.next });
-      setAppts(prev => prev.map(a => a.id === appt.id ? { ...a, status: s.next! } : a));
+      setAppts(prev => prev.map((a: any) => a.id === appt.id ? { ...a, status: s.next! } : a));
       if (s.next === 'IN_PROGRESS') {
         // Open OPD console for this patient
         window.open(`/clinical/visits/${appt.id}`, '_blank');
@@ -77,9 +77,9 @@ export default function MySchedulePage() {
     weekday: 'long', day: 'numeric', month: 'long',
   });
 
-  const pending   = appointments.filter(a => a.status === 'PENDING').length;
-  const confirmed = appointments.filter(a => ['CONFIRMED', 'CHECKED_IN'].includes(a.status)).length;
-  const done      = appointments.filter(a => a.status === 'COMPLETED').length;
+  const pending   = appointments.filter((a: any) => a.status === 'PENDING').length;
+  const confirmed = appointments.filter((a: any) => ['CONFIRMED', 'CHECKED_IN'].includes(a.status)).length;
+  const done      = appointments.filter((a: any) => a.status === 'COMPLETED').length;
 
   return (
     <div className="space-y-5">
@@ -118,9 +118,9 @@ export default function MySchedulePage() {
         {[
           { label: 'Total Today',    value: appointments.length,           color: '#334155' },
           { label: 'Waiting/In',     value: confirmed,                     color: '#3B82F6' },
-          { label: 'In Progress',    value: appointments.filter(a => a.status === 'IN_PROGRESS').length, color: '#0D7C66' },
+          { label: 'In Progress',    value: appointments.filter((a: any) => a.status === 'IN_PROGRESS').length, color: '#0D7C66' },
           { label: 'Completed',      value: done,                           color: '#10B981' },
-        ].map(s => (
+        ].map((s: any) => (
           <div key={s.label} className="bg-white rounded-2xl border border-slate-100 px-4 py-3">
             <p className="text-xs text-slate-400">{s.label}</p>
             <p className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</p>

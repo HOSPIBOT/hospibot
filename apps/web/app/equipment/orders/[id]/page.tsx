@@ -60,7 +60,7 @@ export default function EquipmentOrderDetailPage() {
   if (!order)  return <div className="text-center py-20 text-slate-400">Order not found</div>;
 
   const currentIdx  = PIPELINE.findIndex(s => s.status === order.status);
-  const nextStep    = ADVANCE[order.status] ? PIPELINE.find(s => s.status === ADVANCE[order.status]) : null;
+  const nextStep    = ADVANCE[order.status] ? PIPELINE.find((s: any) => s.status === ADVANCE[order.status]) : null;
   const items       = order.items ?? order.products ?? [];
 
   return (
@@ -85,7 +85,7 @@ export default function EquipmentOrderDetailPage() {
       {/* Status pipeline */}
       <div className="bg-white rounded-2xl border border-slate-100 p-5">
         <div className="flex items-center justify-between mb-4">
-          {PIPELINE.filter(s => s.status !== 'CANCELLED').map((step, i) => {
+          {PIPELINE.filter((s: any) => s.status !== 'CANCELLED').map((step, i) => {
             const done    = currentIdx >= i && order.status !== 'CANCELLED';
             const current = currentIdx === i;
             return (
@@ -129,7 +129,7 @@ export default function EquipmentOrderDetailPage() {
             { l: 'Email',     v: order.customer?.email || order.tenantEmail || '—' },
             { l: 'Order Date',v: formatDate(order.createdAt) },
             { l: 'Total',     v: order.totalAmount ? formatINR(order.totalAmount) : '—' },
-          ].map(f => (
+          ].map((f: any) => (
             <div key={f.l} className="flex justify-between text-sm">
               <span className="text-slate-500">{f.l}</span>
               <span className="font-semibold text-slate-900">{f.v}</span>

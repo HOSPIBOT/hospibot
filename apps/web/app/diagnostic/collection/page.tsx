@@ -41,7 +41,7 @@ function PatientSearch({ onSelect }: { onSelect: (p: any) => void }) {
       {loading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-slate-400" />}
       {results.length > 0 && (
         <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
-          {results.map(p => (
+          {results.map((p: any) => (
             <button key={p.id} onClick={() => { onSelect(p); setQ(''); setResults([]); }}
               className="flex items-center gap-3 w-full px-4 py-3 hover:bg-slate-50 text-left">
               <div className="w-7 h-7 rounded-full bg-[#1E3A5F]/10 text-[#1E3A5F] text-xs font-bold flex items-center justify-center">{p.firstName?.[0]}</div>
@@ -64,7 +64,7 @@ function TimeSlotGrid({ onSelect, selected }: { onSelect: (t: string) => void; s
   }
   return (
     <div className="grid grid-cols-5 gap-1.5 max-h-40 overflow-y-auto">
-      {slots.map(slot => (
+      {slots.map((slot: any) => (
         <button key={slot} onClick={() => onSelect(slot)}
           className={`py-2 text-xs font-bold rounded-xl border-2 transition-all ${selected === slot ? 'text-white border-transparent' : 'border-slate-200 text-slate-600 hover:border-[#1E3A5F]/40'}`}
           style={selected === slot ? { background: NAVY } : {}}>
@@ -234,9 +234,9 @@ function HomeCollectionPageInner() {
   useEffect(() => { load(); }, [load]);
 
   const stats = {
-    scheduled: collections.filter(c => c.status === 'SCHEDULED').length,
-    assigned:  collections.filter(c => c.status === 'ASSIGNED').length,
-    collected: collections.filter(c => c.status === 'COLLECTED').length,
+    scheduled: collections.filter((c: any) => c.status === 'SCHEDULED').length,
+    assigned:  collections.filter((c: any) => c.status === 'ASSIGNED').length,
+    collected: collections.filter((c: any) => c.status === 'COLLECTED').length,
   };
 
   return (
@@ -262,7 +262,7 @@ function HomeCollectionPageInner() {
           { label: 'Assigned',  v: stats.assigned,  c: '#F59E0B', i: User },
           { label: 'Collected', v: stats.collected, c: '#10B981', i: CheckCircle2 },
           { label: 'Total',     v: collections.length, c: NAVY, i: Home },
-        ].map(s => (
+        ].map((s: any) => (
           <div key={s.label} className="bg-white rounded-2xl border border-slate-100 p-4 flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: `${s.c}14` }}>
               <s.i className="w-4 h-4" style={{ color: s.c }} />
@@ -278,11 +278,11 @@ function HomeCollectionPageInner() {
       <div className="flex items-center gap-3 flex-wrap">
         <input type="date" className="px-3.5 py-2.5 text-sm border border-slate-200 rounded-xl bg-white outline-none cursor-pointer"
           value={date} onChange={e => setDate(e.target.value)} />
-        {['', 'SCHEDULED', 'ASSIGNED', 'COLLECTED', 'CANCELLED'].map(s => (
+        {['', 'SCHEDULED', 'ASSIGNED', 'COLLECTED', 'CANCELLED'].map((s: any) => (
           <button key={s} onClick={() => setStatus(s)}
             className={`text-xs font-semibold px-3.5 py-2 rounded-xl transition-all ${status === s ? 'text-white' : 'bg-white border border-slate-200 text-slate-600'}`}
             style={status === s ? { background: NAVY } : {}}>
-            {s || 'All'} ({!s ? collections.length : collections.filter(c => c.status === s).length})
+            {s || 'All'} ({!s ? collections.length : collections.filter((c: any) => c.status === s).length})
           </button>
         ))}
       </div>
@@ -299,7 +299,7 @@ function HomeCollectionPageInner() {
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-4">
-          {collections.map(c => <CollectionCard key={c.id} c={c} onRefresh={() => setRefreshKey(k => k+1)} />)}
+          {collections.map((c: any) => <CollectionCard key={c.id} c={c} onRefresh={() => setRefreshKey(k => k+1)} />)}
         </div>
       )}
 

@@ -42,8 +42,8 @@ export default function WorklistPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const pending = orders.filter(o => ['RECEIVED_AT_LAB', 'IN_PROGRESS'].includes(o.status));
-  const validation = orders.filter(o => o.status === 'RESULTED');
+  const pending = orders.filter((o: any) => ['RECEIVED_AT_LAB', 'IN_PROGRESS'].includes(o.status));
+  const validation = orders.filter((o: any) => o.status === 'RESULTED');
 
   return (
     <div className="space-y-5">
@@ -55,7 +55,7 @@ export default function WorklistPage() {
       </div>
 
       <div className="flex items-center gap-2 flex-wrap">
-        {DEPARTMENTS.map(d => (
+        {DEPARTMENTS.map((d: any) => (
           <button key={d} onClick={() => setDepartment(d)}
             className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${department === d ? 'text-white' : 'bg-white border border-slate-200 text-slate-600'}`}
             style={department === d ? { background: NAVY } : {}}>
@@ -77,13 +77,13 @@ export default function WorklistPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-slate-100 bg-slate-50/80">
-                {['Order', 'Patient', 'Tests', 'Status', 'TAT', 'Action'].map(h => (
+                {['Order', 'Patient', 'Tests', 'Status', 'TAT', 'Action'].map((h: any) => (
                   <th key={h} className="px-5 py-3 text-left text-[11px] font-bold text-slate-400 uppercase tracking-widest">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {orders.map(o => {
+              {orders.map((o: any) => {
                 const p = o.patient ?? {};
                 const items = o.orderItems ?? [];
                 const deadline = items.map((i: any) => i.tatDeadline).filter(Boolean).sort()[0];

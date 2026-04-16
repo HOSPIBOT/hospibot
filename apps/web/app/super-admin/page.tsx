@@ -19,7 +19,7 @@ function buildMrrChart(
   planDistribution: { plan: string; count: number }[]
 ) {
   const MRR_PLAN: Record<string, number> = { STARTER: 500, GROWTH: 1200, ENTERPRISE: 4500 };
-  const currentMrr = planDistribution.reduce((s, p) => s + p.count * (MRR_PLAN[p.plan] || 0), 0);
+  const currentMrr = planDistribution.reduce((s: number, p: any) => s + p.count * (MRR_PLAN[p.plan] || 0), 0);
 
   // Build last-6-months buckets
   const months: { month: string; mrr: number }[] = [];
@@ -39,7 +39,7 @@ function buildMrrChart(
   });
 
   const newPerMonth: Record<string, number> = {};
-  recentOnboarding.forEach(t => {
+  recentOnboarding.forEach((t: any) => {
     const key = t.createdAt.slice(0, 7);
     newPerMonth[key] = (newPerMonth[key] || 0) + (MRR_PLAN[t.plan] || 500);
   });
@@ -150,7 +150,7 @@ export default function SuperAdminDashboard() {
     ? buildMrrChart(stats.recentOnboarding ?? [], stats.planDistribution ?? [])
     : [];
 
-  const pieData = stats?.typeDistribution.map(t => ({
+  const pieData = stats?.typeDistribution.map((t: any) => ({
     name: TYPE_LABELS[t.type] || t.type,
     value: t.count,
     color: PIE_COLORS[t.type] || '#94A3B8',
@@ -310,7 +310,7 @@ export default function SuperAdminDashboard() {
           <table className="w-full">
             <thead>
               <tr className="text-left bg-slate-50">
-                {['Organization', 'Type', 'Plan', 'Status', 'Users', 'Joined'].map(h => (
+                {['Organization', 'Type', 'Plan', 'Status', 'Users', 'Joined'].map((h: any) => (
                   <th key={h} className="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
                 ))}
               </tr>
@@ -322,7 +322,7 @@ export default function SuperAdminDashboard() {
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-[#E8F5F0] text-[#0D7C66] flex items-center justify-center text-xs font-bold">
-                        {t.name.split(' ').map(w => w[0]).slice(0, 2).join('')}
+                        {t.name.split(' ').map((w: any) => w[0]).slice(0, 2).join('')}
                       </div>
                       <div>
                         <p className="text-sm font-medium text-slate-900">{t.name}</p>

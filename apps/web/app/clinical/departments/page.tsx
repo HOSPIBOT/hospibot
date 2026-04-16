@@ -50,7 +50,7 @@ export default function DepartmentsPage() {
     try {
       await api.delete(`/doctors/departments/${id}`);
       toast.success(`${name} removed`);
-      setDepts(p => p.filter(d => d.id !== id));
+      setDepts(p => p.filter((d: any) => d.id !== id));
     } catch { toast.error('Failed to remove'); }
     finally { setDeleting(null); }
   };
@@ -88,7 +88,7 @@ export default function DepartmentsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-4">
-          {depts.map(d => (
+          {depts.map((d: any) => (
             <div key={d.id} className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-shadow group">
               <div className="flex items-start justify-between mb-3">
                 <div>

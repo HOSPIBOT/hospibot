@@ -63,11 +63,11 @@ export default function WellnessDashboard() {
       {/* KPIs */}
       {loading ? (
         <div className="grid grid-cols-4 gap-4">
-          {[1,2,3,4].map(i => <div key={i} className="animate-pulse bg-slate-200 rounded-2xl h-24" />)}
+          {[1,2,3,4].map((i: any) => <div key={i} className="animate-pulse bg-slate-200 rounded-2xl h-24" />)}
         </div>
       ) : (
         <div className="grid grid-cols-4 gap-4">
-          {KPI_CARDS.map(k => (
+          {KPI_CARDS.map((k: any) => (
             <div key={k.label} className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-shadow">
               <div className="flex items-center gap-2 mb-2">
                 <k.icon className="w-4 h-4" style={{ color: k.color }} />
@@ -114,7 +114,7 @@ export default function WellnessDashboard() {
             </a>
           </div>
           {loading ? (
-            <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="animate-pulse bg-slate-100 rounded-xl h-12" />)}</div>
+            <div className="space-y-3">{[1,2,3].map((i: any) => <div key={i} className="animate-pulse bg-slate-100 rounded-xl h-12" />)}</div>
           ) : recent.length === 0 ? (
             <div className="py-8 text-center">
               <Heart className="w-10 h-10 text-slate-200 mx-auto mb-2" />
@@ -149,7 +149,7 @@ export default function WellnessDashboard() {
           { href: '/wellness/bookings', label: 'Sessions',  icon: Calendar, color: '#8B5CF6'  },
           { href: '/wellness/products', label: 'Products',  icon: Package,  color: '#10B981'  },
           { href: '/wellness/analytics',label: 'Analytics', icon: Heart,    color: '#F59E0B'  },
-        ].map(l => (
+        ].map((l: any) => (
           <a key={l.href} href={l.href}
             className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-all group flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${l.color}15` }}>

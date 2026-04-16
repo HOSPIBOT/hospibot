@@ -164,7 +164,7 @@ export default function NewTenantPage() {
               </Field>
               <Field label="Facility Type" required>
                 <select className={inputClass} value={form.type} onChange={set('type')}>
-                  {TENANT_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                  {TENANT_TYPES.map((t: any) => <option key={t.value} value={t.value}>{t.label}</option>)}
                 </select>
               </Field>
               <Field label="Phone" required>
@@ -178,7 +178,7 @@ export default function NewTenantPage() {
               </Field>
               <Field label="State" required>
                 <select className={inputClass} value={form.state} onChange={set('state')}>
-                  {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
+                  {INDIAN_STATES.map((s: any) => <option key={s} value={s}>{s}</option>)}
                 </select>
               </Field>
               <Field label="Address">

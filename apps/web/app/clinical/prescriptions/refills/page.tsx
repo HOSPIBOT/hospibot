@@ -38,8 +38,8 @@ export default function RefillsTrackerPage() {
       const now = Date.now();
 
       const alerts: RefillAlert[] = rxList
-        .filter(rx => rx.refillDueDate)
-        .map(rx => {
+        .filter((rx: any) => rx.refillDueDate)
+        .map((rx: any) => {
           const dueMs   = new Date(rx.refillDueDate).getTime();
           const daysUntil = Math.ceil((dueMs - now) / 86400000);
           const doctor = rx.doctor;
@@ -55,7 +55,7 @@ export default function RefillsTrackerPage() {
               : '—',
           };
         })
-        .sort((a, b) => a.daysUntilRefill - b.daysUntilRefill);
+        .sort((a: any, b: any) => a.daysUntilRefill - b.daysUntilRefill);
 
       setRefills(alerts);
     } catch { toast.error('Failed to load refill data'); }
@@ -78,7 +78,7 @@ export default function RefillsTrackerPage() {
     finally { setSending(null); }
   };
 
-  const filtered = refills.filter(r => {
+  const filtered = refills.filter((r: any) => {
     if (filter === 'overdue')    return r.daysUntilRefill < 0;
     if (filter === 'due_today')  return r.daysUntilRefill >= 0 && r.daysUntilRefill <= 1;
     if (filter === 'due_week')   return r.daysUntilRefill >= 0 && r.daysUntilRefill <= 7;
@@ -88,9 +88,9 @@ export default function RefillsTrackerPage() {
   const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
   const totalPages = Math.ceil(filtered.length / PER_PAGE);
 
-  const overdue    = refills.filter(r => r.daysUntilRefill < 0).length;
-  const dueToday   = refills.filter(r => r.daysUntilRefill >= 0 && r.daysUntilRefill <= 1).length;
-  const dueWeek    = refills.filter(r => r.daysUntilRefill >= 0 && r.daysUntilRefill <= 7).length;
+  const overdue    = refills.filter((r: any) => r.daysUntilRefill < 0).length;
+  const dueToday   = refills.filter((r: any) => r.daysUntilRefill >= 0 && r.daysUntilRefill <= 1).length;
+  const dueWeek    = refills.filter((r: any) => r.daysUntilRefill >= 0 && r.daysUntilRefill <= 7).length;
 
   return (
     <div className="space-y-5">
@@ -117,7 +117,7 @@ export default function RefillsTrackerPage() {
           { key: 'overdue'   as const, label: `Overdue (${overdue})`,                color: 'red' },
           { key: 'due_today' as const, label: `Due Today (${dueToday})`,             color: 'amber' },
           { key: 'due_week'  as const, label: `This Week (${dueWeek})`,              color: 'blue' },
-        ].map(f => (
+        ].map((f: any) => (
           <button key={f.key} onClick={() => { setFilter(f.key); setPage(1); }}
             className={`text-xs font-semibold px-4 py-2 rounded-full border-2 transition-all ${
               filter === f.key
@@ -146,7 +146,7 @@ export default function RefillsTrackerPage() {
       ) : (
         <>
           <div className="space-y-3">
-            {paginated.map(alert => {
+            {paginated.map((alert: any) => {
               const isOverdue = alert.daysUntilRefill < 0;
               const isUrgent  = alert.daysUntilRefill >= 0 && alert.daysUntilRefill <= 3;
               const borderColor = isOverdue ? 'border-red-200' : isUrgent ? 'border-amber-200' : 'border-slate-100';

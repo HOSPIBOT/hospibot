@@ -68,8 +68,8 @@ export default function ServicesStaffPage() {
 
   const exportCSV = () => {
     const header = ['Name', 'Phone', 'Email', 'Role', 'Status', 'Contracts'];
-    const rows = staff.map(s => [s.name ?? '', s.phone ?? '', s.email ?? '', s.role ?? '', s.status ?? '', s.contracts ?? 0]);
-    const csv  = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const rows = staff.map((s: any) => [s.name ?? '', s.phone ?? '', s.email ?? '', s.role ?? '', s.status ?? '', s.contracts ?? 0]);
+    const csv  = [header, ...rows].map((r: any) => r.map((v: any) => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement('a');
@@ -92,9 +92,9 @@ export default function ServicesStaffPage() {
     setSaving(false);
   };
 
-  const active   = staff.filter(s => s.status === 'ACTIVE').length;
-  const onLeave  = staff.filter(s => s.status === 'ON_LEAVE').length;
-  const contracts = staff.reduce((a, s) => a + (s.contracts ?? 0), 0);
+  const active   = staff.filter((s: any) => s.status === 'ACTIVE').length;
+  const onLeave  = staff.filter((s: any) => s.status === 'ON_LEAVE').length;
+  const contracts = staff.reduce((a: number, s: any) => a + (s.contracts ?? 0), 0);
 
   return (
     <div className="space-y-5">
@@ -125,7 +125,7 @@ export default function ServicesStaffPage() {
           { l: 'Active Staff',        v: active,    color: '#10B981' },
           { l: 'On Leave',            v: onLeave,   color: '#F59E0B' },
           { l: 'Contracts Assigned',  v: contracts, color: THEME     },
-        ].map(k => (
+        ].map((k: any) => (
           <div key={k.l} className="bg-white rounded-2xl border border-slate-100 p-5">
             <p className="text-xs text-slate-500 mb-1">{k.l}</p>
             <p className="text-2xl font-bold" style={{ color: k.color }}>{k.v}</p>
@@ -140,7 +140,7 @@ export default function ServicesStaffPage() {
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-4">
-          {staff.map(s => (
+          {staff.map((s: any) => (
             <div key={s.id} className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-shadow">
               <div className="flex items-start gap-3 mb-3">
                 <div className="w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-sm font-bold text-slate-600 flex-shrink-0">
@@ -185,7 +185,7 @@ export default function ServicesStaffPage() {
                 { key: 'name',  label: 'Name *',  ph: 'Full name',    type: 'text'  },
                 { key: 'phone', label: 'Phone *', ph: '+91 98765…',   type: 'tel'   },
                 { key: 'email', label: 'Email',   ph: 'work@email.com', type: 'email' },
-              ].map(f => (
+              ].map((f: any) => (
                 <div key={f.key}>
                   <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">{f.label}</label>
                   <input type={f.type} className={inputCls} placeholder={f.ph}
@@ -197,7 +197,7 @@ export default function ServicesStaffPage() {
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Role</label>
                 <select className={inputCls} value={form.role}
                   onChange={e => setForm(f => ({ ...f, role: e.target.value }))}>
-                  {ROLES.map(r => <option key={r}>{r}</option>)}
+                  {ROLES.map((r: any) => <option key={r}>{r}</option>)}
                 </select>
               </div>
             </div>

@@ -148,7 +148,7 @@ export default function PatientPortalPage() {
 
         {/* Tabs */}
         <div className="flex items-center gap-1 bg-white rounded-2xl border border-slate-100 p-1.5 overflow-x-auto">
-          {tabs.map(t => (
+          {tabs.map((t: any) => (
             <button key={t.key} onClick={()=>setTab(t.key)}
               className={`flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-xl whitespace-nowrap transition-all ${tab===t.key?'bg-[#0D7C66] text-white shadow-sm':'text-slate-500 hover:text-slate-700 hover:bg-slate-50'}`}>
               <t.icon className="w-4 h-4"/>
@@ -219,7 +219,7 @@ export default function PatientPortalPage() {
             {!patient?.appointments?.length ? (
               <div className="py-16 text-center"><Calendar className="w-12 h-12 text-slate-200 mx-auto mb-3"/><p className="text-slate-400 text-sm">No appointments found</p></div>
             ) : (
-              <table className="w-full"><thead><tr className="border-b border-slate-100">{['Date','Time','Doctor','Status'].map(h=><th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">{h}</th>)}</tr></thead>
+              <table className="w-full"><thead><tr className="border-b border-slate-100">{['Date','Time','Doctor','Status'].map((h: any) =><th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">{h}</th>)}</tr></thead>
               <tbody className="divide-y divide-slate-50">
                 {patient.appointments.map((a:any) => (
                   <tr key={a.id} className="hover:bg-slate-50/60">
@@ -263,7 +263,7 @@ export default function PatientPortalPage() {
             {!patient?.labOrders?.length ? (
               <div className="py-16 text-center"><FlaskConical className="w-12 h-12 text-slate-200 mx-auto mb-3"/><p className="text-slate-400 text-sm">No lab reports found</p></div>
             ) : (
-              <table className="w-full"><thead><tr className="border-b border-slate-100">{['Date','Tests','Status','Report'].map(h=><th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">{h}</th>)}</tr></thead>
+              <table className="w-full"><thead><tr className="border-b border-slate-100">{['Date','Tests','Status','Report'].map((h: any) =><th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">{h}</th>)}</tr></thead>
               <tbody className="divide-y divide-slate-50">
                 {patient.labOrders.map((l:any) => (
                   <tr key={l.id} className="hover:bg-slate-50/60">
@@ -285,7 +285,7 @@ export default function PatientPortalPage() {
             {!patient?.invoices?.length ? (
               <div className="py-16 text-center"><CreditCard className="w-12 h-12 text-slate-200 mx-auto mb-3"/><p className="text-slate-400 text-sm">No billing records found</p></div>
             ) : (
-              <table className="w-full"><thead><tr className="border-b border-slate-100">{['Invoice','Date','Total','Paid','Due','Status'].map(h=><th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">{h}</th>)}</tr></thead>
+              <table className="w-full"><thead><tr className="border-b border-slate-100">{['Invoice','Date','Total','Paid','Due','Status'].map((h: any) =><th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">{h}</th>)}</tr></thead>
               <tbody className="divide-y divide-slate-50">
                 {patient.invoices.map((inv:any) => (
                   <tr key={inv.id} className="hover:bg-slate-50/60">

@@ -77,7 +77,7 @@ function DoctorCard({ doc, onToggle }: { doc: any; onToggle: (id: string, availa
           { label: 'Experience', value: doc.experience ? `${doc.experience} yrs` : '—', icon: Award },
           { label: 'Slot Duration', value: `${doc.slotDuration || 15} min`, icon: Clock },
           { label: 'Consult Fee', value: doc.consultationFee ? formatINR(doc.consultationFee) : '—', icon: Calendar },
-        ].map(s => (
+        ].map((s: any) => (
           <div key={s.label} className="text-center bg-slate-50 rounded-xl py-2">
             <p className="text-sm font-bold text-slate-900">{s.value}</p>
             <p className="text-[10px] text-slate-400 mt-0.5">{s.label}</p>
@@ -152,7 +152,7 @@ export default function DoctorsPage() {
 
   const exportCSV = () => {
     const header = ['Name', 'Specialties', 'Phone', 'Email', 'Reg. No.', 'Available', 'Departments'];
-    const rows = doctors.map(d => [
+    const rows = doctors.map((d: any) => [
       `Dr. ${d.user?.firstName ?? ''} ${d.user?.lastName ?? ''}`.trim(),
       (d.specialties as string[])?.join('; ') ?? '',
       d.user?.phone ?? '',
@@ -161,7 +161,7 @@ export default function DoctorsPage() {
       d.isAvailable ? 'Yes' : 'No',
       (d.departments as any[])?.map((dep: any) => dep.name).join('; ') ?? '',
     ]);
-    const csv  = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const csv  = [header, ...rows].map((r: any) => r.map((v: any) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement('a');
@@ -170,14 +170,14 @@ export default function DoctorsPage() {
     toast.success(`Exported ${doctors.length} doctors`);
   };
   const toggleAvailability = (id: string, available: boolean) => {
-    setDoctors(d => d.map(doc => doc.id === id ? { ...doc, isAvailable: available } : doc));
+    setDoctors(d => d.map((doc: any) => doc.id === id ? { ...doc, isAvailable: available } : doc));
   };
 
   const toggleSpecialty = (spec: string) => {
     setForm(f => ({
       ...f,
       specialties: f.specialties.includes(spec)
-        ? f.specialties.filter(s => s !== spec)
+        ? f.specialties.filter((s: any) => s !== spec)
         : [...f.specialties, spec],
     }));
   };
@@ -259,9 +259,9 @@ export default function DoctorsPage() {
       <div className="grid grid-cols-3 gap-3">
         {[
           { label: 'Total Doctors', value: doctors.length, color: '#0D7C66' },
-          { label: 'Available Now', value: doctors.filter(d => d.isAvailable).length, color: '#10B981' },
-          { label: 'Unavailable', value: doctors.filter(d => !d.isAvailable).length, color: '#94A3B8' },
-        ].map(s => (
+          { label: 'Available Now', value: doctors.filter((d: any) => d.isAvailable).length, color: '#10B981' },
+          { label: 'Unavailable', value: doctors.filter((d: any) => !d.isAvailable).length, color: '#94A3B8' },
+        ].map((s: any) => (
           <div key={s.label} className="bg-white rounded-2xl border border-slate-100 p-4 text-center">
             <p className="text-3xl font-bold" style={{ color: s.color }}>{s.value}</p>
             <p className="text-xs text-slate-500 mt-0.5">{s.label}</p>
@@ -282,7 +282,7 @@ export default function DoctorsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {doctors.map(doc => (
+          {doctors.map((doc: any) => (
             <DoctorCard key={doc.id} doc={doc} onToggle={toggleAvailability} />
           ))}
         </div>
@@ -328,7 +328,7 @@ export default function DoctorsPage() {
                     <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Department</label>
                     <select className={inputCls} value={form.departmentId} onChange={setF('departmentId')}>
                       <option value="">No Department</option>
-                      {depts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+                      {depts.map((d: any) => <option key={d.id} value={d.id}>{d.name}</option>)}
                     </select>
                   </div>
                 </div>
@@ -353,7 +353,7 @@ export default function DoctorsPage() {
                   <div>
                     <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Slot Duration (min)</label>
                     <select className={inputCls} value={form.slotDuration} onChange={setF('slotDuration')}>
-                      {[10, 15, 20, 30, 45, 60].map(d => <option key={d} value={d}>{d} minutes</option>)}
+                      {[10, 15, 20, 30, 45, 60].map((d: any) => <option key={d} value={d}>{d} minutes</option>)}
                     </select>
                   </div>
                   <div className="col-span-2">
@@ -367,7 +367,7 @@ export default function DoctorsPage() {
               <div>
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Specialties</p>
                 <div className="flex flex-wrap gap-2">
-                  {SPECIALTIES.map(spec => (
+                  {SPECIALTIES.map((spec: any) => (
                     <button key={spec} onClick={() => toggleSpecialty(spec)}
                       className={`text-xs font-medium px-3 py-1.5 rounded-full border transition-all ${form.specialties.includes(spec) ? 'bg-[#0D7C66] text-white border-[#0D7C66]' : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-[#0D7C66] hover:text-[#0D7C66]'}`}>
                       {spec}

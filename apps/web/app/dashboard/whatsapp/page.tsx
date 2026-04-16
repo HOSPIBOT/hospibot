@@ -73,7 +73,7 @@ export default function WhatsAppPage() {
           ) : conversations.length === 0 ? (
             <div className="text-center py-8 text-gray-400 text-sm">No conversations yet</div>
           ) : (
-            conversations.map(conv => (
+            conversations.map((conv: any) => (
               <div key={conv.id} onClick={() => selectConversation(conv)}
                 className={`px-4 py-3 border-b border-gray-50 cursor-pointer hover:bg-gray-50 transition-colors ${selected?.id === conv.id ? 'bg-primary-50' : ''}`}>
                 <div className="flex items-center justify-between">

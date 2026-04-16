@@ -68,7 +68,7 @@ function QuickScheduleModal({ client, onClose, onScheduled }: {
           <div>
             <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Service Type</label>
             <select className={inputCls} value={serviceType} onChange={e => setServiceType(e.target.value)}>
-              {SERVICE_TYPES.map(s => <option key={s}>{s}</option>)}
+              {SERVICE_TYPES.map((s: any) => <option key={s}>{s}</option>)}
             </select>
           </div>
           <div>
@@ -106,7 +106,7 @@ function AddClientModal({ onClose, onAdded }: { onClose: () => void; onAdded: ()
     try {
       await api.post('/patients', {
         ...form,
-        allergies: form.allergies ? form.allergies.split(',').map(s => s.trim()) : [],
+        allergies: form.allergies ? form.allergies.split(',').map((s: any) => s.trim()) : [],
         bloodGroup: form.bloodGroup || undefined,
       });
       toast.success(`${form.firstName} registered as client!`);
@@ -131,7 +131,7 @@ function AddClientModal({ onClose, onAdded }: { onClose: () => void; onAdded: ()
             { k: 'email',     label: 'Email',        ph: 'email@example.com', type: 'email', span: 1 },
             { k: 'address',   label: 'Address',      ph: 'Street, Area', type: 'text', span: 2 },
             { k: 'city',      label: 'City',         ph: 'Hyderabad',  type: 'text', span: 1 },
-          ].map(field => (
+          ].map((field: any) => (
             <div key={field.k} className={field.span === 2 ? 'col-span-2' : ''}>
               <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">{field.label}</label>
               <input type={field.type} className={inputCls} placeholder={field.ph}
@@ -142,7 +142,7 @@ function AddClientModal({ onClose, onAdded }: { onClose: () => void; onAdded: ()
             <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Blood Group</label>
             <select className={inputCls} value={form.bloodGroup} onChange={f('bloodGroup')}>
               <option value="">Select…</option>
-              {['A+','A-','B+','B-','O+','O-','AB+','AB-'].map(bg => <option key={bg}>{bg}</option>)}
+              {['A+','A-','B+','B-','O+','O-','AB+','AB-'].map((bg: any) => <option key={bg}>{bg}</option>)}
             </select>
           </div>
           <div>
@@ -255,7 +255,7 @@ export default function HomecareClientsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-4">
-          {clients.map(c => {
+          {clients.map((c: any) => {
             const lastVisit = lastVisits[c.id];
             return (
               <div key={c.id}

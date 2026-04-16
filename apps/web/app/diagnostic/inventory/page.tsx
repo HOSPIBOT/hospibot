@@ -73,7 +73,7 @@ function AdjustModal({ reagent, onClose, onSaved }: { reagent: any; onClose: () 
           <div>
             <label className={labelCls}>Transaction Type</label>
             <div className="grid grid-cols-4 gap-2">
-              {(['IN', 'OUT', 'DISCARD', 'ADJUST'] as const).map(t => (
+              {(['IN', 'OUT', 'DISCARD', 'ADJUST'] as const).map((t: any) => (
                 <button key={t} onClick={() => setType(t)}
                   className={`py-2 text-xs font-bold rounded-xl border-2 transition-all ${type === t ? 'border-[#1E3A5F] bg-[#1E3A5F]/5 text-[#1E3A5F]' : 'border-slate-200 text-slate-600'}`}>
                   {t}
@@ -184,15 +184,15 @@ export default function InventoryPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const filtered = reagents.filter(r => {
+  const filtered = reagents.filter((r: any) => {
     const matchSearch = !search || r.name.toLowerCase().includes(search.toLowerCase()) || (r.lotNumber ?? '').includes(search);
     const matchFilter = filter === 'all' || (filter === 'alerts' && r.alerts?.length > 0);
     return matchSearch && matchFilter;
   });
 
-  const alertCount = reagents.filter(r => r.alerts?.length > 0).length;
-  const expiredCount = reagents.filter(r => r.alerts?.includes('EXPIRED')).length;
-  const lowStockCount = reagents.filter(r => r.alerts?.includes('LOW_STOCK')).length;
+  const alertCount = reagents.filter((r: any) => r.alerts?.length > 0).length;
+  const expiredCount = reagents.filter((r: any) => r.alerts?.includes('EXPIRED')).length;
+  const lowStockCount = reagents.filter((r: any) => r.alerts?.includes('LOW_STOCK')).length;
 
   return (
     <div className="space-y-5">
@@ -220,7 +220,7 @@ export default function InventoryPage() {
             { label: 'Total Alerts', value: alertCount, color: '#F59E0B', icon: AlertTriangle },
             { label: 'Expired', value: expiredCount, color: '#EF4444', icon: X },
             { label: 'Low Stock', value: lowStockCount, color: '#F97316', icon: Package },
-          ].map(s => (
+          ].map((s: any) => (
             <div key={s.label} className="bg-white rounded-2xl border border-slate-100 p-4 flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${s.color}15` }}>
                 <s.icon className="w-5 h-5" style={{ color: s.color }} />
@@ -241,7 +241,7 @@ export default function InventoryPage() {
           <input className={`${inputCls} pl-10`} placeholder="Search reagents…" value={search} onChange={e => setSearch(e.target.value)} />
         </div>
         <div className="flex items-center gap-2">
-          {(['all', 'alerts'] as const).map(f => (
+          {(['all', 'alerts'] as const).map((f: any) => (
             <button key={f} onClick={() => setFilter(f)}
               className={`px-4 py-2.5 text-sm font-semibold rounded-xl transition-all ${filter === f ? 'text-white' : 'bg-white border border-slate-200 text-slate-600'}`}
               style={filter === f ? { background: NAVY } : {}}>
@@ -264,7 +264,7 @@ export default function InventoryPage() {
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-4">
-          {filtered.map(r => (
+          {filtered.map((r: any) => (
             <div key={r.id} className={`bg-white rounded-2xl border p-5 hover:shadow-md transition-all ${r.alerts?.includes('EXPIRED') ? 'border-red-200' : r.alerts?.length ? 'border-orange-200' : 'border-slate-100'}`}>
               <div className="flex items-start justify-between mb-2">
                 <div className="flex-1 min-w-0">

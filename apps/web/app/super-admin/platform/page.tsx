@@ -151,7 +151,7 @@ export default function PlatformAssetsPage() {
             { slug: 'diagnostic', color: '#1E3A5F', bg: '#0F1E33' },
             { slug: 'pharmacy',   color: '#166534', bg: '#0D3B20' },
             { slug: 'homecare',   color: '#6B21A8', bg: '#3B0764' },
-          ].map(p => (
+          ].map((p: any) => (
             <div key={p.slug} className="rounded-xl overflow-hidden border border-slate-200">
               <div className="px-3 py-3 flex items-center gap-2" style={{ background: p.bg }}>
                 {preview ? (

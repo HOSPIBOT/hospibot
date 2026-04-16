@@ -97,14 +97,14 @@ export default function WellnessBookingsPage() {
       const res = await api.get('/appointments', { params: { limit: 2000, type: 'WELLNESS' } });
       const all: any[] = res.data.data ?? appointments;
       const header = ['Date', 'Time', 'Member', 'Phone', 'Session Type', 'Status'];
-      const rows = all.map(a => [
+      const rows = all.map((a: any) => [
         formatDate(a.scheduledAt), formatTime(a.scheduledAt),
         `${a.patient?.firstName ?? ''} ${a.patient?.lastName ?? ''}`.trim(),
         a.patient?.phone ?? '',
         a.notes?.match(/Session:\s*([^\n]+)/)?.[1]?.trim() ?? 'Wellness',
         a.status ?? '',
       ]);
-      const csv  = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const csv  = [header, ...rows].map((r: any) => r.map((v: any) => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
       const blob = new Blob([csv], { type: 'text/csv' });
       const url  = URL.createObjectURL(blob);
       const a    = document.createElement('a');
@@ -119,7 +119,7 @@ export default function WellnessBookingsPage() {
     setUpdating(id);
     try {
       await api.put(`/appointments/${id}/status`, { status: nextStatus });
-      setAppointments(prev => prev.map(a =>
+      setAppointments(prev => prev.map((a: any) =>
         a.id === id ? { ...a, status: nextStatus } : a
       ));
       toast.success(`Session marked as ${nextStatus.toLowerCase()}`);
@@ -132,7 +132,7 @@ export default function WellnessBookingsPage() {
     setUpdating(id);
     try {
       await api.put(`/appointments/${id}/status`, { status: 'CANCELLED' });
-      setAppointments(prev => prev.map(a =>
+      setAppointments(prev => prev.map((a: any) =>
         a.id === id ? { ...a, status: 'CANCELLED' } : a
       ));
       toast.success('Session cancelled');
@@ -164,7 +164,7 @@ export default function WellnessBookingsPage() {
 
   const tabCount = (key: string) => {
     if (key === 'all') return appointments.length;
-    return appointments.filter(a => {
+    return appointments.filter((a: any) => {
       if (key === 'completed') return a.status === 'COMPLETED';
       if (key === 'cancelled') return a.status === 'CANCELLED';
       if (key === 'today') {
@@ -216,7 +216,7 @@ export default function WellnessBookingsPage() {
           />
         </div>
         <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
-          {FILTER_TABS.map(t => (
+          {FILTER_TABS.map((t: any) => (
             <button key={t.key} onClick={() => setTab(t.key)}
               className={`text-xs font-medium px-3 py-1.5 rounded-lg transition-all ${
                 tab === t.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
@@ -244,7 +244,7 @@ export default function WellnessBookingsPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {appointments.map(a => {
+          {appointments.map((a: any) => {
             const next = NEXT_STATUS[a.status];
             const busy = updating === a.id;
             return (
@@ -364,7 +364,7 @@ export default function WellnessBookingsPage() {
                       value={patSearch} onChange={e => setPatSearch(e.target.value)} autoFocus />
                     {patients.length > 0 && (
                       <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-10 overflow-hidden">
-                        {patients.map(p => (
+                        {patients.map((p: any) => (
                           <button key={p.id}
                             onClick={() => {
                               setForm(f => ({ ...f, patientId: p.id, patientName: `${p.firstName} ${p.lastName || ''}`.trim() }));
@@ -384,7 +384,7 @@ export default function WellnessBookingsPage() {
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Session Type</label>
                 <select className={inputCls} value={form.sessionType}
                   onChange={e => setForm(f => ({ ...f, sessionType: e.target.value }))}>
-                  {SESSION_TYPES.map(s => <option key={s}>{s}</option>)}
+                  {SESSION_TYPES.map((s: any) => <option key={s}>{s}</option>)}
                 </select>
               </div>
 

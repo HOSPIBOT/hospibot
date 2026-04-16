@@ -63,7 +63,7 @@ function PatientSearch({ onSelect }: { onSelect: (p: any) => void }) {
       </div>
       {show && results.length > 0 && (
         <div className="absolute z-50 w-full bg-white rounded-2xl shadow-xl border border-slate-100 mt-2 overflow-hidden">
-          {results.map(p => (
+          {results.map((p: any) => (
             <button key={p.id} onClick={() => { onSelect(p); setQ(''); setShow(false); }}
               className="flex items-center gap-3 w-full px-4 py-3 hover:bg-slate-50 transition-colors text-left">
               <div className="w-9 h-9 rounded-full bg-[#1E3A5F]/10 flex items-center justify-center text-sm font-bold text-[#1E3A5F] flex-shrink-0">
@@ -119,7 +119,7 @@ function TestSearch({ selected, onAdd, onRemove }: {
       {selected.length > 0 && (
         <div className="space-y-2">
           <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">Selected Tests ({selected.length})</p>
-          {selected.map(t => (
+          {selected.map((t: any) => (
             <div key={t.testCode} className="flex items-center gap-3 bg-[#1E3A5F]/5 border border-[#1E3A5F]/15 rounded-xl px-4 py-2.5">
               <CheckCircle2 className="w-4 h-4 text-[#0D7C66] flex-shrink-0" />
               <div className="flex-1 min-w-0">
@@ -144,7 +144,7 @@ function TestSearch({ selected, onAdd, onRemove }: {
 
       {/* Category filters */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1">
-        {categories.map(c => (
+        {categories.map((c: any) => (
           <button key={c} onClick={() => setActiveCategory(c)}
             className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
               activeCategory === c ? 'text-white' : 'bg-white border border-slate-200 text-slate-600'
@@ -165,7 +165,7 @@ function TestSearch({ selected, onAdd, onRemove }: {
       ) : (
         <div className="max-h-72 overflow-y-auto space-y-1.5 pr-1">
           {filtered.map((t: any) => {
-            const isSelected = selected.some(s => s.testCode === t.code);
+            const isSelected = selected.some((s: any) => s.testCode === t.code);
             return (
               <button key={t.id} onClick={() => isSelected ? onRemove(t.code) : onAdd({
                 testId: t.id, testCode: t.code, testName: t.name,
@@ -235,7 +235,7 @@ function NewOrderPageInner() {
   const [notes, setNotes] = useState('');
   const [paymentMode, setPaymentMode] = useState('CASH');
 
-  const totalAmount = selectedTests.reduce((s, t) => s + t.price, 0);
+  const totalAmount = selectedTests.reduce((s: number, t: any) => s + t.price, 0);
   const statPremium = isStat ? 200 : 0;
   const grandTotal = totalAmount + statPremium;
 
@@ -278,7 +278,7 @@ function NewOrderPageInner() {
         isStat, collectionMode, referringDoctor, clinicalInfo, notes,
       }).catch(() => api.post('/lab/orders', {
         patientId: patient.id,
-        tests: selectedTests.map(t => ({ testName: t.testName, testCode: t.testCode, price: t.price * 100 })),
+        tests: selectedTests.map((t: any) => ({ testName: t.testName, testCode: t.testCode, price: t.price * 100 })),
         isStat, referringDoctor, clinicalInfo, notes, priority: isStat ? 'stat' : 'normal',
       }));
 
@@ -406,7 +406,7 @@ function NewOrderPageInner() {
               {[
                 { v: 'WALKIN', label: 'Walk-in at Lab', icon: FlaskConical },
                 { v: 'HOME_COLLECTION', label: 'Home Collection', icon: Home },
-              ].map(m => (
+              ].map((m: any) => (
                 <button key={m.v} onClick={() => setCollectionMode(m.v as any)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition-all ${
                     collectionMode === m.v ? 'border-[#1E3A5F] bg-[#1E3A5F]/5' : 'border-slate-200 hover:border-slate-300'
@@ -446,7 +446,7 @@ function NewOrderPageInner() {
           <TestSearch
             selected={selectedTests}
             onAdd={t => setSelectedTests(p => [...p, t])}
-            onRemove={code => setSelectedTests(p => p.filter(x => x.testCode !== code))}
+            onRemove={code => setSelectedTests(p => p.filter((x: any) => x.testCode !== code))}
           />
 
           {/* Clinical info */}
@@ -496,7 +496,7 @@ function NewOrderPageInner() {
           {/* Tests summary */}
           <div className="space-y-2">
             <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">Tests ({selectedTests.length})</p>
-            {selectedTests.map(t => (
+            {selectedTests.map((t: any) => (
               <div key={t.testCode} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
                 <div>
                   <p className="text-sm font-semibold text-slate-900">{t.testName}</p>
@@ -521,7 +521,7 @@ function NewOrderPageInner() {
           <div>
             <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Payment Mode</p>
             <div className="grid grid-cols-3 gap-2">
-              {['CASH', 'UPI', 'CARD'].map(m => (
+              {['CASH', 'UPI', 'CARD'].map((m: any) => (
                 <button key={m} onClick={() => setPaymentMode(m)}
                   className={`py-2.5 text-sm font-bold rounded-xl border-2 transition-all ${
                     paymentMode === m ? 'border-[#1E3A5F] bg-[#1E3A5F]/5 text-[#1E3A5F]' : 'border-slate-200 text-slate-600'

@@ -29,10 +29,10 @@ export default function DaySheetPage() {
 
   useEffect(() => { load(date); }, [date]);
 
-  const confirmed  = appts.filter(a => ['CONFIRMED', 'CHECKED_IN', 'IN_PROGRESS'].includes(a.status));
-  const completed  = appts.filter(a => a.status === 'COMPLETED');
-  const cancelled  = appts.filter(a => ['CANCELLED', 'NO_SHOW'].includes(a.status));
-  const pending    = appts.filter(a => a.status === 'PENDING');
+  const confirmed  = appts.filter((a: any) => ['CONFIRMED', 'CHECKED_IN', 'IN_PROGRESS'].includes(a.status));
+  const completed  = appts.filter((a: any) => a.status === 'COMPLETED');
+  const cancelled  = appts.filter((a: any) => ['CANCELLED', 'NO_SHOW'].includes(a.status));
+  const pending    = appts.filter((a: any) => a.status === 'PENDING');
 
   const displayDate = new Date(date + 'T00:00:00').toLocaleDateString('en-IN', {
     weekday: 'long', day: '2-digit', month: 'long', year: 'numeric',
@@ -87,7 +87,7 @@ export default function DaySheetPage() {
               { label: 'Confirmed', count: confirmed.length, color: '#3B82F6' },
               { label: 'Completed', count: completed.length, color: '#10B981' },
               { label: 'Cancelled', count: cancelled.length, color: '#EF4444' },
-            ].map(s => (
+            ].map((s: any) => (
               <div key={s.label} className="px-6 py-3 text-center border-r border-slate-100 last:border-0">
                 <p className="text-2xl font-bold" style={{ color: s.color }}>{s.count}</p>
                 <p className="text-xs text-slate-400">{s.label}</p>

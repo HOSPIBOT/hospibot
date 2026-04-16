@@ -61,7 +61,7 @@ export default function RegisterFamilyPage() {
       .finally(() => setLoading(false));
   }, [familySlug]);
 
-  const filtered = (family?.subTypes ?? []).filter(s =>
+  const filtered = (family?.subTypes ?? []).filter((s: any) =>
     s.name.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -142,7 +142,7 @@ export default function RegisterFamilyPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-8">
           {loading
             ? Array.from({ length: 9 }).map((_, i) => <Skeleton key={i} />)
-            : filtered.map(st => (
+            : filtered.map((st: any) => (
               <SubTypeCard
                 key={st.slug}
                 subType={st}

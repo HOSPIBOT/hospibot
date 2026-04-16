@@ -47,7 +47,7 @@ export default function DoctorsPage() {
         ) : doctors.length === 0 ? (
           <div className="col-span-full text-center py-12 text-gray-400">No doctors found</div>
         ) : (
-          doctors.map(doc => (
+          doctors.map((doc: any) => (
             <div key={doc.id} className="card">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-12 h-12 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center font-bold">

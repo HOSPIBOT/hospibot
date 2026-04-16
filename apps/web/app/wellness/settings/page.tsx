@@ -53,7 +53,7 @@ export default function PortalSettingsPage() {
           <div className="grid grid-cols-2 gap-4">{Array.from({length: 3}).map((_, i) => <Skeleton key={i} />)}</div>
         ) : (
           <div className="grid grid-cols-2 gap-4">
-            {[{ k: 'orgName', l: 'Name', p: 'Organisation name' }, { k: 'phone', l: 'Phone', p: '+91 98765 43210' }, { k: 'email', l: 'Email', p: 'info@business.com' }].map(f => (
+            {[{ k: 'orgName', l: 'Name', p: 'Organisation name' }, { k: 'phone', l: 'Phone', p: '+91 98765 43210' }, { k: 'email', l: 'Email', p: 'info@business.com' }].map((f: any) => (
               <div key={f.k}>
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">{f.l}</label>
                 <input className={inputCls} placeholder={f.p} value={cfg[f.k] || ''} onChange={e => setCfg((c: any) => ({ ...c, [f.k]: e.target.value }))} />

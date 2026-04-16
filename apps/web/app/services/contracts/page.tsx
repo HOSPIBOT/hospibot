@@ -52,7 +52,7 @@ export default function ContractsPage() {
       }).catch(() => {});
   }, []);
 
-  const totalValue = contracts.filter(c => c.status === 'ACTIVE').reduce((s, c) => s + c.value, 0);
+  const totalValue = contracts.filter((c: any) => c.status === 'ACTIVE').reduce((s: number, c: any) => s + c.value, 0);
 
   const save = async () => {
     if (!form.client || !form.value) { toast.error('Client name and value required'); return; }
@@ -86,11 +86,11 @@ export default function ContractsPage() {
       {/* Stats */}
       <div className="grid grid-cols-4 gap-4">
         {[
-          { l: 'Active Contracts', v: contracts.filter(c => c.status === 'ACTIVE').length, icon: CheckCircle2, color: '#10B981' },
-          { l: 'Expiring Soon',   v: contracts.filter(c => c.status === 'EXPIRING').length, icon: AlertTriangle, color: '#F59E0B' },
-          { l: 'Pending Sign',    v: contracts.filter(c => c.status === 'PENDING').length,  icon: FileText,     color: '#3B82F6' },
+          { l: 'Active Contracts', v: contracts.filter((c: any) => c.status === 'ACTIVE').length, icon: CheckCircle2, color: '#10B981' },
+          { l: 'Expiring Soon',   v: contracts.filter((c: any) => c.status === 'EXPIRING').length, icon: AlertTriangle, color: '#F59E0B' },
+          { l: 'Pending Sign',    v: contracts.filter((c: any) => c.status === 'PENDING').length,  icon: FileText,     color: '#3B82F6' },
           { l: 'Active Value',    v: `₹${(totalValue / 100000).toFixed(1)}L`,               icon: TrendingUp,   color: '#334155' },
-        ].map(s => (
+        ].map((s: any) => (
           <div key={s.l} className="bg-white rounded-2xl border border-slate-100 p-5">
             <div className="flex items-center gap-2 mb-2">
               <s.icon className="w-4 h-4" style={{ color: s.color }} />
@@ -106,13 +106,13 @@ export default function ContractsPage() {
         <table className="w-full">
           <thead>
             <tr className="bg-slate-50 border-b border-slate-100">
-              {['Client', 'Type', 'Value', 'Period', 'Days Left', 'Status'].map(h => (
+              {['Client', 'Type', 'Value', 'Period', 'Days Left', 'Status'].map((h: any) => (
                 <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
               ))}
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-50">
-            {contracts.map(c => {
+            {contracts.map((c: any) => {
               const daysLeft = c.end ? Math.ceil((new Date(c.end).getTime() - Date.now()) / 86400000) : null;
               return (
                 <tr key={c.id} className="hover:bg-slate-50/60 transition-colors">
@@ -153,7 +153,7 @@ export default function ContractsPage() {
                 <input className={inputCls} placeholder="Hospital / Clinic name" value={form.client} onChange={e => setForm(f => ({ ...f, client: e.target.value }))} /></div>
               <div><label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Contract Type</label>
                 <select className={inputCls} value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))}>
-                  {['AMC', 'Service', 'Supply', 'Rental', 'Consulting', 'Partnership'].map(t => <option key={t}>{t}</option>)}
+                  {['AMC', 'Service', 'Supply', 'Rental', 'Consulting', 'Partnership'].map((t: any) => <option key={t}>{t}</option>)}
                 </select></div>
               <div><label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Contract Value (₹) *</label>
                 <input type="number" className={inputCls} placeholder="500000" value={form.value} onChange={e => setForm(f => ({ ...f, value: e.target.value }))} /></div>

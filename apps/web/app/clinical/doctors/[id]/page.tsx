@@ -33,7 +33,7 @@ export default function DoctorProfilePage() {
 
   // Availability: {Monday: {start:'09:00', end:'17:00', isAvailable: true}, ...}
   const [avail, setAvail] = useState<Record<string, { start: string; end: string; isAvailable: boolean }>>(
-    DAYS.reduce((acc, d) => ({
+    DAYS.reduce((acc: number, d: any) => ({
       ...acc,
       [d]: { start: '09:00', end: '17:00', isAvailable: d !== 'Sunday' },
     }), {} as any)
@@ -120,7 +120,7 @@ export default function DoctorProfilePage() {
           { key: 'profile'      as const, label: 'Profile',      icon: User },
           { key: 'availability' as const, label: 'Availability', icon: Clock },
           { key: 'stats'        as const, label: 'Performance',  icon: Star },
-        ].map(t => (
+        ].map((t: any) => (
           <button key={t.key} onClick={() => setTab(t.key)}
             className={`flex items-center gap-2 text-sm font-medium px-4 py-1.5 rounded-lg transition-all ${tab === t.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
             <t.icon className="w-4 h-4" />{t.label}
@@ -138,7 +138,7 @@ export default function DoctorProfilePage() {
               { k: 'lastName',    l: 'Last Name',      readOnly: true  },
               { k: 'phone',       l: 'Phone',          readOnly: true  },
               { k: 'email',       l: 'Email',          readOnly: true  },
-            ].map(f => (
+            ].map((f: any) => (
               <div key={f.k}>
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">{f.l}</label>
                 <input className={`${inputCls} ${f.readOnly ? 'opacity-60 cursor-not-allowed' : ''}`}
@@ -162,7 +162,7 @@ export default function DoctorProfilePage() {
                 { k: 'regNumber',      l: 'Registration No.', placeholder: 'MCI Reg Number' },
                 { k: 'experience',     l: 'Experience (years)', placeholder: '12', type: 'number' },
                 { k: 'consultationFee',l: 'Consultation Fee (₹)', placeholder: '500', type: 'number' },
-              ].map(f => (
+              ].map((f: any) => (
                 <div key={f.k}>
                   <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">{f.l}</label>
                   <input type={f.type || 'text'} className={inputCls} placeholder={f.placeholder}
@@ -190,7 +190,7 @@ export default function DoctorProfilePage() {
             <p className="text-xs text-slate-400">Click toggle to enable/disable each day</p>
           </div>
           <div className="space-y-3">
-            {DAYS.map(day => {
+            {DAYS.map((day: any) => {
               const d = avail[day] || { start: '09:00', end: '17:00', isAvailable: false };
               return (
                 <div key={day} className={`flex items-center gap-4 p-4 rounded-2xl border transition-all ${d.isAvailable ? 'border-[#0D7C66]/20 bg-[#E8F5F0]/30' : 'border-slate-100 bg-slate-50/50'}`}>
@@ -204,7 +204,7 @@ export default function DoctorProfilePage() {
                         <label className="text-xs text-slate-500">Start</label>
                         <select className="px-2 py-1.5 text-xs border border-slate-200 rounded-lg bg-white outline-none"
                           value={d.start} onChange={e => setAvail(p => ({ ...p, [day]: { ...d, start: e.target.value } }))}>
-                          {SLOTS.map(s => <option key={s} value={s}>{s}</option>)}
+                          {SLOTS.map((s: any) => <option key={s} value={s}>{s}</option>)}
                         </select>
                       </div>
                       <span className="text-slate-300">—</span>
@@ -212,7 +212,7 @@ export default function DoctorProfilePage() {
                         <label className="text-xs text-slate-500">End</label>
                         <select className="px-2 py-1.5 text-xs border border-slate-200 rounded-lg bg-white outline-none"
                           value={d.end} onChange={e => setAvail(p => ({ ...p, [day]: { ...d, end: e.target.value } }))}>
-                          {SLOTS.map(s => <option key={s} value={s}>{s}</option>)}
+                          {SLOTS.map((s: any) => <option key={s} value={s}>{s}</option>)}
                         </select>
                       </div>
                       <span className="text-xs text-slate-400">
@@ -248,7 +248,7 @@ export default function DoctorProfilePage() {
             { label: 'Avg. Rating',        value: doctor.avgRating ? `${doctor.avgRating}/5` : 'N/A', icon: Star, color: '#F59E0B' },
             { label: 'Prescriptions',      value: doctor.prescriptionCount || 0, icon: Stethoscope, color: '#3B82F6' },
             { label: 'Experience (yrs)',   value: doctor.experience || form.experience || 0, icon: Award, color: '#8B5CF6' },
-          ].map(s => (
+          ].map((s: any) => (
             <div key={s.label} className="bg-white rounded-2xl border border-slate-100 p-5">
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: `${s.color}15` }}>
@@ -267,7 +267,7 @@ export default function DoctorProfilePage() {
                 { l: 'Specialization', v: doctor.specialization || form.specialization || '—' },
                 { l: 'Qualification',  v: doctor.qualification || form.qualification || '—' },
                 { l: 'Reg. Number',    v: doctor.regNumber || form.regNumber || '—' },
-              ].map(f => (
+              ].map((f: any) => (
                 <div key={f.l}>
                   <p className="text-xs text-slate-400 mb-0.5">{f.l}</p>
                   <p className="font-semibold text-slate-900">{f.v}</p>

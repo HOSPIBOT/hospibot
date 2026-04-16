@@ -90,7 +90,7 @@ function InviteModal({ onClose, onInvited }: { onClose: () => void; onInvited: (
           <div>
             <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Role *</label>
             <select className={inputCls} value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))}>
-              {ROLES.map(r => <option key={r} value={r}>{r.replace('_', ' ')}</option>)}
+              {ROLES.map((r: any) => <option key={r} value={r}>{r.replace('_', ' ')}</option>)}
             </select>
           </div>
           <div className="col-span-2">
@@ -136,7 +136,7 @@ export default function ClinicalStaffPage() {
   const exportCSV = () => {
     setExporting(true);
     try {
-      const rows = filtered.map(s => [
+      const rows = filtered.map((s: any) => [
         s.firstName ?? '', s.lastName ?? '',
         s.email ?? '', s.phone ?? '',
         s.role ?? '', s.isActive !== false ? 'Active' : 'Inactive',
@@ -144,7 +144,7 @@ export default function ClinicalStaffPage() {
         s.lastLoginAt ? new Date(s.lastLoginAt).toLocaleDateString('en-IN') : 'Never',
       ]);
       const header = ['First Name', 'Last Name', 'Email', 'Phone', 'Role', 'Status', 'Branch', 'Last Login'];
-      const csv  = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const csv  = [header, ...rows].map((r: any) => r.map((v: any) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
       const blob = new Blob([csv], { type: 'text/csv' });
       const url  = URL.createObjectURL(blob);
       const a    = document.createElement('a');
@@ -157,12 +157,12 @@ export default function ClinicalStaffPage() {
   const toggleActive = async (userId: string, currentActive: boolean, name: string) => {
     try {
       await api.patch(`/auth/users/${userId}`, { isActive: !currentActive });
-      setStaff(prev => prev.map(s => s.id === userId ? { ...s, isActive: !currentActive } : s));
+      setStaff(prev => prev.map((s: any) => s.id === userId ? { ...s, isActive: !currentActive } : s));
       toast.success(`${name} ${!currentActive ? 'activated' : 'deactivated'}`);
     } catch { toast.error('Failed to update'); }
   };
 
-  const filtered = staff.filter(s => {
+  const filtered = staff.filter((s: any) => {
     const matchSearch = !search || `${s.firstName} ${s.lastName} ${s.email}`.toLowerCase().includes(search.toLowerCase());
     const matchRole   = !roleFilter || s.role === roleFilter;
     return matchSearch && matchRole;
@@ -177,7 +177,7 @@ export default function ClinicalStaffPage() {
             <Users className="w-6 h-6 text-[#0D7C66]" /> Staff Management
           </h1>
           <p className="text-sm text-slate-500 mt-0.5">
-            {staff.filter(s => s.isActive !== false).length} active · {staff.length} total staff members
+            {staff.filter((s: any) => s.isActive !== false).length} active · {staff.length} total staff members
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -205,7 +205,7 @@ export default function ClinicalStaffPage() {
         <select className="px-3 py-2 text-sm border border-slate-200 rounded-xl bg-slate-50 outline-none"
           value={roleFilter} onChange={e => setRole(e.target.value)}>
           <option value="">All Roles</option>
-          {ROLES.map(r => <option key={r} value={r}>{r.replace('_', ' ')}</option>)}
+          {ROLES.map((r: any) => <option key={r} value={r}>{r.replace('_', ' ')}</option>)}
         </select>
       </div>
 
@@ -227,13 +227,13 @@ export default function ClinicalStaffPage() {
           <table className="w-full">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-100">
-                {['Staff Member', 'Contact', 'Role', 'Status', ''].map(h => (
+                {['Staff Member', 'Contact', 'Role', 'Status', ''].map((h: any) => (
                   <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {filtered.map(s => {
+              {filtered.map((s: any) => {
                 const name = `${s.firstName} ${s.lastName || ''}`.trim();
                 const active = s.isActive !== false;
                 return (

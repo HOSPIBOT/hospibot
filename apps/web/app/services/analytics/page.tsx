@@ -37,10 +37,10 @@ export default function ServicesAnalyticsPage() {
       );
 
       const invoices: any[] = invoicesRes.data?.data ?? invoicesRes.data ?? [];
-      const paid  = invoices.filter(i => i.status === 'PAID').reduce((s, i) => s + (i.totalAmount ?? 0), 0);
-      const total = invoices.reduce((s, i) => s + (i.totalAmount ?? 0), 0);
-      const overdue = invoices.filter(i => i.status === 'OVERDUE').length;
-      const active  = invoices.filter(i => i.status !== 'CANCELLED').length;
+      const paid  = invoices.filter((i: any) => i.status === 'PAID').reduce((s: number, i: any) => s + (i.totalAmount ?? 0), 0);
+      const total = invoices.reduce((s: number, i: any) => s + (i.totalAmount ?? 0), 0);
+      const overdue = invoices.filter((i: any) => i.status === 'OVERDUE').length;
+      const active  = invoices.filter((i: any) => i.status !== 'CANCELLED').length;
 
       setSummary({
         activeContracts : active,
@@ -57,7 +57,7 @@ export default function ServicesAnalyticsPage() {
           ? invoices.filter((_: any, j: number) => j % CONTRACT_TYPES.length === i).reduce((s: number, iv: any) => s + (iv.totalAmount ?? 0), 0)
           : [1200000, 350000, 875000, 520000, 280000][i],
       }));
-      setTypeDist(perType.filter(t => t.value > 0));
+      setTypeDist(perType.filter((t: any) => t.value > 0));
     }).finally(() => setLoading(false));
   }, []);
 
@@ -77,7 +77,7 @@ export default function ServicesAnalyticsPage() {
       {/* KPIs */}
       {loading ? (
         <div className="grid grid-cols-4 gap-4">
-          {[1,2,3,4].map(i => <div key={i} className="animate-pulse bg-slate-200 rounded-2xl h-24" />)}
+          {[1,2,3,4].map((i: any) => <div key={i} className="animate-pulse bg-slate-200 rounded-2xl h-24" />)}
         </div>
       ) : (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -86,7 +86,7 @@ export default function ServicesAnalyticsPage() {
             { l: 'Portfolio Value',  v: formatINR(summary?.totalValue ?? 0),       icon: TrendingUp,   color: THEME     },
             { l: 'Collected',        v: formatINR(summary?.collected ?? 0),        icon: BarChart3,    color: '#0EA5E9' },
             { l: 'Overdue',          v: summary?.overdue ?? 0,                     icon: AlertTriangle,color: '#EF4444' },
-          ].map(k => (
+          ].map((k: any) => (
             <div key={k.l} className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-shadow">
               <div className="flex items-center gap-2 mb-2">
                 <k.icon className="w-4 h-4" style={{ color: k.color }} />
@@ -162,7 +162,7 @@ export default function ServicesAnalyticsPage() {
           { href: '/services/contracts', label: 'View Contracts', icon: FileText, color: THEME   },
           { href: '/services/billing',   label: 'View Billing',   icon: BarChart3, color: '#0EA5E9' },
           { href: '/services/staff',     label: 'Field Staff',    icon: Users,    color: '#10B981' },
-        ].map(l => (
+        ].map((l: any) => (
           <a key={l.href} href={l.href}
             className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-all group flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"

@@ -119,7 +119,7 @@ export default function RegisterPage() {
     if (selected) router.push(`/register/${selected}`);
   };
 
-  const selectedFamily = families.find(f => f.slug === selected);
+  const selectedFamily = families.find((f: any) => f.slug === selected);
   const selectedTheme = selected ? (FALLBACK_THEMES[selected] || FALLBACK_THEMES.clinical) : null;
 
   return (

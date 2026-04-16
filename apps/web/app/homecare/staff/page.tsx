@@ -84,21 +84,21 @@ export default function StaffDispatchPage() {
   const [exporting, setExporting] = useState(false);
   const exportCSV = () => {
     const header = ['Name', 'Phone', 'Specialties', 'Available', 'Visits Today'];
-    const rows = staff.map(s => [
+    const rows = staff.map((s: any) => [
       s.name ?? `${s.user?.firstName ?? ''} ${s.user?.lastName ?? ''}`.trim(),
       s.user?.phone ?? s.phone ?? '',
       Array.isArray(s.specialties) ? s.specialties.join('; ') : (s.specialties ?? ''),
       s.isAvailable ? 'Yes' : 'No',
       s.todayVisits ?? 0,
     ]);
-    const csv = [header,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const csv = [header,...rows].map((r: any) =>r.map((v: any) =>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
     const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);
     const a=document.createElement('a');a.href=url;a.download=`homecare-staff-${new Date().toISOString().slice(0,10)}.csv`;
     a.click();URL.revokeObjectURL(url);toast.success(`Exported ${staff.length} staff`);
   };
   const dispatch = (person: any) => {
     toast.success(`Dispatching ${person.name}…`);
-    setStaff(prev => prev.map(s =>
+    setStaff(prev => prev.map((s: any) =>
       s.id === person.id ? { ...s, status: 'TRAVELLING' } : s
     ));
     // In a real backend this would POST a dispatch event
@@ -137,14 +137,14 @@ export default function StaffDispatchPage() {
 
   const filtered = statusFilter === 'all'
     ? staff
-    : staff.filter(s => s.status === statusFilter);
+    : staff.filter((s: any) => s.status === statusFilter);
 
   const summaryTabs = [
     { label: 'All',        key: 'all',        count: staff.length,                                    color: '#6B21A8' },
-    { label: 'Available',  key: 'AVAILABLE',  count: staff.filter(s => s.status === 'AVAILABLE').length,  color: '#10B981' },
-    { label: 'On Visit',   key: 'ON_VISIT',   count: staff.filter(s => s.status === 'ON_VISIT').length,   color: '#3B82F6' },
-    { label: 'Travelling', key: 'TRAVELLING', count: staff.filter(s => s.status === 'TRAVELLING').length, color: '#F59E0B' },
-    { label: 'Off Duty',   key: 'OFF_DUTY',   count: staff.filter(s => s.status === 'OFF_DUTY').length,   color: '#94a3b8' },
+    { label: 'Available',  key: 'AVAILABLE',  count: staff.filter((s: any) => s.status === 'AVAILABLE').length,  color: '#10B981' },
+    { label: 'On Visit',   key: 'ON_VISIT',   count: staff.filter((s: any) => s.status === 'ON_VISIT').length,   color: '#3B82F6' },
+    { label: 'Travelling', key: 'TRAVELLING', count: staff.filter((s: any) => s.status === 'TRAVELLING').length, color: '#F59E0B' },
+    { label: 'Off Duty',   key: 'OFF_DUTY',   count: staff.filter((s: any) => s.status === 'OFF_DUTY').length,   color: '#94a3b8' },
   ];
 
   return (
@@ -157,7 +157,7 @@ export default function StaffDispatchPage() {
             <Truck className="w-6 h-6 text-purple-600" /> Staff Dispatch
           </h1>
           <p className="text-sm text-slate-500 mt-0.5">
-            {staff.filter(s => s.status === 'AVAILABLE').length} available · {staff.length} total
+            {staff.filter((s: any) => s.status === 'AVAILABLE').length} available · {staff.length} total
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -179,7 +179,7 @@ export default function StaffDispatchPage() {
 
       {/* Status filter tabs */}
       <div className="flex items-center gap-2 flex-wrap">
-        {summaryTabs.map(tab => (
+        {summaryTabs.map((tab: any) => (
           <button
             key={tab.key}
             onClick={() => setStatusFilter(tab.key)}
@@ -214,7 +214,7 @@ export default function StaffDispatchPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-          {filtered.map(s => (
+          {filtered.map((s: any) => (
             <div key={s.id}
               className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-shadow">
 
@@ -309,7 +309,7 @@ export default function StaffDispatchPage() {
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Specialization</label>
                 <select className={inputCls} value={form.spec}
                   onChange={e => setForm(f => ({ ...f, spec: e.target.value }))}>
-                  {SPECIALIZATIONS.map(s => <option key={s}>{s}</option>)}
+                  {SPECIALIZATIONS.map((s: any) => <option key={s}>{s}</option>)}
                 </select>
               </div>
             </div>

@@ -58,7 +58,7 @@ function AddLogModal({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
           <div><label className={labelCls}>Department</label>
             <select className={inputCls} value={form.department} onChange={setF('department')}>
               <option value="">Select</option>
-              {['Haematology','Biochemistry','Microbiology','Immunology','Radiology','General'].map(d => (
+              {['Haematology','Biochemistry','Microbiology','Immunology','Radiology','General'].map((d: any) => (
                 <option key={d}>{d}</option>
               ))}
             </select>
@@ -111,10 +111,10 @@ export default function EquipmentPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const filtered = filter ? logs.filter(l => l.eventType === filter) : logs;
+  const filtered = filter ? logs.filter((l: any) => l.eventType === filter) : logs;
 
   // Find equipment with upcoming calibrations
-  const upcoming = logs.filter(l =>
+  const upcoming = logs.filter((l: any) =>
     l.nextCalibration && new Date(l.nextCalibration) < new Date(Date.now() + 30 * 86_400_000)
   );
 
@@ -146,7 +146,7 @@ export default function EquipmentPage() {
               {upcoming.length} equipment calibration{upcoming.length > 1 ? 's' : ''} due within 30 days
             </p>
             <p className="text-xs text-amber-600">
-              {upcoming.map(u => u.equipmentName).join(', ')}
+              {upcoming.map((u: any) => u.equipmentName).join(', ')}
             </p>
           </div>
         </div>
@@ -154,13 +154,13 @@ export default function EquipmentPage() {
 
       {/* Event type filter */}
       <div className="flex items-center gap-2 flex-wrap">
-        {['', 'CALIBRATION', 'MAINTENANCE', 'BREAKDOWN', 'QC', 'INSTALLATION'].map(e => (
+        {['', 'CALIBRATION', 'MAINTENANCE', 'BREAKDOWN', 'QC', 'INSTALLATION'].map((e: any) => (
           <button key={e} onClick={() => setFilter(e)}
             className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all border ${
               filter === e ? 'text-white border-transparent' : 'bg-white border-slate-200 text-slate-600'
             }`}
             style={filter === e ? { background: NAVY } : {}}>
-            {e || 'All'} ({!e ? logs.length : logs.filter(l => l.eventType === e).length})
+            {e || 'All'} ({!e ? logs.length : logs.filter((l: any) => l.eventType === e).length})
           </button>
         ))}
       </div>
@@ -188,13 +188,13 @@ export default function EquipmentPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-slate-100 bg-slate-50/80">
-                {['Equipment', 'Event', 'Date', 'Department', 'Downtime', 'Next Cal.', 'Notes'].map(h => (
+                {['Equipment', 'Event', 'Date', 'Department', 'Downtime', 'Next Cal.', 'Notes'].map((h: any) => (
                   <th key={h} className="px-4 py-3 text-left text-[11px] font-bold text-slate-400 uppercase tracking-widest">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {filtered.map(log => {
+              {filtered.map((log: any) => {
                 const calDue = log.nextCalibration ? new Date(log.nextCalibration) : null;
                 const calOverdue = calDue && calDue < new Date();
                 const calSoon = calDue && !calOverdue && calDue < new Date(Date.now() + 30 * 86_400_000);

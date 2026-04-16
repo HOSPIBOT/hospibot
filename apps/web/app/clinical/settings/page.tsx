@@ -176,7 +176,7 @@ export default function SettingsPage() {
         {/* Sidebar tabs */}
         <div className="w-48 flex-shrink-0">
           <nav className="space-y-1">
-            {tabs.map(t => (
+            {tabs.map((t: any) => (
               <button key={t.key} onClick={() => setTab(t.key)}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${tab === t.key ? 'bg-[#0D7C66] text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'}`}>
                 <t.icon className="w-4 h-4 flex-shrink-0" />
@@ -390,7 +390,7 @@ export default function SettingsPage() {
                   <div className="py-12 text-center text-slate-400 text-sm">No departments configured yet.</div>
                 ) : (
                   <div className="divide-y divide-slate-50">
-                    {depts.map(dept => (
+                    {depts.map((dept: any) => (
                       <div key={dept.id} className="flex items-center justify-between px-5 py-3.5 hover:bg-slate-50 transition-colors group">
                         <div className="flex items-center gap-3">
                           <div className="w-9 h-9 rounded-xl bg-[#E8F5F0] text-[#0D7C66] text-xs font-bold flex items-center justify-center">
@@ -446,7 +446,7 @@ export default function SettingsPage() {
                     { key: 'RAZORPAY_KEY_ID',         label: 'Key ID',        placeholder: 'rzp_live_...' },
                     { key: 'RAZORPAY_KEY_SECRET',      label: 'Key Secret',    placeholder: 'Set in backend env vars' },
                     { key: 'RAZORPAY_WEBHOOK_SECRET',  label: 'Webhook Secret', placeholder: 'Set in backend env vars' },
-                  ].map(f => (
+                  ].map((f: any) => (
                     <div key={f.key}>
                       <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">{f.label}</label>
                       <div className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-mono text-slate-500">{f.placeholder}</div>
@@ -504,7 +504,7 @@ export default function SettingsPage() {
                   {[
                     { key: 'ABHA_CLIENT_ID',     label: 'Client ID',     placeholder: 'Set in backend env vars' },
                     { key: 'ABHA_CLIENT_SECRET',  label: 'Client Secret', placeholder: 'Set in backend env vars' },
-                  ].map(f => (
+                  ].map((f: any) => (
                     <div key={f.key}>
                       <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">{f.label}</label>
                       <div className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-mono text-slate-500">{f.placeholder}</div>
@@ -534,7 +534,7 @@ export default function SettingsPage() {
                 { key: 'paymentConfirmation', label: 'Payment confirmation', desc: 'Send receipt after successful payment' },
                 { key: 'newPatientAlert', label: 'New patient registration alert', desc: 'Alert staff when a new patient registers' },
                 { key: 'noShowAlert', label: 'No-show alert to staff', desc: 'Notify reception when patient marks as no-show' },
-              ].map(item => (
+              ].map((item: any) => (
                 <div key={item.key} className="flex items-center justify-between py-3.5 border-b border-slate-50 last:border-0">
                   <div>
                     <p className="text-sm font-medium text-slate-900">{item.label}</p>

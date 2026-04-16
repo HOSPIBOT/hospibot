@@ -139,7 +139,7 @@ function WritePrescriptionModal({ patientId, patientName, doctorId, onClose, onC
 
   const handleSubmit = async () => {
     if (!form.doctorId) { toast.error('Select a doctor'); return; }
-    const validMeds = form.medications.filter(m => m.name && m.frequency && m.duration);
+    const validMeds = form.medications.filter((m: any) => m.name && m.frequency && m.duration);
     if (validMeds.length === 0) { toast.error('Add at least one medication with name, frequency, and duration'); return; }
 
     setSubmitting(true);
@@ -175,7 +175,7 @@ function WritePrescriptionModal({ patientId, patientName, doctorId, onClose, onC
               <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Prescribing Doctor *</label>
               <select className={inputCls} value={form.doctorId} onChange={e => setForm(f => ({ ...f, doctorId: e.target.value }))}>
                 <option value="">Select doctor…</option>
-                {doctors.map(d => (
+                {doctors.map((d: any) => (
                   <option key={d.id} value={d.id}>Dr. {d.user?.firstName} {d.user?.lastName || ''}</option>
                 ))}
               </select>
@@ -323,7 +323,7 @@ function StandaloneWriteModal({ onClose, onCreated }: { onClose: () => void; onC
               value={patSearch} onChange={e => setPatSearch(e.target.value)} autoFocus />
             {patients.length > 0 && (
               <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-10 overflow-hidden">
-                {patients.map(p => (
+                {patients.map((p: any) => (
                   <button key={p.id} onClick={() => setSelected(p)}
                     className="w-full text-left px-4 py-3 hover:bg-slate-50 border-b border-slate-50 last:border-0 transition-colors">
                     <p className="text-sm font-semibold text-slate-900">{p.firstName} {p.lastName || ''}</p>
@@ -388,7 +388,7 @@ export default function PrescriptionsPage() {
       const res = await api.get('/prescriptions', { params: { limit: 5000, search: debSearch || undefined, from: dateFrom || undefined, to: dateTo || undefined } });
       const all: any[] = res.data.data ?? prescriptions;
       const header = ['Date', 'Patient', 'Phone', 'Doctor', 'Medications', 'Status'];
-      const rows = all.map(rx => [
+      const rows = all.map((rx: any) => [
         rx.createdAt ? new Date(rx.createdAt).toLocaleDateString('en-IN') : '',
         `${rx.patient?.firstName ?? ''} ${rx.patient?.lastName ?? ''}`.trim(),
         rx.patient?.phone ?? '',
@@ -396,7 +396,7 @@ export default function PrescriptionsPage() {
         (rx.medications as any[])?.map((m: any) => `${m.name} ${m.dosage || ''}`.trim()).join('; ') ?? '',
         rx.isActive ? 'Active' : 'Expired',
       ]);
-      const csv = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const csv = [header, ...rows].map((r: any) => r.map((v: any) => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
       const blob = new Blob([csv], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a'); a.href = url; a.download = `prescriptions-${new Date().toISOString().slice(0,10)}.csv`;
@@ -470,7 +470,7 @@ export default function PrescriptionsPage() {
               { label: 'Today',    from: new Date().toISOString().slice(0, 10), to: new Date().toISOString().slice(0, 10) },
               { label: '7 days',   from: (() => { const d = new Date(); d.setDate(d.getDate() - 7); return d.toISOString().slice(0, 10); })(), to: new Date().toISOString().slice(0, 10) },
               { label: '30 days',  from: (() => { const d = new Date(); d.setDate(d.getDate() - 30); return d.toISOString().slice(0, 10); })(), to: new Date().toISOString().slice(0, 10) },
-            ].map(p => (
+            ].map((p: any) => (
               <button key={p.label} onClick={() => { setDateFrom(p.from); setDateTo(p.to); }}
                 className={`text-xs font-medium px-2.5 py-1.5 rounded-lg transition-all ${
                   dateFrom === p.from && dateTo === p.to
@@ -500,7 +500,7 @@ export default function PrescriptionsPage() {
       ) : (
         <>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {prescriptions.map(rx => (
+            {prescriptions.map((rx: any) => (
               <PrescriptionCard key={rx.id} rx={rx} onSend={sendRx} />
             ))}
           </div>

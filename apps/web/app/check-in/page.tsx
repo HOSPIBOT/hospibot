@@ -121,7 +121,7 @@ function SelfCheckInPageInner() {
         {appointments.length > 0 && (
           <div className="space-y-3">
             <p className="text-xs font-bold text-slate-500 uppercase tracking-wide text-center">Today's Appointments</p>
-            {appointments.map(a => (
+            {appointments.map((a: any) => (
               <button key={a.id} onClick={() => checkIn(a)}
                 className="w-full bg-white rounded-3xl border-2 border-slate-200 hover:border-[#0D7C66] p-5 text-left transition-all group hover:shadow-md">
                 <div className="flex items-center justify-between">

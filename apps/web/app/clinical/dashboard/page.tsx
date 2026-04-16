@@ -42,7 +42,7 @@ function SetupChecklist({ totalPatients, hasQueue }: { totalPatients: number; ha
     { done: false, label: 'Configure WhatsApp number', href: '/clinical/settings', desc: 'Connect your WhatsApp Business number' },
     { done: false, label: 'Set up automation rules', href: '/clinical/automation', desc: 'Enable follow-up reminders' },
   ];
-  const doneCount = steps.filter(s => s.done).length;
+  const doneCount = steps.filter((s: any) => s.done).length;
   if (doneCount === steps.length) return null;
   return (
     <div className="bg-gradient-to-br from-[#E8F5F0] to-[#F0FDF4] rounded-2xl border border-[#0D7C66]/20 p-5 mb-2">
@@ -62,7 +62,7 @@ function SetupChecklist({ totalPatients, hasQueue }: { totalPatients: number; ha
         <div className="bg-[#0D7C66] h-1.5 rounded-full transition-all" style={{ width: `${(doneCount/steps.length)*100}%` }} />
       </div>
       <div className="grid grid-cols-1 gap-2">
-        {steps.filter(s => !s.done).slice(0, 3).map((step, i) => (
+        {steps.filter((s: any) => !s.done).slice(0, 3).map((step, i) => (
           <a key={i} href={step.href} className="flex items-center gap-3 bg-white rounded-xl px-4 py-3 hover:bg-[#E8F5F0] transition-colors group border border-transparent hover:border-[#0D7C66]/20">
             <div className="w-5 h-5 rounded-full border-2 border-slate-200 flex-shrink-0 group-hover:border-[#0D7C66] transition-colors" />
             <div className="flex-1 min-w-0">
@@ -103,9 +103,9 @@ export default function ClinicalDashboard() {
   const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
   const firstName = user?.firstName || 'Doctor';
 
-  const inProgress = queue.filter(a => a.status === 'IN_PROGRESS').length;
-  const waiting    = queue.filter(a => a.status === 'CONFIRMED').length;
-  const checkedIn  = queue.filter(a => a.status === 'CHECKED_IN').length;
+  const inProgress = queue.filter((a: any) => a.status === 'IN_PROGRESS').length;
+  const waiting    = queue.filter((a: any) => a.status === 'CONFIRMED').length;
+  const checkedIn  = queue.filter((a: any) => a.status === 'CHECKED_IN').length;
 
   return (
     <div className="space-y-6">
@@ -196,7 +196,7 @@ export default function ClinicalDashboard() {
               { label: 'Waiting', value: waiting, color: '#3B82F6' },
               { label: 'Ready', value: checkedIn, color: '#8B5CF6' },
               { label: 'Active', value: inProgress, color: '#0D7C66' },
-            ].map(s => (
+            ].map((s: any) => (
               <div key={s.label} className="text-center bg-slate-50 rounded-xl py-3">
                 <p className="text-xl font-bold" style={{ color: s.color }}>{s.value}</p>
                 <p className="text-[10px] text-slate-400 mt-0.5">{s.label}</p>
@@ -247,7 +247,7 @@ export default function ClinicalDashboard() {
               { href: '/clinical/billing', label: 'Create Invoice', icon: TrendingUp, color: '#F59E0B', desc: 'Generate bill for patient' },
               { href: '/clinical/crm', label: 'CRM Leads', icon: Zap, color: '#EF4444', desc: 'Manage patient leads' },
               { href: '/clinical/vault', label: 'Health Vault', icon: Shield, color: '#10B981', desc: 'Access patient records' },
-            ].map(action => (
+            ].map((action: any) => (
               <a key={action.href} href={action.href}
                 className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 border border-slate-100 hover:border-slate-200 transition-all group">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-105" style={{ background: `${action.color}15` }}>

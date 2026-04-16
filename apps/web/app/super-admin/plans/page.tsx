@@ -105,25 +105,25 @@ export default function PlansPage() {
 
   useEffect(() => {
     Promise.all(
-      plans.map(p =>
+      plans.map((p: any) =>
         getAllTenants({ page: 1, limit: 1, plan: p.key as any, status: 'ALL' })
           .then(r => ({ key: p.key, count: r.meta.total }))
           .catch(() => ({ key: p.key, count: 0 }))
       )
     ).then(results => {
       const counts: Record<string, number> = {};
-      results.forEach(r => { counts[r.key] = r.count; });
+      results.forEach((r: any) => { counts[r.key] = r.count; });
       setLiveCounts(counts);
     }).finally(() => setLoading(false));
   }, []);
 
-  const getPlanTenants = (key: string) => liveCounts[key] ?? plans.find(p => p.key === key)?.tenants ?? 0;
+  const getPlanTenants = (key: string) => liveCounts[key] ?? plans.find((p: any) => p.key === key)?.tenants ?? 0;
   const getPlanMrr = (key: string) => {
-    const plan = plans.find(p => p.key === key);
+    const plan = plans.find((p: any) => p.key === key);
     if (!plan) return 0;
     return getPlanTenants(key) * plan.price;
   };
-  const totalMrr = plans.reduce((sum, p) => sum + getPlanMrr(p.key), 0);
+  const totalMrr = plans.reduce((sum: number, p: any) => sum + getPlanMrr(p.key), 0);
 
   return (
     <div className="space-y-6">

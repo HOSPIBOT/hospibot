@@ -71,7 +71,7 @@ function EditPatientModal({ patient, onClose, onSaved }: { patient: any; onClose
           <div><label className={labelCls}>Blood Group</label>
             <select className={inputCls} value={form.bloodGroup} onChange={setF('bloodGroup')}>
               <option value="">Unknown</option>
-              {['A+','A-','B+','B-','AB+','AB-','O+','O-'].map(bg => <option key={bg}>{bg}</option>)}
+              {['A+','A-','B+','B-','AB+','AB-','O+','O-'].map((bg: any) => <option key={bg}>{bg}</option>)}
             </select>
           </div>
           <div><label className={labelCls}>Email</label><input className={inputCls} type="email" value={form.email} onChange={setF('email')} /></div>
@@ -138,10 +138,10 @@ export default function PatientDetailPage() {
     : null;
   const name = `${patient.firstName} ${patient.lastName ?? ''}`.trim();
   const totalSpend = orders
-    .filter(o => o.status === 'DELIVERED')
-    .reduce((s, o) => s + (o.totalAmount ?? 0), 0);
+    .filter((o: any) => o.status === 'DELIVERED')
+    .reduce((s: number, o: any) => s + (o.totalAmount ?? 0), 0);
   const lastOrder = orders[0];
-  const criticalOrders = orders.filter(o =>
+  const criticalOrders = orders.filter((o: any) =>
     (o.criticalAlerts ?? []).some((a: any) => !a.acknowledgedAt)
   ).length;
 
@@ -197,7 +197,7 @@ export default function PatientDetailPage() {
           { label: 'Total Orders', value: orders.length, icon: FlaskConical, color: '#8B5CF6' },
           { label: 'Total Spend', value: formatINR(totalSpend), icon: Activity, color: TEAL },
           { label: 'Last Visit', value: lastOrder ? formatDate(lastOrder.createdAt) : 'Never', icon: Calendar, color: '#F59E0B' },
-        ].map(s => (
+        ].map((s: any) => (
           <div key={s.label} className="bg-white rounded-2xl border border-slate-100 p-4 flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
               style={{ background: `${s.color}14` }}>
@@ -216,7 +216,7 @@ export default function PatientDetailPage() {
         {[
           { key: 'orders', label: `Lab Orders (${orders.length})` },
           { key: 'info', label: 'Patient Info' },
-        ].map(t => (
+        ].map((t: any) => (
           <button key={t.key} onClick={() => setActiveTab(t.key as any)}
             className={`px-5 py-2 text-sm font-bold rounded-xl transition-all ${
               activeTab === t.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
@@ -241,7 +241,7 @@ export default function PatientDetailPage() {
               </Link>
             </div>
           ) : (
-            orders.map(o => {
+            orders.map((o: any) => {
               const items = o.orderItems ?? o.tests ?? [];
               const statusColor = STATUS_COLORS[o.status] ?? '#94A3B8';
               return (

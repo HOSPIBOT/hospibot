@@ -71,7 +71,7 @@ export default function SystemPage() {
 
   // Build a rolling uptime history from window.performance (stub until real metrics endpoint)
   const [uptimeHistory] = useState(() =>
-    ['00:00','03:00','06:00','09:00','12:00','15:00','18:00','21:00','Now'].map(t => ({
+    ['00:00','03:00','06:00','09:00','12:00','15:00','18:00','21:00','Now'].map((t: any) => ({
       time: t, api: 100, db: 100, wa: t === '15:00' ? 99.5 : 100,
     }))
   );

@@ -60,7 +60,7 @@ function RoleEditModal({ user, permissions, onClose, onUpdated }: {
   };
 
   const togglePerm = (perm: string) => {
-    setCustomPerms(p => p.includes(perm) ? p.filter(x => x !== perm) : [...p, perm]);
+    setCustomPerms(p => p.includes(perm) ? p.filter((x: any) => x !== perm) : [...p, perm]);
   };
 
   const handleDpdpa = async (action: string) => {
@@ -84,7 +84,7 @@ function RoleEditModal({ user, permissions, onClose, onUpdated }: {
           <div>
             <label className="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">Role</label>
             <div className="grid grid-cols-4 gap-2">
-              {ROLES.map(role => (
+              {ROLES.map((role: any) => (
                 <button key={role} onClick={() => setRole(role)}
                   className={`px-3 py-2 rounded-xl text-xs font-semibold border-2 transition-all ${
                     selectedRole === role ? 'border-[#0D7C66] bg-[#E8F5F0] text-[#0D7C66]' : 'border-slate-200 text-slate-600 hover:border-slate-300'
@@ -98,7 +98,7 @@ function RoleEditModal({ user, permissions, onClose, onUpdated }: {
           <div className="bg-[#E8F5F0] rounded-xl p-4 border border-[#0D7C66]/20">
             <p className="text-xs font-bold text-[#0D7C66] mb-2">DEFAULT PERMISSIONS FOR {selectedRole}</p>
             <div className="flex flex-wrap gap-1.5">
-              {rolePerms.map(p => (
+              {rolePerms.map((p: any) => (
                 <span key={p} className="text-[10px] font-medium bg-white text-[#0D7C66] px-2 py-0.5 rounded-full border border-[#0D7C66]/20">{p}</span>
               ))}
               {rolePerms.length === 0 && <span className="text-xs text-slate-400">Loading…</span>}
@@ -115,7 +115,7 @@ function RoleEditModal({ user, permissions, onClose, onUpdated }: {
             <div>
               <p className="text-xs font-bold text-slate-500 mb-3 uppercase tracking-wide">Select Individual Permissions</p>
               <div className="grid grid-cols-2 gap-2">
-                {permissions.map(perm => (
+                {permissions.map((perm: any) => (
                   <label key={perm.key} className={`flex items-start gap-2.5 p-2.5 rounded-xl border cursor-pointer transition-all ${
                     customPerms.includes(perm.key) ? 'border-[#0D7C66] bg-[#E8F5F0]' : 'border-slate-100 hover:border-slate-200'
                   }`}>
@@ -236,7 +236,7 @@ export default function SecurityPage() {
 
       {/* Tab bar */}
       <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1 w-fit">
-        {tabs.map(t => (
+        {tabs.map((t: any) => (
           <button key={t.key} onClick={() => setTab(t.key)}
             className={`flex items-center gap-2 text-sm font-medium px-4 py-1.5 rounded-lg transition-all ${tab === t.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
             <t.icon className="w-4 h-4" />{t.label}
@@ -256,7 +256,7 @@ export default function SecurityPage() {
                 { label: 'Logins (30d)',   value: stats?.recentLogins || 0,  icon: Lock,          color: '#3B82F6' },
                 { label: 'Actions (30d)', value: stats?.recentActions || 0, icon: Activity,      color: '#F59E0B' },
                 { label: 'Security Level', value: 'High',                    icon: Shield,        color: '#10B981' },
-              ].map(s => (
+              ].map((s: any) => (
                 <div key={s.label} className="bg-white rounded-2xl border border-slate-100 p-5">
                   <div className="flex items-center gap-2 mb-2"><s.icon className="w-4 h-4" style={{color:s.color}}/><p className="text-xs text-slate-500">{s.label}</p></div>
                   <p className="text-2xl font-bold text-slate-900">{s.value}</p>
@@ -293,7 +293,7 @@ export default function SecurityPage() {
                 { label: 'Consent Management (DPDPA)',  status: 'enabled',  desc: 'Patient consent required for cross-provider data sharing' },
                 { label: 'WhatsApp OTP (MFA)',          status: 'available', desc: 'Enable two-factor authentication via WhatsApp OTP' },
                 { label: 'HIPAA BAA',                   status: 'pending',  desc: 'Business Associate Agreement for US healthcare clients' },
-              ].map(item => (
+              ].map((item: any) => (
                 <div key={item.label} className="flex items-center gap-4 py-2.5 border-b border-slate-50 last:border-0">
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
                     item.status === 'enabled' ? 'bg-emerald-100 text-emerald-700' : item.status === 'available' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'
@@ -339,7 +339,7 @@ export default function SecurityPage() {
               <div className="py-12 text-center text-slate-400 text-sm">No team members found</div>
             ) : (
               <div className="divide-y divide-slate-50">
-                {users.map(u => {
+                {users.map((u: any) => {
                   const permCount = u.permissions ? Object.keys(u.permissions).length : 0;
                   return (
                     <div key={u.id} className="flex items-center gap-4 px-5 py-4 hover:bg-slate-50 transition-colors group">
@@ -387,12 +387,12 @@ export default function SecurityPage() {
             <select value={auditFilters.entity} onChange={e => setAuditFilters(f => ({ ...f, entity: e.target.value }))}
               className="px-3 py-2 text-sm border border-slate-200 rounded-xl bg-slate-50 outline-none cursor-pointer">
               <option value="">All Entities</option>
-              {['patient','appointment','invoice','user','setting','lead','automation_rule'].map(e => <option key={e} value={e}>{e}</option>)}
+              {['patient','appointment','invoice','user','setting','lead','automation_rule'].map((e: any) => <option key={e} value={e}>{e}</option>)}
             </select>
             <select value={auditFilters.action} onChange={e => setAuditFilters(f => ({ ...f, action: e.target.value }))}
               className="px-3 py-2 text-sm border border-slate-200 rounded-xl bg-slate-50 outline-none cursor-pointer">
               <option value="">All Actions</option>
-              {['CREATE','READ','UPDATE','DELETE','EXPORT','LOGIN','ERASURE_REQUEST'].map(a => <option key={a} value={a}>{a}</option>)}
+              {['CREATE','READ','UPDATE','DELETE','EXPORT','LOGIN','ERASURE_REQUEST'].map((a: any) => <option key={a} value={a}>{a}</option>)}
             </select>
             <button onClick={() => loadAudit(1)}
               className="px-3 py-2 bg-[#0D7C66] text-white text-sm font-medium rounded-xl hover:bg-[#0A5E4F] transition-colors">
@@ -405,7 +405,7 @@ export default function SecurityPage() {
             <table className="w-full">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-100">
-                  {['Time', 'User', 'Action', 'Entity', 'Record', 'IP'].map(h => (
+                  {['Time', 'User', 'Action', 'Entity', 'Record', 'IP'].map((h: any) => (
                     <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
                   ))}
                 </tr>
@@ -413,7 +413,7 @@ export default function SecurityPage() {
               <tbody className="divide-y divide-slate-50">
                 {auditLogs.length === 0 ? (
                   <tr><td colSpan={6} className="py-12 text-center text-slate-400 text-sm">No audit logs found</td></tr>
-                ) : auditLogs.map(log => (
+                ) : auditLogs.map((log: any) => (
                   <tr key={log.id} className="hover:bg-slate-50/60 transition-colors">
                     <td className="px-5 py-3 text-xs text-slate-500 whitespace-nowrap">{new Date(log.createdAt).toLocaleString('en-IN')}</td>
                     <td className="px-5 py-3 text-xs text-slate-700">
@@ -444,7 +444,7 @@ export default function SecurityPage() {
               { title: 'NABH Alignment', status: 'Partial', color: '#F59E0B', desc: 'HospiBot supports NABH-aligned clinical documentation, patient safety workflows, and quality management. Full certification assistance available on Enterprise plan.' },
               { title: 'ISO 27001', status: 'Roadmap', color: '#3B82F6', desc: 'Information security management system certification planned. Security controls, access management, and audit trails are in place.' },
               { title: 'HIPAA (USA)', status: 'Roadmap', color: '#6B7280', desc: 'Business Associate Agreements and HIPAA-compliant data handling planned for international expansion. Encryption and audit logs already in place.' },
-            ].map(item => (
+            ].map((item: any) => (
               <div key={item.title} className="bg-white rounded-2xl border border-slate-100 p-5">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="font-bold text-slate-900">{item.title}</h3>
@@ -470,7 +470,7 @@ export default function SecurityPage() {
                 { right: 'Right to Portability', desc: 'Full patient data export available via Security API', status: '✅ Available',
                   action: <button onClick={()=>handleDpdpa('export')} className="text-xs font-semibold text-[#0D7C66] border border-[#0D7C66]/30 bg-[#E8F5F0] px-3 py-1.5 rounded-xl hover:bg-[#0D7C66]/10 ml-2 whitespace-nowrap">Export Data</button> },
                 { right: 'Right to Grievance', desc: 'Grievance redressal officer contact required — configure in Settings', status: '⚠️ Configure' },
-              ].map(item => (
+              ].map((item: any) => (
                 <div key={item.right} className="flex items-center justify-between py-2.5 border-b border-slate-50 last:border-0">
                   <div>
                     <p className="text-sm font-semibold text-slate-900">{item.right}</p>

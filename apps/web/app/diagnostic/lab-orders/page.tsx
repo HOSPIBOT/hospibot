@@ -38,7 +38,7 @@ const NEXT_STATUS: Record<string, { to: string; label: string; color: string }> 
 const inputCls = 'w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#1E3A5F] focus:ring-2 focus:ring-[#1E3A5F]/10 outline-none transition-all placeholder:text-slate-400';
 
 function StatusBadge({ status, isStat }: { status: string; isStat?: boolean }) {
-  const s = STAGES.find(x => x.key === status);
+  const s = STAGES.find((x: any) => x.key === status);
   return (
     <div className="flex items-center gap-1.5">
       {isStat && <span className="px-1.5 py-0.5 bg-red-500 text-white text-[9px] font-black rounded uppercase">STAT</span>}
@@ -188,7 +188,7 @@ export default function LabOrdersPage() {
           style={!status && !statOnly ? { background: NAVY } : {}}>
           All ({meta.total})
         </button>
-        {STAGES.slice(0, 8).map(s => {
+        {STAGES.slice(0, 8).map((s: any) => {
           const cnt = statusCounts[s.key] ?? 0;
           const active = status === s.key;
           return (
@@ -230,7 +230,7 @@ export default function LabOrdersPage() {
         <table className="w-full">
           <thead>
             <tr className="border-b border-slate-100 bg-slate-50/80">
-              {['Order ID', 'Patient', 'Tests', 'Status', 'Amount', ''].map(h => (
+              {['Order ID', 'Patient', 'Tests', 'Status', 'Amount', ''].map((h: any) => (
                 <th key={h} className="px-5 py-3 text-left text-[11px] font-bold text-slate-400 uppercase tracking-widest">{h}</th>
               ))}
             </tr>
@@ -254,7 +254,7 @@ export default function LabOrdersPage() {
                   <p className="text-sm mt-1">{search || status ? 'Try different filters' : 'Create the first order'}</p>
                 </td>
               </tr>
-            ) : orders.map(o => (
+            ) : orders.map((o: any) => (
               <OrderRow key={o.id} order={o} onRefresh={() => setRefreshKey(k => k + 1)} />
             ))}
           </tbody>

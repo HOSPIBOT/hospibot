@@ -224,15 +224,15 @@ export default function TemplatesPage() {
   const categories = ['ALL', 'APPOINTMENT', 'LAB', 'BILLING', 'FOLLOWUP', 'GENERAL'];
 
   // Merge standard templates with DB templates for display
-  const displayTemplates = STANDARD_TEMPLATES.filter(t =>
+  const displayTemplates = STANDARD_TEMPLATES.filter((t: any) =>
     filter === 'ALL' || t.category === filter
-  ).map(st => {
-    const dbTemplate = templates.find(t => t.name === st.name);
+  ).map((st: any) => {
+    const dbTemplate = templates.find((t: any) => t.name === st.name);
     return { ...st, status: dbTemplate?.status || null };
   });
 
-  const seededCount  = displayTemplates.filter(t => t.status).length;
-  const approvedCount = displayTemplates.filter(t => t.status === 'APPROVED').length;
+  const seededCount  = displayTemplates.filter((t: any) => t.status).length;
+  const approvedCount = displayTemplates.filter((t: any) => t.status === 'APPROVED').length;
 
   return (
     <div className="space-y-6">
@@ -273,7 +273,7 @@ export default function TemplatesPage() {
           { label: 'Seeded in DB',    value: seededCount,               color: '#3B82F6', icon: CheckCircle2 },
           { label: 'Approved by Meta', value: approvedCount,            color: '#10B981', icon: CheckCircle2 },
           { label: 'Pending Approval', value: seededCount - approvedCount, color: '#F59E0B', icon: Clock },
-        ].map(s => (
+        ].map((s: any) => (
           <div key={s.label} className="bg-white rounded-2xl border border-slate-100 p-4">
             <div className="flex items-center gap-2 mb-2">
               <s.icon className="w-4 h-4" style={{ color: s.color }} />
@@ -286,19 +286,19 @@ export default function TemplatesPage() {
 
       {/* Category filter */}
       <div className="flex items-center gap-2 flex-wrap">
-        {categories.map(cat => (
+        {categories.map((cat: any) => (
           <button key={cat} onClick={() => setFilter(cat)}
             className={`text-xs font-semibold px-3 py-1.5 rounded-full transition-all ${
               filter === cat ? 'bg-[#0D7C66] text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
             }`}>
-            {cat === 'ALL' ? `All (${STANDARD_TEMPLATES.length})` : `${cat} (${STANDARD_TEMPLATES.filter(t => t.category === cat).length})`}
+            {cat === 'ALL' ? `All (${STANDARD_TEMPLATES.length})` : `${cat} (${STANDARD_TEMPLATES.filter((t: any) => t.category === cat).length})`}
           </button>
         ))}
       </div>
 
       {/* Templates grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {displayTemplates.map(template => (
+        {displayTemplates.map((template: any) => (
           <TemplateCard key={template.name} template={template} onSeed={async () => {
             try {
               await api.post('/whatsapp/templates', {

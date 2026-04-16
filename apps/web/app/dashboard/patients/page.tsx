@@ -90,7 +90,7 @@ export default function PatientsPage() {
         ) : patients.length === 0 ? (
           <div className="text-center py-12 text-gray-400">No patients found</div>
         ) : (
-          patients.map(p => (
+          patients.map((p: any) => (
             <div key={p.id} className="card flex items-center gap-4 cursor-pointer hover:border-primary-200">
               <div className="w-10 h-10 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center text-sm font-bold flex-shrink-0">
                 {getInitials(p.firstName, p.lastName)}

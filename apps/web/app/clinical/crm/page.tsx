@@ -50,12 +50,12 @@ function LeadCard({ lead, onMove, onConvert, onBook }: {
   onBook: (lead: Lead) => void;
 }) {
   const [showMenu, setShowMenu] = useState(false);
-  const stageInfo = STAGES.find(s => s.key === lead.stage);
+  const stageInfo = STAGES.find((s: any) => s.key === lead.stage);
   const patientName = lead.patient
     ? `${lead.patient.firstName} ${lead.patient.lastName || ''}`
     : lead.name || lead.phone;
 
-  const nextStages = STAGES.filter(s => s.key !== lead.stage);
+  const nextStages = STAGES.filter((s: any) => s.key !== lead.stage);
 
   return (
     <div className="bg-white rounded-xl border border-slate-100 p-3.5 shadow-sm hover:shadow-md transition-all group">
@@ -78,7 +78,7 @@ function LeadCard({ lead, onMove, onConvert, onBook }: {
           {showMenu && (
             <div className="absolute right-0 top-6 bg-white rounded-xl border border-slate-200 shadow-lg z-10 py-1 min-w-40" onMouseLeave={() => setShowMenu(false)}>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide px-3 py-1.5">Move to stage</p>
-              {nextStages.map(s => (
+              {nextStages.map((s: any) => (
                 <button key={s.key} onClick={() => { onMove(lead.id, s.key); setShowMenu(false); }}
                   className="w-full text-left px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full" style={{ background: s.color }} />
@@ -116,7 +116,7 @@ function LeadCard({ lead, onMove, onConvert, onBook }: {
       {/* Tags */}
       {lead.tags?.length > 0 && (
         <div className="flex flex-wrap gap-1 mb-2">
-          {lead.tags.slice(0, 3).map(tag => (
+          {lead.tags.slice(0, 3).map((tag: any) => (
             <span key={tag} className="text-[10px] font-medium bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-full">{tag}</span>
           ))}
         </div>
@@ -211,7 +211,7 @@ function QuickBookModal({ lead, onClose, onBooked }: { lead: Lead; onClose: () =
             <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Doctor (optional)</label>
             <select className={inputCls} value={doctorId} onChange={e => setDoctorId(e.target.value)}>
               <option value="">Any Available Doctor</option>
-              {doctors.map(d => <option key={d.id} value={d.id}>Dr. {d.user?.firstName} {d.user?.lastName || ''}</option>)}
+              {doctors.map((d: any) => <option key={d.id} value={d.id}>Dr. {d.user?.firstName} {d.user?.lastName || ''}</option>)}
             </select>
           </div>
           <div>
@@ -245,7 +245,7 @@ function AddLeadModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
     try {
       await api.post('/crm/leads', {
         ...form,
-        tags: form.tags ? form.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
+        tags: form.tags ? form.tags.split(',').map((t: any) => t.trim()).filter(Boolean) : [],
       });
       toast.success('Lead added!');
       onCreated();
@@ -280,7 +280,7 @@ function AddLeadModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
           <div>
             <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Lead Source</label>
             <select className={inputCls} value={form.source} onChange={set('source')}>
-              {SOURCES.map(s => <option key={s} value={s}>{SOURCE_LABELS[s]}</option>)}
+              {SOURCES.map((s: any) => <option key={s} value={s}>{SOURCE_LABELS[s]}</option>)}
             </select>
           </div>
           <div>
@@ -343,8 +343,8 @@ export default function CRMPage() {
   const moveStage = async (leadId: string, newStage: string) => {
     try {
       await api.put(`/crm/leads/${leadId}`, { stage: newStage });
-      setLeads(l => l.map(lead => lead.id === leadId ? { ...lead, stage: newStage } : lead));
-      toast.success(`Moved to ${STAGES.find(s => s.key === newStage)?.label}`);
+      setLeads(l => l.map((lead: any) => lead.id === leadId ? { ...lead, stage: newStage } : lead));
+      toast.success(`Moved to ${STAGES.find((s: any) => s.key === newStage)?.label}`);
     } catch { toast.error('Failed to update stage'); }
   };
 
@@ -358,7 +358,7 @@ export default function CRMPage() {
     }
   };
 
-  const byStage = (stageKey: string) => leads.filter(l => l.stage === stageKey);
+  const byStage = (stageKey: string) => leads.filter((l: any) => l.stage === stageKey);
 
   const [exporting, setExporting] = useState(false);
   const [bookingLead, setBookingLead] = useState<any>(null);
@@ -369,7 +369,7 @@ export default function CRMPage() {
       const res = await api.get('/crm/leads', { params: { limit: 5000 } });
       const all: any[] = res.data.data ?? leads;
       const header = ['Name', 'Phone', 'Email', 'Source', 'Stage', 'Notes', 'Created'];
-      const rows = all.map(l => [
+      const rows = all.map((l: any) => [
         l.name ?? '',
         l.phone ?? '',
         l.email ?? '',
@@ -378,7 +378,7 @@ export default function CRMPage() {
         l.notes ?? '',
         l.createdAt ? new Date(l.createdAt).toLocaleDateString('en-IN') : '',
       ]);
-      const csv  = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const csv  = [header, ...rows].map((r: any) => r.map((v: any) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
       const blob = new Blob([csv], { type: 'text/csv' });
       const url  = URL.createObjectURL(blob);
       const a    = document.createElement('a');
@@ -430,7 +430,7 @@ export default function CRMPage() {
             </span>
           </div>
           <div className="flex items-end gap-1 h-14">
-            {STAGES.map(stage => {
+            {STAGES.map((stage: any) => {
               const count = funnel.funnel?.find((f: any) => f.stage === stage.key)?.count || 0;
               const maxCount = Math.max(...(funnel.funnel?.map((f: any) => f.count) || [1]), 1);
               const height = Math.max((count / maxCount) * 100, 8);
@@ -471,10 +471,10 @@ export default function CRMPage() {
         <select value={sourceFilter} onChange={e => setSourceFilter(e.target.value)}
           className="px-3 py-2 text-sm border border-slate-200 rounded-xl bg-slate-50 outline-none focus:border-[#0D7C66] cursor-pointer">
           <option value="">All Sources</option>
-          {SOURCES.map(s => <option key={s} value={s}>{SOURCE_LABELS[s]}</option>)}
+          {SOURCES.map((s: any) => <option key={s} value={s}>{SOURCE_LABELS[s]}</option>)}
         </select>
         <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
-          {(['kanban', 'list'] as const).map(v => (
+          {(['kanban', 'list'] as const).map((v: any) => (
             <button key={v} onClick={() => setView(v)}
               className={`text-xs font-medium px-3 py-1.5 rounded-lg capitalize transition-all ${view === v ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
               {v}
@@ -487,13 +487,13 @@ export default function CRMPage() {
       {view === 'kanban' && (
         loading ? (
           <div className="grid grid-cols-7 gap-3">
-            {STAGES.map(s => (
+            {STAGES.map((s: any) => (
               <div key={s.key} className="animate-pulse bg-slate-200 rounded-2xl h-64" />
             ))}
           </div>
         ) : (
           <div className="flex gap-3 overflow-x-auto pb-4" style={{ minHeight: '60vh' }}>
-            {STAGES.map(stage => {
+            {STAGES.map((stage: any) => {
               const stageleads = byStage(stage.key);
               return (
                 <div key={stage.key} className="flex-shrink-0 w-64 flex flex-col rounded-2xl overflow-hidden"
@@ -515,7 +515,7 @@ export default function CRMPage() {
                   <div className="flex-1 overflow-y-auto p-2 space-y-2" style={{ maxHeight: '70vh' }}>
                     {stageleads.length === 0 ? (
                       <div className="py-8 text-center text-xs text-slate-300">No leads here</div>
-                    ) : stageleads.map(lead => (
+                    ) : stageleads.map((lead: any) => (
                       <LeadCard key={lead.id} lead={lead}
                         onMove={moveStage}
                         onConvert={convertLead} onBook={(l: any) => setBookingLead(l)} />
@@ -534,7 +534,7 @@ export default function CRMPage() {
           <table className="w-full">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-100">
-                {['Name / Phone', 'Source', 'Stage', 'Score', 'Tags', 'Added', ''].map(h => (
+                {['Name / Phone', 'Source', 'Stage', 'Score', 'Tags', 'Added', ''].map((h: any) => (
                   <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
                 ))}
               </tr>
@@ -550,8 +550,8 @@ export default function CRMPage() {
                 <tr>
                   <td colSpan={7} className="py-16 text-center text-slate-400 text-sm">No leads found</td>
                 </tr>
-              ) : leads.map(lead => {
-                const stage = STAGES.find(s => s.key === lead.stage);
+              ) : leads.map((lead: any) => {
+                const stage = STAGES.find((s: any) => s.key === lead.stage);
                 const name = lead.patient ? `${lead.patient.firstName} ${lead.patient.lastName || ''}` : lead.name || lead.phone;
                 return (
                   <tr key={lead.id} className="hover:bg-slate-50/60 transition-colors group">
@@ -578,7 +578,7 @@ export default function CRMPage() {
                     </td>
                     <td className="px-5 py-3.5">
                       <div className="flex gap-1 flex-wrap">
-                        {lead.tags.slice(0, 2).map(tag => (
+                        {lead.tags.slice(0, 2).map((tag: any) => (
                           <span key={tag} className="text-[10px] font-medium bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-full">{tag}</span>
                         ))}
                       </div>

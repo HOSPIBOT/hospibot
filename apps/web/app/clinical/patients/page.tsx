@@ -97,14 +97,14 @@ export default function PatientsPage() {
       });
       const all: any[] = res.data.data ?? [];
       const header = ['Health ID','First Name','Last Name','Phone','Email','Gender','Blood Group','DOB','City','Registered On'];
-      const rows = all.map(p => [
+      const rows = all.map((p: any) => [
         p.healthId ?? '', p.firstName ?? '', p.lastName ?? '', p.phone ?? '',
         p.email ?? '', p.gender ?? '', p.bloodGroup ?? '',
         p.dateOfBirth ? p.dateOfBirth.slice(0, 10) : '',
         p.city ?? '',
         p.createdAt ? p.createdAt.slice(0, 10) : '',
       ]);
-      const csv = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const csv = [header, ...rows].map((r: any) => r.map((v: any) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
       const blob = new Blob([csv], { type: 'text/csv' });
       const url  = URL.createObjectURL(blob);
       const a    = document.createElement('a');
@@ -126,8 +126,8 @@ export default function PatientsPage() {
     try {
       await api.post('/patients', {
         ...form,
-        allergies: form.allergies ? form.allergies.split(',').map(s => s.trim()) : [],
-        chronicConditions: form.chronicConditions ? form.chronicConditions.split(',').map(s => s.trim()) : [],
+        allergies: form.allergies ? form.allergies.split(',').map((s: any) => s.trim()) : [],
+        chronicConditions: form.chronicConditions ? form.chronicConditions.split(',').map((s: any) => s.trim()) : [],
         dateOfBirth: form.dateOfBirth || undefined,
         gender: form.gender || undefined,
         bloodGroup: form.bloodGroup || undefined,
@@ -236,7 +236,7 @@ export default function PatientsPage() {
                   onChange={e => setFilterBlood(e.target.value)}
                   className="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:border-[#0D7C66] outline-none cursor-pointer">
                   <option value="">All Blood Groups</option>
-                  {['A+','A-','B+','B-','O+','O-','AB+','AB-'].map(bg => (
+                  {['A+','A-','B+','B-','O+','O-','AB+','AB-'].map((bg: any) => (
                     <option key={bg} value={bg}>{bg}</option>
                   ))}
                 </select>
@@ -271,7 +271,7 @@ export default function PatientsPage() {
                 </td>
               </tr>
             ) : (
-              patients.map(p => (
+              patients.map((p: any) => (
                 <tr key={p.id} className="hover:bg-slate-50/60 transition-colors group cursor-pointer"
                   onClick={() => window.location.href = `/clinical/patients/${p.id}`}>
                   <td className="px-5 py-3.5">
@@ -430,7 +430,7 @@ export default function PatientsPage() {
                     <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Gender</label>
                     <select className={inputCls} value={form.gender} onChange={setF('gender')}>
                       <option value="">Select gender</option>
-                      {GENDER_OPTIONS.map(g => <option key={g} value={g}>{g}</option>)}
+                      {GENDER_OPTIONS.map((g: any) => <option key={g} value={g}>{g}</option>)}
                     </select>
                   </div>
                   <div className="col-span-2">
@@ -455,7 +455,7 @@ export default function PatientsPage() {
                     <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Blood Group</label>
                     <select className={inputCls} value={form.bloodGroup} onChange={setF('bloodGroup')}>
                       <option value="">Unknown</option>
-                      {BLOOD_GROUPS.map(g => <option key={g} value={g}>{g}</option>)}
+                      {BLOOD_GROUPS.map((g: any) => <option key={g} value={g}>{g}</option>)}
                     </select>
                   </div>
                   <div>

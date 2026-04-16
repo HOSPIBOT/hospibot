@@ -48,7 +48,7 @@ function InviteModal({ onClose, onInvited }: { onClose: () => void; onInvited: (
     } finally { setSaving(false); }
   };
 
-  const selectedRole = LAB_ROLES.find(r => r.value === form.role);
+  const selectedRole = LAB_ROLES.find((r: any) => r.value === form.role);
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
@@ -66,7 +66,7 @@ function InviteModal({ onClose, onInvited }: { onClose: () => void; onInvited: (
           <div>
             <label className={labelCls}>Role *</label>
             <div className="grid grid-cols-2 gap-2">
-              {LAB_ROLES.map(r => (
+              {LAB_ROLES.map((r: any) => (
                 <button key={r.value} onClick={() => setForm(f => ({ ...f, role: r.value }))}
                   className={`flex items-start gap-2 px-3 py-2.5 rounded-xl border-2 text-left transition-all ${
                     form.role === r.value ? 'border-[#1E3A5F] bg-[#1E3A5F]/5' : 'border-slate-200 hover:border-slate-300'
@@ -132,7 +132,7 @@ function InviteModal({ onClose, onInvited }: { onClose: () => void; onInvited: (
 
 function StaffCard({ user, onToggle }: { user: any; onToggle: (id: string, active: boolean) => void }) {
   const [toggling, setToggling] = useState(false);
-  const role = LAB_ROLES.find(r => r.value === user.role);
+  const role = LAB_ROLES.find((r: any) => r.value === user.role);
   const name = `${user.firstName} ${user.lastName ?? ''}`.trim();
   const initials = `${user.firstName[0]}${user.lastName?.[0] ?? ''}`.toUpperCase();
 
@@ -225,7 +225,7 @@ export default function DiagnosticStaffPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-slate-900">Staff Management</h1>
-          <p className="text-sm text-slate-500">{staff.filter(s => s.isActive).length} active · {meta.total} total</p>
+          <p className="text-sm text-slate-500">{staff.filter((s: any) => s.isActive).length} active · {meta.total} total</p>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={() => setRefreshKey(k => k + 1)}
@@ -247,7 +247,7 @@ export default function DiagnosticStaffPage() {
           style={!role ? { background: NAVY } : {}}>
           All ({meta.total})
         </button>
-        {LAB_ROLES.map(r => {
+        {LAB_ROLES.map((r: any) => {
           const cnt = roleCounts[r.value] ?? 0;
           if (cnt === 0) return null;
           return (
@@ -294,7 +294,7 @@ export default function DiagnosticStaffPage() {
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-4">
-          {staff.map(u => (
+          {staff.map((u: any) => (
             <StaffCard key={u.id} user={u} onToggle={toggleUser} />
           ))}
         </div>

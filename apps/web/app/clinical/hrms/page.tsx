@@ -80,7 +80,7 @@ export default function HRMSPayrollPage() {
   };
 
   const updateRow = (userId: string, field: string, value: number) => {
-    setPayroll(p => p.map(r => {
+    setPayroll(p => p.map((r: any) => {
       if (r.userId !== userId) return r;
       const updated = { ...r, [field]: value };
       const earned = Math.round(updated.baseSalary * (updated.presentDays / updated.workingDays));
@@ -92,34 +92,34 @@ export default function HRMSPayrollPage() {
   const processAll = async () => {
     setProcessing(true);
     await new Promise(r => setTimeout(r, 1000));
-    setPayroll(p => p.map(r => ({ ...r, status: 'PROCESSED' })));
+    setPayroll(p => p.map((r: any) => ({ ...r, status: 'PROCESSED' })));
     toast.success(`Payroll processed for ${payroll.length} employees — ${MONTHS[month]} ${year}`);
     setProcessing(false);
   };
 
   const markPaid = (userId: string) => {
-    setPayroll(p => p.map(r => r.userId===userId ? {...r,status:'PAID'} : r));
+    setPayroll(p => p.map((r: any) => r.userId===userId ? {...r,status:'PAID'} : r));
     toast.success('Marked as paid');
   };
 
   const exportCSV = () => {
     setExporting(true);
     const header = ['Employee','Role','Base Salary','Working Days','Present Days','Overtime','Deductions','Bonus','Net Salary','Status'];
-    const rows = payroll.map(r => [
+    const rows = payroll.map((r: any) => [
       r.name, r.role, r.baseSalary, r.workingDays, r.presentDays,
       r.overtime, r.deductions, r.bonus, r.netSalary, r.status,
     ]);
-    const csv=[header,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const csv=[header,...rows].map((r: any) =>r.map((v: any) =>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
     const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);
     const a=document.createElement('a');a.href=url;a.download=`payroll-${MONTHS[month]}-${year}.csv`;
     a.click();URL.revokeObjectURL(url);toast.success('Payroll exported');
     setExporting(false);
   };
 
-  const totalPayable   = payroll.reduce((s,r) => s + r.netSalary, 0);
-  const totalDeductions= payroll.reduce((s,r) => s + r.deductions, 0);
-  const totalBonus     = payroll.reduce((s,r) => s + r.bonus, 0);
-  const pendingCount   = payroll.filter(r => r.status==='PENDING').length;
+  const totalPayable   = payroll.reduce((s: number, r: any) => s + r.netSalary, 0);
+  const totalDeductions= payroll.reduce((s: number, r: any) => s + r.deductions, 0);
+  const totalBonus     = payroll.reduce((s: number, r: any) => s + r.bonus, 0);
+  const pendingCount   = payroll.filter((r: any) => r.status==='PENDING').length;
 
   return (
     <div className="space-y-5">
@@ -137,7 +137,7 @@ export default function HRMSPayrollPage() {
           </select>
           <select value={year} onChange={e=>setYear(+e.target.value)}
             className="px-3 py-2 text-sm border border-slate-200 rounded-xl bg-slate-50 outline-none">
-            {[2024,2025,2026].map(y=><option key={y}>{y}</option>)}
+            {[2024,2025,2026].map((y: any) =><option key={y}>{y}</option>)}
           </select>
           <button onClick={exportCSV} disabled={exporting}
             className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm font-medium px-3 py-2 rounded-xl hover:bg-slate-50 disabled:opacity-50">
@@ -158,7 +158,7 @@ export default function HRMSPayrollPage() {
           {label:'Total Deductions', value: formatINR(totalDeductions*100), color:'#EF4444'},
           {label:'Total Bonus',      value: formatINR(totalBonus*100),      color:'#F59E0B'},
           {label:'Pending',          value: pendingCount,                   color:'#3B82F6'},
-        ].map(k=>(
+        ].map((k: any) =>(
           <div key={k.label} className="bg-white rounded-2xl border border-slate-100 p-5">
             <p className="text-xs text-slate-500">{k.label}</p>
             <p className="text-2xl font-bold mt-1" style={{color:k.color}}>{k.value}</p>
@@ -175,7 +175,7 @@ export default function HRMSPayrollPage() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[900px]">
             <thead><tr className="border-b border-slate-100">
-              {['Employee','Role','Base (₹)','Days','Present','Overtime (₹)','Deductions (₹)','Bonus (₹)','Net (₹)','Status',''].map(h=>(
+              {['Employee','Role','Base (₹)','Days','Present','Overtime (₹)','Deductions (₹)','Bonus (₹)','Net (₹)','Status',''].map((h: any) =>(
                 <th key={h} className="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">{h}</th>
               ))}
             </tr></thead>
@@ -184,7 +184,7 @@ export default function HRMSPayrollPage() {
                 <tr key={i}>{Array.from({length:11}).map((__,j)=><td key={j} className="px-3 py-3"><div className="animate-pulse bg-slate-200 rounded h-4"/></td>)}</tr>
               )) : payroll.length===0 ? (
                 <tr><td colSpan={11} className="py-16 text-center text-slate-400 text-sm">No staff found</td></tr>
-              ) : payroll.map(r => (
+              ) : payroll.map((r: any) => (
                 <tr key={r.userId} className="hover:bg-slate-50/60 transition-colors">
                   <td className="px-3 py-3">
                     <div className="flex items-center gap-2">
@@ -234,7 +234,7 @@ export default function HRMSPayrollPage() {
         </div>
         {payroll.length > 0 && (
           <div className="px-5 py-3 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
-            <p className="text-xs text-slate-500">{payroll.filter(r=>r.status==='PAID').length} paid · {payroll.filter(r=>r.status==='PROCESSED').length} processed · {pendingCount} pending</p>
+            <p className="text-xs text-slate-500">{payroll.filter((r: any) =>r.status==='PAID').length} paid · {payroll.filter((r: any) =>r.status==='PROCESSED').length} processed · {pendingCount} pending</p>
             <p className="text-sm font-bold text-[#0D7C66]">Total Payable: {formatINR(totalPayable*100)}</p>
           </div>
         )}

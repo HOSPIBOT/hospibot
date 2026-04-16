@@ -126,7 +126,7 @@ export default function SuperAdminWalletsPage() {
             { label: 'Total Tenants', value: wallets.length, icon: CheckCircle2, color: '#0D7C66' },
             { label: 'Low Balance (<100 credits)', value: stats.lowBalance ?? 0, icon: AlertTriangle, color: stats.lowBalance > 0 ? '#EF4444' : '#94A3B8' },
             { label: 'Total WA Credits (platform)', value: stats.totalWaCredits?.toFixed(0) ?? '—', icon: Zap, color: '#3B82F6' },
-          ].map(s => (
+          ].map((s: any) => (
             <div key={s.label} className="bg-white rounded-2xl border border-slate-100 p-5 flex items-center gap-4">
               <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: `${s.color}14` }}>
                 <s.icon className="w-5 h-5" style={{ color: s.color }} />
@@ -175,7 +175,7 @@ export default function SuperAdminWalletsPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-slate-100 bg-slate-50/80">
-                {['Tenant', 'WA Credits', 'SMS Credits', 'Storage (GB)', 'Auto-Recharge', 'Actions'].map(h => (
+                {['Tenant', 'WA Credits', 'SMS Credits', 'Storage (GB)', 'Auto-Recharge', 'Actions'].map((h: any) => (
                   <th key={h} className="px-5 py-3 text-left text-[11px] font-bold text-slate-400 uppercase tracking-widest">{h}</th>
                 ))}
               </tr>

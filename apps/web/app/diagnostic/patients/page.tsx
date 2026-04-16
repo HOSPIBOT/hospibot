@@ -50,7 +50,7 @@ function AddPatientModal({ onClose, onCreated }: { onClose: () => void; onCreate
           <div><label className={labelCls}>Blood Group</label>
             <select className={inputCls} value={form.bloodGroup} onChange={setF('bloodGroup')}>
               <option value="">Unknown</option>
-              {['A+','A-','B+','B-','AB+','AB-','O+','O-'].map(bg => <option key={bg}>{bg}</option>)}
+              {['A+','A-','B+','B-','AB+','AB-','O+','O-'].map((bg: any) => <option key={bg}>{bg}</option>)}
             </select>
           </div>
           <div><label className={labelCls}>Email</label><input className={inputCls} type="email" placeholder="optional" value={form.email} onChange={setF('email')} /></div>
@@ -188,7 +188,7 @@ export default function DiagnosticPatientsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-4 gap-4">
-          {patients.map(p => <PatientCard key={p.id} p={p} onNewOrder={handleNewOrder} />)}
+          {patients.map((p: any) => <PatientCard key={p.id} p={p} onNewOrder={handleNewOrder} />)}
         </div>
       )}
 

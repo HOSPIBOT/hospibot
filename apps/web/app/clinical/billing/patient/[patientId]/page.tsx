@@ -39,9 +39,9 @@ export default function PatientLedgerPage() {
   if (loading) return <div className="flex items-center justify-center h-screen text-slate-400">Loading…</div>;
   if (!patient) return <div className="text-center py-20 text-slate-400">Patient not found</div>;
 
-  const totalBilled  = invoices.reduce((s, i) => s + (i.totalAmount || 0), 0);
-  const totalPaid    = invoices.reduce((s, i) => s + (i.paidAmount  || 0), 0);
-  const totalDue     = invoices.reduce((s, i) => s + (i.dueAmount   || 0), 0);
+  const totalBilled  = invoices.reduce((s: number, i: any) => s + (i.totalAmount || 0), 0);
+  const totalPaid    = invoices.reduce((s: number, i: any) => s + (i.paidAmount  || 0), 0);
+  const totalDue     = invoices.reduce((s: number, i: any) => s + (i.dueAmount   || 0), 0);
   const patName      = `${patient.firstName} ${patient.lastName || ''}`.trim();
 
   return (
@@ -85,7 +85,7 @@ export default function PatientLedgerPage() {
               { l: 'Total Billed',  v: formatINR(totalBilled), icon: CreditCard,    color: '#334155' },
               { l: 'Amount Paid',   v: formatINR(totalPaid),   icon: CheckCircle2,  color: '#10B981' },
               { l: 'Balance Due',   v: formatINR(totalDue),    icon: AlertTriangle, color: totalDue > 0 ? '#EF4444' : '#10B981' },
-            ].map(s => (
+            ].map((s: any) => (
               <div key={s.l} className="px-6 py-4 text-center border-r border-slate-100 last:border-0">
                 <p className="text-2xl font-bold" style={{ color: s.color }}>{s.v}</p>
                 <p className="text-xs text-slate-400 mt-0.5">{s.l}</p>
@@ -101,7 +101,7 @@ export default function PatientLedgerPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-100">
-                    {['Invoice #', 'Date', 'Description', 'Billed', 'Paid', 'Balance', 'Status'].map(h => (
+                    {['Invoice #', 'Date', 'Description', 'Billed', 'Paid', 'Balance', 'Status'].map((h: any) => (
                       <th key={h} className="text-left py-2.5 pr-3 text-xs font-bold text-slate-400 uppercase tracking-wide">{h}</th>
                     ))}
                   </tr>

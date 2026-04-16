@@ -143,7 +143,7 @@ export default function PrescriptionDetailPage() {
                 </tbody>
               </table>
               {/* Special instructions per med */}
-              {meds.filter(m => m.instructions).map((m, i) => (
+              {meds.filter((m: any) => m.instructions).map((m, i) => (
                 <p key={i} className="text-xs text-slate-500 mt-1.5 px-3">
                   <span className="font-semibold">{m.name}:</span> {m.instructions}
                 </p>

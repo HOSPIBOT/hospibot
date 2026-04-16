@@ -46,7 +46,7 @@ export default function PharmacyDashboard() {
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-4 lg:grid-cols-6">
-          {kpis.map(k => (
+          {kpis.map((k: any) => (
             <div key={k.label} className="bg-white rounded-2xl border border-slate-100 p-4 text-center">
               <div className="w-9 h-9 rounded-xl mx-auto flex items-center justify-center mb-2" style={{ background: `${k.color}15` }}>
                 <k.icon className="w-4 h-4" style={{ color: k.color }} />
@@ -124,7 +124,7 @@ export default function PharmacyDashboard() {
           { href: '/pharmacy/inventory',      label: 'Inventory',       icon: Package,       color: '#3B82F6' },
           { href: '/pharmacy/orders',         label: 'Dispensing',      icon: ShoppingCart,  color: '#8B5CF6' },
           { href: '/pharmacy/purchase-orders',label: 'Purchase Orders', icon: TrendingUp,    color: '#F59E0B' },
-        ].map(link => (
+        ].map((link: any) => (
           <a key={link.href} href={link.href}
             className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-all group flex items-center gap-4">
             <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: `${link.color}15` }}>

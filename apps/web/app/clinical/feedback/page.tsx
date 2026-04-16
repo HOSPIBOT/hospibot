@@ -19,7 +19,7 @@ function StarRating({ value, onChange }: { value: number; onChange: (v: number) 
   const [hover, setHover] = useState(0);
   return (
     <div className="flex items-center gap-1.5">
-      {[1, 2, 3, 4, 5].map(n => (
+      {[1, 2, 3, 4, 5].map((n: any) => (
         <button key={n}
           onMouseEnter={() => setHover(n)}
           onMouseLeave={() => setHover(0)}
@@ -49,7 +49,7 @@ function FeedbackPageInner() {
   const visitId = searchParams?.get('visitId') || searchParams?.get('visit_id') || '';
   const [done, setDone]           = useState(false);
 
-  const allAnswered = QUESTIONS.every(q => ratings[q.id] != null);
+  const allAnswered = QUESTIONS.every((q: any) => ratings[q.id] != null);
 
   const submit = async () => {
     if (!allAnswered) return;
@@ -82,7 +82,7 @@ function FeedbackPageInner() {
           </p>
           <div className="bg-white rounded-2xl border border-slate-100 p-4 text-left space-y-2 mb-6">
             {Object.entries(ratings).map(([k, v]) => {
-              const q = QUESTIONS.find(q => q.id === k);
+              const q = QUESTIONS.find((q: any) => q.id === k);
               return (
                 <div key={k} className="flex justify-between text-xs">
                   <span className="text-slate-400">{q?.label.slice(0, 30)}…</span>
@@ -120,7 +120,7 @@ function FeedbackPageInner() {
               />
             ) : (
               <div className="flex flex-wrap gap-2">
-                {q.options!.map(opt => (
+                {q.options!.map((opt: any) => (
                   <button key={opt}
                     onClick={() => setRatings(r => ({ ...r, [q.id]: opt }))}
                     className={`px-4 py-2 text-sm font-semibold rounded-2xl border-2 transition-all ${

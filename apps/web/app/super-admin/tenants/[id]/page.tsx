@@ -143,7 +143,7 @@ export default function TenantDetailPage() {
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-[#E8F5F0] text-[#0D7C66] flex items-center justify-center text-xl font-bold">
-              {tenant.name.split(' ').map(w => w[0]).slice(0, 2).join('')}
+              {tenant.name.split(' ').map((w: any) => w[0]).slice(0, 2).join('')}
             </div>
             <div>
               <h1 className="text-xl font-bold text-slate-900">{tenant.name}</h1>

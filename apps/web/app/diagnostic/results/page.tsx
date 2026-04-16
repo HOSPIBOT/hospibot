@@ -279,7 +279,7 @@ export default function ResultEntryPage() {
 
       {/* Department filter */}
       <div className="flex items-center gap-2 flex-wrap">
-        {DEPARTMENTS.map(d => (
+        {DEPARTMENTS.map((d: any) => (
           <button key={d} onClick={() => setDepartment(d)}
             className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${department === d ? 'text-white' : 'bg-white border border-slate-200 text-slate-600'}`}
             style={department === d ? { background: NAVY } : {}}>
@@ -309,7 +309,7 @@ export default function ResultEntryPage() {
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-4">
-          {orders.map(o => (
+          {orders.map((o: any) => (
             <WorklistRow key={o.id} order={o} onResult={setSelected} />
           ))}
         </div>

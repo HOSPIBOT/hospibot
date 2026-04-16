@@ -52,7 +52,7 @@ function PatientSelfRegistrationPageInner() {
         address:   form.address.trim() || undefined,
         city:      form.city.trim() || undefined,
         pincode:   form.pincode.trim() || undefined,
-        allergies: form.allergies ? form.allergies.split(',').map(a => a.trim()).filter(Boolean) : [],
+        allergies: form.allergies ? form.allergies.split(',').map((a: any) => a.trim()).filter(Boolean) : [],
         emergencyContact: form.emergencyName ? { name: form.emergencyName, phone: form.emergencyPhone } : undefined,
       };
 
@@ -145,7 +145,7 @@ function PatientSelfRegistrationPageInner() {
           <div>
             <label className="block text-xs font-semibold text-slate-500 mb-1.5">Gender</label>
             <div className="flex gap-2">
-              {['MALE', 'FEMALE', 'OTHER'].map(g => (
+              {['MALE', 'FEMALE', 'OTHER'].map((g: any) => (
                 <button key={g} onClick={() => setForm(p => ({ ...p, gender: g }))}
                   className={`flex-1 py-2.5 text-xs font-bold rounded-xl border-2 transition-all ${form.gender === g ? 'border-[#0D7C66] bg-[#E8F5F0] text-[#0D7C66]' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>
                   {g.charAt(0) + g.slice(1).toLowerCase()}
@@ -158,7 +158,7 @@ function PatientSelfRegistrationPageInner() {
             <label className="block text-xs font-semibold text-slate-500 mb-1.5">Blood Group</label>
             <select className={inputCls} value={form.bloodGroup} onChange={f('bloodGroup')}>
               <option value="">Select blood group</option>
-              {BLOOD_GROUPS.map(b => <option key={b} value={b}>{b}</option>)}
+              {BLOOD_GROUPS.map((b: any) => <option key={b} value={b}>{b}</option>)}
             </select>
           </div>
         </div>

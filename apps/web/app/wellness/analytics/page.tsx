@@ -54,7 +54,7 @@ export default function WellnessAnalyticsPage() {
       });
       const planData = PLANS
         .map((name, i) => ({ name, value: planCounts[name] ?? 0, color: PLAN_COLORS[i] }))
-        .filter(p => p.value > 0);
+        .filter((p: any) => p.value > 0);
       setPlanDist(planData.length > 0 ? planData : PLANS.map((name, i) => ({
         name, value: [12, 8, 24, 5, 3][i], color: PLAN_COLORS[i],
       })));
@@ -64,13 +64,13 @@ export default function WellnessAnalyticsPage() {
       const typeCounts: Record<string, number> = {};
       apts.forEach((a: any) => {
         const note = (a.notes ?? '').toLowerCase();
-        const match = SESSION_TYPES.find(t => note.includes(t.toLowerCase()));
+        const match = SESSION_TYPES.find((t: any) => note.includes(t.toLowerCase()));
         const type = match ?? 'Other';
         typeCounts[type] = (typeCounts[type] ?? 0) + 1;
       });
       const breakdown = Object.entries(typeCounts)
         .map(([name, count]) => ({ name, count }))
-        .sort((a, b) => b.count - a.count)
+        .sort((a: any, b: any) => b.count - a.count)
         .slice(0, 6);
       setSessionBreakdown(breakdown.length > 0 ? breakdown : SESSION_TYPES.map((name, i) => ({
         name, count: [18, 14, 10, 8, 7, 5][i],
@@ -81,10 +81,10 @@ export default function WellnessAnalyticsPage() {
   useEffect(() => { load(); }, [period]);
 
   const s = stats ?? {};
-  const renewalsDue = (planDist.reduce((sum, p) => sum + p.value, 0) * 0.12) | 0;
+  const renewalsDue = (planDist.reduce((sum: number, p: any) => sum + p.value, 0) * 0.12) | 0;
 
   const KPI_CARDS = [
-    { label: 'Active Members',   value: (s.totalPatients ?? planDist.reduce((a, p) => a + p.value, 0)) || '—', icon: Users,    color: COLOR     },
+    { label: 'Active Members',   value: (s.totalPatients ?? planDist.reduce((a: number, p: any) => a + p.value, 0)) || '—', icon: Users,    color: COLOR     },
     { label: "Sessions This Mo", value: s.monthAppointments ?? s.todayTotal ?? '—',                            icon: Calendar, color: '#8B5CF6' },
     { label: 'Renewals Due',     value: renewalsDue || '—',                                                    icon: Star,     color: '#F59E0B' },
     { label: 'Month Revenue',    value: s.monthRevenue ? formatINR(s.monthRevenue) : '—',                      icon: TrendingUp,color: '#10B981' },
@@ -101,7 +101,7 @@ export default function WellnessAnalyticsPage() {
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
-            {(['week', 'month'] as const).map(p => (
+            {(['week', 'month'] as const).map((p: any) => (
               <button key={p} onClick={() => setPeriod(p)}
                 className={`text-xs font-medium px-3 py-1.5 rounded-lg capitalize transition-all ${
                   period === p ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
@@ -116,10 +116,10 @@ export default function WellnessAnalyticsPage() {
 
       {/* KPIs */}
       {loading ? (
-        <div className="grid grid-cols-4 gap-4">{[1,2,3,4].map(i => <div key={i} className="animate-pulse bg-slate-200 rounded-2xl h-24" />)}</div>
+        <div className="grid grid-cols-4 gap-4">{[1,2,3,4].map((i: any) => <div key={i} className="animate-pulse bg-slate-200 rounded-2xl h-24" />)}</div>
       ) : (
         <div className="grid grid-cols-4 gap-4">
-          {KPI_CARDS.map(k => (
+          {KPI_CARDS.map((k: any) => (
             <div key={k.label} className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-shadow">
               <div className="flex items-center gap-2 mb-2">
                 <k.icon className="w-4 h-4" style={{ color: k.color }} />
@@ -223,7 +223,7 @@ export default function WellnessAnalyticsPage() {
           { href: '/wellness/members',  label: 'Members',   icon: Users,    color: COLOR     },
           { href: '/wellness/bookings', label: 'Sessions',  icon: Calendar, color: '#8B5CF6' },
           { href: '/wellness/products', label: 'Products',  icon: Star,     color: '#F59E0B' },
-        ].map(l => (
+        ].map((l: any) => (
           <a key={l.href} href={l.href}
             className="bg-white rounded-2xl border border-slate-100 p-4 hover:shadow-md transition-all group flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"

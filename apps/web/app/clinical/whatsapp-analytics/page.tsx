@@ -53,7 +53,7 @@ export default function WhatsAppAnalyticsPage() {
       ['Bot Handled', stats.botHandled || 0],
       ['Human Escalated', stats.humanEscalated || 0],
     ];
-    const csv = rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
+    const csv = rows.map((r: any) =>r.map((v: any) =>`"${v}"`).join(',')).join('\n');
     const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);
     const a=document.createElement('a');a.href=url;a.download=`whatsapp-analytics-${period}d.csv`;
     a.click();URL.revokeObjectURL(url);
@@ -91,7 +91,7 @@ export default function WhatsAppAnalyticsPage() {
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
-            {([7,14,30] as const).map(p=>(
+            {([7,14,30] as const).map((p: any) =>(
               <button key={p} onClick={()=>setPeriod(p)}
                 className={`text-xs font-medium px-3 py-1.5 rounded-lg transition-all ${period===p?'bg-white text-slate-900 shadow-sm':'text-slate-500'}`}>
                 {p}d
@@ -117,7 +117,7 @@ export default function WhatsAppAnalyticsPage() {
           { label:'Inbound',             value: stats?.inbound ?? '—',               icon: Inbox,         color:'#8B5CF6' },
           { label:'Outbound',            value: stats?.outbound ?? '—',              icon: Send,          color:'#F59E0B' },
           { label:'Unread',              value: stats?.unreadTotal ?? '—',           icon: Clock,         color:'#EF4444' },
-        ].map(k=>(
+        ].map((k: any) =>(
           <div key={k.label} className="bg-white rounded-2xl border border-slate-100 p-4">
             <div className="flex items-center justify-between mb-2">
               <p className="text-[11px] text-slate-500 font-medium leading-tight">{k.label}</p>
@@ -134,7 +134,7 @@ export default function WhatsAppAnalyticsPage() {
           { label:'Delivery Rate',   value:`${deliveryRate}%`,  color:'#10B981', desc:'Messages successfully delivered' },
           { label:'Response Rate',   value:`${responseRate}%`,  color:'#3B82F6', desc:'Patients who replied' },
           { label:'Bot Resolution',  value:`${botRate}%`,       color:'#8B5CF6', desc:'Conversations handled by AI' },
-        ].map(k=>(
+        ].map((k: any) =>(
           <div key={k.label} className="bg-white rounded-2xl border border-slate-100 p-5">
             <p className="text-xs text-slate-500 font-medium">{k.label}</p>
             <p className="text-4xl font-black mt-1" style={{color:k.color}}>{k.value}</p>
@@ -163,10 +163,10 @@ export default function WhatsAppAnalyticsPage() {
         </div>
         <div className="bg-white rounded-2xl border border-slate-100 p-5">
           <h3 className="text-sm font-bold text-slate-900 mb-4">Conversation Flow Breakdown</h3>
-          {flowBreakdown.some(f=>f.value>0) ? (
+          {flowBreakdown.some((f: any) =>f.value>0) ? (
             <ResponsiveContainer width="100%" height={200}>
               <PieChart>
-                <Pie data={flowBreakdown.filter(f=>f.value>0)} cx="50%" cy="50%" outerRadius={80}
+                <Pie data={flowBreakdown.filter((f: any) =>f.value>0)} cx="50%" cy="50%" outerRadius={80}
                   dataKey="value" label={({name,percent})=>`${name.split(' ')[0]} ${Math.round(percent*100)}%`}>
                   {flowBreakdown.map((_,i)=><Cell key={i} fill={COLORS[i]}/>)}
                 </Pie>
@@ -189,12 +189,12 @@ export default function WhatsAppAnalyticsPage() {
           </div>
           <table className="w-full">
             <thead><tr className="border-b border-slate-100">
-              {['Template Name','Category','Status','Times Sent'].map(h=>(
+              {['Template Name','Category','Status','Times Sent'].map((h: any) =>(
                 <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
               ))}
             </tr></thead>
             <tbody className="divide-y divide-slate-50">
-              {templates.map(t=>(
+              {templates.map((t: any) =>(
                 <tr key={t.id} className="hover:bg-slate-50/60">
                   <td className="px-4 py-3 text-sm font-semibold text-slate-900">{t.name}</td>
                   <td className="px-4 py-3"><span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-[#E8F5F0] text-[#0D7C66]">{t.category||'UTILITY'}</span></td>
@@ -219,7 +219,7 @@ export default function WhatsAppAnalyticsPage() {
                 { label:'Intent Detection',    value:'98.2%' },
                 { label:'Languages Detected',  value:'EN/HI/TE/AR' },
                 { label:'Bot Uptime',           value:'99.9%' },
-              ].map(k=>(
+              ].map((k: any) =>(
                 <div key={k.label} className="bg-white/10 rounded-xl p-3 text-center">
                   <p className="text-xs opacity-70">{k.label}</p>
                   <p className="text-lg font-bold mt-1">{k.value}</p>

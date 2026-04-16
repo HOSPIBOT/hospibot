@@ -183,9 +183,9 @@ export default function AppointmentQueuePage() {
     }
   };
 
-  const inProgress = queue.filter(a => a.status === 'IN_PROGRESS');
-  const checkedIn  = queue.filter(a => a.status === 'CHECKED_IN');
-  const waiting    = queue.filter(a => a.status === 'CONFIRMED');
+  const inProgress = queue.filter((a: any) => a.status === 'IN_PROGRESS');
+  const checkedIn  = queue.filter((a: any) => a.status === 'CHECKED_IN');
+  const waiting    = queue.filter((a: any) => a.status === 'CONFIRMED');
 
   // Kiosk mode — large display for waiting room
   if (kioskMode) {
@@ -251,7 +251,7 @@ export default function AppointmentQueuePage() {
               { label: 'Waiting',    value: summary?.waiting || waiting.length,  color: 'text-blue-300' },
               { label: 'With Doctor', value: summary?.inProgress || inProgress.length, color: 'text-emerald-300' },
               { label: 'Completed',  value: summary?.completed || 0,             color: 'text-slate-300' },
-            ].map(s => (
+            ].map((s: any) => (
               <div key={s.label} className="text-center">
                 <p className={`text-4xl font-bold ${s.color}`}>{s.value}</p>
                 <p className="text-white/60 text-sm mt-1">{s.label}</p>
@@ -280,7 +280,7 @@ export default function AppointmentQueuePage() {
           <select value={doctorFilter} onChange={e => setDoctorFilter(e.target.value)}
             className="px-3 py-2 text-sm border border-slate-200 rounded-xl bg-slate-50 outline-none cursor-pointer">
             <option value="">All Doctors</option>
-            {doctors.map(d => (
+            {doctors.map((d: any) => (
               <option key={d.id} value={d.id}>Dr. {d.user?.firstName} {d.user?.lastName || ''}</option>
             ))}
           </select>
@@ -301,7 +301,7 @@ export default function AppointmentQueuePage() {
           { label: 'Waiting',      value: waiting.length,             icon: Clock,        color: '#3B82F6' },
           { label: 'Checked In',   value: checkedIn.length,           icon: UserCheck,    color: '#8B5CF6' },
           { label: 'With Doctor',  value: inProgress.length,          icon: Activity,     color: '#10B981' },
-        ].map(s => (
+        ].map((s: any) => (
           <div key={s.label} className="bg-white rounded-2xl border border-slate-100 p-4">
             <div className="flex items-center gap-2 mb-2">
               <s.icon className="w-4 h-4" style={{ color: s.color }} />

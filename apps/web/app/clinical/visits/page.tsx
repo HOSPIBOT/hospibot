@@ -55,7 +55,7 @@ export default function AllVisitsPage() {
       const res = await api.get('/appointments', { params });
       const all: any[] = res.data.data ?? [];
       const header = ['Date', 'Time', 'Patient', 'Phone', 'Doctor', 'Department', 'Diagnosis', 'Chief Complaint'];
-      const rows = all.map(v => {
+      const rows = all.map((v: any) => {
         const drName = v.doctor
           ? `Dr. ${v.doctor.user?.firstName ?? ''} ${v.doctor.user?.lastName ?? ''}`.trim()
           : '';
@@ -71,7 +71,7 @@ export default function AllVisitsPage() {
         ];
       });
       const csv = [header, ...rows]
-        .map(r => r.map(val => `"${String(val).replace(/"/g, '""')}"`).join(','))
+        .map((r: any) => r.map((val: any) => `"${String(val).replace(/"/g, '""')}"`).join(','))
         .join('\n');
       const blob = new Blob([csv], { type: 'text/csv' });
       const url  = URL.createObjectURL(blob);
@@ -191,7 +191,7 @@ export default function AllVisitsPage() {
                   className={`${inputCls} w-full appearance-none pr-7`}
                 >
                   <option value="">All Doctors</option>
-                  {doctors.map(d => (
+                  {doctors.map((d: any) => (
                     <option key={d.id} value={d.id}>
                       Dr. {d.user?.firstName ?? d.firstName} {d.user?.lastName ?? d.lastName ?? ''}
                     </option>
@@ -250,7 +250,7 @@ export default function AllVisitsPage() {
               { label: 'This week',  from: (() => { const d = new Date(); d.setDate(d.getDate() - d.getDay()); return d.toISOString().slice(0, 10); })(), to: new Date().toISOString().slice(0, 10) },
               { label: 'This month', from: new Date().toISOString().slice(0, 8) + '01', to: new Date().toISOString().slice(0, 10) },
               { label: 'Last 30d',   from: (() => { const d = new Date(); d.setDate(d.getDate() - 30); return d.toISOString().slice(0, 10); })(), to: new Date().toISOString().slice(0, 10) },
-            ].map(p => (
+            ].map((p: any) => (
               <button
                 key={p.label}
                 onClick={() => { setDateFrom(p.from); setDateTo(p.to); }}
@@ -286,7 +286,7 @@ export default function AllVisitsPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {visits.map(v => {
+          {visits.map((v: any) => {
             const patient = v.patient;
             const doctor  = v.doctor;
             const drName  = doctor

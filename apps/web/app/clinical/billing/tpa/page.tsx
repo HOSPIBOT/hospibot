@@ -54,7 +54,7 @@ export default function TPAClaimsPage() {
   useEffect(() => { load(1); }, [statusF]);
   useEffect(() => { load(page); }, [page]);
 
-  const filteredClaims = claims.filter(c =>
+  const filteredClaims = claims.filter((c: any) =>
     !search || `${c.patient?.firstName} ${c.patient?.lastName} ${c.tpaName} ${c.claimNumber} ${c.invoiceNumber}`.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -108,7 +108,7 @@ export default function TPAClaimsPage() {
       const res = await api.get('/billing/tpa/claims', { params: { limit: 5000 } });
       const all: any[] = res.data.data ?? [];
       const header = ['Invoice#','Patient','TPA','Policy No','Pre-Auth Status','Pre-Auth Amt','Claim#','Claim Status','Claim Amt','Settled Amt','Date'];
-      const rows = all.map(c => [
+      const rows = all.map((c: any) => [
         c.invoiceNumber, `${c.patient?.firstName??''} ${c.patient?.lastName??''}`.trim(),
         c.tpaName??'', c.patient?.insurancePolicyNo??'',
         c.preAuthStatus??'', c.preAuthAmount ? formatINR(c.preAuthAmount) : '',
@@ -117,7 +117,7 @@ export default function TPAClaimsPage() {
         c.settledAmount ? formatINR(c.settledAmount) : '',
         formatDate(c.createdAt),
       ]);
-      const csv = [header,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const csv = [header,...rows].map((r: any) =>r.map((v: any) =>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
       const blob = new Blob([csv],{type:'text/csv'}); const url = URL.createObjectURL(blob);
       const a = document.createElement('a'); a.href=url; a.download=`tpa-claims-${new Date().toISOString().slice(0,10)}.csv`;
       a.click(); URL.revokeObjectURL(url); toast.success(`Exported ${all.length} claims`);
@@ -125,9 +125,9 @@ export default function TPAClaimsPage() {
   };
 
   // ── KPI aggregates ────────────────────────────────────────────────────────
-  const totalClaimed  = claims.reduce((s,c) => s + (c.claimAmount  ?? 0), 0);
-  const totalSettled  = claims.reduce((s,c) => s + (c.settledAmount ?? 0), 0);
-  const pendingClaims = claims.filter(c => ['SUBMITTED','PROCESSING'].includes(c.claimStatus ?? '')).length;
+  const totalClaimed  = claims.reduce((s: number, c: any) => s + (c.claimAmount  ?? 0), 0);
+  const totalSettled  = claims.reduce((s: number, c: any) => s + (c.settledAmount ?? 0), 0);
+  const pendingClaims = claims.filter((c: any) => ['SUBMITTED','PROCESSING'].includes(c.claimStatus ?? '')).length;
 
   return (
     <div className="space-y-5">
@@ -157,7 +157,7 @@ export default function TPAClaimsPage() {
           { label: 'Pending Claims',     value: pendingClaims,                  color:'#F59E0B' },
           { label: 'Total Claimed',      value: formatINR(totalClaimed),        color:'#3B82F6' },
           { label: 'Total Settled',      value: formatINR(totalSettled),        color:'#10B981' },
-        ].map(k => (
+        ].map((k: any) => (
           <div key={k.label} className="bg-white rounded-2xl border border-slate-100 p-5">
             <p className="text-xs text-slate-500">{k.label}</p>
             <p className="text-2xl font-bold mt-1" style={{color:k.color}}>{k.value}</p>
@@ -175,7 +175,7 @@ export default function TPAClaimsPage() {
         <select value={statusF} onChange={e=>setStatusF(e.target.value)}
           className="px-3 py-2 text-sm border border-slate-200 rounded-xl bg-slate-50 outline-none cursor-pointer">
           <option value="">All Statuses</option>
-          {CLAIM_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+          {CLAIM_STATUSES.map((s: any) => <option key={s} value={s}>{s}</option>)}
         </select>
       </div>
 
@@ -184,7 +184,7 @@ export default function TPAClaimsPage() {
         <table className="w-full">
           <thead>
             <tr className="bg-slate-50 border-b border-slate-100">
-              {['Invoice','Patient','TPA / Policy','Pre-Auth','Claim #','Claim Status','Amounts','Actions'].map(h => (
+              {['Invoice','Patient','TPA / Policy','Pre-Auth','Claim #','Claim Status','Amounts','Actions'].map((h: any) => (
                 <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
               ))}
             </tr>
@@ -198,7 +198,7 @@ export default function TPAClaimsPage() {
                 <p className="text-slate-400 text-sm">No TPA claims found</p>
                 <p className="text-slate-400 text-xs mt-1">Create an invoice and mark it as TPA/Insurance</p>
               </td></tr>
-            ) : filteredClaims.map(c => (
+            ) : filteredClaims.map((c: any) => (
               <tr key={c.id} className="hover:bg-slate-50/60 transition-colors">
                 <td className="px-4 py-3">
                   <p className="text-sm font-mono font-semibold text-slate-900">{c.invoiceNumber}</p>

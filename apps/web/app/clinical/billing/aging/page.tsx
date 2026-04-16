@@ -47,12 +47,12 @@ export default function InvoiceAgingPage() {
       });
       const raw: any[] = res.data.data ?? [];
       const aged: AgedInvoice[] = raw
-        .filter(inv => (inv.dueAmount ?? 0) > 0)
-        .map(inv => {
+        .filter((inv: any) => (inv.dueAmount ?? 0) > 0)
+        .map((inv: any) => {
           const daysOld = Math.floor((Date.now() - new Date(inv.createdAt).getTime()) / 86400000);
           return { ...inv, daysOld, bracket: getBracket(daysOld) };
         })
-        .sort((a, b) => b.daysOld - a.daysOld);
+        .sort((a: any, b: any) => b.daysOld - a.daysOld);
       setInvoices(aged);
     } catch { toast.error('Failed to load aging report'); }
     finally { setLoading(false); }
@@ -75,7 +75,7 @@ export default function InvoiceAgingPage() {
   const exportCSV = () => {
     const rows = [
       ['Invoice', 'Patient', 'Phone', 'Date', 'Days Old', 'Total', 'Due', 'Age Bracket'],
-      ...displayed.map(i => [
+      ...displayed.map((i: any) => [
         i.invoiceNumber,
         `${i.patient?.firstName} ${i.patient?.lastName || ''}`.trim(),
         i.patient?.phone || '',
@@ -86,7 +86,7 @@ export default function InvoiceAgingPage() {
         BRACKET_CONFIG[i.bracket].label,
       ]),
     ];
-    const csv = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+    const csv = rows.map((r: any) => r.map((v: any) => `"${v}"`).join(',')).join('\n');
     const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
     const a = document.createElement('a');
     a.href = url; a.download = `invoice-aging-${new Date().toISOString().slice(0, 10)}.csv`;
@@ -94,18 +94,18 @@ export default function InvoiceAgingPage() {
   };
 
   // Bracket summaries
-  const summary = (['0-30', '31-60', '61-90', '90+'] as AgeBracket[]).map(b => {
-    const items = invoices.filter(i => i.bracket === b);
+  const summary = (['0-30', '31-60', '61-90', '90+'] as AgeBracket[]).map((b: any) => {
+    const items = invoices.filter((i: any) => i.bracket === b);
     return {
       bracket: b,
       count: items.length,
-      total: items.reduce((s, i) => s + i.dueAmount, 0),
+      total: items.reduce((s: number, i: any) => s + i.dueAmount, 0),
       ...BRACKET_CONFIG[b],
     };
   });
 
-  const totalDue    = invoices.reduce((s, i) => s + i.dueAmount, 0);
-  const displayed   = filter === 'all' ? invoices : invoices.filter(i => i.bracket === filter);
+  const totalDue    = invoices.reduce((s: number, i: any) => s + i.dueAmount, 0);
+  const displayed   = filter === 'all' ? invoices : invoices.filter((i: any) => i.bracket === filter);
 
   return (
     <div className="space-y-5">
@@ -131,7 +131,7 @@ export default function InvoiceAgingPage() {
 
       {/* Aging summary cards */}
       <div className="grid grid-cols-4 gap-4">
-        {summary.map(s => (
+        {summary.map((s: any) => (
           <button key={s.bracket} onClick={() => setFilter(filter === s.bracket ? 'all' : s.bracket)}
             className={`rounded-2xl border-2 p-4 text-left transition-all ${
               filter === s.bracket ? 'border-current shadow-md' : 'border-slate-100 bg-white hover:border-slate-200'
@@ -164,13 +164,13 @@ export default function InvoiceAgingPage() {
           <table className="w-full">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-100">
-                {['Invoice #', 'Patient', 'Date', 'Days', 'Total', 'Due', 'Bracket', 'Action'].map(h => (
+                {['Invoice #', 'Patient', 'Date', 'Days', 'Total', 'Due', 'Bracket', 'Action'].map((h: any) => (
                   <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {displayed.map(inv => {
+              {displayed.map((inv: any) => {
                 const cfg = BRACKET_CONFIG[inv.bracket];
                 const patName = `${inv.patient?.firstName} ${inv.patient?.lastName || ''}`.trim();
                 return (

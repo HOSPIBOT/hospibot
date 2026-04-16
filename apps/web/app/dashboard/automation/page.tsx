@@ -87,7 +87,7 @@ export default function AutomationPage() {
           {rules.length === 0 ? (
             <div className="text-center py-12 text-gray-400">No rules yet. Install a protocol template to get started.</div>
           ) : (
-            rules.map(rule => (
+            rules.map((rule: any) => (
               <div key={rule.id} className="card flex items-center gap-4">
                 <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0">
                   <Zap className={`w-5 h-5 ${rule.isActive ? 'text-amber-500' : 'text-gray-300'}`} />
@@ -113,7 +113,7 @@ export default function AutomationPage() {
 
       {tab === 'protocols' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {protocols.map(p => (
+          {protocols.map((p: any) => (
             <div key={p.id} className="card">
               <h3 className="font-semibold text-gray-900">{p.name}</h3>
               <p className="text-sm text-gray-500 mt-1">{p.description}</p>

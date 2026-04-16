@@ -101,9 +101,9 @@ export default function TelemedicinePage() {
     toast.success('Reminder sent via WhatsApp!');
   };
 
-  const scheduled   = sessions.filter(s => s.status === 'SCHEDULED').length;
-  const completed   = sessions.filter(s => s.status === 'COMPLETED').length;
-  const inProgress  = sessions.filter(s => s.status === 'IN_PROGRESS').length;
+  const scheduled   = sessions.filter((s: any) => s.status === 'SCHEDULED').length;
+  const completed   = sessions.filter((s: any) => s.status === 'COMPLETED').length;
+  const inProgress  = sessions.filter((s: any) => s.status === 'IN_PROGRESS').length;
 
   return (
     <div className="space-y-5">
@@ -131,7 +131,7 @@ export default function TelemedicinePage() {
           {label:'In Progress',  value: inProgress,        color:'#8B5CF6'},
           {label:'Completed',    value: completed,         color:'#10B981'},
           {label:'Total Sessions',value: sessions.length,  color:'#0D7C66'},
-        ].map(k=>(
+        ].map((k: any) =>(
           <div key={k.label} className="bg-white rounded-2xl border border-slate-100 p-5">
             <p className="text-xs text-slate-500">{k.label}</p>
             <p className="text-3xl font-bold mt-1" style={{color:k.color}}>{k.value}</p>
@@ -159,7 +159,7 @@ export default function TelemedicinePage() {
         </div>
         <table className="w-full">
           <thead><tr className="border-b border-slate-100">
-            {['Date / Time','Patient','Doctor','Duration','Status','Meet Link','Actions'].map(h=>(
+            {['Date / Time','Patient','Doctor','Duration','Status','Meet Link','Actions'].map((h: any) =>(
               <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
             ))}
           </tr></thead>
@@ -172,7 +172,7 @@ export default function TelemedicinePage() {
                 <p className="text-slate-400 text-sm">No teleconsultations scheduled</p>
                 <button onClick={()=>setShowNew(true)} className="mt-3 text-sm font-semibold text-[#0D7C66] hover:underline">Schedule first session →</button>
               </td></tr>
-            ) : sessions.map(s => {
+            ) : sessions.map((s: any) => {
               const meta = (() => { try { return JSON.parse(s.notes||'{}'); } catch { return {}; } })();
               return (
                 <tr key={s.id} className="hover:bg-slate-50/60 transition-colors">
@@ -243,7 +243,7 @@ export default function TelemedicinePage() {
                     <input className={inputCls} placeholder="Search patient…" value={patSearch} onChange={e=>setPatSearch(e.target.value)} autoFocus />
                     {patients.length>0 && (
                       <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-10">
-                        {patients.map(p=>(
+                        {patients.map((p: any) =>(
                           <button key={p.id} onClick={()=>{setSelectedPat(p);setForm(f=>({...f,patientId:p.id}));setPatSearch('');setPatients([]);}}
                             className="w-full text-left px-4 py-2.5 hover:bg-slate-50 text-sm border-b last:border-0">
                             <p className="font-semibold">{p.firstName} {p.lastName||''}</p>
@@ -259,7 +259,7 @@ export default function TelemedicinePage() {
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Doctor *</label>
                 <select className={inputCls} value={form.doctorId} onChange={e=>setForm(f=>({...f,doctorId:e.target.value}))}>
                   <option value="">Select doctor…</option>
-                  {doctors.map(d=><option key={d.id} value={d.id}>Dr. {d.user?.firstName||''} {d.user?.lastName||''} — {d.specialties?.[0]||''}</option>)}
+                  {doctors.map((d: any) =><option key={d.id} value={d.id}>Dr. {d.user?.firstName||''} {d.user?.lastName||''} — {d.specialties?.[0]||''}</option>)}
                 </select>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -270,7 +270,7 @@ export default function TelemedicinePage() {
                 <div>
                   <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Duration (mins)</label>
                   <select className={inputCls} value={form.duration} onChange={e=>setForm(f=>({...f,duration:+e.target.value}))}>
-                    {[15,20,30,45,60].map(d=><option key={d} value={d}>{d} minutes</option>)}
+                    {[15,20,30,45,60].map((d: any) =><option key={d} value={d}>{d} minutes</option>)}
                   </select>
                 </div>
               </div>

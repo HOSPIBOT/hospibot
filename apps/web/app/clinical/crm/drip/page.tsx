@@ -71,10 +71,10 @@ export default function DripCampaignPage() {
   };
 
   const updateStep = (id: string, patch: Partial<DripStep>) => {
-    setSteps(s => s.map(st => st.id === id ? { ...st, ...patch } : st));
+    setSteps(s => s.map((st: any) => st.id === id ? { ...st, ...patch } : st));
   };
 
-  const removeStep = (id: string) => setSteps(s => s.filter(st => st.id !== id));
+  const removeStep = (id: string) => setSteps(s => s.filter((st: any) => st.id !== id));
 
   const loadTemplate = (t: typeof COMMON_TEMPLATES[0]) => {
     setForm(f => ({ ...f, name: t.name, trigger: t.trigger }));
@@ -86,7 +86,7 @@ export default function DripCampaignPage() {
 
   const save = async () => {
     if (!form.name || steps.length === 0) { toast.error('Name and at least one step required'); return; }
-    const msgSteps = steps.filter(s => s.type === 'WHATSAPP_MESSAGE' && !s.message?.trim());
+    const msgSteps = steps.filter((s: any) => s.type === 'WHATSAPP_MESSAGE' && !s.message?.trim());
     if (msgSteps.length > 0) { toast.error('All WhatsApp steps need a message'); return; }
     setSaving(true);
     try {
@@ -95,7 +95,7 @@ export default function DripCampaignPage() {
         description: form.description,
         triggerEvent: form.trigger,
         conditions: form.triggerCondition ? [{ field: 'tags', operator: 'contains', value: form.triggerCondition }] : [],
-        actions: steps.map(s => ({
+        actions: steps.map((s: any) => ({
           type: s.type,
           delayDays: s.delayDays,
           message: s.message,
@@ -147,12 +147,12 @@ export default function DripCampaignPage() {
         <div className="bg-gradient-to-r from-[#E8F5F0] to-white rounded-2xl border border-[#0D7C66]/20 p-5">
           <p className="text-sm font-bold text-slate-900 mb-3">⚡ Quick-start templates</p>
           <div className="grid grid-cols-2 gap-3">
-            {COMMON_TEMPLATES.map(t => (
+            {COMMON_TEMPLATES.map((t: any) => (
               <button key={t.name} onClick={() => { loadTemplate(t); setShowCreate(true); }}
                 className="text-left p-3.5 bg-white rounded-xl border border-slate-100 hover:border-[#0D7C66]/30 hover:shadow-sm transition-all">
                 <p className="text-sm font-semibold text-slate-900">{t.name}</p>
                 <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{t.message.slice(0,80)}…</p>
-                <p className="text-[11px] font-medium text-[#0D7C66] mt-1.5">Trigger: {TRIGGER_OPTIONS.find(o=>o.value===t.trigger)?.label}</p>
+                <p className="text-[11px] font-medium text-[#0D7C66] mt-1.5">Trigger: {TRIGGER_OPTIONS.find((o: any) =>o.value===t.trigger)?.label}</p>
               </button>
             ))}
           </div>
@@ -170,7 +170,7 @@ export default function DripCampaignPage() {
               <p className="text-slate-400 text-sm font-medium">No drip campaigns yet</p>
               <p className="text-slate-400 text-xs mt-1">Use a template above or create one from scratch</p>
             </div>
-          ) : campaigns.map(c => (
+          ) : campaigns.map((c: any) => (
             <div key={c.id} className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
               <div className="flex items-center justify-between px-5 py-4">
                 <div className="flex items-center gap-3">
@@ -178,7 +178,7 @@ export default function DripCampaignPage() {
                   <div>
                     <p className="text-sm font-bold text-slate-900">{c.name}</p>
                     <p className="text-xs text-slate-400 mt-0.5">
-                      {TRIGGER_OPTIONS.find(o=>o.value===c.triggerEvent)?.label || c.triggerEvent}
+                      {TRIGGER_OPTIONS.find((o: any) =>o.value===c.triggerEvent)?.label || c.triggerEvent}
                       {' · '}{Array.isArray(c.actions) ? c.actions.length : 0} steps
                       {' · '}Created {formatDate(c.createdAt)}
                     </p>
@@ -203,7 +203,7 @@ export default function DripCampaignPage() {
                   <div className="relative pl-5">
                     <div className="absolute left-2 top-0 bottom-0 w-0.5 bg-slate-100" />
                     {(Array.isArray(c.actions) ? c.actions : []).map((action: any, i: number) => {
-                      const st = STEP_TYPES.find(s => s.value === action.type) || STEP_TYPES[0];
+                      const st = STEP_TYPES.find((s: any) => s.value === action.type) || STEP_TYPES[0];
                       return (
                         <div key={i} className="relative mb-4 last:mb-0">
                           <div className="absolute -left-5 w-4 h-4 rounded-full border-2 border-white flex items-center justify-center" style={{background: st.color}}>
@@ -246,7 +246,7 @@ export default function DripCampaignPage() {
             <div>
               <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Trigger *</label>
               <select className={inputCls} value={form.trigger} onChange={e=>setForm(f=>({...f,trigger:e.target.value}))}>
-                {TRIGGER_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                {TRIGGER_OPTIONS.map((o: any) => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
             <div className="col-span-2">
@@ -274,7 +274,7 @@ export default function DripCampaignPage() {
               {steps.length > 0 && <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-slate-100 z-0" />}
               <div className="relative space-y-3 z-10">
                 {steps.map((step, idx) => {
-                  const st = STEP_TYPES.find(s => s.value === step.type) || STEP_TYPES[0];
+                  const st = STEP_TYPES.find((s: any) => s.value === step.type) || STEP_TYPES[0];
                   return (
                     <div key={step.id} className="flex items-start gap-3">
                       <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white text-xs font-bold mt-1" style={{background: st.color}}>
@@ -284,7 +284,7 @@ export default function DripCampaignPage() {
                         <div className="flex items-center gap-3">
                           <select value={step.type} onChange={e=>updateStep(step.id, {type:e.target.value})}
                             className="text-xs font-semibold border border-slate-200 rounded-xl px-3 py-1.5 bg-white outline-none cursor-pointer">
-                            {STEP_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                            {STEP_TYPES.map((t: any) => <option key={t.value} value={t.value}>{t.label}</option>)}
                           </select>
                           {idx > 0 && (
                             <div className="flex items-center gap-1.5 text-xs text-slate-500">
@@ -331,7 +331,7 @@ export default function DripCampaignPage() {
 
             {/* Add step buttons */}
             <div className="flex items-center gap-2 mt-4 flex-wrap">
-              {STEP_TYPES.map(st => (
+              {STEP_TYPES.map((st: any) => (
                 <button key={st.value} onClick={() => addStep(st.value)}
                   className="flex items-center gap-1.5 text-xs font-semibold border border-dashed px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors"
                   style={{color: st.color, borderColor: `${st.color}40`}}>

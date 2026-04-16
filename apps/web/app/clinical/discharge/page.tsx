@@ -171,7 +171,7 @@ For queries, contact ${tenant?.phone || 'our helpline'}.`;
           { label: 'Allergies', value: patient?.allergies?.join(', ') || 'None known' },
           { label: 'Chronic Conditions', value: patient?.chronicConditions?.join(', ') || 'None' },
           { label: 'Insurance', value: patient?.insuranceProvider || '—' },
-        ].map(f => (
+        ].map((f: any) => (
           <div key={f.label}>
             <p className="text-xs text-slate-400 font-medium">{f.label}</p>
             <p className="text-sm font-semibold text-slate-900 mt-0.5">{f.value}</p>
@@ -215,7 +215,7 @@ For queries, contact ${tenant?.phone || 'our helpline'}.`;
         <div>
           <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Condition at Discharge</label>
           <select className={inputCls} value={form.conditionAtDischarge} onChange={setE('conditionAtDischarge')}>
-            {['Stable', 'Improved', 'Unchanged', 'Deteriorated', 'Recovered', 'Critical', 'Expired'].map(c =>
+            {['Stable', 'Improved', 'Unchanged', 'Deteriorated', 'Recovered', 'Critical', 'Expired'].map((c: any) =>
               <option key={c}>{c}</option>)}
           </select>
         </div>

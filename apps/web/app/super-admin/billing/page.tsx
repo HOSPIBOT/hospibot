@@ -50,10 +50,10 @@ export default function PlatformBillingPage() {
   useEffect(() => { load(page); }, [page]);
 
   // Billing aggregates
-  const totalMRR    = tenants.reduce((s,t) => s + (PLANS.find(p=>p.id===t.plan)?.price||0), 0);
-  const activeCount = tenants.filter(t => t.status === 'ACTIVE').length;
-  const trialCount  = tenants.filter(t => t.status === 'TRIAL').length;
-  const churnCount  = tenants.filter(t => ['CANCELLED','EXPIRED'].includes(t.status)).length;
+  const totalMRR    = tenants.reduce((s: number, t: any) => s + (PLANS.find((p: any) =>p.id===t.plan)?.price||0), 0);
+  const activeCount = tenants.filter((t: any) => t.status === 'ACTIVE').length;
+  const trialCount  = tenants.filter((t: any) => t.status === 'TRIAL').length;
+  const churnCount  = tenants.filter((t: any) => ['CANCELLED','EXPIRED'].includes(t.status)).length;
 
   const startCheckout = async (tenantId: string, plan: string) => {
     setSaving(true);
@@ -83,13 +83,13 @@ export default function PlatformBillingPage() {
       const res = await api.get('/super-admin/tenants', { params: { limit: 5000 } });
       const all: any[] = res.data.data ?? [];
       const header = ['Tenant','Plan','Status','MRR','Branches','Users','Joined'];
-      const rows = all.map(t => [
+      const rows = all.map((t: any) => [
         t.name, t.plan, t.status,
-        `₹${(PLANS.find(p=>p.id===t.plan)?.price||0)/100}/mo`,
+        `₹${(PLANS.find((p: any) =>p.id===t.plan)?.price||0)/100}/mo`,
         t._count?.branches||0, t._count?.users||0,
         formatDate(t.createdAt),
       ]);
-      const csv = [header,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const csv = [header,...rows].map((r: any) =>r.map((v: any) =>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
       const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob);
       const a=document.createElement('a'); a.href=url; a.download=`platform-billing-${new Date().toISOString().slice(0,10)}.csv`;
       a.click(); URL.revokeObjectURL(url); toast.success(`Exported ${all.length} tenants`);
@@ -123,7 +123,7 @@ export default function PlatformBillingPage() {
           { label:'Active Tenants',            value: activeCount,                                  color:'#10B981', icon: Building2   },
           { label:'On Trial',                  value: trialCount,                                   color:'#3B82F6', icon: Clock       },
           { label:'Churned (This Month)',       value: churnCount,                                   color:'#EF4444', icon: AlertTriangle },
-        ].map(k => (
+        ].map((k: any) => (
           <div key={k.label} className="bg-white rounded-2xl border border-slate-100 p-5 flex items-center gap-4">
             <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0" style={{background:`${k.color}15`}}>
               <k.icon className="w-5 h-5" style={{color:k.color}} />
@@ -138,7 +138,7 @@ export default function PlatformBillingPage() {
 
       {/* Plans reference */}
       <div className="grid grid-cols-4 gap-4">
-        {PLANS.map(plan => (
+        {PLANS.map((plan: any) => (
           <div key={plan.id} className="bg-white rounded-2xl border border-slate-100 p-4">
             <div className="flex items-center justify-between mb-2">
               <p className="text-sm font-bold text-slate-900">{plan.name}</p>
@@ -146,14 +146,14 @@ export default function PlatformBillingPage() {
             </div>
             <p className="text-xs text-slate-400 mb-2">{plan.maxUsers === -1 ? 'Unlimited' : `Up to ${plan.maxUsers}`} users · {plan.maxBranches === -1 ? 'Unlimited' : plan.maxBranches} branch{plan.maxBranches!==1?'es':''}</p>
             <div className="space-y-1">
-              {plan.features.map(f => (
+              {plan.features.map((f: any) => (
                 <div key={f} className="flex items-center gap-1.5 text-xs text-slate-600">
                   <CheckCircle2 className="w-3 h-3 text-emerald-500 flex-shrink-0" /> {f}
                 </div>
               ))}
             </div>
             <div className="mt-3 pt-3 border-t border-slate-100">
-              <p className="text-xs font-bold text-slate-900">{tenants.filter(t=>t.plan===plan.id).length} tenants</p>
+              <p className="text-xs font-bold text-slate-900">{tenants.filter((t: any) =>t.plan===plan.id).length} tenants</p>
             </div>
           </div>
         ))}
@@ -170,7 +170,7 @@ export default function PlatformBillingPage() {
         </div>
         <table className="w-full">
           <thead><tr className="border-b border-slate-100">
-            {['Tenant','Plan','Status','MRR','Branches','Users','Joined','Actions'].map(h => (
+            {['Tenant','Plan','Status','MRR','Branches','Users','Joined','Actions'].map((h: any) => (
               <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
             ))}
           </tr></thead>
@@ -179,8 +179,8 @@ export default function PlatformBillingPage() {
               <tr key={i}>{Array.from({length:8}).map((__,j)=><td key={j} className="px-4 py-3"><div className="animate-pulse bg-slate-200 rounded h-4"/></td>)}</tr>
             )) : tenants.length===0 ? (
               <tr><td colSpan={8} className="py-16 text-center text-slate-400 text-sm">No tenants found</td></tr>
-            ) : tenants.map(t => {
-              const plan = PLANS.find(p => p.id === t.plan);
+            ) : tenants.map((t: any) => {
+              const plan = PLANS.find((p: any) => p.id === t.plan);
               const mrr = plan?.price || 0;
               return (
                 <tr key={t.id} className="hover:bg-slate-50/60 transition-colors">
@@ -232,7 +232,7 @@ export default function PlatformBillingPage() {
               <button onClick={()=>setSelected(null)} className="p-2 text-slate-400 hover:bg-slate-100 rounded-xl">✕</button>
             </div>
             <div className="px-6 py-5 space-y-3">
-              {PLANS.map(plan => (
+              {PLANS.map((plan: any) => (
                 <button key={plan.id} onClick={() => setPlanUpdate(plan.id)}
                   className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all ${planUpdate===plan.id ? 'border-[#0D7C66] bg-[#E8F5F0]' : 'border-slate-200 hover:border-slate-300'}`}>
                   <div className="text-left">

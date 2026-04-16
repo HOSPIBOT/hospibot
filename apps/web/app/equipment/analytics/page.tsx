@@ -83,7 +83,7 @@ export default function EquipmentAnalyticsPage() {
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
-            {(['week', 'month', 'quarter'] as const).map(p => (
+            {(['week', 'month', 'quarter'] as const).map((p: any) => (
               <button key={p} onClick={() => setPeriod(p)}
                 className={`text-xs font-medium px-3 py-1.5 rounded-lg capitalize transition-all ${
                   period === p ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
@@ -98,10 +98,10 @@ export default function EquipmentAnalyticsPage() {
 
       {/* KPIs */}
       {loading ? (
-        <div className="grid grid-cols-4 gap-4">{[1,2,3,4].map(i => <div key={i} className="animate-pulse bg-slate-200 rounded-2xl h-24" />)}</div>
+        <div className="grid grid-cols-4 gap-4">{[1,2,3,4].map((i: any) => <div key={i} className="animate-pulse bg-slate-200 rounded-2xl h-24" />)}</div>
       ) : (
         <div className="grid grid-cols-4 gap-4">
-          {KPI_CARDS.map(k => (
+          {KPI_CARDS.map((k: any) => (
             <div key={k.label} className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-shadow">
               <div className="flex items-center gap-2 mb-2">
                 <k.icon className="w-4 h-4" style={{ color: k.color }} />
@@ -203,7 +203,7 @@ export default function EquipmentAnalyticsPage() {
           { href: '/equipment/orders',   label: 'B2B Orders',  icon: ShoppingCart, color: COLOR      },
           { href: '/equipment/products', label: 'Catalogue',   icon: Package,      color: '#8B5CF6'  },
           { href: '/equipment/dashboard',label: 'Dashboard',   icon: BarChart3,    color: '#10B981'  },
-        ].map(l => (
+        ].map((l: any) => (
           <a key={l.href} href={l.href}
             className="bg-white rounded-2xl border border-slate-100 p-4 hover:shadow-md transition-all group flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"

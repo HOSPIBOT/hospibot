@@ -46,19 +46,19 @@ function CreateOrderModal({ onClose, onCreated }: { onClose: () => void; onCreat
   }, [prodSearch]);
 
   const addProduct = (p: any) => {
-    if (form.items.some(i => i.productId === p.id)) return;
+    if (form.items.some((i: any) => i.productId === p.id)) return;
     setForm(f => ({ ...f, items: [...f.items, { productId: p.id, productName: p.name, unitPrice: p.sellingPrice, quantity: 1 }] }));
     setProdSearch(''); setProducts([]);
   };
 
   const updateQty = (productId: string, qty: number) => {
     if (qty < 1) return;
-    setForm(f => ({ ...f, items: f.items.map(i => i.productId === productId ? { ...i, quantity: qty } : i) }));
+    setForm(f => ({ ...f, items: f.items.map((i: any) => i.productId === productId ? { ...i, quantity: qty } : i) }));
   };
 
-  const removeItem = (productId: string) => setForm(f => ({ ...f, items: f.items.filter(i => i.productId !== productId) }));
+  const removeItem = (productId: string) => setForm(f => ({ ...f, items: f.items.filter((i: any) => i.productId !== productId) }));
 
-  const subtotal = form.items.reduce((s, i) => s + i.unitPrice * i.quantity, 0);
+  const subtotal = form.items.reduce((s: number, i: any) => s + i.unitPrice * i.quantity, 0);
   const billAmount = subtotal - (form.discount * 100);
 
   const handleSubmit = async () => {
@@ -67,7 +67,7 @@ function CreateOrderModal({ onClose, onCreated }: { onClose: () => void; onCreat
     try {
       await api.post('/pharmacy/dispensing', {
         patientId: form.patientId,
-        items: form.items.map(i => ({ productId: i.productId, quantity: i.quantity })),
+        items: form.items.map((i: any) => ({ productId: i.productId, quantity: i.quantity })),
         discountAmount: Math.round(form.discount * 100),
         notes: form.notes,
       });
@@ -99,7 +99,7 @@ function CreateOrderModal({ onClose, onCreated }: { onClose: () => void; onCreat
                 <input className={inputCls} placeholder="Search patient…" value={patSearch} onChange={e => setPatSearch(e.target.value)} />
                 {patients.length > 0 && (
                   <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-10 overflow-hidden">
-                    {patients.map(p => (
+                    {patients.map((p: any) => (
                       <button key={p.id} onClick={() => { setForm(f => ({ ...f, patientId: p.id, patientName: `${p.firstName} ${p.lastName || ''}` })); setPatSearch(''); setPatients([]); }}
                         className="w-full text-left px-4 py-2.5 hover:bg-slate-50 border-b border-slate-50 last:border-0">
                         <p className="text-sm font-medium text-slate-900">{p.firstName} {p.lastName || ''}</p>
@@ -123,7 +123,7 @@ function CreateOrderModal({ onClose, onCreated }: { onClose: () => void; onCreat
               </div>
               {products.length > 0 && (
                 <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-10 overflow-hidden">
-                  {products.map(p => (
+                  {products.map((p: any) => (
                     <button key={p.id} onClick={() => addProduct(p)}
                       className="w-full text-left px-4 py-2.5 hover:bg-slate-50 border-b border-slate-50 last:border-0">
                       <div className="flex items-center justify-between">
@@ -150,7 +150,7 @@ function CreateOrderModal({ onClose, onCreated }: { onClose: () => void; onCreat
                 <span className="col-span-1" />
               </div>
               <div className="divide-y divide-slate-50">
-                {form.items.map(item => (
+                {form.items.map((item: any) => (
                   <div key={item.productId} className="px-4 py-2.5 grid grid-cols-12 items-center">
                     <span className="col-span-5 text-sm text-slate-900 font-medium">{item.productName}</span>
                     <span className="col-span-3 text-center text-sm text-slate-600">₹{(item.unitPrice / 100).toFixed(2)}</span>
@@ -244,7 +244,7 @@ export default function DispensingPage() {
       const res = await api.get('/pharmacy/dispensing', { params: { limit: 2000 } });
       const all: any[] = res.data.data ?? orders;
       const header = ['Order #', 'Patient', 'Phone', 'Doctor', 'Items', 'Total', 'Status', 'Date'];
-      const rows = all.map(o => [
+      const rows = all.map((o: any) => [
         o.orderNumber ?? o.id?.slice(0,8).toUpperCase() ?? '',
         `${o.patient?.firstName ?? ''} ${o.patient?.lastName ?? ''}`.trim(),
         o.patient?.phone ?? '',
@@ -254,7 +254,7 @@ export default function DispensingPage() {
         o.status ?? '',
         o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN') : '',
       ]);
-      const csv = [header,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const csv = [header,...rows].map((r: any) =>r.map((v: any) =>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
       const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);
       const a=document.createElement('a');a.href=url;a.download=`dispensing-${new Date().toISOString().slice(0,10)}.csv`;
       a.click();URL.revokeObjectURL(url);toast.success(`Exported ${all.length} orders`);
@@ -304,7 +304,7 @@ export default function DispensingPage() {
             value={search} onChange={e => setSearch(e.target.value)} />
         </div>
         <div className="flex items-center gap-1">
-          {['', 'PENDING', 'DISPENSED', 'CANCELLED'].map(s => (
+          {['', 'PENDING', 'DISPENSED', 'CANCELLED'].map((s: any) => (
             <button key={s} onClick={() => setStatus(s)}
               className={`text-xs font-semibold px-3 py-1.5 rounded-full transition-all ${statusFilter === s ? 'text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
               style={statusFilter === s ? { background: NAV_COLOR } : {}}>
@@ -328,7 +328,7 @@ export default function DispensingPage() {
               <Plus className="w-4 h-4" /> Create First Order
             </button>
           </div>
-        ) : orders.map(order => (
+        ) : orders.map((order: any) => (
           <div key={order.id} className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-all">
             <div className="flex items-start gap-4">
               <div className="w-10 h-10 rounded-xl text-white flex items-center justify-center flex-shrink-0 font-bold text-sm"

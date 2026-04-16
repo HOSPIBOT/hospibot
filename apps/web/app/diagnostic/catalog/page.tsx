@@ -54,7 +54,7 @@ function AddTestModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
           <div>
             <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Category</label>
             <select className={inputCls} value={form.category} onChange={set('category')}>
-              {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+              {CATEGORIES.map((c: any) => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
           <div className="col-span-2">
@@ -72,7 +72,7 @@ function AddTestModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
           <div>
             <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Sample Type</label>
             <select className={inputCls} value={form.sampleType} onChange={set('sampleType')}>
-              {SAMPLE_TYPES.map(s => <option key={s} value={s}>{s}</option>)}
+              {SAMPLE_TYPES.map((s: any) => <option key={s} value={s}>{s}</option>)}
             </select>
           </div>
           <div>
@@ -178,7 +178,7 @@ export default function TestCatalogPage() {
             value={search} onChange={e => setSearch(e.target.value)} />
         </div>
         <div className="flex flex-wrap gap-1.5">
-          {['', ...CATEGORIES].map(c => (
+          {['', ...CATEGORIES].map((c: any) => (
             <button key={c} onClick={() => setCat(c)}
               className={`text-xs font-semibold px-2.5 py-1.5 rounded-full transition-all ${
                 catFilter === c ? 'text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'

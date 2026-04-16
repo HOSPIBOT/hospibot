@@ -82,7 +82,7 @@ export default function EquipmentProductsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-4">
-          {products.map(p=>{
+          {products.map((p: any) =>{
             const inStock = (p.stock??0) > 0 || p.inStock === true;
             return (
             <div key={p.id} className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-shadow group">
@@ -107,7 +107,7 @@ export default function EquipmentProductsPage() {
                     if (isNaN(n) || n < 0) { toast.error('Invalid quantity'); return; }
                     try {
                       await api.patch(`/marketplace/products/${p.id}`, { stock: n });
-                      setProducts(prev => prev.map(x => x.id === p.id ? { ...x, stock: n } : x));
+                      setProducts(prev => prev.map((x: any) => x.id === p.id ? { ...x, stock: n } : x));
                       toast.success('Stock updated');
                     } catch { toast.error('Failed to update stock'); }
                   }}
@@ -118,7 +118,7 @@ export default function EquipmentProductsPage() {
                   onClick={async () => {
                     try {
                       await api.patch(`/marketplace/products/${p.id}`, { inStock: !inStock });
-                      setProducts(prev => prev.map(x => x.id === p.id ? { ...x, inStock: !inStock } : x));
+                      setProducts(prev => prev.map((x: any) => x.id === p.id ? { ...x, inStock: !inStock } : x));
                       toast.success(inStock ? 'Marked out of stock' : 'Marked in stock');
                     } catch { toast.error('Failed'); }
                   }}

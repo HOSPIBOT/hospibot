@@ -68,7 +68,7 @@ function CampaignCard({ campaign, onExecute, onView }: { campaign: any; onExecut
           { label: 'Delivered', value: campaign.deliveredCount || 0,  color: '#8B5CF6' },
           { label: 'Read',      value: campaign.readCount || 0,       color: '#F59E0B' },
           { label: 'Converted', value: campaign.convertedCount || 0,  color: '#10B981' },
-        ].map(s => (
+        ].map((s: any) => (
           <div key={s.label} className="text-center bg-slate-50 rounded-xl py-2">
             <p className="text-base font-bold" style={{ color: s.color }}>{s.value}</p>
             <p className="text-[10px] text-slate-400">{s.label}</p>
@@ -83,7 +83,7 @@ function CampaignCard({ campaign, onExecute, onView }: { campaign: any; onExecut
             { label: 'Delivery Rate', rate: deliveryRate, color: '#8B5CF6' },
             { label: 'Read Rate',     rate: readRate,     color: '#F59E0B' },
             { label: 'Conv. Rate',    rate: convRate,     color: '#10B981' },
-          ].map(r => (
+          ].map((r: any) => (
             <div key={r.label} className="flex items-center gap-2">
               <span className="text-[10px] text-slate-400 w-24">{r.label}</span>
               <div className="flex-1 bg-slate-100 rounded-full h-1.5">
@@ -147,7 +147,7 @@ function CreateCampaignModal({ onClose, onCreated }: { onClose: () => void; onCr
       filters: {
         ...f.filters,
         [field]: f.filters[field].includes(val)
-          ? f.filters[field].filter(x => x !== val)
+          ? f.filters[field].filter((x: any) => x !== val)
           : [...f.filters[field], val],
       },
     }));
@@ -165,7 +165,7 @@ function CreateCampaignModal({ onClose, onCreated }: { onClose: () => void; onCr
   const buildFilters = () => ({
     ...(form.filters.stages.length     ? { stages: form.filters.stages }     : {}),
     ...(form.filters.sources.length    ? { sources: form.filters.sources }   : {}),
-    ...(form.filters.tags              ? { tags: form.filters.tags.split(',').map(t => t.trim()).filter(Boolean) } : {}),
+    ...(form.filters.tags              ? { tags: form.filters.tags.split(',').map((t: any) => t.trim()).filter(Boolean) } : {}),
     ...(form.filters.city              ? { city: form.filters.city }         : {}),
     ...(form.filters.minDaysSinceVisit ? { minDaysSinceVisit: Number(form.filters.minDaysSinceVisit) } : {}),
     ...(form.filters.maxDaysSinceVisit ? { maxDaysSinceVisit: Number(form.filters.maxDaysSinceVisit) } : {}),
@@ -192,7 +192,7 @@ function CreateCampaignModal({ onClose, onCreated }: { onClose: () => void; onCr
     } finally { setSubmitting(false); }
   };
 
-  const selectedTemplate = TEMPLATES.find(t => t.name === form.templateName);
+  const selectedTemplate = TEMPLATES.find((t: any) => t.name === form.templateName);
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={e => e.target === e.currentTarget && onClose()}>
@@ -236,7 +236,7 @@ function CreateCampaignModal({ onClose, onCreated }: { onClose: () => void; onCr
               <div>
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">WhatsApp Template <span className="text-red-500">*</span></label>
                 <div className="grid grid-cols-1 gap-2">
-                  {TEMPLATES.map(t => (
+                  {TEMPLATES.map((t: any) => (
                     <button key={t.name} onClick={() => setF('templateName', t.name)}
                       className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 text-left transition-all ${
                         form.templateName === t.name ? 'border-[#0D7C66] bg-[#E8F5F0]' : 'border-slate-200 hover:border-slate-300 bg-slate-50'
@@ -270,7 +270,7 @@ function CreateCampaignModal({ onClose, onCreated }: { onClose: () => void; onCr
               <div>
                 <label className="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">CRM Stage <span className="text-slate-300 font-normal normal-case">(match any selected)</span></label>
                 <div className="flex flex-wrap gap-2">
-                  {STAGES.map(s => (
+                  {STAGES.map((s: any) => (
                     <button key={s} onClick={() => toggleArr('stages', s)}
                       className={`text-xs font-medium px-3 py-1.5 rounded-full border transition-all ${
                         form.filters.stages.includes(s) ? 'bg-[#0D7C66] text-white border-[#0D7C66]' : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-slate-300'
@@ -285,7 +285,7 @@ function CreateCampaignModal({ onClose, onCreated }: { onClose: () => void; onCr
               <div>
                 <label className="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">Lead Source <span className="text-slate-300 font-normal normal-case">(match any selected)</span></label>
                 <div className="flex flex-wrap gap-2">
-                  {SOURCES.map(s => (
+                  {SOURCES.map((s: any) => (
                     <button key={s} onClick={() => toggleArr('sources', s)}
                       className={`text-xs font-medium px-3 py-1.5 rounded-full border transition-all ${
                         form.filters.sources.includes(s) ? 'bg-[#0D7C66] text-white border-[#0D7C66]' : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-slate-300'
@@ -391,8 +391,8 @@ function CreateCampaignModal({ onClose, onCreated }: { onClose: () => void; onCr
                 <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
                   <p className="text-xs font-bold text-blue-700 mb-2">ACTIVE FILTERS</p>
                   <div className="flex flex-wrap gap-1.5">
-                    {form.filters.stages.map(s => <span key={s} className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">{s}</span>)}
-                    {form.filters.sources.map(s => <span key={s} className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">{s}</span>)}
+                    {form.filters.stages.map((s: any) => <span key={s} className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">{s}</span>)}
+                    {form.filters.sources.map((s: any) => <span key={s} className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">{s}</span>)}
                     {form.filters.tags && <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">Tags: {form.filters.tags}</span>}
                     {form.filters.city && <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">City: {form.filters.city}</span>}
                   </div>
@@ -473,9 +473,9 @@ export default function CampaignsPage() {
   };
 
   // Overall stats
-  const totalSent      = campaigns.reduce((s, c) => s + (c.sentCount || 0), 0);
-  const totalRead      = campaigns.reduce((s, c) => s + (c.readCount || 0), 0);
-  const totalConverted = campaigns.reduce((s, c) => s + (c.convertedCount || 0), 0);
+  const totalSent      = campaigns.reduce((s: number, c: any) => s + (c.sentCount || 0), 0);
+  const totalRead      = campaigns.reduce((s: number, c: any) => s + (c.readCount || 0), 0);
+  const totalConverted = campaigns.reduce((s: number, c: any) => s + (c.convertedCount || 0), 0);
   const avgReadRate    = totalSent > 0 ? Math.round((totalRead / totalSent) * 100) : 0;
 
   return (
@@ -509,7 +509,7 @@ export default function CampaignsPage() {
           { label: 'Messages Sent',   value: totalSent,        icon: Send,          color: '#25D366' },
           { label: 'Avg Read Rate',   value: `${avgReadRate}%`, icon: TrendingUp,   color: '#F59E0B' },
           { label: 'Appointments',    value: totalConverted,   icon: Calendar,      color: '#3B82F6' },
-        ].map(s => (
+        ].map((s: any) => (
           <div key={s.label} className="bg-white rounded-2xl border border-slate-100 p-4">
             <div className="flex items-center gap-2 mb-2">
               <s.icon className="w-4 h-4" style={{ color: s.color }} />
@@ -522,7 +522,7 @@ export default function CampaignsPage() {
 
       {/* Filter */}
       <div className="flex items-center gap-2">
-        {['', 'draft', 'scheduled', 'running', 'completed', 'failed'].map(s => (
+        {['', 'draft', 'scheduled', 'running', 'completed', 'failed'].map((s: any) => (
           <button key={s} onClick={() => setStatus(s)}
             className={`text-xs font-semibold px-3 py-1.5 rounded-full transition-all capitalize ${statusFilter === s ? 'bg-[#0D7C66] text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
             {s || 'All'}
@@ -547,7 +547,7 @@ export default function CampaignsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {campaigns.map(c => (
+          {campaigns.map((c: any) => (
             <CampaignCard key={c.id} campaign={c}
               onExecute={() => executeCampaign(c.id)}
               onView={() => {}} />

@@ -104,7 +104,7 @@ export default function WellnessMembersPage() {
           {search && <button onClick={() => setSearch('')}><X className="w-3 h-3 text-slate-400" /></button>}
         </div>
         <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
-          {['', ...PLANS].map(p => (
+          {['', ...PLANS].map((p: any) => (
             <button key={p} onClick={() => setPlanTab(p)}
               className={`text-xs font-medium px-3 py-1.5 rounded-lg transition-all ${planTab === p ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
               {p || 'All'}
@@ -123,7 +123,7 @@ export default function WellnessMembersPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {members.map(m => {
+          {members.map((m: any) => {
             const exp = expiryStatus(m.membershipExpiry);
             const ExpIcon = exp.icon;
             return (
@@ -181,7 +181,7 @@ export default function WellnessMembersPage() {
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={e => e.target === e.currentTarget && setShowAdd(false)}>
           <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-              <h2 className="text-lg font-bold text-slate-900">{form.patId && members.some(m => m.id === form.patId) ? 'Renew Membership' : 'Enroll Member'}</h2>
+              <h2 className="text-lg font-bold text-slate-900">{form.patId && members.some((m: any) => m.id === form.patId) ? 'Renew Membership' : 'Enroll Member'}</h2>
               <button onClick={() => { setShowAdd(false); setForm({ patId: '', patName: '', plan: 'Gold', sessions: 12, validUntil: '' }); setPatSearch(''); }} className="p-2 text-slate-400 hover:bg-slate-100 rounded-xl"><X className="w-4 h-4" /></button>
             </div>
             <div className="px-6 py-5 space-y-4">
@@ -192,7 +192,7 @@ export default function WellnessMembersPage() {
                     <input className={inputCls} placeholder="Search patient…" value={patSearch} onChange={e => setPatSearch(e.target.value)} autoFocus />
                     {patSuggestions.length > 0 && (
                       <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-10 overflow-hidden">
-                        {patSuggestions.map(p => (
+                        {patSuggestions.map((p: any) => (
                           <button key={p.id} onClick={() => { setForm(f => ({ ...f, patId: p.id, patName: `${p.firstName} ${p.lastName || ''}`.trim() })); setPatSearch(''); setSuggestions([]); }} className="w-full text-left px-4 py-2.5 hover:bg-slate-50 text-sm">{p.firstName} {p.lastName || ''} · {p.phone}</button>
                         ))}
                       </div>
@@ -207,7 +207,7 @@ export default function WellnessMembersPage() {
               )}
               <div>
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Plan</label>
-                <select className={inputCls} value={form.plan} onChange={e => setForm(f => ({ ...f, plan: e.target.value }))}>{PLANS.map(p => <option key={p}>{p}</option>)}</select>
+                <select className={inputCls} value={form.plan} onChange={e => setForm(f => ({ ...f, plan: e.target.value }))}>{PLANS.map((p: any) => <option key={p}>{p}</option>)}</select>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div><label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Sessions</label><input type="number" min={1} className={inputCls} value={form.sessions} onChange={e => setForm(f => ({ ...f, sessions: Number(e.target.value) }))} /></div>

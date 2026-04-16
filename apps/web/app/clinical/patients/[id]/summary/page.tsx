@@ -86,7 +86,7 @@ export default function PatientSummaryPage() {
                     { l: 'Email',        v: patient.email || '—' },
                     { l: 'Date of Birth',v: patient.dateOfBirth ? formatDate(patient.dateOfBirth) : '—' },
                     { l: 'Address',      v: [patient.address, patient.city, patient.pincode].filter(Boolean).join(', ') || '—' },
-                  ].map(f => (
+                  ].map((f: any) => (
                     <div key={f.l}>
                       <span className="text-slate-400 text-xs">{f.l}: </span>
                       <span className="font-semibold text-slate-900">{f.v}</span>
@@ -156,7 +156,7 @@ export default function PatientSummaryPage() {
                 <div className="border border-slate-100 rounded-xl overflow-hidden">
                   <table className="w-full text-xs">
                     <thead className="bg-slate-50">
-                      <tr>{['Order #', 'Tests', 'Date', 'Status'].map(h => (
+                      <tr>{['Order #', 'Tests', 'Date', 'Status'].map((h: any) => (
                         <th key={h} className="px-3 py-2 text-left font-semibold text-slate-500 uppercase">{h}</th>
                       ))}</tr>
                     </thead>
@@ -216,7 +216,7 @@ export default function PatientSummaryPage() {
                     { l: 'Total Invoices', v: recentInvoices.length },
                     { l: 'Total Billed',   v: formatINR(recentInvoices.reduce((s: number, i: any) => s + (i.totalAmount || 0), 0)) },
                     { l: 'Balance Due',    v: formatINR(totalDue), highlight: totalDue > 0 },
-                  ].map(s => (
+                  ].map((s: any) => (
                     <div key={s.l} className={`rounded-xl px-3 py-2 border ${s.highlight ? 'bg-red-50 border-red-200' : 'bg-slate-50 border-slate-100'}`}>
                       <p className="text-[10px] text-slate-400">{s.l}</p>
                       <p className={`text-sm font-bold ${s.highlight ? 'text-red-700' : 'text-slate-900'}`}>{s.v}</p>

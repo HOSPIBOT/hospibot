@@ -45,7 +45,7 @@ export default function DiagnosticWhatsAppPage() {
     return () => clearTimeout(t);
   }, [search]);
 
-  const filteredConversations = conversations.filter(c => {
+  const filteredConversations = conversations.filter((c: any) => {
     if (filter === 'unread') return (c.unreadCount ?? 0) > 0;
     if (filter === 'bot')    return c.isBot && !c.isClosed;
     if (filter === 'human')  return !c.isBot && !c.isClosed;
@@ -106,7 +106,7 @@ export default function DiagnosticWhatsAppPage() {
     if ((conv.unreadCount ?? 0) > 0) {
       try {
         await api.patch(`/whatsapp/conversations/${conv.id}`, { unreadCount: 0 });
-        setConversations(cs => cs.map(c => c.id === conv.id ? { ...c, unreadCount: 0 } : c));
+        setConversations(cs => cs.map((c: any) => c.id === conv.id ? { ...c, unreadCount: 0 } : c));
       } catch { /* silent */ }
     }
   };
@@ -124,7 +124,7 @@ export default function DiagnosticWhatsAppPage() {
       setMessageText('');
       setShowTemplates(false);
       loadMessages(active.id);
-      setConversations(cs => cs.map(c =>
+      setConversations(cs => cs.map((c: any) =>
         c.id === active.id ? { ...c, lastMessageAt: new Date().toISOString() } : c
       ));
     } catch { toast.error('Failed to send'); }
@@ -136,7 +136,7 @@ export default function DiagnosticWhatsAppPage() {
     try {
       await api.patch(`/whatsapp/conversations/${active.id}`, { isBot: false });
       setActive((a: any) => ({ ...a, isBot: false }));
-      setConversations(cs => cs.map(c => c.id === active.id ? { ...c, isBot: false } : c));
+      setConversations(cs => cs.map((c: any) => c.id === active.id ? { ...c, isBot: false } : c));
       toast.success('Bot paused — assigned to you');
     } catch { toast.error('Failed'); }
   };
@@ -164,7 +164,7 @@ export default function DiagnosticWhatsAppPage() {
     setShowTemplates(false);
   };
 
-  const filteredTpls = templates.filter(t =>
+  const filteredTpls = templates.filter((t: any) =>
     !tplSearch || (t.name ?? '').toLowerCase().includes(tplSearch.toLowerCase())
   );
 
@@ -206,12 +206,12 @@ export default function DiagnosticWhatsAppPage() {
 
         {/* Filter tabs */}
         <div className="flex border-b border-slate-100 px-2 py-1.5 gap-0.5 overflow-x-auto">
-          {FILTER_TABS.map(tab => {
+          {FILTER_TABS.map((tab: any) => {
             const count =
-              tab.key === 'unread' ? conversations.filter(c => (c.unreadCount ?? 0) > 0).length :
-              tab.key === 'bot'    ? conversations.filter(c =>  c.isBot && !c.isClosed).length :
-              tab.key === 'human'  ? conversations.filter(c => !c.isBot && !c.isClosed).length :
-              tab.key === 'closed' ? conversations.filter(c =>  c.isClosed).length :
+              tab.key === 'unread' ? conversations.filter((c: any) => (c.unreadCount ?? 0) > 0).length :
+              tab.key === 'bot'    ? conversations.filter((c: any) =>  c.isBot && !c.isClosed).length :
+              tab.key === 'human'  ? conversations.filter((c: any) => !c.isBot && !c.isClosed).length :
+              tab.key === 'closed' ? conversations.filter((c: any) =>  c.isClosed).length :
               conversations.length;
             const isActive = filter === tab.key;
             return (
@@ -252,7 +252,7 @@ export default function DiagnosticWhatsAppPage() {
               <Inbox className="w-10 h-10 text-slate-200 mx-auto mb-2" />
               <p className="text-xs text-slate-400">No conversations</p>
             </div>
-          ) : filteredConversations.map(conv => (
+          ) : filteredConversations.map((conv: any) => (
             <button key={conv.id} onClick={() => selectConversation(conv)}
               className={`w-full text-left px-3 py-2.5 hover:bg-slate-50 transition-colors border-b border-slate-50 ${
                 active?.id === conv.id ? 'border-l-2' : ''
@@ -306,7 +306,7 @@ export default function DiagnosticWhatsAppPage() {
             <p className="text-slate-600 font-semibold">Select a conversation</p>
             <p className="text-slate-400 text-sm mt-1">
               {conversations.length > 0
-                ? `${conversations.filter(c => (c.unreadCount ?? 0) > 0).length} unread · ${conversations.length} total`
+                ? `${conversations.filter((c: any) => (c.unreadCount ?? 0) > 0).length} unread · ${conversations.length} total`
                 : 'No conversations yet'}
             </p>
           </div>
@@ -408,7 +408,7 @@ export default function DiagnosticWhatsAppPage() {
                         <div className="py-6 text-center text-xs text-slate-400">
                           {templates.length === 0 ? 'No approved templates yet' : 'No matches'}
                         </div>
-                      ) : filteredTpls.map(tpl => (
+                      ) : filteredTpls.map((tpl: any) => (
                         <button key={tpl.id} onClick={() => useTemplate(tpl)}
                           className="w-full text-left px-4 py-2.5 hover:bg-slate-50 transition-colors group">
                           <div className="flex items-center justify-between mb-0.5">

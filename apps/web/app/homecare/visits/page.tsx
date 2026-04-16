@@ -35,13 +35,13 @@ export default function HomecareVisitsPage() {
       const res = await api.get('/appointments', { params: { limit: 2000, type: 'HOME_VISIT' } });
       const all: any[] = res.data.data ?? visits;
       const header = ['Date','Time','Client','Phone','Address','Service','Status'];
-      const rows = all.map(v => [
+      const rows = all.map((v: any) => [
         formatDate(v.scheduledAt), formatTime(v.scheduledAt),
         `${v.patient?.firstName??''} ${v.patient?.lastName??''}`.trim(),
         v.patient?.phone??'', v.patient?.address??v.patient?.city??'',
         v.notes?.match(/Service:\s*([^\n]+)/)?.[1]?.trim()??'Home Visit', v.status??'',
       ]);
-      const csv=[header,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const csv=[header,...rows].map((r: any) =>r.map((v: any) =>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
       const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);
       const a=document.createElement('a');a.href=url;a.download=`home-visits-${new Date().toISOString().slice(0,10)}.csv`;
       a.click();URL.revokeObjectURL(url);toast.success(`Exported ${all.length} visits`);
@@ -80,7 +80,7 @@ export default function HomecareVisitsPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {visits.map(v => {
+          {visits.map((v: any) => {
             const nextStatus = ADVANCE[v.status];
             const patient = v.patient;
             return (

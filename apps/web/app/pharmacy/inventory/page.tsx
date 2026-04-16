@@ -132,7 +132,7 @@ export default function InventoryPage() {
             { key: 'outOfStock',  label: 'Out of Stock',    count: alerts.outOfStock?.length || 0,  icon: Package,       color: '#EF4444', bg: '#FFF1F2' },
             { key: 'lowStock',    label: 'Low Stock',        count: alerts.lowStock?.length || 0,    icon: AlertTriangle, color: '#F59E0B', bg: '#FFFBEB' },
             { key: 'nearExpiry',  label: 'Expiring (90d)',   count: alerts.nearExpiry?.length || 0,  icon: Clock,         color: '#EA580C', bg: '#FFF7ED' },
-          ].map(s => (
+          ].map((s: any) => (
             <button key={s.key} onClick={() => setTab(s.key as any)}
               className={`rounded-2xl border p-5 text-center transition-all hover:shadow-md ${activeTab === s.key ? 'ring-2' : ''}`}
               style={{
@@ -158,7 +158,7 @@ export default function InventoryPage() {
               { key: 'outOfStock', label: 'Out of Stock' },
               { key: 'lowStock',   label: 'Low Stock' },
               { key: 'nearExpiry', label: 'Near Expiry' },
-            ].map(t => (
+            ].map((t: any) => (
               <button key={t.key} onClick={() => setTab(t.key as any)}
                 className={`text-xs font-semibold px-3 py-1.5 rounded-full transition-all ${activeTab === t.key ? 'text-white' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'}`}
                 style={activeTab === t.key ? { background: NAV_COLOR } : {}}>

@@ -75,7 +75,7 @@ export default function AppointmentsPage() {
       )}
 
       <div className="flex gap-2 flex-wrap">
-        {['', 'CONFIRMED', 'CHECKED_IN', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED', 'NO_SHOW'].map(s => (
+        {['', 'CONFIRMED', 'CHECKED_IN', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED', 'NO_SHOW'].map((s: any) => (
           <button key={s} onClick={() => setStatusFilter(s)}
             className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${statusFilter === s ? 'bg-primary-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
             {s || 'All'}
@@ -89,7 +89,7 @@ export default function AppointmentsPage() {
         ) : appointments.length === 0 ? (
           <div className="text-center py-12 text-gray-400">No appointments for this date</div>
         ) : (
-          appointments.map(apt => (
+          appointments.map((apt: any) => (
             <div key={apt.id} className="card flex items-center gap-4">
               <div className="text-center w-16 flex-shrink-0">
                 <p className="text-lg font-bold text-gray-900">{formatTime(apt.scheduledAt)}</p>

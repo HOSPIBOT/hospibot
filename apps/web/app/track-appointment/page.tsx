@@ -110,7 +110,7 @@ function TrackAppointmentPageInner() {
               { l: 'Doctor',       v: doctorName },
               { l: 'Department',   v: appt.department?.name || '—' },
               { l: 'Booking Ref',  v: appt.id?.slice(0, 8).toUpperCase() },
-            ].map(r => (
+            ].map((r: any) => (
               <div key={r.l} className="flex justify-between text-sm">
                 <span className="text-slate-400">{r.l}</span>
                 <span className="font-semibold text-slate-800">{r.v}</span>

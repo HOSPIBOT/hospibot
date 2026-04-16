@@ -127,7 +127,7 @@ function ActionEditor({ action, onChange, onRemove, index }: {
       </div>
       <select className={inputCls} value={action.type || ''} onChange={e => onChange({ ...action, type: e.target.value })}>
         <option value="">Select action type…</option>
-        {ACTION_TYPES.map(a => <option key={a.value} value={a.value}>{a.label}</option>)}
+        {ACTION_TYPES.map((a: any) => <option key={a.value} value={a.value}>{a.label}</option>)}
       </select>
 
       {action.type === 'SEND_WHATSAPP' && (
@@ -168,7 +168,7 @@ function ActionEditor({ action, onChange, onRemove, index }: {
           <select className={inputCls} value={action.stage || ''}
             onChange={e => onChange({ ...action, stage: e.target.value })}>
             <option value="">Select stage…</option>
-            {CRM_STAGES.map(s => <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>)}
+            {CRM_STAGES.map((s: any) => <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>)}
           </select>
         </div>
       )}
@@ -188,7 +188,7 @@ function ActionEditor({ action, onChange, onRemove, index }: {
 function RuleCard({ rule, onToggle, onDelete }: {
   rule: AutomationRule; onToggle: () => void; onDelete: () => void;
 }) {
-  const trigger = TRIGGERS.find(t => t.value === rule.trigger);
+  const trigger = TRIGGERS.find((t: any) => t.value === rule.trigger);
   const convRate = rule.triggeredCount > 0
     ? Math.round((rule.convertedCount / rule.triggeredCount) * 100)
     : 0;
@@ -275,7 +275,7 @@ function CreateRuleModal({ onClose, onCreated }: { onClose: () => void; onCreate
   };
 
   const removeTag = (tag: string) => {
-    setForm(f => ({ ...f, conditions: { ...f.conditions, tags: f.conditions.tags.filter(t => t !== tag) } }));
+    setForm(f => ({ ...f, conditions: { ...f.conditions, tags: f.conditions.tags.filter((t: any) => t !== tag) } }));
   };
 
   const updateAction = (index: number, action: any) => {
@@ -300,7 +300,7 @@ function CreateRuleModal({ onClose, onCreated }: { onClose: () => void; onCreate
           ...(form.conditions.ageMin ? { ageMin: Number(form.conditions.ageMin) } : {}),
           ...(form.conditions.ageMax ? { ageMax: Number(form.conditions.ageMax) } : {}),
         },
-        actions: form.actions.filter(a => a.type),
+        actions: form.actions.filter((a: any) => a.type),
         escalation: form.escalation,
       });
       toast.success('Automation rule created!');
@@ -343,7 +343,7 @@ function CreateRuleModal({ onClose, onCreated }: { onClose: () => void; onCreate
           <div className="bg-[#E8F5F0] rounded-xl p-4 space-y-3">
             <p className="text-xs font-bold text-[#0D7C66] uppercase tracking-widest">① When This Happens (Trigger)</p>
             <div className="grid grid-cols-2 gap-2">
-              {TRIGGERS.map(t => (
+              {TRIGGERS.map((t: any) => (
                 <button key={t.value} onClick={() => setForm(f => ({ ...f, trigger: t.value }))}
                   className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border-2 text-sm font-medium transition-all text-left ${
                     form.trigger === t.value ? 'border-[#0D7C66] bg-white text-[#0D7C66]' : 'border-transparent bg-white/60 text-slate-600 hover:bg-white'
@@ -383,7 +383,7 @@ function CreateRuleModal({ onClose, onCreated }: { onClose: () => void; onCreate
             <div>
               <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Patient Tags <span className="text-slate-300 font-normal normal-case">(match any)</span></label>
               <div className="flex flex-wrap gap-1.5 mb-2">
-                {form.conditions.tags.map(tag => (
+                {form.conditions.tags.map((tag: any) => (
                   <span key={tag} className="flex items-center gap-1 text-xs bg-[#0D7C66] text-white px-2.5 py-1 rounded-full font-medium">
                     {tag}
                     <button onClick={() => removeTag(tag)} className="hover:text-red-300 transition-colors">
@@ -506,7 +506,7 @@ export default function AutomationPage() {
   const toggleRule = async (rule: AutomationRule) => {
     try {
       await api.patch(`/automation/rules/${rule.id}/toggle`);
-      setRules(r => r.map(x => x.id === rule.id ? { ...x, isActive: !x.isActive } : x));
+      setRules(r => r.map((x: any) => x.id === rule.id ? { ...x, isActive: !x.isActive } : x));
       toast.success(rule.isActive ? 'Rule paused' : 'Rule activated');
     } catch { toast.error('Failed to update rule'); }
   };
@@ -515,7 +515,7 @@ export default function AutomationPage() {
     // Confirmed via UI button
     try {
       await api.delete(`/automation/rules/${id}`);
-      setRules(r => r.filter(x => x.id !== id));
+      setRules(r => r.filter((x: any) => x.id !== id));
       toast.success('Rule deleted');
     } catch { toast.error('Failed to delete rule'); }
   };
@@ -534,7 +534,7 @@ export default function AutomationPage() {
     } finally { setInstallingProtocol(null); }
   };
 
-  const activeRules   = rules.filter(r => r.isActive).length;
+  const activeRules   = rules.filter((r: any) => r.isActive).length;
   const totalTriggered = stats?.totalTriggered ?? 0;
   const convRate      = stats?.conversionRate ?? 0;
 
@@ -564,7 +564,7 @@ export default function AutomationPage() {
           { label: 'Messages Sent',   value: totalTriggered,  icon: MessageSquare, color: '#25D366' },
           { label: 'Appointments Booked', value: stats?.totalConverted ?? 0, icon: Calendar, color: '#3B82F6' },
           { label: 'Conversion Rate', value: `${convRate}%`,  icon: BarChart3,    color: '#F59E0B' },
-        ].map(s => (
+        ].map((s: any) => (
           <div key={s.label} className="bg-white rounded-2xl border border-slate-100 p-5">
             <div className="flex items-center gap-2 mb-2">
               <s.icon className="w-4 h-4" style={{ color: s.color }} />
@@ -610,7 +610,7 @@ export default function AutomationPage() {
           </div>
         ) : (
           <div className="space-y-3">
-            {rules.map(rule => (
+            {rules.map((rule: any) => (
               <RuleCard key={rule.id} rule={rule}
                 onToggle={() => toggleRule(rule)}
                 onDelete={() => deleteRule(rule.id)} />
@@ -628,7 +628,7 @@ export default function AutomationPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {PROTOCOL_TEMPLATES.map(proto => {
+            {PROTOCOL_TEMPLATES.map((proto: any) => {
               const installed = installedProtocols.has(proto.id);
               return (
                 <div key={proto.id} className={`bg-white rounded-2xl border p-5 transition-all hover:shadow-md ${installed ? 'border-[#0D7C66]/30 bg-[#E8F5F0]/30' : 'border-slate-100'}`}>

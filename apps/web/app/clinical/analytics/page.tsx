@@ -60,7 +60,7 @@ export default function AnalyticsPage() {
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
-            {(['week','month','quarter'] as const).map(p => (
+            {(['week','month','quarter'] as const).map((p: any) => (
               <button key={p} onClick={() => setPeriod(p)}
                 className={`text-xs font-medium px-3 py-1.5 rounded-lg capitalize transition-all ${period === p ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
                 {p}
@@ -85,7 +85,7 @@ export default function AnalyticsPage() {
             { label: 'Appointments',      value: kpis.todayAppointments?.toString() || '0',                 icon: Calendar,     color: '#3B82F6', change: 'today' },
             { label: 'Month Revenue',     value: formatINR(kpis.monthRevenue || 0),                          icon: TrendingUp,   color: '#8B5CF6', change: kpis.revenueGrowth ? `${kpis.revenueGrowth > 0 ? '+' : ''}${kpis.revenueGrowth}% vs last month` : '' },
             { label: 'WhatsApp Messages', value: (kpis.whatsappMessagesSent || 0).toLocaleString('en-IN'),  icon: MessageSquare, color: '#25D366', change: 'all time' },
-          ].map(k => (
+          ].map((k: any) => (
             <div key={k.label} className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-shadow">
               <div className="flex items-start justify-between mb-3">
                 <p className="text-sm text-slate-500">{k.label}</p>
@@ -235,7 +235,7 @@ export default function AnalyticsPage() {
                 { label: 'Messages Received',       value: whatsapp.totalReceived || 0,   color: '#3B82F6' },
                 { label: 'Active Conversations',    value: whatsapp.activeConversations || 0, color: '#8B5CF6' },
                 { label: 'Chatbot Handled',         value: whatsapp.botHandled || 0,      color: '#25D366' },
-              ].map(m => (
+              ].map((m: any) => (
                 <div key={m.label} className="flex items-center justify-between">
                   <span className="text-sm text-slate-600">{m.label}</span>
                   <div className="flex items-center gap-3">

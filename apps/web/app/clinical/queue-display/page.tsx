@@ -74,9 +74,9 @@ export default function QueueDisplayPage() {
   const now = time.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   const dateStr = time.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
-  const nowServing = queue.filter(a => a.status === 'IN_PROGRESS');
-  const nextUp = queue.filter(a => a.status === 'CHECKED_IN');
-  const waiting = queue.filter(a => ['CONFIRMED', 'PENDING'].includes(a.status));
+  const nowServing = queue.filter((a: any) => a.status === 'IN_PROGRESS');
+  const nextUp = queue.filter((a: any) => a.status === 'CHECKED_IN');
+  const waiting = queue.filter((a: any) => ['CONFIRMED', 'PENDING'].includes(a.status));
 
   return (
     <div className="min-h-screen bg-[#0A0F1E] text-white overflow-hidden select-none" style={{ fontFamily: 'system-ui, sans-serif' }}>

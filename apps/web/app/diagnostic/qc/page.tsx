@@ -124,7 +124,7 @@ function QCPageInner() {
             { label: 'SD (1s)', value: lj.sd?.toFixed(3) },
             { label: 'CV%', value: lj.sd && lj.mean ? `${(lj.sd / lj.mean * 100).toFixed(1)}%` : '—' },
             { label: 'Pass Rate', value: passRate !== null ? `${passRate}%` : '—' },
-          ].map(s => (
+          ].map((s: any) => (
             <div key={s.label} className="bg-white rounded-2xl border border-slate-100 p-4">
               <p className="text-2xl font-black text-slate-900">{s.value ?? '—'}</p>
               <p className="text-xs text-slate-500 mt-1">{s.label}</p>
@@ -172,7 +172,7 @@ function QCPageInner() {
                 { y: lj.lwl,  color: '#EAB308', dash: '5 3', label: '-2s' },
                 { y: lj.ucl,  color: '#EF4444', dash: '4 2', label: '+3s' },
                 { y: lj.lcl,  color: '#EF4444', dash: '4 2', label: '-3s' },
-              ].map(l => (
+              ].map((l: any) => (
                 <ReferenceLine key={l.label} y={l.y} stroke={l.color} strokeDasharray={l.dash}
                   label={{ value: l.label, fill: l.color, fontSize: 9 }} />
               ))}
@@ -197,7 +197,7 @@ function QCPageInner() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-slate-100 bg-slate-50/80">
-                {['Date', 'Level', 'Expected', 'Actual', 'CV%', 'Status', 'Flags'].map(h => (
+                {['Date', 'Level', 'Expected', 'Actual', 'CV%', 'Status', 'Flags'].map((h: any) => (
                   <th key={h} className="px-4 py-3 text-left text-[11px] font-bold text-slate-400 uppercase tracking-widest">{h}</th>
                 ))}
               </tr>

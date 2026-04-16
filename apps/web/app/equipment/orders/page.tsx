@@ -38,7 +38,7 @@ export default function EquipmentOrdersPage() {
       const res = await api.get('/marketplace/orders', { params: { limit: 2000 } });
       const all: any[] = res.data.data ?? orders;
       const header = ['Order #','Buyer','Items','Amount','Status','Date'];
-      const rows = all.map(o => [
+      const rows = all.map((o: any) => [
         o.orderNumber ?? o.id?.slice(0,8).toUpperCase() ?? '',
         o.buyer?.name ?? o.tenantId?.slice(0,8) ?? '',
         ((o.items as any[])?.length ?? 0),
@@ -46,7 +46,7 @@ export default function EquipmentOrdersPage() {
         o.status ?? '',
         o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN') : '',
       ]);
-      const csv = [header,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const csv = [header,...rows].map((r: any) =>r.map((v: any) =>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
       const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob);
       const a=document.createElement('a'); a.href=url; a.download=`equipment-orders-${new Date().toISOString().slice(0,10)}.csv`;
       a.click(); URL.revokeObjectURL(url); toast.success(`Exported ${all.length} orders`);
@@ -74,7 +74,7 @@ export default function EquipmentOrdersPage() {
           <select className="px-3 py-2 text-sm border border-slate-200 rounded-xl bg-slate-50 outline-none cursor-pointer"
             value={filter} onChange={e=>setFilter(e.target.value)}>
             <option value="">All Status</option>
-            {['PENDING','CONFIRMED','SHIPPED','DELIVERED','CANCELLED'].map(s=><option key={s} value={s}>{s}</option>)}
+            {['PENDING','CONFIRMED','SHIPPED','DELIVERED','CANCELLED'].map((s: any) =><option key={s} value={s}>{s}</option>)}
           </select>
           <button onClick={()=>load(meta.page)} className="p-2 border border-slate-200 rounded-xl text-slate-500 hover:bg-slate-50">
             <RefreshCw className={`w-4 h-4 ${loading?'animate-spin':''}`}/>
@@ -97,12 +97,12 @@ export default function EquipmentOrdersPage() {
         <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
           <table className="w-full">
             <thead><tr className="bg-slate-50 border-b border-slate-100">
-              {['Order #','Buyer','Items','Amount','Date','Status',''].map(h=>(
+              {['Order #','Buyer','Items','Amount','Date','Status',''].map((h: any) =>(
                 <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase">{h}</th>
               ))}
             </tr></thead>
             <tbody className="divide-y divide-slate-50">
-              {orders.map(o=>{
+              {orders.map((o: any) =>{
                 const items = (o.items as any[]) ?? [];
                 const next = NEXT_STATUS[o.status];
                 return (

@@ -56,9 +56,9 @@ export default function SubTypesPage() {
     finally { setSaving(false); }
   };
 
-  const filtered = familyFilter ? subtypes.filter(s => s.familyId === familyFilter || s.portalFamilyId === familyFilter) : subtypes;
+  const filtered = familyFilter ? subtypes.filter((s: any) => s.familyId === familyFilter || s.portalFamilyId === familyFilter) : subtypes;
   const groupedByFamily: Record<string, any[]> = {};
-  filtered.forEach(s => {
+  filtered.forEach((s: any) => {
     const key = s.portalFamily?.slug || s.familySlug || 'other';
     if (!groupedByFamily[key]) groupedByFamily[key] = [];
     groupedByFamily[key].push(s);

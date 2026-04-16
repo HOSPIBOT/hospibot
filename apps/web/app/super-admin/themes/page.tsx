@@ -81,7 +81,7 @@ export default function ThemesPage() {
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-        {themes.map(theme => (
+        {themes.map((theme: any) => (
           <div key={theme.id} className="bg-white rounded-2xl border border-slate-100 overflow-hidden hover:shadow-md transition-shadow">
             {/* Colour preview strip */}
             <div className="h-12 flex">
@@ -120,7 +120,7 @@ export default function ThemesPage() {
                   <option value="">Select family…</option>
                   {families.length > 0
                     ? families.map((f: any) => <option key={f.id} value={f.slug}>{f.name}</option>)
-                    : ['clinical','diagnostic','pharmacy','homecare','equipment','wellness','services'].map(s => <option key={s} value={s}>{s}</option>)
+                    : ['clinical','diagnostic','pharmacy','homecare','equipment','wellness','services'].map((s: any) => <option key={s} value={s}>{s}</option>)
                   }
                 </select></div>
               <div className="grid grid-cols-3 gap-3">
@@ -128,7 +128,7 @@ export default function ThemesPage() {
                   { k: 'primaryColor', l: 'Primary' },
                   { k: 'accentColor',  l: 'Accent' },
                   { k: 'bgColor',      l: 'Background' },
-                ].map(c => (
+                ].map((c: any) => (
                   <div key={c.k}>
                     <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">{c.l}</label>
                     <div className="flex items-center gap-2">

@@ -236,7 +236,7 @@ export default function AbhaPage() {
                     value={patSearch} onChange={e => searchPatients(e.target.value)} />
                   {patients.length > 0 && (
                     <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-10 overflow-hidden">
-                      {patients.map(p => (
+                      {patients.map((p: any) => (
                         <button key={p.id} onClick={() => { setSelected(p); setPatients([]); setPatSearch(''); }}
                           className="w-full text-left px-4 py-3 hover:bg-slate-50 border-b border-slate-50 last:border-0">
                           <p className="text-sm font-medium text-slate-900">{p.firstName} {p.lastName || ''}</p>

@@ -149,7 +149,7 @@ export default function DiagnosticSettingsPage() {
       <div className="flex gap-6">
         {/* Sidebar */}
         <div className="w-52 flex-shrink-0 space-y-1">
-          {TABS.map(t => (
+          {TABS.map((t: any) => (
             <button key={t.key} onClick={() => setTab(t.key as Tab)}
               className={`flex items-center gap-3 w-full px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${tab === t.key ? 'text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
               style={tab === t.key ? { background: NAVY } : {}}>

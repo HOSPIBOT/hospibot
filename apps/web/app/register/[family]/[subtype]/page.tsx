@@ -246,7 +246,7 @@ export default function RegisterSubTypePage() {
                 <div>
                   <FieldLabel required>State</FieldLabel>
                   <Select value={org.state} onChange={setO('state')}>
-                    {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
+                    {INDIAN_STATES.map((s: any) => <option key={s} value={s}>{s}</option>)}
                   </Select>
                 </div>
                 <div>
@@ -386,7 +386,7 @@ export default function RegisterSubTypePage() {
                     <p className="text-xs text-slate-500 mt-0.5">{p.desc}</p>
                   </div>
                   <ul className="space-y-1.5">
-                    {p.features.map(f => (
+                    {p.features.map((f: any) => (
                       <li key={f} className="flex items-start gap-2 text-xs text-slate-600">
                         <CheckCircle2 className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-emerald-500" />
                         {f}

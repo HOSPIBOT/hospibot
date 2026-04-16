@@ -78,7 +78,7 @@ function AddTPAModal({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
           <div>
             <label className={labelCls}>TPA Company</label>
             <select className={inputCls} value={form.tpaCompany} onChange={setF('tpaCompany')}>
-              {INDIA_TPAS.map(t => <option key={t} value={t}>{t}</option>)}
+              {INDIA_TPAS.map((t: any) => <option key={t} value={t}>{t}</option>)}
               <option value="Other">Other</option>
             </select>
           </div>
@@ -103,7 +103,7 @@ function AddTPAModal({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
           <div>
             <label className={labelCls}>Credit Days</label>
             <select className={inputCls} value={form.creditDays} onChange={setF('creditDays')}>
-              {[15, 30, 45, 60, 90].map(d => <option key={d} value={d}>{d} days</option>)}
+              {[15, 30, 45, 60, 90].map((d: any) => <option key={d} value={d}>{d} days</option>)}
             </select>
           </div>
         </div>
@@ -138,7 +138,7 @@ export default function TPAPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const totalPending = clients.reduce((s, c) => s + (c.pendingAmount ?? 0), 0);
+  const totalPending = clients.reduce((s: number, c: any) => s + (c.pendingAmount ?? 0), 0);
 
   return (
     <div className="space-y-5">
@@ -180,7 +180,7 @@ export default function TPAPage() {
               { name: 'Medi Assist', type: 'Private TPA', color: '#3B82F6' },
               { name: 'Star Health', type: 'Private TPA', color: '#3B82F6' },
               { name: 'HDFC ERGO', type: 'Private TPA', color: '#3B82F6' },
-            ].map(p => (
+            ].map((p: any) => (
               <div key={p.name} className="flex items-center gap-2 bg-white rounded-xl px-3 py-2 border border-slate-100">
                 <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: p.color }} />
                 <div>
@@ -219,7 +219,7 @@ export default function TPAPage() {
               <CheckCircle2 className="w-5 h-5 text-green-600" />
             </div>
             <div>
-              <p className="text-2xl font-black text-slate-900">{clients.filter(c => c.isActive).length}</p>
+              <p className="text-2xl font-black text-slate-900">{clients.filter((c: any) => c.isActive).length}</p>
               <p className="text-xs text-slate-500">Active</p>
             </div>
           </div>
@@ -235,7 +235,7 @@ export default function TPAPage() {
         </div>
       ) : clients.length > 0 ? (
         <div className="grid grid-cols-3 gap-4">
-          {clients.map(c => {
+          {clients.map((c: any) => {
             const tpaInfo = (c.billingAddress ?? '').split('|');
             const tpaCompany = tpaInfo[0]?.replace('TPA:', '').trim();
             const authCode = tpaInfo[1]?.replace('Auth:', '').trim();

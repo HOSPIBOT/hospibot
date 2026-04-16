@@ -60,12 +60,12 @@ export default function OnboardingPage() {
 
   const toggleSpecialty = (s: string) => setOrg(o => ({
     ...o,
-    specialties: o.specialties.includes(s) ? o.specialties.filter(x=>x!==s) : [...o.specialties, s],
+    specialties: o.specialties.includes(s) ? o.specialties.filter((x: any) =>x!==s) : [...o.specialties, s],
   }));
 
   const toggleDay = (d: string) => setSlots(sl => ({
     ...sl,
-    days: sl.days.includes(d) ? sl.days.filter(x=>x!==d) : [...sl.days, d],
+    days: sl.days.includes(d) ? sl.days.filter((x: any) =>x!==d) : [...sl.days, d],
   }));
 
   const next = () => setStep(s => Math.min(5, s+1));
@@ -189,7 +189,7 @@ export default function OnboardingPage() {
                 <div>
                   <label className="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">Facility Type *</label>
                   <div className="grid grid-cols-4 gap-2">
-                    {FACILITY_TYPES.map(t => (
+                    {FACILITY_TYPES.map((t: any) => (
                       <button key={t.value} onClick={() => setOrg(o=>({...o,type:t.value}))}
                         className={`p-3 rounded-xl border-2 text-center transition-all ${org.type===t.value?'border-[#0D7C66] bg-[#E8F5F0]':'border-slate-200 hover:border-slate-300'}`}>
                         <t.icon className={`w-5 h-5 mx-auto mb-1 ${org.type===t.value?'text-[#0D7C66]':'text-slate-400'}`}/>
@@ -209,7 +209,7 @@ export default function OnboardingPage() {
                 <div>
                   <label className="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">Specialties (select all that apply)</label>
                   <div className="flex flex-wrap gap-2">
-                    {SPECIALTIES.map(s => (
+                    {SPECIALTIES.map((s: any) => (
                       <button key={s} onClick={() => toggleSpecialty(s)}
                         className={`text-xs font-medium px-3 py-1.5 rounded-xl border transition-all ${org.specialties.includes(s)?'bg-[#0D7C66] text-white border-[#0D7C66]':'bg-slate-50 text-slate-600 border-slate-200 hover:border-[#0D7C66]'}`}>
                         {s}
@@ -237,7 +237,7 @@ export default function OnboardingPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div><label className="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">Specialty</label>
                     <select className={inputCls} value={doctor.specialty} onChange={e=>setDoctor(d=>({...d,specialty:e.target.value}))}>
-                      {SPECIALTIES.map(s=><option key={s}>{s}</option>)}
+                      {SPECIALTIES.map((s: any) =><option key={s}>{s}</option>)}
                     </select></div>
                   <div><label className="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">Consultation Fee (₹)</label>
                     <input type="number" className={inputCls} placeholder="500" value={doctor.consultationFee} onChange={e=>setDoctor(d=>({...d,consultationFee:e.target.value}))} /></div>
@@ -267,7 +267,7 @@ export default function OnboardingPage() {
                 <div>
                   <label className="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">Working Days</label>
                   <div className="flex items-center gap-2">
-                    {DAYS.map(d => (
+                    {DAYS.map((d: any) => (
                       <button key={d} onClick={() => toggleDay(d)}
                         className={`w-10 h-10 rounded-xl text-xs font-bold border-2 transition-all ${slots.days.includes(d)?'bg-[#0D7C66] text-white border-[#0D7C66]':'bg-white text-slate-500 border-slate-200 hover:border-[#0D7C66]'}`}>
                         {d.slice(0,2)}
@@ -282,7 +282,7 @@ export default function OnboardingPage() {
                     <input type="time" className={inputCls} value={slots.endTime} onChange={e=>setSlots(s=>({...s,endTime:e.target.value}))} /></div>
                   <div><label className="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">Slot Duration</label>
                     <select className={inputCls} value={slots.slotDuration} onChange={e=>setSlots(s=>({...s,slotDuration:e.target.value}))}>
-                      {['10','15','20','30','45','60'].map(d=><option key={d} value={d}>{d} minutes</option>)}
+                      {['10','15','20','30','45','60'].map((d: any) =><option key={d} value={d}>{d} minutes</option>)}
                     </select></div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -311,12 +311,12 @@ export default function OnboardingPage() {
                 </div>
                 {[
                   { label:'Facility',    value: org.name || '(not set)' },
-                  { label:'Type',        value: FACILITY_TYPES.find(t=>t.value===org.type)?.label || org.type },
+                  { label:'Type',        value: FACILITY_TYPES.find((t: any) =>t.value===org.type)?.label || org.type },
                   { label:'City',        value: org.city || '(not set)' },
                   { label:'Doctor',      value: doctor.firstName ? `Dr. ${doctor.firstName} ${doctor.lastName}` : '(not added)' },
                   { label:'WhatsApp',    value: wa.phoneNumberId ? '✓ Configured' : '(not configured)' },
                   { label:'Slots',       value: `${slots.startTime}–${slots.endTime}, every ${slots.slotDuration} min` },
-                ].map(r => (
+                ].map((r: any) => (
                   <div key={r.label} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
                     <p className="text-sm text-slate-500">{r.label}</p>
                     <p className="text-sm font-semibold text-slate-900">{r.value}</p>

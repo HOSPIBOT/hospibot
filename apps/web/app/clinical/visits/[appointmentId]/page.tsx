@@ -57,18 +57,18 @@ const DRUG_META = {
 // Check drug interactions and allergy conflicts for a medication list
 function checkDrugSafety(meds: {name:string}[], allergies: string[] = []): {level:'HIGH'|'MEDIUM'|'LOW'; msg:string}[] {
   const warnings: {level:'HIGH'|'MEDIUM'|'LOW'; msg:string}[] = [];
-  const names = meds.map(m => m.name.trim()).filter(Boolean);
+  const names = meds.map((m: any) => m.name.trim()).filter(Boolean);
   // Interaction check
   for (const [a, b, level, msg] of DRUG_META.interactions) {
-    const hasA = names.some(n => n.toLowerCase().includes(a.toLowerCase()));
-    const hasB = names.some(n => n.toLowerCase().includes(b.toLowerCase()));
+    const hasA = names.some((n: any) => n.toLowerCase().includes(a.toLowerCase()));
+    const hasB = names.some((n: any) => n.toLowerCase().includes(b.toLowerCase()));
     if (hasA && hasB) warnings.push({ level: level as any, msg });
   }
   // Allergy cross-check
   for (const allergy of allergies) {
     const conflictDrugs = DRUG_META.allergyMap[allergy] || [];
     for (const drug of conflictDrugs) {
-      if (names.some(n => n.toLowerCase().includes(drug.toLowerCase()))) {
+      if (names.some((n: any) => n.toLowerCase().includes(drug.toLowerCase()))) {
         warnings.push({ level: 'HIGH', msg: `⚠️ ALLERGY ALERT: Patient is allergic to ${allergy}. ${drug} may cause allergic reaction.` });
       }
     }
@@ -92,7 +92,7 @@ function VitalsPanel({ vitals, onChange }: { vitals: Vitals; onChange: (v: Vital
 
   return (
     <div className="grid grid-cols-4 gap-3">
-      {fields.map(f => (
+      {fields.map((f: any) => (
         <div key={f.key} className="relative">
           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{f.label}</label>
           <div className="relative">
@@ -123,7 +123,7 @@ function MedRow({ med, index, onChange, onRemove }: {
   med: Medication; index: number; onChange: (m: Medication) => void; onRemove: () => void;
 }) {
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const filtered = med.name.length > 1 ? DRUG_META.drugs.filter(d => d.toLowerCase().includes(med.name.toLowerCase())) : [];
+  const filtered = med.name.length > 1 ? DRUG_META.drugs.filter((d: any) => d.toLowerCase().includes(med.name.toLowerCase())) : [];
 
   return (
     <div className="grid grid-cols-12 gap-2 items-end">
@@ -136,7 +136,7 @@ function MedRow({ med, index, onChange, onRemove }: {
           onBlur={() => setTimeout(() => setShowSuggestions(false), 200)} />
         {showSuggestions && filtered.length > 0 && (
           <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-20 max-h-36 overflow-y-auto">
-            {filtered.slice(0, 6).map(d => (
+            {filtered.slice(0, 6).map((d: any) => (
               <button key={d} onMouseDown={() => { onChange({ ...med, name: d }); setShowSuggestions(false); }}
                 className="w-full text-left px-3 py-2 text-xs hover:bg-slate-50 border-b border-slate-50 last:border-0 text-slate-800">
                 {d}
@@ -155,7 +155,7 @@ function MedRow({ med, index, onChange, onRemove }: {
         {index === 0 && <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Frequency</label>}
         <select className={inputCls} value={med.frequency} onChange={e => onChange({ ...med, frequency: e.target.value })}>
           <option value="">Frequency…</option>
-          {DRUG_META.frequencies.map(f => <option key={f} value={f}>{f}</option>)}
+          {DRUG_META.frequencies.map((f: any) => <option key={f} value={f}>{f}</option>)}
         </select>
       </div>
       {/* Duration */}
@@ -163,7 +163,7 @@ function MedRow({ med, index, onChange, onRemove }: {
         {index === 0 && <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Duration</label>}
         <select className={inputCls} value={med.duration} onChange={e => onChange({ ...med, duration: e.target.value })}>
           <option value="">Duration…</option>
-          {DRUG_META.durations.map(d => <option key={d} value={d}>{d}</option>)}
+          {DRUG_META.durations.map((d: any) => <option key={d} value={d}>{d}</option>)}
         </select>
       </div>
       {/* Remove */}
@@ -240,7 +240,7 @@ export default function VisitConsolePage() {
   };
 
   const savePrescription = async () => {
-    const validMeds = medications.filter(m => m.name && m.frequency && m.duration);
+    const validMeds = medications.filter((m: any) => m.name && m.frequency && m.duration);
     if (validMeds.length === 0) { toast.error('Add at least one complete medication'); return; }
     setSaving(true);
     try {
@@ -261,13 +261,13 @@ export default function VisitConsolePage() {
   };
 
   const createInvoice = async () => {
-    const total = billItems.reduce((s, i) => s + i.total, 0);
+    const total = billItems.reduce((s: number, i: any) => s + i.total, 0);
     setSaving(true);
     try {
       await api.post('/billing/invoices', {
         patientId: appointment?.patientId,
         appointmentId,
-        items: billItems.map(i => ({
+        items: billItems.map((i: any) => ({
           description: i.description, quantity: i.quantity,
           unitPrice: i.unitPrice * 100, totalPrice: i.total * 100,
         })),
@@ -305,7 +305,7 @@ export default function VisitConsolePage() {
   const patientName = `${patient?.firstName} ${patient?.lastName || ''}`.trim();
   const doctorName = `Dr. ${doctor?.user?.firstName} ${doctor?.user?.lastName || ''}`.trim();
 
-  const totalBill = billItems.reduce((s, i) => s + i.total, 0);
+  const totalBill = billItems.reduce((s: number, i: any) => s + i.total, 0);
 
   return (
     <div className="space-y-4">
@@ -369,7 +369,7 @@ export default function VisitConsolePage() {
           { key: 'vitals',  label: 'Vitals & Notes',   icon: Activity },
           { key: 'rx',      label: 'Prescriptions',    icon: Pill },
           { key: 'billing', label: 'Billing',          icon: CreditCard },
-        ].map(s => (
+        ].map((s: any) => (
           <button key={s.key} onClick={() => setActiveSection(s.key as any)}
             className={`flex items-center gap-2 text-sm font-medium px-5 py-2 rounded-lg transition-all ${activeSection === s.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
             <s.icon className="w-4 h-4" />{s.label}
@@ -404,7 +404,7 @@ export default function VisitConsolePage() {
                   <input className={inputCls} placeholder="Type or select…"
                     value={diagnosisText} onChange={e => setDiagnosisText(e.target.value)} />
                   <div className="flex flex-wrap gap-1 mt-2">
-                    {COMMON_DIAGNOSES.slice(0, 8).map(d => (
+                    {COMMON_DIAGNOSES.slice(0, 8).map((d: any) => (
                       <button key={d} onClick={() => setDiagnosisText(d)}
                         className={`text-[10px] font-medium px-2 py-0.5 rounded-full border transition-all ${diagnosisText === d ? 'bg-[#0D7C66] text-white border-[#0D7C66]' : 'border-slate-200 text-slate-500 hover:border-[#0D7C66] hover:text-[#0D7C66]'}`}>
                         {d.split('(')[0].trim()}

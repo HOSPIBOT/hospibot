@@ -133,7 +133,7 @@ export default function SubscriptionPage() {
 
       {/* Plan cards */}
       <div className="grid grid-cols-4 gap-4">
-        {plans.map(plan => {
+        {plans.map((plan: any) => {
           const isCurrent = plan.name === currentPlan;
           const color     = PLAN_COLORS[plan.name] || '#64748B';
           const features  = PLAN_FEATURES[plan.name] || [];
@@ -158,7 +158,7 @@ export default function SubscriptionPage() {
                 <p className="text-xl font-black" style={{color}}>{plan.priceFormatted}</p>
 
                 <div className="mt-4 space-y-2">
-                  {features.map(f => (
+                  {features.map((f: any) => (
                     <div key={f} className="flex items-center gap-2 text-xs text-slate-600">
                       <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" style={{color}} />
                       {f}
@@ -244,7 +244,7 @@ export default function SubscriptionPage() {
                 <p className="text-sm text-slate-500 mb-2">You'll be redirected to Razorpay to complete payment.</p>
                 <div className="bg-slate-50 rounded-xl p-3 mb-5 text-sm">
                   <p className="font-semibold text-slate-900">{showConfirm} Plan</p>
-                  <p className="text-slate-500">{plans.find(p=>p.name===showConfirm)?.priceFormatted}</p>
+                  <p className="text-slate-500">{plans.find((p: any) =>p.name===showConfirm)?.priceFormatted}</p>
                   <p className="text-xs text-slate-400 mt-1">Pay via UPI, Net Banking, or Card</p>
                 </div>
                 <div className="flex items-center gap-3">

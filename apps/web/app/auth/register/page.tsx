@@ -88,7 +88,7 @@ export default function RegisterPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
                   <select className="input-field" value={form.type} onChange={e => set('type', e.target.value)}>
-                    {tenantTypes.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                    {tenantTypes.map((t: any) => <option key={t.value} value={t.value}>{t.label}</option>)}
                   </select>
                 </div>
                 <div className="grid grid-cols-2 gap-3">

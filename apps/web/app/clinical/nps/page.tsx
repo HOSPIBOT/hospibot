@@ -43,14 +43,14 @@ export default function NPSDashboard() {
   useEffect(() => { load(); }, [load]);
 
   // Compute NPS
-  const ratingsData = reviews.filter(r => r.rating);
+  const ratingsData = reviews.filter((r: any) => r.rating);
   const avg = ratingsData.length > 0
-    ? (ratingsData.reduce((s, r) => s + (r.rating || 0), 0) / ratingsData.length).toFixed(1)
+    ? (ratingsData.reduce((s: number, r: any) => s + (r.rating || 0), 0) / ratingsData.length).toFixed(1)
     : '—';
 
-  const promoters  = ratingsData.filter(r => r.rating >= 4).length;
-  const detractors = ratingsData.filter(r => r.rating <= 2).length;
-  const passives   = ratingsData.filter(r => r.rating === 3).length;
+  const promoters  = ratingsData.filter((r: any) => r.rating >= 4).length;
+  const detractors = ratingsData.filter((r: any) => r.rating <= 2).length;
+  const passives   = ratingsData.filter((r: any) => r.rating === 3).length;
   const nps = ratingsData.length > 0
     ? Math.round(((promoters - detractors) / ratingsData.length) * 100)
     : 0;
@@ -64,14 +64,14 @@ export default function NPSDashboard() {
   const exportCSV = () => {
     setExporting(true);
     const header = ['Date', 'Patient', 'Rating', 'Feedback', 'Doctor'];
-    const rows = reviews.map(r => [
+    const rows = reviews.map((r: any) => [
       formatDate(r.createdAt),
       `${r.patient?.firstName||''} ${r.patient?.lastName||''}`.trim(),
       r.rating || '—',
       r.feedback || r.notes || '—',
       r.doctor ? `Dr. ${r.doctor.user?.firstName||''} ${r.doctor.user?.lastName||''}`.trim() : '—',
     ]);
-    const csv = [header,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const csv = [header,...rows].map((r: any) =>r.map((v: any) =>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
     const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);
     const a=document.createElement('a');a.href=url;a.download=`feedback-${new Date().toISOString().slice(0,10)}.csv`;
     a.click();URL.revokeObjectURL(url);toast.success('Feedback exported');
@@ -114,7 +114,7 @@ export default function NPSDashboard() {
           { label: 'Promoters',     value: promoters,     icon: ThumbsUp,  color: '#10B981', suffix: '' },
           { label: 'Passives',      value: passives,      icon: Minus,     color: '#6B7280', suffix: '' },
           { label: 'Detractors',    value: detractors,    icon: ThumbsDown,color: '#EF4444', suffix: '' },
-        ].map(k => (
+        ].map((k: any) => (
           <div key={k.label} className="bg-white rounded-2xl border border-slate-100 p-5">
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs text-slate-500 font-medium">{k.label}</p>
@@ -131,9 +131,9 @@ export default function NPSDashboard() {
           <h3 className="text-sm font-bold text-slate-900 mb-4">Rating Distribution</h3>
           {reviews.length > 0 ? (
             <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={[1,2,3,4,5].map(s => ({
+              <BarChart data={[1,2,3,4,5].map((s: any) => ({
                 star: `${s}⭐`,
-                count: ratingsData.filter(r=>r.rating===s).length,
+                count: ratingsData.filter((r: any) =>r.rating===s).length,
               }))}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                 <XAxis dataKey="star" tick={{fontSize:11}} />
@@ -153,7 +153,7 @@ export default function NPSDashboard() {
           {reviews.length > 0 ? (
             <ResponsiveContainer width="100%" height={200}>
               <PieChart>
-                <Pie data={pieData.filter(d=>d.value>0)} cx="50%" cy="50%"
+                <Pie data={pieData.filter((d: any) =>d.value>0)} cx="50%" cy="50%"
                   outerRadius={80} dataKey="value" label={({name,percent})=>`${name.split(' ')[0]} ${Math.round(percent*100)}%`}>
                   {pieData.map((_,i) => <Cell key={i} fill={COLORS[i]}/>)}
                 </Pie>
@@ -184,18 +184,18 @@ export default function NPSDashboard() {
         ) : (
           <table className="w-full">
             <thead><tr className="border-b border-slate-100">
-              {['Date','Patient','Rating','Doctor','Feedback'].map(h=>(
+              {['Date','Patient','Rating','Doctor','Feedback'].map((h: any) =>(
                 <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
               ))}
             </tr></thead>
             <tbody className="divide-y divide-slate-50">
-              {reviews.map(r => (
+              {reviews.map((r: any) => (
                 <tr key={r.id} className="hover:bg-slate-50/60">
                   <td className="px-4 py-3 text-xs text-slate-500">{formatDate(r.createdAt)}</td>
                   <td className="px-4 py-3 text-sm font-semibold text-slate-900">{r.patient?.firstName} {r.patient?.lastName||''}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-0.5">
-                      {[1,2,3,4,5].map(s=>(
+                      {[1,2,3,4,5].map((s: any) =>(
                         <Star key={s} className={`w-3.5 h-3.5 ${s<=(r.rating||0)?'text-amber-400 fill-amber-400':'text-slate-200 fill-slate-200'}`}/>
                       ))}
                     </div>

@@ -107,7 +107,7 @@ function EmergencyModal({ phone, onClose }: { phone: string; onClose: () => void
                 { label: 'Patient Name',    value: result.name },
                 { label: 'Blood Group',     value: result.bloodGroup, highlight: true },
                 { label: 'Health ID',       value: result.healthId },
-              ].map(item => (
+              ].map((item: any) => (
                 <div key={item.label} className="flex items-center justify-between py-2 border-b border-slate-50">
                   <span className="text-sm text-slate-500">{item.label}</span>
                   <span className={`text-sm font-bold ${item.highlight ? 'text-red-700 bg-red-50 px-3 py-1 rounded-full' : 'text-slate-900'}`}>{item.value || '—'}</span>
@@ -259,7 +259,7 @@ function VaultCard({ uhr, records, consentScope, onRequestAccess }: {
           <div>
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Recent Records</p>
             <div className="space-y-2">
-              {records.slice(0, 5).map(record => {
+              {records.slice(0, 5).map((record: any) => {
                 const Icon = RECORD_ICONS[record.recordType] || FileText;
                 const color = RECORD_COLORS[record.recordType] || '#6B7280';
                 return (
@@ -359,7 +359,7 @@ export default function VaultPage() {
             { label: 'Records Created', value: stats.recordsCreated, icon: FileText,    color: '#0D7C66', desc: 'by this facility' },
             { label: 'Active Consents', value: stats.activeConsents, icon: Unlock,       color: '#3B82F6', desc: 'from other providers' },
             { label: 'Emergency Accesses', value: stats.emergencyAccesses, icon: AlertCircle, color: '#EF4444', desc: 'all fully audited' },
-          ].map(s => (
+          ].map((s: any) => (
             <div key={s.label} className="bg-white rounded-2xl border border-slate-100 p-5">
               <div className="flex items-center gap-2 mb-2">
                 <s.icon className="w-4 h-4" style={{ color: s.color }} />
@@ -381,7 +381,7 @@ export default function VaultPage() {
             { step: '2', title: 'System Checks Records', desc: 'HospiBot finds their Health ID and records from all connected facilities' },
             { step: '3', title: 'Patient Gets WhatsApp', desc: 'Patient receives consent request with scope options on their WhatsApp' },
             { step: '4', title: 'Access Granted', desc: 'Once approved, doctor sees complete cross-provider history' },
-          ].map(s => (
+          ].map((s: any) => (
             <div key={s.step} className="flex items-start gap-2">
               <div className="w-6 h-6 rounded-full bg-[#0D7C66] text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">{s.step}</div>
               <div>

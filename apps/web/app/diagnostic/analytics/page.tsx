@@ -69,7 +69,7 @@ export default function DiagnosticAnalyticsPage() {
   const trend = a.revenueTrend ?? [];
   const statusDist = Object.entries(a.statusDist ?? {})
     .map(([name, value]: any) => ({ name: name.replace(/_/g, ' '), value }))
-    .filter(s => s.value > 0);
+    .filter((s: any) => s.value > 0);
   const automationStats = a.automationStats ?? {};
   const convRate = automationStats.SENT > 0
     ? Math.round(automationStats.CONVERTED / automationStats.SENT * 100)
@@ -85,7 +85,7 @@ export default function DiagnosticAnalyticsPage() {
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
-            {PERIODS.map(p => (
+            {PERIODS.map((p: any) => (
               <button key={p.v} onClick={() => setPeriod(p.v as any)}
                 className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-all ${period === p.v ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
                 {p.label}
@@ -109,7 +109,7 @@ export default function DiagnosticAnalyticsPage() {
 
       {/* Revenue & Volume trend chart */}
       <div className="bg-white rounded-2xl border border-slate-100 p-5">
-        <h3 className="font-bold text-slate-900 mb-5">Revenue & Order Trend — {PERIODS.find(p => p.v === period)?.label}</h3>
+        <h3 className="font-bold text-slate-900 mb-5">Revenue & Order Trend — {PERIODS.find((p: any) => p.v === period)?.label}</h3>
         {trend.length === 0 ? (
           <div className="h-56 flex items-center justify-center text-slate-400">
             <p className="text-sm">No trend data available for this period</p>
@@ -180,7 +180,7 @@ export default function DiagnosticAnalyticsPage() {
               { label: 'Messages Sent', value: automationStats.SENT ?? 0, color: '#3B82F6' },
               { label: 'Bookings Converted', value: automationStats.CONVERTED ?? 0, color: TEAL },
               { label: 'Opted Out', value: automationStats.OPTED_OUT ?? 0, color: '#94A3B8' },
-            ].map(s => (
+            ].map((s: any) => (
               <div key={s.label} className="flex items-center gap-3">
                 <span className="text-sm text-slate-600 w-36">{s.label}</span>
                 <div className="flex-1 h-2.5 bg-slate-100 rounded-full overflow-hidden">
@@ -224,7 +224,7 @@ export default function DiagnosticAnalyticsPage() {
             icon: Home,
             color: '#06B6D4',
           },
-        ].map(s => (
+        ].map((s: any) => (
           <div key={s.title} className="bg-white rounded-2xl border border-slate-100 p-5">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${s.color}14` }}>
@@ -249,7 +249,7 @@ export default function DiagnosticAnalyticsPage() {
               { label: '4 – 12 hours', pct: 48, color: '#1E3A5F' },
               { label: '12 – 24 hours',pct: 20, color: '#F59E0B' },
               { label: '> 24 hours',   pct: 10, color: '#EF4444' },
-            ].map(t => (
+            ].map((t: any) => (
               <div key={t.label} className="flex items-center gap-3">
                 <span className="text-xs text-slate-600 w-28 flex-shrink-0">{t.label}</span>
                 <div className="flex-1 h-3 bg-slate-100 rounded-full overflow-hidden">
@@ -278,7 +278,7 @@ export default function DiagnosticAnalyticsPage() {
               { label: 'Walk-in',        icon: '🏥', color: NAVY,    pct: 70 },
               { label: 'Home Collection',icon: '🏠', color: TEAL,    pct: 25 },
               { label: 'External / PSC', icon: '🔬', color: '#8B5CF6', pct: 5 },
-            ].map(m => (
+            ].map((m: any) => (
               <div key={m.label} className="flex items-center gap-3">
                 <span className="text-base">{m.icon}</span>
                 <div className="flex-1">

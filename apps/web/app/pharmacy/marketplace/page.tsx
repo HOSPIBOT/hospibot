@@ -31,7 +31,7 @@ export default function PharmacyMarketplacePage() {
       await api.post('/marketplace/my-products', {
         ...form,
         price: Number(form.price), mrp: form.mrp ? Number(form.mrp) : undefined,
-        tags: form.tags ? form.tags.split(',').map(t=>t.trim()) : [],
+        tags: form.tags ? form.tags.split(',').map((t: any) =>t.trim()) : [],
         deliveryDays: form.isHomeDelivery ? Number(form.deliveryDays) : undefined,
       });
       toast.success(`${form.name} listed on HospiBot Marketplace!`);
@@ -43,7 +43,7 @@ export default function PharmacyMarketplacePage() {
   const toggle = async(id:string, isAvailable:boolean) => {
     try {
       await api.put(`/marketplace/my-products/${id}`, { isAvailable: !isAvailable });
-      setProducts(p => p.map(prod => prod.id===id ? {...prod, isAvailable: !isAvailable} : prod));
+      setProducts(p => p.map((prod: any) => prod.id===id ? {...prod, isAvailable: !isAvailable} : prod));
       toast.success(!isAvailable ? 'Product listed' : 'Product unlisted');
     } catch { toast.error('Failed'); }
   };
@@ -79,7 +79,7 @@ export default function PharmacyMarketplacePage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {products.map(p => (
+          {products.map((p: any) => (
             <div key={p.id} className="bg-white rounded-2xl border border-slate-100 p-4">
               <div className="flex items-start justify-between mb-2">
                 <div className="flex-1 min-w-0">
@@ -121,14 +121,14 @@ export default function PharmacyMarketplacePage() {
               <div className="col-span-2"><label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Description</label><textarea className={`${inputCls} resize-none`} rows={2} placeholder="Brief description for marketplace listing" value={form.description} onChange={e=>setForm(f=>({...f,description:e.target.value}))}/></div>
               <div><label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Category</label>
                 <select className={inputCls} value={form.category} onChange={e=>setForm(f=>({...f,category:e.target.value}))}>
-                  {['OTC Medicines','Prescription Medicines','Health Supplements','Personal Care','Baby Care','Surgical Supplies','Diagnostics','Equipment'].map(c=><option key={c} value={c}>{c}</option>)}
+                  {['OTC Medicines','Prescription Medicines','Health Supplements','Personal Care','Baby Care','Surgical Supplies','Diagnostics','Equipment'].map((c: any) =><option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div><label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Price (₹) *</label><input type="number" min={0} step={0.01} className={inputCls} placeholder="150.00" value={form.price} onChange={e=>setForm(f=>({...f,price:e.target.value}))}/></div>
               <div><label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">MRP (₹)</label><input type="number" min={0} step={0.01} className={inputCls} placeholder="180.00" value={form.mrp} onChange={e=>setForm(f=>({...f,mrp:e.target.value}))}/></div>
               <div><label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Price Unit</label>
                 <select className={inputCls} value={form.priceUnit} onChange={e=>setForm(f=>({...f,priceUnit:e.target.value}))}>
-                  {['per strip','per bottle','per unit','per pack','per tablet'].map(u=><option key={u} value={u}>{u}</option>)}
+                  {['per strip','per bottle','per unit','per pack','per tablet'].map((u: any) =><option key={u} value={u}>{u}</option>)}
                 </select>
               </div>
               <div className="col-span-2"><label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Tags (comma-separated)</label><input className={inputCls} placeholder="paracetamol, fever, pain relief" value={form.tags} onChange={e=>setForm(f=>({...f,tags:e.target.value}))}/></div>

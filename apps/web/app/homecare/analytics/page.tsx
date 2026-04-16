@@ -36,7 +36,7 @@ export default function HomecareAnalyticsPage() {
       // Build service-type breakdown from completed visits
       const visits: any[] = bookedRes.data?.data ?? [];
       const serviceMap: Record<string, number> = {};
-      visits.forEach(v => {
+      visits.forEach((v: any) => {
         const m = v.notes?.match(/Service:\s*([^\n]+)/);
         const type = m?.[1]?.trim() || 'General';
         serviceMap[type] = (serviceMap[type] || 0) + 1;
@@ -60,7 +60,7 @@ export default function HomecareAnalyticsPage() {
     ? Math.round((d.totalVisits / d.monthAppointments) * 100)
     : null;
 
-  const activeStaff  = staff.filter(s => s.isAvailable).length;
+  const activeStaff  = staff.filter((s: any) => s.isAvailable).length;
 
   return (
     <div className="space-y-6">
@@ -70,7 +70,7 @@ export default function HomecareAnalyticsPage() {
         <h1 className="text-2xl font-bold text-slate-900">Home Care Analytics</h1>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
-            {(['week','month'] as const).map(p => (
+            {(['week','month'] as const).map((p: any) => (
               <button key={p} onClick={() => setPeriod(p)}
                 className={`text-xs font-medium px-3 py-1.5 rounded-lg capitalize transition-all ${period === p ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
                 {p}
@@ -93,7 +93,7 @@ export default function HomecareAnalyticsPage() {
             { l: 'Active Clients',     v: d.totalPatients ?? 0,               icon: Users,         color: NAV       },
             { l: `Visits (${period})`, v: d.monthAppointments ?? 0,           icon: Calendar,      color: '#3B82F6' },
             { l: 'Completion Rate',    v: completionRate !== null ? `${completionRate}%` : '—', icon: CheckCircle2, color: '#F59E0B' },
-          ].map(k => (
+          ].map((k: any) => (
             <div key={k.l} className="bg-white rounded-2xl border border-slate-100 p-5">
               <div className="flex items-center gap-2 mb-2">
                 <k.icon className="w-4 h-4" style={{ color: k.color }} />
@@ -183,7 +183,7 @@ export default function HomecareAnalyticsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            {staff.slice(0, 8).map(s => {
+            {staff.slice(0, 8).map((s: any) => {
               const name = s.user ? `${s.user.firstName} ${s.user.lastName || ''}`.trim() : 'Staff';
               const initials = name.split(' ').map((n:string) => n[0]).join('').slice(0,2).toUpperCase();
               return (
@@ -212,7 +212,7 @@ export default function HomecareAnalyticsPage() {
           { href: '/homecare/bookings', icon: Calendar, label: 'View Bookings',     color: '#3B82F6' },
           { href: '/homecare/patients', icon: Users,    label: 'Client List',       color: NAV       },
           { href: '/homecare/staff',    icon: Truck,    label: 'Staff Dispatch',    color: '#10B981' },
-        ].map(link => (
+        ].map((link: any) => (
           <a key={link.href} href={link.href}
             className="bg-white rounded-2xl border border-slate-100 p-5 flex items-center gap-4 hover:shadow-md transition-all group">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"

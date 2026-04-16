@@ -109,13 +109,13 @@ export default function VaccinationsPage() {
     const ageInDays = Math.floor((Date.now() - new Date(selected.dateOfBirth).getTime()) / (1000 * 60 * 60 * 24));
     const administered = new Set(records.map((r: any) => r.title || r.data?.vaccine));
     return VACCINE_SCHEDULES
-      .filter(v => v.dueAt <= ageInDays + 7 && !administered.has(v.name)) // due now or in next week
+      .filter((v: any) => v.dueAt <= ageInDays + 7 && !administered.has(v.name)) // due now or in next week
       .slice(0, 8);
   };
 
   const exportPDF = () => {
     if (!selected) return;
-    const rows = records.map(r => `${r.recordDate?.slice(0,10) || formatDate(r.createdAt)} | ${r.title} | Batch: ${r.data?.batch||'—'} | ${r.data?.administeredBy||'—'}`).join('\n');
+    const rows = records.map((r: any) => `${r.recordDate?.slice(0,10) || formatDate(r.createdAt)} | ${r.title} | Batch: ${r.data?.batch||'—'} | ${r.data?.administeredBy||'—'}`).join('\n');
     const content = `VACCINATION RECORD\n${selected.firstName} ${selected.lastName||''}\nDOB: ${selected.dateOfBirth ? new Date(selected.dateOfBirth).toLocaleDateString('en-IN') : '—'}\nHealth ID: ${selected.healthId||'—'}\n\n${rows || 'No records'}`;
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -151,7 +151,7 @@ export default function VaccinationsPage() {
           </div>
           {patients.length > 0 && (
             <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-10">
-              {patients.map(p => (
+              {patients.map((p: any) => (
                 <button key={p.id} onClick={() => { setSelected(p); setSearch(''); setPatients([]); loadRecords(p); }}
                   className="w-full text-left px-4 py-3 hover:bg-slate-50 border-b last:border-0 transition-colors">
                   <p className="text-sm font-semibold text-slate-900">{p.firstName} {p.lastName||''}</p>
@@ -196,7 +196,7 @@ export default function VaccinationsPage() {
                 <p className="text-sm font-bold text-amber-800">{dueVaccines.length} vaccine{dueVaccines.length>1?'s':''} due or overdue</p>
               </div>
               <div className="flex flex-wrap gap-2">
-                {dueVaccines.map(v => (
+                {dueVaccines.map((v: any) => (
                   <button key={v.name} onClick={() => { setForm(f=>({...f,vaccine:v.name})); setShowAdd(true); }}
                     className="text-xs font-semibold text-amber-800 bg-amber-100 border border-amber-200 px-3 py-1.5 rounded-xl hover:bg-amber-200 transition-colors">
                     + {v.name}
@@ -225,7 +225,7 @@ export default function VaccinationsPage() {
             ) : (
               <table className="w-full">
                 <thead><tr className="border-b border-slate-100">
-                  {['Date','Vaccine','Batch #','Site','Given By','Next Due'].map(h => (
+                  {['Date','Vaccine','Batch #','Site','Given By','Next Due'].map((h: any) => (
                     <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
                   ))}
                 </tr></thead>
@@ -249,7 +249,7 @@ export default function VaccinationsPage() {
           <div className="bg-white rounded-2xl border border-slate-100 p-5">
             <h3 className="font-bold text-slate-900 mb-4">National Immunization Schedule Reference</h3>
             <div className="grid grid-cols-3 gap-2">
-              {VACCINE_SCHEDULES.slice(0,12).map(v => {
+              {VACCINE_SCHEDULES.slice(0,12).map((v: any) => {
                 const administered = records.some((r:any) => r.title === v.name);
                 return (
                   <div key={v.name} className={`flex items-center gap-2.5 p-2.5 rounded-xl border text-xs ${administered ? 'bg-emerald-50 border-emerald-100' : 'bg-slate-50 border-slate-100'}`}>
@@ -283,7 +283,7 @@ export default function VaccinationsPage() {
                 <input className={inputCls} list="vaccine-list" placeholder="Select or type vaccine name…"
                   value={form.vaccine} onChange={e=>setForm(f=>({...f,vaccine:e.target.value}))} autoFocus />
                 <datalist id="vaccine-list">
-                  {[...VACCINE_SCHEDULES.map(v=>v.name), ...ADULT_VACCINES].map(v=><option key={v} value={v}/>)}
+                  {[...VACCINE_SCHEDULES.map((v: any) =>v.name), ...ADULT_VACCINES].map((v: any) =><option key={v} value={v}/>)}
                 </datalist>
               </div>
               <div>
@@ -301,7 +301,7 @@ export default function VaccinationsPage() {
               <div>
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Site of Administration</label>
                 <select className={inputCls} value={form.site} onChange={e=>setForm(f=>({...f,site:e.target.value}))}>
-                  {['Right arm','Left arm','Right thigh','Left thigh','Oral','Intranasal','Subcutaneous'].map(s=><option key={s}>{s}</option>)}
+                  {['Right arm','Left arm','Right thigh','Left thigh','Oral','Intranasal','Subcutaneous'].map((s: any) =><option key={s}>{s}</option>)}
                 </select>
               </div>
               <div className="col-span-2">

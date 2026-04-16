@@ -88,11 +88,11 @@ function PackageModal({
   };
 
   const filteredCatalog = search
-    ? catalog.filter(t => t.code?.toLowerCase().includes(search.toLowerCase()) || t.name?.toLowerCase().includes(search.toLowerCase()))
+    ? catalog.filter((t: any) => t.code?.toLowerCase().includes(search.toLowerCase()) || t.name?.toLowerCase().includes(search.toLowerCase()))
     : catalog;
 
-  const totalRetailPrice = form.testCodes.reduce((sum, code) => {
-    const test = catalog.find(t => t.code === code);
+  const totalRetailPrice = form.testCodes.reduce((sum: number, code: any) => {
+    const test = catalog.find((t: any) => t.code === code);
     return sum + (test?.price ?? 0);
   }, 0);
 
@@ -140,7 +140,7 @@ function PackageModal({
             <div>
               <label className={labelCls}>Category</label>
               <select className={inputCls} value={form.packageType} onChange={setF('packageType')}>
-                {PACKAGE_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                {PACKAGE_TYPES.map((t: any) => <option key={t.value} value={t.value}>{t.label}</option>)}
               </select>
             </div>
             <div>
@@ -174,8 +174,8 @@ function PackageModal({
             {/* Selected tests */}
             {form.testCodes.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mb-3">
-                {form.testCodes.map(code => {
-                  const test = catalog.find(t => t.code === code);
+                {form.testCodes.map((code: any) => {
+                  const test = catalog.find((t: any) => t.code === code);
                   return (
                     <span key={code}
                       className="inline-flex items-center gap-1 bg-[#1E3A5F]/10 text-[#1E3A5F] text-xs font-bold px-2.5 py-1 rounded-full">
@@ -229,8 +229,8 @@ function PackageModal({
 }
 
 function PackageCard({ pkg, catalog, onEdit, onToggle }: { pkg: any; catalog: any[]; onEdit: () => void; onToggle: () => void }) {
-  const pkgType = PACKAGE_TYPES.find(t => t.value === pkg.packageType);
-  const tests = pkg.testCodes?.map((code: string) => catalog.find(t => t.code === code)).filter(Boolean) ?? [];
+  const pkgType = PACKAGE_TYPES.find((t: any) => t.value === pkg.packageType);
+  const tests = pkg.testCodes?.map((code: string) => catalog.find((t: any) => t.code === code)).filter(Boolean) ?? [];
 
   return (
     <div className={`bg-white rounded-2xl border p-5 hover:shadow-md transition-all ${pkg.isActive ? 'border-slate-100' : 'border-slate-200 opacity-60'}`}>
@@ -329,7 +329,7 @@ export default function PackagesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-slate-900">Health Packages</h1>
-          <p className="text-sm text-slate-500">{packages.filter(p => p.isActive).length} active packages · Build bundles for corporate wellness and health check-ups</p>
+          <p className="text-sm text-slate-500">{packages.filter((p: any) => p.isActive).length} active packages · Build bundles for corporate wellness and health check-ups</p>
         </div>
         <div className="flex items-center gap-2">
           {packages.length === 0 && (
@@ -373,7 +373,7 @@ export default function PackagesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-4">
-          {packages.map(pkg => (
+          {packages.map((pkg: any) => (
             <PackageCard key={pkg.id} pkg={pkg} catalog={catalog}
               onEdit={() => setEditing(pkg)}
               onToggle={() => togglePackage(pkg)} />

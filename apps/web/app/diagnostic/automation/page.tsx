@@ -71,7 +71,7 @@ function RuleCard({ rule, onToggle }: { rule: any; onToggle: () => void }) {
             { label: 'Sent', value: rule.sentTotal ?? 0 },
             { label: 'Converted', value: rule.convertedTotal ?? 0 },
             { label: 'Conv. Rate', value: `${cvr}%`, highlight: cvr > 15 },
-          ].map(s => (
+          ].map((s: any) => (
             <div key={s.label} className="text-center">
               <p className={`text-lg font-black ${s.highlight ? 'text-[#0D7C66]' : 'text-slate-900'}`}>{s.value}</p>
               <p className="text-[10px] text-slate-400">{s.label}</p>
@@ -111,7 +111,7 @@ function AddRuleModal({ onClose, onSaved }: { onClose: () => void; onSaved: () =
           <div><label className={labelCls}>Rule Name *</label><input className={inputCls} placeholder="Diabetic Follow-Up (90 days)" value={form.name} onChange={setF('name')} /></div>
           <div><label className={labelCls}>Trigger Event</label>
             <select className={inputCls} value={form.triggerEvent} onChange={setF('triggerEvent')}>
-              {TRIGGER_OPTIONS.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+              {TRIGGER_OPTIONS.map((t: any) => <option key={t.value} value={t.value}>{t.label}</option>)}
             </select>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -120,7 +120,7 @@ function AddRuleModal({ onClose, onSaved }: { onClose: () => void; onSaved: () =
           </div>
           <div><label className={labelCls}>WhatsApp Template</label>
             <select className={inputCls} value={form.templateCode} onChange={setF('templateCode')}>
-              {TEMPLATE_OPTIONS.map(t => <option key={t.code} value={t.code}>{t.label}</option>)}
+              {TEMPLATE_OPTIONS.map((t: any) => <option key={t.code} value={t.code}>{t.label}</option>)}
             </select>
           </div>
           <div><label className={labelCls}>Custom Message (optional)</label>
@@ -173,9 +173,9 @@ export default function AutomationPage() {
     finally { setSeeding(false); }
   };
 
-  const activeRules = rules.filter(r => r.isActive).length;
-  const totalSent = rules.reduce((s, r) => s + (r.sentTotal ?? 0), 0);
-  const totalConverted = rules.reduce((s, r) => s + (r.convertedTotal ?? 0), 0);
+  const activeRules = rules.filter((r: any) => r.isActive).length;
+  const totalSent = rules.reduce((s: number, r: any) => s + (r.sentTotal ?? 0), 0);
+  const totalConverted = rules.reduce((s: number, r: any) => s + (r.convertedTotal ?? 0), 0);
 
   return (
     <div className="space-y-5">
@@ -207,7 +207,7 @@ export default function AutomationPage() {
             { label: 'Messages Sent', value: totalSent, icon: Zap, color: '#3B82F6' },
             { label: 'Bookings Converted', value: totalConverted, icon: CheckCircle2, color: TEAL },
             { label: 'Overall Conv. Rate', value: `${totalSent > 0 ? Math.round(totalConverted / totalSent * 100) : 0}%`, icon: TrendingUp, color: '#F59E0B' },
-          ].map(s => (
+          ].map((s: any) => (
             <div key={s.label} className="bg-white rounded-2xl border border-slate-100 p-4 flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${s.color}14` }}>
                 <s.icon className="w-5 h-5" style={{ color: s.color }} />
@@ -235,7 +235,7 @@ export default function AutomationPage() {
               { step: '1', label: 'Patient completes HbA1c', desc: 'Test result is released to patient' },
               { step: '2', label: '90 days later', desc: 'Automated WhatsApp reminder sent' },
               { step: '3', label: 'Patient books & pays', desc: 'Revenue attributed to the rule' },
-            ].map(s => (
+            ].map((s: any) => (
               <div key={s.step} className="bg-white rounded-xl p-4 border border-slate-100">
                 <div className="w-7 h-7 rounded-full bg-[#1E3A5F] text-white text-sm font-black flex items-center justify-center mb-2">{s.step}</div>
                 <p className="text-sm font-bold text-slate-900">{s.label}</p>
@@ -259,7 +259,7 @@ export default function AutomationPage() {
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-4">
-          {rules.map(rule => (
+          {rules.map((rule: any) => (
             <RuleCard key={rule.id} rule={rule} onToggle={() => toggle(rule.id)} />
           ))}
         </div>

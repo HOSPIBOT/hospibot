@@ -143,7 +143,7 @@ export default function PharmacySuppliersPage() {
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-4">
-          {suppliers.map(s => (
+          {suppliers.map((s: any) => (
             <a key={s.id} href={`/pharmacy/suppliers/${s.id}`} className="block bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md hover:border-emerald-200 transition-all group">
               <div className="flex items-start justify-between mb-3">
                 <div>

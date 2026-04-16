@@ -98,14 +98,14 @@ export default function OperationTheatrePage() {
     } catch { toast.error('Failed'); }
   };
 
-  const filtered = cases.filter(c =>
+  const filtered = cases.filter((c: any) =>
     !search || JSON.stringify(c).toLowerCase().includes(search.toLowerCase())
   );
 
   // Today's stats
-  const scheduled   = cases.filter(c => c.status === 'SCHEDULED').length;
-  const inProgress  = cases.filter(c => c.status === 'IN_PROGRESS').length;
-  const completed   = cases.filter(c => c.status === 'COMPLETED').length;
+  const scheduled   = cases.filter((c: any) => c.status === 'SCHEDULED').length;
+  const inProgress  = cases.filter((c: any) => c.status === 'IN_PROGRESS').length;
+  const completed   = cases.filter((c: any) => c.status === 'COMPLETED').length;
 
   return (
     <div className="space-y-5">
@@ -135,7 +135,7 @@ export default function OperationTheatrePage() {
           { label:'In Progress',value: inProgress, color:'#8B5CF6' },
           { label:'Completed',  value: completed,  color:'#10B981' },
           { label:'Total Today',value: cases.length,color:'#0D7C66' },
-        ].map(k => (
+        ].map((k: any) => (
           <div key={k.label} className="bg-white rounded-2xl border border-slate-100 p-5">
             <p className="text-xs text-slate-500">{k.label}</p>
             <p className="text-3xl font-bold mt-1" style={{color:k.color}}>{k.value}</p>
@@ -155,7 +155,7 @@ export default function OperationTheatrePage() {
         <table className="w-full">
           <thead>
             <tr className="border-b border-slate-100">
-              {['Time','Patient','Surgery','OT Room','Surgeon','Anesthesia','Status','Actions'].map(h => (
+              {['Time','Patient','Surgery','OT Room','Surgeon','Anesthesia','Status','Actions'].map((h: any) => (
                 <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
               ))}
             </tr>
@@ -169,7 +169,7 @@ export default function OperationTheatrePage() {
                 <p className="text-slate-400 text-sm">No OT cases scheduled</p>
                 <button onClick={() => setShowNew(true)} className="mt-3 text-sm font-semibold text-[#0D7C66] hover:underline">Schedule a case →</button>
               </td></tr>
-            ) : filtered.map(c => {
+            ) : filtered.map((c: any) => {
               const meta = (() => { try { return JSON.parse(c.notes||'{}'); } catch { return {}; } })();
               return (
                 <tr key={c.id} className="hover:bg-slate-50/60 transition-colors">
@@ -220,7 +220,7 @@ export default function OperationTheatrePage() {
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Patient *</label>
                 {form.patientId ? (
                   <div className="flex items-center justify-between bg-emerald-50 rounded-xl px-4 py-2.5 border border-emerald-200">
-                    <span className="text-sm font-semibold text-emerald-900">{patients.find(p=>p.id===form.patientId)?.firstName || 'Selected'}</span>
+                    <span className="text-sm font-semibold text-emerald-900">{patients.find((p: any) =>p.id===form.patientId)?.firstName || 'Selected'}</span>
                     <button onClick={()=>setForm(f=>({...f,patientId:''}))}><X className="w-4 h-4 text-emerald-400"/></button>
                   </div>
                 ) : (
@@ -228,7 +228,7 @@ export default function OperationTheatrePage() {
                     <input className={inputCls} placeholder="Search patient…" value={patSearch} onChange={e=>setPatSearch(e.target.value)} autoFocus />
                     {patients.length > 0 && (
                       <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-10">
-                        {patients.map(p => (
+                        {patients.map((p: any) => (
                           <button key={p.id} onClick={()=>{setForm(f=>({...f,patientId:p.id}));setPatSearch('');setPatients([]);}}
                             className="w-full text-left px-4 py-2.5 hover:bg-slate-50 text-sm border-b last:border-0">
                             <p className="font-semibold">{p.firstName} {p.lastName||''}</p>
@@ -244,13 +244,13 @@ export default function OperationTheatrePage() {
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Surgery Type *</label>
                 <select className={inputCls} value={form.surgeryType} onChange={set('surgeryType')}>
                   <option value="">Select…</option>
-                  {SURGERY_TYPES.map(t=><option key={t}>{t}</option>)}
+                  {SURGERY_TYPES.map((t: any) =><option key={t}>{t}</option>)}
                 </select>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">OT Room</label>
                 <select className={inputCls} value={form.otRoom} onChange={set('otRoom')}>
-                  {OT_ROOMS.map(r=><option key={r}>{r}</option>)}
+                  {OT_ROOMS.map((r: any) =><option key={r}>{r}</option>)}
                 </select>
               </div>
               <div>
@@ -264,7 +264,7 @@ export default function OperationTheatrePage() {
               <div>
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Surgeon *</label>
                 <input className={inputCls} placeholder="Dr. Name" value={form.surgeon} onChange={set('surgeon')} list="surgeons-list" />
-                <datalist id="surgeons-list">{doctors.map(d=><option key={d.id} value={`Dr. ${d.user?.firstName} ${d.user?.lastName||''}`}/>)}</datalist>
+                <datalist id="surgeons-list">{doctors.map((d: any) =><option key={d.id} value={`Dr. ${d.user?.firstName} ${d.user?.lastName||''}`}/>)}</datalist>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Anesthetist</label>
@@ -277,7 +277,7 @@ export default function OperationTheatrePage() {
               <div>
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Anesthesia Type</label>
                 <select className={inputCls} value={form.anesthesiaType} onChange={set('anesthesiaType')}>
-                  {['General','Spinal','Epidural','Local','Regional','Sedation'].map(a=><option key={a}>{a}</option>)}
+                  {['General','Spinal','Epidural','Local','Regional','Sedation'].map((a: any) =><option key={a}>{a}</option>)}
                 </select>
               </div>
               <div className="col-span-2">

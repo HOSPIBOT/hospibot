@@ -40,7 +40,7 @@ export default function PharmacyAnalyticsPage() {
         <h1 className="text-2xl font-bold text-slate-900">Pharmacy Analytics</h1>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
-            {(['week','month'] as const).map(p => (
+            {(['week','month'] as const).map((p: any) => (
               <button key={p} onClick={() => setPeriod(p)}
                 className={`text-xs font-medium px-3 py-1.5 rounded-lg capitalize transition-all ${period === p ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
                 {p}
@@ -63,7 +63,7 @@ export default function PharmacyAnalyticsPage() {
             { label: 'Today\'s Revenue', value: formatINR(d.todayRevenue ?? 0),        icon: TrendingUp,     color: '#10B981' },
             { label: 'Low Stock Items',  value: (d.lowStockCount ?? 0) + (d.outOfStockCount ?? 0), icon: AlertTriangle, color: '#F59E0B' },
             { label: 'Orders Today',     value: d.todayOrders ?? 0,                   icon: BarChart3,      color: '#3B82F6' },
-          ].map(k => (
+          ].map((k: any) => (
             <div key={k.label} className="bg-white rounded-2xl border border-slate-100 p-5">
               <div className="flex items-center gap-2 mb-2">
                 <k.icon className="w-4 h-4" style={{ color: k.color }} />
@@ -111,7 +111,7 @@ export default function PharmacyAnalyticsPage() {
             { label: 'Out of Stock',    value: d.outOfStockCount ?? 0, color: '#EF4444', href: '/pharmacy/inventory' },
             { label: 'Low Stock',       value: d.lowStockCount ?? 0,   color: '#F59E0B', href: '/pharmacy/inventory' },
             { label: 'Expiring (90d)',  value: d.expiringCount ?? 0,   color: '#F97316', href: '/pharmacy/inventory' },
-          ].map(a => (
+          ].map((a: any) => (
             <a key={a.label} href={a.href}
               className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-shadow group">
               <div className="flex items-center justify-between">

@@ -68,7 +68,7 @@ function QuickMessagePanel({ patientPhone, patientName }: { patientPhone: string
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-1.5">
-        {TEMPLATES.map(t => (
+        {TEMPLATES.map((t: any) => (
           <button key={t.label} onClick={() => setMessage(t.text)}
             className="text-[10px] font-semibold bg-white text-[#0D7C66] border border-[#0D7C66]/30 px-2.5 py-1 rounded-full hover:bg-[#0D7C66] hover:text-white transition-all">
             {t.label}
@@ -232,7 +232,7 @@ export default function PatientDetailPage() {
           { label: 'Prescriptions', value: p.prescriptions?.length ?? 0, icon: Pill,         color: '#3B82F6' },
           { label: 'Lab Orders',    value: p.labOrders?.length ?? 0,     icon: FlaskConical, color: '#F59E0B' },
           { label: 'Outstanding',   value: p.invoices?.filter((i: any) => i.status !== 'PAID').length ?? 0, icon: CreditCard, color: '#EF4444' },
-        ].map(s => (
+        ].map((s: any) => (
           <div key={s.label} className="bg-white rounded-2xl border border-slate-100 p-4 text-center">
             <div className="w-9 h-9 rounded-xl mx-auto flex items-center justify-center mb-2" style={{ background: `${s.color}15` }}>
               <s.icon className="w-4 h-4" style={{ color: s.color }} />

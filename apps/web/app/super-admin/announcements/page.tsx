@@ -192,7 +192,7 @@ export default function AnnouncementsPage() {
       <div className="grid grid-cols-4 gap-4">
         {[
           { label: 'Total Sent',   value: history.length,                                    sub: 'All time'            },
-          { label: 'This Month',   value: history.filter(a => a.sentAt?.includes('2026')).length, sub: 'Apr 2026'       },
+          { label: 'This Month',   value: history.filter((a: any) => a.sentAt?.includes('2026')).length, sub: 'Apr 2026'       },
           { label: 'All Tenants',  value: tenantCounts.ALL || '…',                           sub: 'On platform'         },
           { label: 'Open Rate',    value: '94%',                                             sub: 'In-app notification' },
         ].map((s) => (

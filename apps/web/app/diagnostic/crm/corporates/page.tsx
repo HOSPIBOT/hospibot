@@ -85,7 +85,7 @@ export default function CorporatePage() {
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-4">
-          {clients.map(c => (
+          {clients.map((c: any) => (
             <div key={c.id} className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-all">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 rounded-xl bg-[#1E3A5F]/10 flex items-center justify-center text-[#1E3A5F] font-black">{c.companyName?.[0]}</div>

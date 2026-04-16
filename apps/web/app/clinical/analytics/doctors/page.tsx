@@ -27,26 +27,26 @@ export default function DoctorAnalyticsPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const chartData = topDoctors.map(d => ({
+  const chartData = topDoctors.map((d: any) => ({
     name: `Dr. ${(d.firstName||d.user?.firstName||'').slice(0,8)}`,
     appointments: d.appointmentCount || d.totalAppointments || 0,
     revenue: Math.round((d.revenue || d.totalRevenue || 0) / 100),
   }));
 
-  const totalAppts   = topDoctors.reduce((s,d) => s + (d.appointmentCount||0), 0);
-  const totalRevenue = topDoctors.reduce((s,d) => s + (d.revenue||d.totalRevenue||0), 0);
+  const totalAppts   = topDoctors.reduce((s: number, d: any) => s + (d.appointmentCount||0), 0);
+  const totalRevenue = topDoctors.reduce((s: number, d: any) => s + (d.revenue||d.totalRevenue||0), 0);
 
   const exportCSV = () => {
     setExporting(true);
     const header = ['Doctor','Specialties','Appointments','Revenue','Avg Rating'];
-    const rows = topDoctors.map(d => [
+    const rows = topDoctors.map((d: any) => [
       `Dr. ${d.firstName||d.user?.firstName||''} ${d.lastName||d.user?.lastName||''}`.trim(),
       d.specialties?.join(', ')||'—',
       d.appointmentCount||0,
       `₹${((d.revenue||d.totalRevenue||0)/100).toLocaleString('en-IN')}`,
       d.avgRating||'—',
     ]);
-    const csv=[header,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const csv=[header,...rows].map((r: any) =>r.map((v: any) =>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
     const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);
     const a=document.createElement('a');a.href=url;a.download=`doctor-analytics-${period}.csv`;a.click();URL.revokeObjectURL(url);
     setExporting(false);
@@ -61,7 +61,7 @@ export default function DoctorAnalyticsPage() {
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
-            {(['week','month','year'] as const).map(p=>(
+            {(['week','month','year'] as const).map((p: any) =>(
               <button key={p} onClick={()=>setPeriod(p)} className={`text-xs font-medium px-3 py-1.5 rounded-lg capitalize transition-all ${period===p?'bg-white text-slate-900 shadow-sm':'text-slate-500'}`}>{p}</button>
             ))}
           </div>
@@ -78,7 +78,7 @@ export default function DoctorAnalyticsPage() {
           {label:'Total Appointments',value:totalAppts.toLocaleString('en-IN'),color:'#3B82F6',icon:Users},
           {label:'Total Revenue',value:formatINR(totalRevenue),color:'#0D7C66',icon:IndianRupee},
           {label:'Active Doctors',value:doctors.length,color:'#8B5CF6',icon:Stethoscope},
-        ].map(k=>(
+        ].map((k: any) =>(
           <div key={k.label} className="bg-white rounded-2xl border border-slate-100 p-5 flex items-center gap-4">
             <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{background:`${k.color}15`}}>
               <k.icon className="w-5 h-5" style={{color:k.color}}/>
@@ -120,7 +120,7 @@ export default function DoctorAnalyticsPage() {
         <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-100"><h3 className="font-bold text-slate-900">Doctor Leaderboard</h3></div>
         <table className="w-full">
           <thead><tr className="border-b border-slate-100">
-            {['Rank','Doctor','Specialties','Appointments','Revenue','Rating'].map(h=><th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>)}
+            {['Rank','Doctor','Specialties','Appointments','Revenue','Rating'].map((h: any) =><th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>)}
           </tr></thead>
           <tbody className="divide-y divide-slate-50">
             {loading ? Array.from({length:5}).map((_,i)=>(<tr key={i}>{Array.from({length:6}).map((__,j)=><td key={j} className="px-4 py-3"><div className="animate-pulse bg-slate-200 rounded h-4"/></td>)}</tr>))

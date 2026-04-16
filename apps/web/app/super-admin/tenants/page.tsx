@@ -85,7 +85,7 @@ export default function TenantsPage() {
       const all: Tenant[] = res.data;
       const header = ['Name', 'Type', 'Plan', 'Status', 'City', 'State', 'Users', 'Patients', 'WhatsApp', 'Created'];
       const MRR: Record<string, number> = { STARTER: 500, GROWTH: 1200, ENTERPRISE: 4500 };
-      const rows = all.map(t => [
+      const rows = all.map((t: any) => [
         t.name, t.type?.replace(/_/g, ' ') ?? '',
         t.plan, t.status,
         t.city ?? '', t.state ?? '',
@@ -93,7 +93,7 @@ export default function TenantsPage() {
         t.waPhoneNumberId ? 'Yes' : 'No',
         new Date(t.createdAt ?? '').toLocaleDateString('en-IN'),
       ]);
-      const csv  = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const csv  = [header, ...rows].map((r: any) => r.map((v: any) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
       const blob = new Blob([csv], { type: 'text/csv' });
       const url  = URL.createObjectURL(blob);
       const a    = document.createElement('a');
@@ -175,7 +175,7 @@ export default function TenantsPage() {
           <table className="w-full">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-100">
-                {['Organization', 'Location', 'Plan', 'Status', 'Users', 'Patients', 'MRR', 'WA', ''].map(h => (
+                {['Organization', 'Location', 'Plan', 'Status', 'Users', 'Patients', 'MRR', 'WA', ''].map((h: any) => (
                   <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
                 ))}
               </tr>
@@ -187,7 +187,7 @@ export default function TenantsPage() {
                     <Link href={`/super-admin/tenants/${t.id}`}>
                       <div className="flex items-center gap-3 cursor-pointer">
                         <div className="w-9 h-9 rounded-xl bg-[#E8F5F0] text-[#0D7C66] flex items-center justify-center text-xs font-bold flex-shrink-0">
-                          {t.name.split(' ').map(w => w[0]).slice(0, 2).join('')}
+                          {t.name.split(' ').map((w: any) => w[0]).slice(0, 2).join('')}
                         </div>
                         <div>
                           <p className="text-sm font-semibold text-slate-900 group-hover:text-[#0D7C66] transition-colors">{t.name}</p>

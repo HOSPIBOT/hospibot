@@ -56,7 +56,7 @@ export default function HomecareBookingsPage() {
       const res = await api.get('/appointments', { params: { limit: 2000, type: 'HOME_VISIT' } });
       const all: any[] = res.data.data ?? appointments;
       const header = ['Date', 'Time', 'Client', 'Phone', 'Address', 'Service', 'Status'];
-      const rows = all.map(a => [
+      const rows = all.map((a: any) => [
         formatDate(a.scheduledAt), formatTime(a.scheduledAt),
         `${a.patient?.firstName ?? ''} ${a.patient?.lastName ?? ''}`.trim(),
         a.patient?.phone ?? '',
@@ -64,7 +64,7 @@ export default function HomecareBookingsPage() {
         a.notes?.match(/Service:\s*([^\n]+)/)?.[1]?.trim() ?? 'Home Visit',
         a.status ?? '',
       ]);
-      const csv  = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const csv  = [header, ...rows].map((r: any) => r.map((v: any) => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
       const blob = new Blob([csv], { type: 'text/csv' });
       const url  = URL.createObjectURL(blob);
       const a    = document.createElement('a');
@@ -79,7 +79,7 @@ export default function HomecareBookingsPage() {
     setUpdating(id);
     try {
       await api.put(`/appointments/${id}/status`, { status: nextStatus });
-      setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: nextStatus } : a));
+      setAppointments(prev => prev.map((a: any) => a.id === id ? { ...a, status: nextStatus } : a));
       toast.success(`Visit ${nextStatus.replace('_', ' ').toLowerCase()}`);
     } catch { toast.error('Failed to update'); } finally { setUpdating(null); }
   };
@@ -89,7 +89,7 @@ export default function HomecareBookingsPage() {
     setUpdating(id);
     try {
       await api.put(`/appointments/${id}/status`, { status: 'CANCELLED' });
-      setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: 'CANCELLED' } : a));
+      setAppointments(prev => prev.map((a: any) => a.id === id ? { ...a, status: 'CANCELLED' } : a));
       toast.success('Visit cancelled');
     } catch { toast.error('Failed'); } finally { setUpdating(null); }
   };
@@ -141,7 +141,7 @@ export default function HomecareBookingsPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {appointments.map(a => {
+          {appointments.map((a: any) => {
             const next = NEXT_STATUS[a.status];
             const busy = updating === a.id;
             return (
@@ -205,10 +205,10 @@ export default function HomecareBookingsPage() {
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Client *</label>
                 {form.patientId
                   ? <div className="flex items-center justify-between bg-purple-50 rounded-xl px-4 py-2.5 border border-purple-200"><span className="text-sm font-semibold text-purple-800">{form.patientName}</span><button onClick={() => setForm(f => ({ ...f, patientId: '', patientName: '' }))}><X className="w-4 h-4 text-purple-400" /></button></div>
-                  : <div className="relative"><input className={inputCls} placeholder="Search client…" value={patSearch} onChange={e => setPatSearch(e.target.value)} autoFocus />{patients.length > 0 && <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-10 overflow-hidden">{patients.map(p => <button key={p.id} onClick={() => { setForm(f => ({ ...f, patientId: p.id, patientName: `${p.firstName} ${p.lastName || ''}`.trim() })); setPatSearch(''); setPatients([]); }} className="w-full text-left px-4 py-2.5 hover:bg-slate-50"><p className="text-sm font-medium text-slate-900">{p.firstName} {p.lastName || ''}</p><p className="text-xs text-slate-400">{p.phone}</p></button>)}</div>}</div>}
+                  : <div className="relative"><input className={inputCls} placeholder="Search client…" value={patSearch} onChange={e => setPatSearch(e.target.value)} autoFocus />{patients.length > 0 && <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-10 overflow-hidden">{patients.map((p: any) => <button key={p.id} onClick={() => { setForm(f => ({ ...f, patientId: p.id, patientName: `${p.firstName} ${p.lastName || ''}`.trim() })); setPatSearch(''); setPatients([]); }} className="w-full text-left px-4 py-2.5 hover:bg-slate-50"><p className="text-sm font-medium text-slate-900">{p.firstName} {p.lastName || ''}</p><p className="text-xs text-slate-400">{p.phone}</p></button>)}</div>}</div>}
               </div>
               <div><label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Date & Time *</label><input type="datetime-local" className={inputCls} value={form.scheduledAt} onChange={e => setForm(f => ({ ...f, scheduledAt: e.target.value }))} /></div>
-              <div><label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Service Type</label><select className={inputCls} value={form.serviceType} onChange={e => setForm(f => ({ ...f, serviceType: e.target.value }))}>{SERVICE_TYPES.map(s => <option key={s} value={s}>{s}</option>)}</select></div>
+              <div><label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Service Type</label><select className={inputCls} value={form.serviceType} onChange={e => setForm(f => ({ ...f, serviceType: e.target.value }))}>{SERVICE_TYPES.map((s: any) => <option key={s} value={s}>{s}</option>)}</select></div>
               <div><label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Address</label><input className={inputCls} placeholder="Full address for home visit" value={form.address} onChange={e => setForm(f => ({ ...f, address: e.target.value }))} /></div>
             </div>
             <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 bg-slate-50/50 rounded-b-2xl">

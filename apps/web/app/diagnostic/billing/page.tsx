@@ -134,7 +134,7 @@ export default function BillingPage() {
 
       {/* Tab navigation */}
       <div className="flex items-center gap-1 bg-slate-100 rounded-2xl p-1.5 overflow-x-auto">
-        {TABS.map(t => (
+        {TABS.map((t: any) => (
           <button key={t.key} onClick={() => setTab(t.key)}
             className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl transition-all ${tab === t.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
             <t.icon className="w-3.5 h-3.5" />
@@ -148,7 +148,7 @@ export default function BillingPage() {
         <div className="space-y-5">
           {/* Wallet cards */}
           <div className="grid grid-cols-3 gap-4">
-            {WALLET_CARDS.map(wc => <WalletCard key={wc.type} wc={wc} balances={wallet} />)}
+            {WALLET_CARDS.map((wc: any) => <WalletCard key={wc.type} wc={wc} balances={wallet} />)}
           </div>
 
           {/* Usage this month */}
@@ -181,7 +181,7 @@ export default function BillingPage() {
                   { type: 'WHATSAPP', label: 'WhatsApp', color: '#25D366' },
                   { type: 'SMS', label: 'SMS', color: '#3B82F6' },
                   { type: 'STORAGE', label: 'Storage', color: '#8B5CF6' },
-                ].map(t => (
+                ].map((t: any) => (
                   <button key={t.type} onClick={() => loadPacks(t.type)}
                     className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all border ${activePackType === t.type ? 'text-white border-transparent' : 'bg-white border-slate-200 text-slate-600'}`}
                     style={activePackType === t.type ? { background: t.color } : {}}>
@@ -194,7 +194,7 @@ export default function BillingPage() {
               <div className="text-center py-8 text-slate-400 text-sm">No recharge packs configured. Contact HospiBot support.</div>
             ) : (
               <div className="grid grid-cols-3 gap-4">
-                {packs.map(pack => <RechargePackCard key={pack.id} pack={pack} onSuccess={() => { setRefreshKey(k => k + 1); load(); }} />)}
+                {packs.map((pack: any) => <RechargePackCard key={pack.id} pack={pack} onSuccess={() => { setRefreshKey(k => k + 1); load(); }} />)}
               </div>
             )}
           </div>
@@ -211,7 +211,7 @@ export default function BillingPage() {
                   { label: 'Total Messages', value: usage.totalMessages ?? 0, color: '#25D366' },
                   { label: 'Total Credits Used', value: (usage.totalCredits ?? 0).toFixed(1), color: NAVY },
                   { label: 'Delivery Rate', value: '98.2%', color: TEAL },
-                ].map(s => (
+                ].map((s: any) => (
                   <div key={s.label} className="bg-white rounded-2xl border border-slate-100 p-4">
                     <p className="text-2xl font-black" style={{ color: s.color }}>{s.value}</p>
                     <p className="text-xs text-slate-500 mt-1">{s.label} (30d)</p>
@@ -258,13 +258,13 @@ export default function BillingPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/80">
-                  {['Invoice #', 'Type', 'Amount', 'Date', 'Status', ''].map(h => (
+                  {['Invoice #', 'Type', 'Amount', 'Date', 'Status', ''].map((h: any) => (
                     <th key={h} className="px-5 py-3 text-left text-[11px] font-bold text-slate-400 uppercase tracking-widest">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {invoices.map(inv => (
+                {invoices.map((inv: any) => (
                   <tr key={inv.id} className="border-b border-slate-50 hover:bg-slate-50/50">
                     <td className="px-5 py-3.5 font-mono text-sm font-bold text-[#1E3A5F]">{inv.invoiceNumber}</td>
                     <td className="px-5 py-3.5"><span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-semibold">{inv.invoiceType}</span></td>
@@ -300,13 +300,13 @@ export default function BillingPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/80">
-                  {['Type', 'Description', 'Amount', 'Balance After', 'Date'].map(h => (
+                  {['Type', 'Description', 'Amount', 'Balance After', 'Date'].map((h: any) => (
                     <th key={h} className="px-5 py-3 text-left text-[11px] font-bold text-slate-400 uppercase tracking-widest">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {transactions.map(txn => (
+                {transactions.map((txn: any) => (
                   <tr key={txn.id} className="border-b border-slate-50 hover:bg-slate-50/50">
                     <td className="px-5 py-3"><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${txn.txType?.startsWith('CREDIT') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{txn.txType}</span></td>
                     <td className="px-5 py-3 text-sm text-slate-700">{txn.description}</td>

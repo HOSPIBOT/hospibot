@@ -74,7 +74,7 @@ export default function PharmacyAlertsPage() {
     : alerts.outOfStock
     : [];
 
-  const tabInfo = TABS.find(t => t.key === tab)!;
+  const tabInfo = TABS.find((t: any) => t.key === tab)!;
 
   const totalAlerts = alerts
     ? alerts.outOfStock.length + alerts.lowStock.length + alerts.nearExpiry.length
@@ -113,11 +113,11 @@ export default function PharmacyAlertsPage() {
       {/* Summary KPIs */}
       {loading ? (
         <div className="grid grid-cols-3 gap-4">
-          {[1,2,3].map(i => <div key={i} className="animate-pulse bg-slate-200 rounded-2xl h-20" />)}
+          {[1,2,3].map((i: any) => <div key={i} className="animate-pulse bg-slate-200 rounded-2xl h-20" />)}
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-4">
-          {TABS.map(t => {
+          {TABS.map((t: any) => {
             const count = alerts
               ? t.key === 'low_stock'    ? alerts.lowStock.length
               : t.key === 'near_expiry'  ? alerts.nearExpiry.length
@@ -147,7 +147,7 @@ export default function PharmacyAlertsPage() {
 
       {/* Tab bar */}
       <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1 w-fit">
-        {TABS.map(t => {
+        {TABS.map((t: any) => {
           const count = alerts
             ? t.key === 'low_stock'    ? alerts.lowStock.length
             : t.key === 'near_expiry'  ? alerts.nearExpiry.length
@@ -175,7 +175,7 @@ export default function PharmacyAlertsPage() {
       {/* Alert list */}
       {loading ? (
         <div className="space-y-3">
-          {[1,2,3,4,5].map(i => <div key={i} className="animate-pulse bg-slate-200 rounded-2xl h-20" />)}
+          {[1,2,3,4,5].map((i: any) => <div key={i} className="animate-pulse bg-slate-200 rounded-2xl h-20" />)}
         </div>
       ) : current.length === 0 ? (
         <div className="bg-white rounded-2xl border border-slate-100 py-20 text-center">

@@ -37,7 +37,7 @@ export default function ClinicalLabPage() {
       const res = await api.get('/lab/orders', { params });
       const all: any[] = res.data.data ?? orders;
       const header = ['Order #', 'Patient', 'Phone', 'Tests', 'Priority', 'Status', 'Date'];
-      const rows = all.map(o => [
+      const rows = all.map((o: any) => [
         o.id?.slice(0, 8).toUpperCase() ?? '',
         `${o.patient?.firstName ?? ''} ${o.patient?.lastName ?? ''}`.trim(),
         o.patient?.phone ?? '',
@@ -46,7 +46,7 @@ export default function ClinicalLabPage() {
         o.status ?? '',
         o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN') : '',
       ]);
-      const csv  = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const csv  = [header, ...rows].map((r: any) => r.map((v: any) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
       const blob = new Blob([csv], { type: 'text/csv' });
       const url  = URL.createObjectURL(blob);
       const a    = document.createElement('a');
@@ -99,14 +99,14 @@ export default function ClinicalLabPage() {
   }, [showOrder]);
 
   const toggleTest = (id: string) =>
-    setSelTests(p => p.includes(id) ? p.filter(x=>x!==id) : [...p, id]);
+    setSelTests(p => p.includes(id) ? p.filter((x: any) =>x!==id) : [...p, id]);
 
   const createOrder = async () => {
     if (!selPat) { toast.error('Select a patient'); return; }
     if (!selTests.length) { toast.error('Select at least one test'); return; }
     setSaving(true);
     try {
-      const tests = catalog.filter(c => selTests.includes(c.id)).map(c => ({ testId: c.id, testName: c.name, price: c.price }));
+      const tests = catalog.filter((c: any) => selTests.includes(c.id)).map((c: any) => ({ testId: c.id, testName: c.name, price: c.price }));
       await api.post('/lab/orders', { patientId: selPat.id, tests, priority, notes: notes || undefined });
       toast.success('Lab order created!');
       setShow(false); setSelPat(null); setSelTests([]); setNotes(''); setPatSearch('');
@@ -157,7 +157,7 @@ export default function ClinicalLabPage() {
               { key: 'PROCESSING',       label: 'Processing'},
               { key: 'COMPLETED',        label: 'Ready'     },
               { key: 'DELIVERED',        label: 'Delivered' },
-            ].map(s => (
+            ].map((s: any) => (
               <button key={s.key} onClick={() => setStatusFilter(s.key)}
                 className={`text-xs font-medium px-3 py-1.5 rounded-lg transition-all ${
                   statusFilter === s.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
@@ -170,7 +170,7 @@ export default function ClinicalLabPage() {
               { key: 'ROUTINE', label: 'Routine' },
               { key: 'URGENT',  label: '⚡ Urgent'},
               { key: 'STAT',    label: '🔴 STAT'  },
-            ].map(p => (
+            ].map((p: any) => (
               <button key={p.key} onClick={() => setPriorityFilter(p.key)}
                 className={`text-xs font-medium px-3 py-1.5 rounded-lg transition-all ${
                   priorityFilter === p.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
@@ -197,12 +197,12 @@ export default function ClinicalLabPage() {
         <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
           <table className="w-full">
             <thead><tr className="bg-slate-50 border-b border-slate-100">
-              {['Order #','Patient','Tests','Priority','Date','Status',''].map(h=>(
+              {['Order #','Patient','Tests','Priority','Date','Status',''].map((h: any) =>(
                 <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
               ))}
             </tr></thead>
             <tbody className="divide-y divide-slate-50">
-              {orders.map(o=>{
+              {orders.map((o: any) =>{
                 const tests = (o.tests as any[]) ?? [];
                 return (
                   <tr key={o.id} className="hover:bg-slate-50/60 transition-colors">
@@ -271,7 +271,7 @@ export default function ClinicalLabPage() {
                       value={patSearch} onChange={e=>setPatSearch(e.target.value)} autoFocus/>
                     {patients.length>0&&(
                       <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-10 overflow-hidden">
-                        {patients.map(p=>(
+                        {patients.map((p: any) =>(
                           <button key={p.id} onClick={()=>{setSelPat(p);setPatSearch('');setPatients([]);}}
                             className="w-full text-left px-4 py-3 hover:bg-slate-50 border-b border-slate-50 last:border-0">
                             <p className="text-sm font-semibold text-slate-900">{p.firstName} {p.lastName||''}</p>
@@ -291,7 +291,7 @@ export default function ClinicalLabPage() {
                   <p className="text-xs text-slate-400 py-4 text-center">Loading catalog…</p>
                 ) : (
                   <div className="max-h-48 overflow-y-auto border border-slate-200 rounded-xl divide-y divide-slate-50">
-                    {catalog.map(t=>{
+                    {catalog.map((t: any) =>{
                       const sel = selTests.includes(t.id);
                       return (
                         <label key={t.id} className={`flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-slate-50 ${sel?'bg-[#E8F5F0]':''}`}>

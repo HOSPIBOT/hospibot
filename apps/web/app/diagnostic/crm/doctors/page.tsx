@@ -52,7 +52,7 @@ function DoctorModal({ doctor, onClose, onSaved }: { doctor?: any; onClose: () =
           <div><label className={labelCls}>Specialty</label>
             <select className={inputCls} value={form.specialty} onChange={setF('specialty')}>
               <option value="">Select…</option>
-              {SPECIALTIES.map(s => <option key={s}>{s}</option>)}
+              {SPECIALTIES.map((s: any) => <option key={s}>{s}</option>)}
             </select>
           </div>
           <div><label className={labelCls}>MCI Number</label><input className={inputCls} placeholder="MCI-12345" value={form.mciNumber} onChange={setF('mciNumber')} /></div>
@@ -101,7 +101,7 @@ export default function DoctorCRMPage() {
     } catch { toast.error('WhatsApp failed'); }
   };
 
-  const topReferrers = [...doctors].sort((a, b) => b.referralVolumeMtd - a.referralVolumeMtd).slice(0, 5);
+  const topReferrers = [...doctors].sort((a: any, b: any) => b.referralVolumeMtd - a.referralVolumeMtd).slice(0, 5);
 
   return (
     <div className="space-y-5">
@@ -167,7 +167,7 @@ export default function DoctorCRMPage() {
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-4">
-          {doctors.map(doc => (
+          {doctors.map((doc: any) => (
             <div key={doc.id} className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-all">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">

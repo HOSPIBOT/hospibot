@@ -180,7 +180,7 @@ function PublicBookingPageInner() {
               </div>
             ) : (
               <div className="space-y-3">
-                {doctors.map(d => {
+                {doctors.map((d: any) => {
                   const name = `Dr. ${d.user?.firstName} ${d.user?.lastName || ''}`.trim();
                   const isSelected = selectedDoctor?.id === d.id;
                   return (
@@ -263,7 +263,7 @@ function PublicBookingPageInner() {
             ) : (
               <>
                 <div className="grid grid-cols-3 gap-2">
-                  {slots.map(slot => (
+                  {slots.map((slot: any) => (
                     <button key={slot} onClick={() => setSelectedSlot(slot)}
                       className={`py-3 text-sm font-bold rounded-2xl border-2 transition-all ${
                         selectedSlot === slot

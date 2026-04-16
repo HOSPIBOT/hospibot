@@ -29,7 +29,7 @@ const ALL_FLAGS = [
 ];
 
   // @ts-ignore
-const CATEGORIES = [...new Set(ALL_FLAGS.map(f => f.category))];
+const CATEGORIES = [...new Set(ALL_FLAGS.map((f: any) => f.category))];
 
 export default function FeatureFlagsPage() {
   const [tenants,   setTenants]   = useState<any[]>([]);
@@ -58,14 +58,14 @@ export default function FeatureFlagsPage() {
       const res = await api.get(`/super-admin/tenants/${tenant.id}`);
       const tenantData = res.data;
       const currentFlags: Record<string,boolean> = {};
-      ALL_FLAGS.forEach(f => {
+      ALL_FLAGS.forEach((f: any) => {
         currentFlags[f.key] = tenantData.featureFlags?.[f.key] ?? tenantData.settings?.[f.key] ?? true;
       });
       setFlags(currentFlags);
     } catch {
       // Default all flags to true
       const defaults: Record<string,boolean> = {};
-      ALL_FLAGS.forEach(f => { defaults[f.key] = true; });
+      ALL_FLAGS.forEach((f: any) => { defaults[f.key] = true; });
       setFlags(defaults);
     }
   };
@@ -83,15 +83,15 @@ export default function FeatureFlagsPage() {
   };
 
   const toggleAll = (category: string, value: boolean) => {
-    const catFlags = ALL_FLAGS.filter(f => f.category === category);
+    const catFlags = ALL_FLAGS.filter((f: any) => f.category === category);
     setFlags(prev => {
       const updated = { ...prev };
-      catFlags.forEach(f => { updated[f.key] = value; });
+      catFlags.forEach((f: any) => { updated[f.key] = value; });
       return updated;
     });
   };
 
-  const filteredFlags = ALL_FLAGS.filter(f =>
+  const filteredFlags = ALL_FLAGS.filter((f: any) =>
     !search || f.label.toLowerCase().includes(search.toLowerCase()) || f.desc.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -128,7 +128,7 @@ export default function FeatureFlagsPage() {
           <div className="overflow-y-auto max-h-96">
             {loading ? (
               Array.from({length:5}).map((_,i)=><div key={i} className="m-3 animate-pulse bg-slate-200 rounded-xl h-12"/>)
-            ) : tenants.map(t => (
+            ) : tenants.map((t: any) => (
               <button key={t.id} onClick={() => selectTenant(t)}
                 className={`w-full text-left px-4 py-3 border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors ${selected?.id===t.id?'bg-[#E8F5F0] border-l-2 border-l-[#0D7C66]':''}`}>
                 <p className={`text-sm font-semibold ${selected?.id===t.id?'text-[#0D7C66]':'text-slate-900'}`}>{t.name}</p>
@@ -160,18 +160,18 @@ export default function FeatureFlagsPage() {
                 </div>
               </div>
 
-              {CATEGORIES.filter(cat => filteredFlags.some(f=>f.category===cat)).map(category => {
-                const catFlags = filteredFlags.filter(f => f.category === category);
-                const allOn  = catFlags.every(f => flags[f.key]);
-                const allOff = catFlags.every(f => !flags[f.key]);
+              {CATEGORIES.filter((cat: any) => filteredFlags.some((f: any) =>f.category===cat)).map((category: any) => {
+                const catFlags = filteredFlags.filter((f: any) => f.category === category);
+                const allOn  = catFlags.every((f: any) => flags[f.key]);
+                const allOff = catFlags.every((f: any) => !flags[f.key]);
                 const isOpen = expanded.includes(category);
                 return (
                   <div key={category} className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-                    <button onClick={() => setExpanded(e => e.includes(category) ? e.filter(c=>c!==category) : [...e, category])}
+                    <button onClick={() => setExpanded(e => e.includes(category) ? e.filter((c: any) =>c!==category) : [...e, category])}
                       className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-slate-50/60 transition-colors">
                       <div className="flex items-center gap-3">
                         <p className="font-bold text-slate-900 text-sm">{category}</p>
-                        <span className="text-xs text-slate-400">{catFlags.filter(f=>flags[f.key]).length}/{catFlags.length} on</span>
+                        <span className="text-xs text-slate-400">{catFlags.filter((f: any) =>flags[f.key]).length}/{catFlags.length} on</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <button onClick={e=>{e.stopPropagation();toggleAll(category,true);}} className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg hover:bg-emerald-100">All On</button>
@@ -181,7 +181,7 @@ export default function FeatureFlagsPage() {
                     </button>
                     {isOpen && (
                       <div className="border-t border-slate-100 divide-y divide-slate-50">
-                        {catFlags.map(flag => (
+                        {catFlags.map((flag: any) => (
                           <div key={flag.key} className="flex items-center justify-between px-5 py-3.5 hover:bg-slate-50/40 transition-colors">
                             <div>
                               <p className="text-sm font-semibold text-slate-900">{flag.label}</p>

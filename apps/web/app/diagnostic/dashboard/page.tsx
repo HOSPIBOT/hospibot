@@ -44,7 +44,7 @@ function StatusBoard({ data }: { data: any }) {
   ];
   return (
     <div className="grid grid-cols-6 gap-3">
-      {stages.map(s => (
+      {stages.map((s: any) => (
         <Link key={s.label} href={`/diagnostic/lab-orders?status=${s.q}`}>
           <div className="bg-white rounded-2xl border border-slate-100 p-4 text-center hover:shadow-md transition-all cursor-pointer">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-2"
@@ -71,7 +71,7 @@ function MorningChecklist() {
     'Bench decontamination done',
   ];
   const [done, setDone] = useState<number[]>([]);
-  const toggle = (i: number) => setDone(p => p.includes(i) ? p.filter(x => x !== i) : [...p, i]);
+  const toggle = (i: number) => setDone(p => p.includes(i) ? p.filter((x: any) => x !== i) : [...p, i]);
   if (done.length === items.length) return null;
   return (
     <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5">
@@ -232,7 +232,7 @@ export default function DiagnosticDashboard() {
               { href: '/diagnostic/results', label: 'Enter Results', icon: FlaskConical, color: '#F59E0B' },
               { href: '/diagnostic/qc', label: 'QC Log', icon: Target, color: '#8B5CF6' },
               { href: '/diagnostic/inventory', label: 'Check Reagents', icon: Package, color: '#10B981' },
-            ].map(a => (
+            ].map((a: any) => (
               <Link key={a.href} href={a.href}>
                 <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors group cursor-pointer">
                   <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"

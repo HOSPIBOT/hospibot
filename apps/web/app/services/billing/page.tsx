@@ -47,14 +47,14 @@ export default function ServicesBillingPage() {
     setExporting(true);
     try {
       const header = ['Invoice #', 'Client', 'Amount', 'Status', 'Date'];
-      const rows = filtered.map(inv => [
+      const rows = filtered.map((inv: any) => [
         inv.invoiceNumber ?? inv.id?.slice(0,8).toUpperCase() ?? '',
         clientName(inv),
         inv.totalAmount ?? 0,
         inv.status ?? '',
         inv.createdAt ? new Date(inv.createdAt).toLocaleDateString('en-IN') : '',
       ]);
-      const csv  = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const csv  = [header, ...rows].map((r: any) => r.map((v: any) => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
       const blob = new Blob([csv], { type: 'text/csv' });
       const url  = URL.createObjectURL(blob);
       const a    = document.createElement('a');
@@ -65,7 +65,7 @@ export default function ServicesBillingPage() {
     finally { setExporting(false); }
   };
 
-  const filtered = invoices.filter(inv => {
+  const filtered = invoices.filter((inv: any) => {
     if (!search) return true;
     const q = search.toLowerCase();
     return (
@@ -73,9 +73,9 @@ export default function ServicesBillingPage() {
     );
   });
 
-  const collected   = invoices.filter(i => i.status === 'PAID').reduce((s, i) => s + (i.totalAmount ?? 0), 0);
-  const outstanding = invoices.filter(i => i.status !== 'PAID').reduce((s, i) => s + (i.totalAmount ?? 0), 0);
-  const overdue     = invoices.filter(i => i.status === 'OVERDUE').length;
+  const collected   = invoices.filter((i: any) => i.status === 'PAID').reduce((s: number, i: any) => s + (i.totalAmount ?? 0), 0);
+  const outstanding = invoices.filter((i: any) => i.status !== 'PAID').reduce((s: number, i: any) => s + (i.totalAmount ?? 0), 0);
+  const overdue     = invoices.filter((i: any) => i.status === 'OVERDUE').length;
 
   const clientName = (inv: any) =>
     (inv.patientName ?? `${inv.patient?.firstName ?? ''} ${inv.patient?.lastName ?? ''}`.trim()) || '—';
@@ -107,7 +107,7 @@ export default function ServicesBillingPage() {
           { l: 'Collected',        v: formatINR(collected),      icon: TrendingUp,    color: '#10B981' },
           { l: 'Outstanding',      v: formatINR(outstanding),    icon: AlertTriangle, color: '#F59E0B' },
           { l: 'Overdue',          v: overdue,                   icon: AlertTriangle, color: '#EF4444' },
-        ].map(k => (
+        ].map((k: any) => (
           <div key={k.l} className="bg-white rounded-2xl border border-slate-100 p-5">
             <div className="flex items-center gap-2 mb-2">
               <k.icon className="w-4 h-4" style={{ color: k.color }} />
@@ -131,7 +131,7 @@ export default function ServicesBillingPage() {
         <table className="w-full">
           <thead>
             <tr className="bg-slate-50 border-b border-slate-100">
-              {['Invoice #', 'Client', 'Amount', 'Date', 'Status', ''].map(h => (
+              {['Invoice #', 'Client', 'Amount', 'Date', 'Status', ''].map((h: any) => (
                 <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
               ))}
             </tr>
@@ -154,7 +154,7 @@ export default function ServicesBillingPage() {
                 </td>
               </tr>
             ) : (
-              filtered.map(inv => (
+              filtered.map((inv: any) => (
                 <tr key={inv.id} className="hover:bg-slate-50/60 transition-colors">
                   <td className="px-5 py-3.5 text-xs font-mono text-slate-500">{inv.invoiceNumber ?? `INV-${inv.id?.slice(-4)}`}</td>
                   <td className="px-5 py-3.5 font-semibold text-slate-900 text-sm">{clientName(inv)}</td>

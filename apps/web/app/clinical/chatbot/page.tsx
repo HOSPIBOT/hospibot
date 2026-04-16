@@ -47,7 +47,7 @@ export default function ChatbotPage() {
 
       // Load intent status from settings or defaults
       const intentStatus: Record<string, boolean> = {};
-      INTENTS.forEach(i => {
+      INTENTS.forEach((i: any) => {
         intentStatus[i.key] = s.intents?.[i.key] !== false ? i.defaultOn : false;
       });
       setIntents(intentStatus);
@@ -120,7 +120,7 @@ export default function ChatbotPage() {
             <h3 className="font-semibold text-slate-900 mb-1">Intent Modules</h3>
             <p className="text-xs text-slate-400 mb-4">Toggle which capabilities the chatbot handles automatically</p>
             <div className="space-y-2">
-              {INTENTS.map(intent => {
+              {INTENTS.map((intent: any) => {
                 const enabled   = intents[intent.key] !== false;
                 const expanded  = expandedIntent === intent.key;
                 return (
@@ -201,12 +201,12 @@ export default function ChatbotPage() {
       <div className="bg-white rounded-2xl border border-slate-100 p-5">
         <h3 className="font-semibold text-slate-900 mb-3">Active Capabilities Summary</h3>
         <div className="flex flex-wrap gap-2">
-          {INTENTS.filter(i => intents[i.key] !== false ? i.defaultOn : false).map(i => (
+          {INTENTS.filter((i: any) => intents[i.key] !== false ? i.defaultOn : false).map((i: any) => (
             <span key={i.key} className="flex items-center gap-1.5 text-xs font-semibold bg-[#E8F5F0] text-[#0D7C66] px-3 py-1.5 rounded-full border border-[#0D7C66]/20">
               <i.icon className="w-3 h-3" /> {i.label}
             </span>
           ))}
-          {INTENTS.filter(i => intents[i.key] === false || (!i.defaultOn && !intents[i.key])).map(i => (
+          {INTENTS.filter((i: any) => intents[i.key] === false || (!i.defaultOn && !intents[i.key])).map((i: any) => (
             <span key={i.key} className="flex items-center gap-1.5 text-xs font-semibold bg-slate-100 text-slate-400 px-3 py-1.5 rounded-full line-through">
               {i.label}
             </span>

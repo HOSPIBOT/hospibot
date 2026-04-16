@@ -106,7 +106,7 @@ export default function ABTestingPage() {
   };
 
   const toggleStatus = (id: string) => {
-    setTests(prev => prev.map(t => t.id === id
+    setTests(prev => prev.map((t: any) => t.id === id
       ? { ...t, status: t.status === 'RUNNING' ? 'DRAFT' : 'RUNNING' }
       : t
     ));
@@ -143,7 +143,7 @@ export default function ABTestingPage() {
 
       {/* Test cards */}
       <div className="space-y-4">
-        {tests.map(test => {
+        {tests.map((test: any) => {
           const rateA = parseFloat(responseRate(test.variantA));
           const rateB = parseFloat(responseRate(test.variantB));
           const winnerVariant = test.winner ? (test.winner === 'A' ? test.variantA : test.variantB) : null;
@@ -175,7 +175,7 @@ export default function ABTestingPage() {
                 {[
                   { ...test.variantA, label: 'A', color: '#3B82F6', rate: rateA },
                   { ...test.variantB, label: 'B', color: '#8B5CF6', rate: rateB },
-                ].map(v => (
+                ].map((v: any) => (
                   <div key={v.label} className={`p-5 ${test.winner===v.label ? 'bg-amber-50/50' : ''}`}>
                     <div className="flex items-center gap-2 mb-3">
                       <span className={`w-7 h-7 rounded-lg text-white text-xs font-black flex items-center justify-center`} style={{background:v.color}}>
@@ -230,7 +230,7 @@ export default function ABTestingPage() {
               <div><label className="block text-xs font-semibold text-slate-500 mb-2 uppercase">Test Name *</label>
                 <input className={inputCls} placeholder="e.g., Appointment reminder tone" value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value}))} /></div>
               <div className="grid grid-cols-2 gap-5">
-                {(['A','B'] as const).map(v => (
+                {(['A','B'] as const).map((v: any) => (
                   <div key={v} className={`space-y-3 p-4 rounded-2xl border-2 ${v==='A'?'border-blue-200 bg-blue-50/30':'border-purple-200 bg-purple-50/30'}`}>
                     <div className="flex items-center gap-2">
                       <span className={`w-7 h-7 rounded-lg text-white text-xs font-black flex items-center justify-center ${v==='A'?'bg-blue-500':'bg-purple-500'}`}>{v}</span>
@@ -247,7 +247,7 @@ export default function ABTestingPage() {
               </div>
               <div><label className="block text-xs font-semibold text-slate-500 mb-2 uppercase">Sample Size per Variant</label>
                 <select className={inputCls} value={form.sampleSize} onChange={e=>setForm(f=>({...f,sampleSize:e.target.value}))}>
-                  {['50','100','200','500','1000'].map(n=><option key={n} value={n}>{n} patients</option>)}
+                  {['50','100','200','500','1000'].map((n: any) =><option key={n} value={n}>{n} patients</option>)}
                 </select></div>
             </div>
             <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 bg-slate-50/50 rounded-b-2xl">

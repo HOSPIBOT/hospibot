@@ -44,7 +44,7 @@ export default function SuperAdminAuditPage() {
       const res = await api.get('/super-admin/audit-logs', { params });
       const all: any[] = res.data.data ?? logs;
       const header = ['Timestamp', 'Tenant ID', 'User', 'Action', 'Entity', 'IP Address', 'Details'];
-      const rows = all.map(l => [
+      const rows = all.map((l: any) => [
         new Date(l.createdAt).toLocaleString('en-IN'),
         l.tenantId ?? '',
         l.user ? `${l.user.firstName} ${l.user.lastName || ''}` : '—',
@@ -53,7 +53,7 @@ export default function SuperAdminAuditPage() {
         l.ipAddress ?? '',
         l.details ? JSON.stringify(l.details).slice(0, 200) : '',
       ]);
-      const csv  = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const csv  = [header, ...rows].map((r: any) => r.map((v: any) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
       const blob = new Blob([csv], { type: 'text/csv' });
       const url  = URL.createObjectURL(blob);
       const a    = document.createElement('a');
@@ -93,12 +93,12 @@ export default function SuperAdminAuditPage() {
         <select value={filters.entity} onChange={e => setFilters(f => ({ ...f, entity: e.target.value }))}
           className="px-3 py-2 text-sm border border-slate-200 rounded-xl bg-slate-50 outline-none cursor-pointer">
           <option value="">All Entities</option>
-          {['patient','appointment','invoice','user','setting','lead','automation_rule','prescription','lab_order'].map(e => <option key={e} value={e}>{e}</option>)}
+          {['patient','appointment','invoice','user','setting','lead','automation_rule','prescription','lab_order'].map((e: any) => <option key={e} value={e}>{e}</option>)}
         </select>
         <select value={filters.action} onChange={e => setFilters(f => ({ ...f, action: e.target.value }))}
           className="px-3 py-2 text-sm border border-slate-200 rounded-xl bg-slate-50 outline-none cursor-pointer">
           <option value="">All Actions</option>
-          {['CREATE','READ','UPDATE','DELETE','EXPORT','LOGIN','ERASURE_REQUEST'].map(a => <option key={a} value={a}>{a}</option>)}
+          {['CREATE','READ','UPDATE','DELETE','EXPORT','LOGIN','ERASURE_REQUEST'].map((a: any) => <option key={a} value={a}>{a}</option>)}
         </select>
         <button onClick={() => load(1)} className="px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-xl hover:bg-slate-800 transition-colors">Apply</button>
         <button onClick={() => setFilters({ action: '', entity: '' })} className="px-4 py-2 border border-slate-200 text-slate-600 text-sm font-medium rounded-xl hover:bg-slate-50 transition-colors">Reset</button>
@@ -109,7 +109,7 @@ export default function SuperAdminAuditPage() {
         <table className="w-full">
           <thead>
             <tr className="bg-slate-50 border-b border-slate-100">
-              {['Timestamp', 'Tenant', 'User', 'Action', 'Entity', 'IP Address'].map(h => (
+              {['Timestamp', 'Tenant', 'User', 'Action', 'Entity', 'IP Address'].map((h: any) => (
                 <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
               ))}
             </tr>
@@ -126,7 +126,7 @@ export default function SuperAdminAuditPage() {
                 <Activity className="w-10 h-10 text-slate-200 mx-auto mb-3" />
                 <p className="text-slate-400 text-sm">No audit logs found</p>
               </td></tr>
-            ) : logs.map(log => (
+            ) : logs.map((log: any) => (
               <tr key={log.id} className="hover:bg-slate-50/60 transition-colors">
                 <td className="px-5 py-3 text-xs text-slate-500 whitespace-nowrap">
                   {new Date(log.createdAt).toLocaleString('en-IN')}

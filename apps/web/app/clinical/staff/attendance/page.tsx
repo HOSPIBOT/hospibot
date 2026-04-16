@@ -71,38 +71,38 @@ export default function StaffAttendancePage() {
       const d = new Date(year, month, i + 1);
       return d.toISOString().slice(0, 10);
     });
-    const header = ['Staff Name', 'Role', ...dates.map(d => d.slice(8))];
-    const rows = staff.map(s => [
+    const header = ['Staff Name', 'Role', ...dates.map((d: any) => d.slice(8))];
+    const rows = staff.map((s: any) => [
       `${s.firstName || ''} ${s.lastName || ''}`.trim(),
       s.role?.replace(/_/g,' ') || '',
-      ...dates.map(d => attendance[s.id]?.[d] || '—'),
+      ...dates.map((d: any) => attendance[s.id]?.[d] || '—'),
     ]);
-    const csv = [header,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const csv = [header,...rows].map((r: any) =>r.map((v: any) =>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
     const blob = new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);
     const a = document.createElement('a');a.href=url;a.download=`attendance-${MONTHS[month]}-${year}.csv`;
     a.click();URL.revokeObjectURL(url);toast.success('Attendance report exported');
     setExporting(false);
   };
 
-  const filteredStaff = staff.filter(s =>
+  const filteredStaff = staff.filter((s: any) =>
     !search || `${s.firstName} ${s.lastName} ${s.role} ${s.email}`.toLowerCase().includes(search.toLowerCase())
   );
 
   // Monthly summary per staff member
   const getSummary = (userId: string) => {
     const rec = attendance[userId] || {};
-    const dates = Object.keys(rec).filter(d => d.startsWith(`${year}-${String(month+1).padStart(2,'0')}`));
-    const present  = dates.filter(d => rec[d] === 'PRESENT').length;
-    const absent   = dates.filter(d => rec[d] === 'ABSENT').length;
-    const halfDay  = dates.filter(d => rec[d] === 'HALF_DAY').length;
-    const leave    = dates.filter(d => rec[d] === 'LEAVE').length;
+    const dates = Object.keys(rec).filter((d: any) => d.startsWith(`${year}-${String(month+1).padStart(2,'0')}`));
+    const present  = dates.filter((d: any) => rec[d] === 'PRESENT').length;
+    const absent   = dates.filter((d: any) => rec[d] === 'ABSENT').length;
+    const halfDay  = dates.filter((d: any) => rec[d] === 'HALF_DAY').length;
+    const leave    = dates.filter((d: any) => rec[d] === 'LEAVE').length;
     return { present, absent, halfDay, leave };
   };
 
   const todayStats = {
-    present: staff.filter(s => attendance[s.id]?.[today] === 'PRESENT').length,
-    absent:  staff.filter(s => attendance[s.id]?.[today] === 'ABSENT').length,
-    onLeave: staff.filter(s => attendance[s.id]?.[today] === 'LEAVE').length,
+    present: staff.filter((s: any) => attendance[s.id]?.[today] === 'PRESENT').length,
+    absent:  staff.filter((s: any) => attendance[s.id]?.[today] === 'ABSENT').length,
+    onLeave: staff.filter((s: any) => attendance[s.id]?.[today] === 'LEAVE').length,
   };
 
   return (
@@ -122,7 +122,7 @@ export default function StaffAttendancePage() {
           </select>
           <select value={year} onChange={e=>setYear(+e.target.value)}
             className="px-3 py-2 text-sm border border-slate-200 rounded-xl bg-slate-50 outline-none">
-            {[2024,2025,2026].map(y=><option key={y}>{y}</option>)}
+            {[2024,2025,2026].map((y: any) =><option key={y}>{y}</option>)}
           </select>
           <button onClick={exportCSV} disabled={exporting}
             className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm font-medium px-3 py-2 rounded-xl hover:bg-slate-50 disabled:opacity-50">
@@ -141,7 +141,7 @@ export default function StaffAttendancePage() {
           { label:"Today's Absent",   value: todayStats.absent,  color:'#EF4444' },
           { label:"On Leave",         value: todayStats.onLeave, color:'#3B82F6' },
           { label:"Total Staff",      value: staff.length,       color:'#0D7C66' },
-        ].map(k=>(
+        ].map((k: any) =>(
           <div key={k.label} className="bg-white rounded-2xl border border-slate-100 p-5">
             <p className="text-xs text-slate-500">{k.label}</p>
             <p className="text-3xl font-bold mt-1" style={{color:k.color}}>{k.value}</p>
@@ -164,7 +164,7 @@ export default function StaffAttendancePage() {
         <div className="space-y-2">
           {loading ? Array.from({length:5}).map((_,i) => <div key={i} className="animate-pulse bg-slate-200 rounded-xl h-12"/>) :
           filteredStaff.length === 0 ? <p className="text-slate-400 text-sm text-center py-8">No staff found</p> :
-          filteredStaff.map(s => {
+          filteredStaff.map((s: any) => {
             const current = getAttendance(s.id, today);
             const isSaving = saving === `${s.id}-${today}`;
             return (
@@ -179,7 +179,7 @@ export default function StaffAttendancePage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  {(['PRESENT','HALF_DAY','LEAVE','ABSENT'] as AttendanceStatus[]).map(status => {
+                  {(['PRESENT','HALF_DAY','LEAVE','ABSENT'] as AttendanceStatus[]).map((status: any) => {
                     const cfg = STATUS_CONFIG[status];
                     return (
                       <button key={status} onClick={() => markAttendance(s.id, today, status)}
@@ -215,7 +215,7 @@ export default function StaffAttendancePage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-50">
-            {filteredStaff.map(s => {
+            {filteredStaff.map((s: any) => {
               const sum = getSummary(s.id);
               const total = sum.present + sum.absent + sum.halfDay + sum.leave;
               const pct = total > 0 ? Math.round(((sum.present + sum.halfDay * 0.5) / total) * 100) : 0;

@@ -26,7 +26,7 @@ export default function WellnessProductsPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const filtered = search ? products.filter(p => p.name?.toLowerCase().includes(search.toLowerCase())) : products;
+  const filtered = search ? products.filter((p: any) => p.name?.toLowerCase().includes(search.toLowerCase())) : products;
 
   const save = async () => {
     if (!form.name || !form.price) { toast.error('Name and price required'); return; }
@@ -82,7 +82,7 @@ export default function WellnessProductsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-4">
-          {filtered.map(p => (
+          {filtered.map((p: any) => (
             <div key={p.id} className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-shadow">
               <div className="flex items-start justify-between mb-2">
                 <div>
@@ -113,7 +113,7 @@ export default function WellnessProductsPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div><label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Category</label>
                   <select className={inputCls} value={form.category} onChange={e=>setForm(f=>({...f,category:e.target.value}))}>
-                    {CATEGORIES.map(c=><option key={c}>{c}</option>)}</select></div>
+                    {CATEGORIES.map((c: any) =><option key={c}>{c}</option>)}</select></div>
                 <div><label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Price (₹) *</label>
                   <input type="number" className={inputCls} placeholder="999" value={form.price} onChange={e=>setForm(f=>({...f,price:e.target.value}))}/></div>
               </div>

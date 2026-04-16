@@ -25,10 +25,10 @@ Priya,Sharma,+919876543211,priya@email.com,1992-07-22,FEMALE,B+,"456 Jubilee Hil
 Sunita,Reddy,+919876543212,,1978-11-08,FEMALE,A+,,Secunderabad,Aspirin`;
 
 function parseCSV(text: string): ImportRow[] {
-  const lines = text.trim().split('\n').filter(l => l.trim());
+  const lines = text.trim().split('\n').filter((l: any) => l.trim());
   if (lines.length < 2) return [];
 
-  const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, '').trim());
+  const headers = lines[0].split(',').map((h: any) => h.trim().replace(/^"|"$/g, '').trim());
   const colMap: Record<string, number> = {};
   for (const col of ALL_COLS) {
     const idx = headers.findIndex(h => h.toLowerCase().replace(/[\s_-]/g, '') === col.toLowerCase());
@@ -101,7 +101,7 @@ export default function PatientImportPage() {
   }, [handleFile]);
 
   const importAll = async () => {
-    const valid = rows.filter(r => r._valid && !r._imported);
+    const valid = rows.filter((r: any) => r._valid && !r._imported);
     if (valid.length === 0) { toast.error('No valid rows to import'); return; }
 
     setImporting(true);
@@ -120,14 +120,14 @@ export default function PatientImportPage() {
           bloodGroup:  row.bloodGroup,
           address:     row.address,
           city:        row.city,
-          allergies:   row.allergies ? row.allergies.split(',').map(a => a.trim()).filter(Boolean) : [],
+          allergies:   row.allergies ? row.allergies.split(',').map((a: any) => a.trim()).filter(Boolean) : [],
         });
         // Mark as imported in UI
-        setRows(prev => prev.map(r => r.phone === row.phone ? { ...r, _imported: true } : r));
+        setRows(prev => prev.map((r: any) => r.phone === row.phone ? { ...r, _imported: true } : r));
         imported++;
       } catch (err: any) {
         const msg = err?.response?.data?.message || 'Failed';
-        setRows(prev => prev.map(r => r.phone === row.phone ? { ...r, _valid: false, _error: msg } : r));
+        setRows(prev => prev.map((r: any) => r.phone === row.phone ? { ...r, _valid: false, _error: msg } : r));
         failed++;
       }
       setProgress(Math.round(((i + 1) / valid.length) * 100));
@@ -148,9 +148,9 @@ export default function PatientImportPage() {
     a.click(); URL.revokeObjectURL(url);
   };
 
-  const valid   = rows.filter(r => r._valid);
-  const invalid = rows.filter(r => !r._valid);
-  const imported = rows.filter(r => r._imported);
+  const valid   = rows.filter((r: any) => r._valid);
+  const invalid = rows.filter((r: any) => !r._valid);
+  const imported = rows.filter((r: any) => r._imported);
 
   return (
     <div className="space-y-5">
@@ -210,7 +210,7 @@ export default function PatientImportPage() {
               { label: 'Valid',       value: valid.length,   color: '#10B981' },
               { label: 'Errors',      value: invalid.length, color: '#EF4444' },
               { label: 'Imported',    value: imported.length, color: '#0D7C66' },
-            ].map(s => (
+            ].map((s: any) => (
               <div key={s.label} className="bg-white rounded-2xl border border-slate-100 p-4 text-center">
                 <p className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</p>
                 <p className="text-xs text-slate-400 mt-0.5">{s.label}</p>

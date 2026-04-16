@@ -199,7 +199,7 @@ function FamilyCard({ family, onToggle, onThemeUpdate }: {
           )}
 
           <div className="space-y-1.5 max-h-64 overflow-y-auto">
-            {(family.subTypes ?? []).map(st => (
+            {(family.subTypes ?? []).map((st: any) => (
               <div key={st.id} className="flex items-center justify-between px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors group">
                 <div className="flex items-center gap-2">
                   <span className={`w-1.5 h-1.5 rounded-full ${st.isActive ? 'bg-emerald-500' : 'bg-slate-300'}`} />
@@ -239,13 +239,13 @@ export default function PortalsManagementPage() {
   const handleToggle = async (id: string, isActive: boolean) => {
     try {
       await api.patch(`/portal/families/${id}/toggle`, { isActive });
-      setFamilies(f => f.map(fam => fam.id === id ? { ...fam, isActive } : fam));
+      setFamilies(f => f.map((fam: any) => fam.id === id ? { ...fam, isActive } : fam));
       toast.success(isActive ? 'Portal enabled' : 'Portal disabled');
     } catch { toast.error('Failed to update portal'); }
   };
 
   const handleThemeUpdate = (id: string, theme: Theme) => {
-    setFamilies(f => f.map(fam => fam.id === id ? { ...fam, theme } : fam));
+    setFamilies(f => f.map((fam: any) => fam.id === id ? { ...fam, theme } : fam));
   };
 
   const handleAddFamily = async () => {
@@ -329,7 +329,7 @@ export default function PortalsManagementPage() {
         ))}</div>
       ) : (
         <div className="space-y-3">
-          {families.map(family => (
+          {families.map((family: any) => (
             <FamilyCard key={family.id} family={family} onToggle={handleToggle} onThemeUpdate={handleThemeUpdate} />
           ))}
         </div>

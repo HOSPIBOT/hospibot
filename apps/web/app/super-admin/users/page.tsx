@@ -56,14 +56,14 @@ export default function UsersPage() {
       const res = await getAllUsers({ page: 1, limit: 5000, search: debSearch || undefined, role: roleFilter });
       const all: PlatformUser[] = res.data;
       const header = ['First Name', 'Last Name', 'Email', 'Role', 'Tenant', 'Status', 'Last Login'];
-      const rows = all.map(u => [
+      const rows = all.map((u: any) => [
         u.firstName ?? '', u.lastName ?? '', u.email ?? '',
         u.role?.replace(/_/g, ' ') ?? '',
         (u as any).tenant?.name ?? '',
         u.isActive !== false ? 'Active' : 'Inactive',
         u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleDateString('en-IN') : 'Never',
       ]);
-      const csv  = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const csv  = [header, ...rows].map((r: any) => r.map((v: any) => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
       const blob = new Blob([csv], { type: 'text/csv' });
       const url  = URL.createObjectURL(blob);
       const a    = document.createElement('a');
@@ -75,7 +75,7 @@ export default function UsersPage() {
   };
 
   // Aggregate counts
-  const superAdminCount = users.filter(u => u.role === 'SUPER_ADMIN').length;
+  const superAdminCount = users.filter((u: any) => u.role === 'SUPER_ADMIN').length;
 
   return (
     <div className="space-y-5">
@@ -107,7 +107,7 @@ export default function UsersPage() {
           </div>
           <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}
             className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 outline-none cursor-pointer">
-            {ALL_ROLES.map(r => <option key={r} value={r}>{r === 'ALL' ? 'All Roles' : r.replace(/_/g, ' ')}</option>)}
+            {ALL_ROLES.map((r: any) => <option key={r} value={r}>{r === 'ALL' ? 'All Roles' : r.replace(/_/g, ' ')}</option>)}
           </select>
         </div>
       </div>
@@ -122,7 +122,7 @@ export default function UsersPage() {
           <table className="w-full">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-100">
-                {['User', 'Role', 'Tenant', 'Status', 'Last Login', ''].map(h => (
+                {['User', 'Role', 'Tenant', 'Status', 'Last Login', ''].map((h: any) => (
                   <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
                 ))}
               </tr>

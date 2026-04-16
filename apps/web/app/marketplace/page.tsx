@@ -108,7 +108,7 @@ function CartDrawer({ items, onClose, onRemove, onUpdateQty }: {
   const [step, setStep]         = useState<'cart' | 'checkout'>('cart');
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ name: '', phone: '', email: '', address: '', city: '', pincode: '' });
-  const total = items.reduce((s, i) => s + i.price * i.quantity, 0);
+  const total = items.reduce((s: number, i: any) => s + i.price * i.quantity, 0);
 
   const placeOrder = async () => {
     if (!form.name || !form.phone || !form.address) { toast.error('Name, phone and address required'); return; }
@@ -117,7 +117,7 @@ function CartDrawer({ items, onClose, onRemove, onUpdateQty }: {
       const res = await api.post('/marketplace/orders', {
         buyerName: form.name, buyerPhone: form.phone, buyerEmail: form.email,
         buyerAddress: form.address, buyerCity: form.city, buyerPincode: form.pincode,
-        items: items.map(i => ({ productId: i.id, productName: i.name, quantity: i.quantity, price: i.price })),
+        items: items.map((i: any) => ({ productId: i.id, productName: i.name, quantity: i.quantity, price: i.price })),
       });
       toast.success(`Order placed! Order #${res.data.orderNumber}. The seller will contact you shortly.`);
       onClose();
@@ -146,7 +146,7 @@ function CartDrawer({ items, onClose, onRemove, onUpdateQty }: {
               </div>
             ) : (
               <div className="space-y-4">
-                {items.map(item => (
+                {items.map((item: any) => (
                   <div key={item.id} className="flex items-center gap-3 bg-slate-50 rounded-xl p-3">
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-slate-900 truncate">{item.name}</p>
@@ -181,7 +181,7 @@ function CartDrawer({ items, onClose, onRemove, onUpdateQty }: {
                 { key: 'address', label: 'Delivery Address *', placeholder: 'Street, Area' },
                 { key: 'city',    label: 'City',              placeholder: 'Hyderabad' },
                 { key: 'pincode', label: 'Pincode',           placeholder: '500001' },
-              ].map(f => (
+              ].map((f: any) => (
                 <div key={f.key}>
                   <label className="block text-xs font-semibold text-slate-500 mb-1">{f.label}</label>
                   <input className={inputCls} placeholder={f.placeholder}
@@ -195,7 +195,7 @@ function CartDrawer({ items, onClose, onRemove, onUpdateQty }: {
         {items.length > 0 && (
           <div className="px-5 py-4 border-t border-slate-100">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-sm text-slate-600">Total ({items.reduce((s, i) => s + i.quantity, 0)} items)</span>
+              <span className="text-sm text-slate-600">Total ({items.reduce((s: number, i: any) => s + i.quantity, 0)} items)</span>
               <span className="text-lg font-bold text-slate-900">{formatINR(total)}</span>
             </div>
             {step === 'cart' ? (
@@ -259,20 +259,20 @@ export default function MarketplacePage() {
 
   const addToCart = (product: any) => {
     setCart(c => {
-      const existing = c.find(i => i.id === product.id);
-      if (existing) return c.map(i => i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i);
+      const existing = c.find((i: any) => i.id === product.id);
+      if (existing) return c.map((i: any) => i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i);
       return [...c, { id: product.id, name: product.name, price: product.price, quantity: 1, tenantName: product.tenantName }];
     });
     toast.success(`${product.name} added to cart`, { duration: 2000 });
   };
 
-  const removeFromCart = (id: string) => setCart(c => c.filter(i => i.id !== id));
+  const removeFromCart = (id: string) => setCart(c => c.filter((i: any) => i.id !== id));
   const updateQty = (id: string, qty: number) => {
     if (qty <= 0) removeFromCart(id);
-    else setCart(c => c.map(i => i.id === id ? { ...i, quantity: qty } : i));
+    else setCart(c => c.map((i: any) => i.id === id ? { ...i, quantity: qty } : i));
   };
 
-  const cartCount = cart.reduce((s, i) => s + i.quantity, 0);
+  const cartCount = cart.reduce((s: number, i: any) => s + i.quantity, 0);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -306,7 +306,7 @@ export default function MarketplacePage() {
                 { label: 'Products',  value: stats.totalProducts },
                 { label: 'Orders',    value: stats.totalOrders },
                 { label: 'Providers', value: stats.portalBreakdown?.length || 0 },
-              ].map(s => (
+              ].map((s: any) => (
                 <div key={s.label}>
                   <p className="text-2xl font-bold">{s.value.toLocaleString('en-IN')}</p>
                   <p className="text-emerald-300 text-xs">{s.label}</p>
@@ -321,7 +321,7 @@ export default function MarketplacePage() {
         {/* Filters + Cart */}
         <div className="flex items-center gap-3 mb-6 flex-wrap">
           <div className="flex items-center gap-2">
-            {[{ key: '', label: 'All' }, ...Object.entries(PORTAL_LABELS).map(([k, v]) => ({ key: k, label: v.label }))].map(p => (
+            {[{ key: '', label: 'All' }, ...Object.entries(PORTAL_LABELS).map(([k, v]) => ({ key: k, label: v.label }))].map((p: any) => (
               <button key={p.key} onClick={() => setPortal(p.key)}
                 className={`text-xs font-semibold px-3 py-1.5 rounded-full border transition-all ${
                   portalFilter === p.key ? 'bg-[#0D7C66] text-white border-[#0D7C66]' : 'bg-white border-slate-200 text-slate-600 hover:border-[#0D7C66] hover:text-[#0D7C66]'
@@ -366,7 +366,7 @@ export default function MarketplacePage() {
         ) : (
           <>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {products.map(p => (
+              {products.map((p: any) => (
                 <ProductCard key={p.id} product={p} onAddToCart={addToCart} />
               ))}
             </div>

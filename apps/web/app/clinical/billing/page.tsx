@@ -105,26 +105,26 @@ export default function BillingPage() {
   const updateItem = (id: string, field: keyof LineItem, value: any) => {
     setForm(f => ({
       ...f,
-      items: f.items.map(item => item.id === id ? calcItem({ ...item, [field]: value }) : item),
+      items: f.items.map((item: any) => item.id === id ? calcItem({ ...item, [field]: value }) : item),
     }));
   };
   const addItem = () => setForm(f => ({ ...f, items: [...f.items, newItem()] }));
-  const removeItem = (id: string) => setForm(f => ({ ...f, items: f.items.filter(i => i.id !== id) }));
+  const removeItem = (id: string) => setForm(f => ({ ...f, items: f.items.filter((i: any) => i.id !== id) }));
 
   // Totals
-  const subtotal  = form.items.reduce((s, i) => s + i.amount, 0);
-  const gstTotal  = form.items.reduce((s, i) => s + i.gstAmount, 0);
+  const subtotal  = form.items.reduce((s: number, i: any) => s + i.amount, 0);
+  const gstTotal  = form.items.reduce((s: number, i: any) => s + i.gstAmount, 0);
   const discount  = form.discount;
   const total     = subtotal + gstTotal - discount;
 
   const handleCreate = async () => {
     if (!form.patientId) { toast.error('Select a patient'); return; }
-    if (form.items.every(i => !i.description)) { toast.error('Add at least one item'); return; }
+    if (form.items.every((i: any) => !i.description)) { toast.error('Add at least one item'); return; }
     setSubmitting(true);
     try {
       await api.post('/billing/invoices', {
         patientId: form.patientId,
-        items: form.items.filter(i => i.description).map(i => ({
+        items: form.items.filter((i: any) => i.description).map((i: any) => ({
           description: i.description,
           quantity: i.quantity,
           rate: Math.round(i.rate * 100), // convert to paise
@@ -218,7 +218,7 @@ export default function BillingPage() {
             { label: 'Total Collected',    value: formatINR(revenue.totalCollected ?? 0),  color: '#10B981', icon: CheckCircle2 },
             { label: 'Outstanding',        value: formatINR(revenue.totalOutstanding ?? 0), color: '#EF4444', icon: AlertCircle },
             { label: 'Invoices (Month)',   value: (revenue.invoiceCount ?? 0).toLocaleString('en-IN'), color: '#3B82F6', icon: FileText },
-          ].map(s => (
+          ].map((s: any) => (
             <div key={s.label} className="bg-white rounded-2xl border border-slate-100 p-4">
               <div className="flex items-center gap-2 mb-2">
                 <s.icon className="w-4 h-4" style={{ color: s.color }} />
@@ -241,7 +241,7 @@ export default function BillingPage() {
         <select value={statusFilter} onChange={e => setStatus(e.target.value)}
           className="px-3 py-2 text-sm border border-slate-200 rounded-xl bg-slate-50 outline-none focus:border-[#0D7C66] cursor-pointer">
           <option value="">All Statuses</option>
-          {['DRAFT','SENT','PAID','PARTIALLY_PAID','OVERDUE','CANCELLED'].map(s => (
+          {['DRAFT','SENT','PAID','PARTIALLY_PAID','OVERDUE','CANCELLED'].map((s: any) => (
             <option key={s} value={s}>{s.replace('_', ' ')}</option>
           ))}
         </select>
@@ -279,7 +279,7 @@ export default function BillingPage() {
                   <p className="text-slate-400 text-sm font-medium">No invoices found</p>
                 </td>
               </tr>
-            ) : invoices.map(inv => (
+            ) : invoices.map((inv: any) => (
               <tr key={inv.id} className="hover:bg-slate-50/60 transition-colors group">
                 <td className="px-5 py-3.5 font-mono text-sm font-bold text-[#0D7C66]">{inv.invoiceNumber}</td>
                 <td className="px-5 py-3.5 text-sm text-slate-900 font-medium">
@@ -362,7 +362,7 @@ export default function BillingPage() {
                     <input className={inputCls} placeholder="Search patient…" value={patientSearch} onChange={e => setPatientSearch(e.target.value)} />
                     {patientResults.length > 0 && (
                       <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-10 overflow-hidden">
-                        {patientResults.map(p => (
+                        {patientResults.map((p: any) => (
                           <button key={p.id} onClick={() => { setForm(f => ({ ...f, patientId: p.id, patientName: `${p.firstName} ${p.lastName || ''}` })); setPatientSearch(''); setPatientResults([]); }}
                             className="w-full text-left px-4 py-2.5 hover:bg-slate-50 border-b border-slate-50 last:border-0">
                             <p className="text-sm font-medium text-slate-900">{p.firstName} {p.lastName || ''}</p>
@@ -397,7 +397,7 @@ export default function BillingPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {form.items.map(item => (
+                      {form.items.map((item: any) => (
                         <tr key={item.id}>
                           <td className="px-3 py-2">
                             <input className="w-full text-sm outline-none bg-transparent placeholder:text-slate-300 focus:placeholder:text-slate-400"
@@ -416,7 +416,7 @@ export default function BillingPage() {
                           <td className="px-3 py-2">
                             <select className="w-full text-sm text-center outline-none bg-transparent cursor-pointer"
                               value={item.gstRate} onChange={e => updateItem(item.id, 'gstRate', Number(e.target.value))}>
-                              {GST_RATES.map(r => <option key={r} value={r}>{r}%</option>)}
+                              {GST_RATES.map((r: any) => <option key={r} value={r}>{r}%</option>)}
                             </select>
                           </td>
                           <td className="px-3 py-2 text-right text-sm font-semibold text-slate-900">
@@ -502,7 +502,7 @@ export default function BillingPage() {
               <div>
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Payment Method</label>
                 <div className="grid grid-cols-4 gap-2">
-                  {['CASH','CARD','UPI','CHEQUE'].map(m => (
+                  {['CASH','CARD','UPI','CHEQUE'].map((m: any) => (
                     <button key={m} onClick={() => setPayMethod(m)}
                       className={`py-2 text-xs font-bold rounded-xl border-2 transition-all ${payMethod === m ? 'border-[#0D7C66] bg-[#E8F5F0] text-[#0D7C66]' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>
                       {m}

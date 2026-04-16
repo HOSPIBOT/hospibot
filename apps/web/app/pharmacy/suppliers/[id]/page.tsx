@@ -41,7 +41,7 @@ export default function SupplierDetailPage() {
         // Fallback: load all suppliers and find this one
         api.get('/pharmacy/suppliers').then(r => {
           const all: any[] = Array.isArray(r.data) ? r.data : (r.data?.data ?? []);
-          setSupplier(all.find(s => s.id === id) ?? null);
+          setSupplier(all.find((s: any) => s.id === id) ?? null);
         }).catch(() => setSupplier(null));
       }
       setOrders(ordersRes.data?.data ?? []);
@@ -51,14 +51,14 @@ export default function SupplierDetailPage() {
     });
   }, [id]);
 
-  const totalSpend   = orders.filter(o => o.status === 'RECEIVED').reduce((s, o) => s + (o.totalAmount ?? 0), 0);
-  const pendingOrders = orders.filter(o => ['SENT', 'PARTIAL', 'DRAFT'].includes(o.status)).length;
+  const totalSpend   = orders.filter((o: any) => o.status === 'RECEIVED').reduce((s: number, o: any) => s + (o.totalAmount ?? 0), 0);
+  const pendingOrders = orders.filter((o: any) => ['SENT', 'PARTIAL', 'DRAFT'].includes(o.status)).length;
   const lastOrderDate = orders.length > 0 ? orders[0].createdAt : null;
 
   if (loading) {
     return (
       <div className="space-y-4 max-w-4xl">
-        {[1,2,3].map(i => <div key={i} className="animate-pulse bg-slate-200 rounded-2xl h-24" />)}
+        {[1,2,3].map((i: any) => <div key={i} className="animate-pulse bg-slate-200 rounded-2xl h-24" />)}
       </div>
     );
   }
@@ -112,7 +112,7 @@ export default function SupplierDetailPage() {
           { label: 'Total Spend',     value: formatINR(totalSpend),   icon: TrendingUp,   color: '#10B981'  },
           { label: 'Pending Orders',  value: pendingOrders,           icon: Clock,        color: '#F59E0B'  },
           { label: 'Last Order',      value: lastOrderDate ? formatDate(lastOrderDate) : 'Never', icon: Package, color: '#3B82F6' },
-        ].map(k => (
+        ].map((k: any) => (
           <div key={k.label} className="bg-white rounded-2xl border border-slate-100 p-5">
             <div className="flex items-center gap-2 mb-2">
               <k.icon className="w-4 h-4" style={{ color: k.color }} />
@@ -135,7 +135,7 @@ export default function SupplierDetailPage() {
             { icon: MapPin,    value: supplier.address ? `${supplier.address}${supplier.city ? ', ' + supplier.city : ''}` : supplier.city },
             { icon: Building2, value: supplier.gstNumber ? `GST: ${supplier.gstNumber}` : null },
             { icon: FileText,  value: supplier.drugLicence ? `Drug Lic: ${supplier.drugLicence}` : null },
-          ].filter(f => f.value).map((f, i) => (
+          ].filter((f: any) => f.value).map((f, i) => (
             <div key={i} className="flex items-start gap-2.5 text-sm text-slate-600">
               <f.icon className="w-4 h-4 text-slate-400 flex-shrink-0 mt-0.5" />
               <span className="truncate">{f.value}</span>
@@ -156,7 +156,7 @@ export default function SupplierDetailPage() {
           </div>
           {loadingOrders ? (
             <div className="p-5 space-y-3">
-              {[1,2,3].map(i => <div key={i} className="animate-pulse bg-slate-100 rounded-xl h-12" />)}
+              {[1,2,3].map((i: any) => <div key={i} className="animate-pulse bg-slate-100 rounded-xl h-12" />)}
             </div>
           ) : orders.length === 0 ? (
             <div className="py-16 text-center">
@@ -171,13 +171,13 @@ export default function SupplierDetailPage() {
             <table className="w-full">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-100">
-                  {['PO Number', 'Date', 'Amount', 'Status', ''].map(h => (
+                  {['PO Number', 'Date', 'Amount', 'Status', ''].map((h: any) => (
                     <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
-                {orders.map(po => (
+                {orders.map((po: any) => (
                   <tr key={po.id} className="hover:bg-slate-50/60 transition-colors">
                     <td className="px-4 py-3 font-mono text-xs text-slate-700 font-semibold">
                       {po.orderNumber ?? po.id?.slice(0, 8).toUpperCase()}

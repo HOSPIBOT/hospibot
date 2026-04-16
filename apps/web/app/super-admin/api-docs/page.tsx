@@ -192,7 +192,7 @@ export default function APIDocsPage() {
   const [copied,   setCopied]   = useState('');
 
   const toggle = (name: string) => {
-    setExpanded(e => e.includes(name) ? e.filter(n=>n!==name) : [...e, name]);
+    setExpanded(e => e.includes(name) ? e.filter((n: any) =>n!==name) : [...e, name]);
   };
 
   const copyText = (text: string, id: string) => {
@@ -203,7 +203,7 @@ export default function APIDocsPage() {
     });
   };
 
-  const totalEndpoints = API_SECTIONS.reduce((s,sect)=>s+sect.endpoints.length, 0);
+  const totalEndpoints = API_SECTIONS.reduce((s: number, sect: any) =>s+sect.endpoints.length, 0);
 
   return (
     <div className="space-y-5">
@@ -260,7 +260,7 @@ export default function APIDocsPage() {
 
       {/* Endpoints by section */}
       <div className="space-y-3">
-        {API_SECTIONS.map(section => {
+        {API_SECTIONS.map((section: any) => {
           const isOpen = expanded.includes(section.name);
           return (
             <div key={section.name} className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
@@ -336,7 +336,7 @@ export default function APIDocsPage() {
             { label:'File Uploads',     value:'Max 10MB per file' },
             { label:'Search Results',   value:'Max 1000 per page' },
             { label:'Token Expiry',     value:'Access: 15m · Refresh: 7d' },
-          ].map(r=>(
+          ].map((r: any) =>(
             <div key={r.label} className="bg-slate-50 rounded-xl p-3">
               <p className="text-xs text-slate-400 font-medium">{r.label}</p>
               <p className="text-sm font-semibold text-slate-900 mt-0.5">{r.value}</p>
