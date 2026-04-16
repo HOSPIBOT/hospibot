@@ -19,7 +19,8 @@
     "db:push": "cd server && npx prisma db push",
     "db:seed": "cd server && npx prisma db seed",
     "db:studio": "cd server && npx prisma studio",
-    "vercel-build": "cd apps/web && npm install && npm run build"
+    "vercel-build": "cd apps/web && npm install && npm run build",
+    "install:web": "cd apps/web && npm install"
   },
   "devDependencies": {
     "turbo": "^2.0.0"
