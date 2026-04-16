@@ -41,7 +41,6 @@ export default function PortalLogin({ portalSlug, features }: PortalLoginProps) 
       ].forEach(k => localStorage.removeItem(k));
     }
   }, [portalSlug]);
-  const { setAuth } = useAuthStore();
   const [form, setForm] = useState({ email: '', password: '' });
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
