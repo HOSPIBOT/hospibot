@@ -1,5 +1,5 @@
 import {
-  Injectable, UnauthorizedException, ConflictException, NotFoundException,
+  Injectable, Logger, UnauthorizedException, ConflictException, NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -9,6 +9,8 @@ import { RegisterTenantDto, LoginDto, CreateUserDto } from './dto';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private prisma: PrismaService,
     private jwt: JwtService,
@@ -106,6 +108,20 @@ export class AuthService {
 
       return { tenant, branch, user };
     });
+
+    // Post-registration: auto-setup for diagnostic portal
+    if (result.tenant.portalFamily?.slug === 'diagnostic') {
+      this.setupDiagnosticTenant(result.tenant.id).catch(err =>
+        this.logger.error(`Diagnostic setup failed for ${result.tenant.id}: ${err.message}`)
+      );
+    }
+
+    // Create initial wallet for all tenants
+    await (this.prisma as any).tenantWallet?.upsert({
+      where: { tenantId: result.tenant.id },
+      create: { tenantId: result.tenant.id, waCredits: 100 }, // 100 free credits on signup
+      update: {},
+    }).catch(() => {});
 
     const tokens = await this.generateTokens(
       result.user.id, result.tenant.id, result.user.role,
@@ -321,4 +337,60 @@ export class AuthService {
     ]);
     return { accessToken, refreshToken };
   }
+
+  // ── Auto-setup for new diagnostic tenants ─────────────────────────────────
+
+  private async setupDiagnosticTenant(tenantId: string) {
+    // 1. Seed default test catalog (25 tests)
+    const DEFAULT_TESTS = [
+      { code: 'CBC',    name: 'Complete Blood Count',           category: 'Haematology',  price: 25000, sampleType: 'Blood', turnaroundHrs: 4 },
+      { code: 'ESR',    name: 'Erythrocyte Sedimentation Rate', category: 'Haematology',  price: 8000,  sampleType: 'Blood', turnaroundHrs: 4 },
+      { code: 'LFT',    name: 'Liver Function Test',            category: 'Biochemistry', price: 45000, sampleType: 'Blood', turnaroundHrs: 12 },
+      { code: 'KFT',    name: 'Kidney Function Test',           category: 'Biochemistry', price: 45000, sampleType: 'Blood', turnaroundHrs: 12 },
+      { code: 'FBS',    name: 'Fasting Blood Sugar',            category: 'Biochemistry', price: 8000,  sampleType: 'Blood', turnaroundHrs: 2 },
+      { code: 'HBA1C',  name: 'Glycosylated Haemoglobin',      category: 'Biochemistry', price: 45000, sampleType: 'Blood', turnaroundHrs: 12 },
+      { code: 'LIPID',  name: 'Lipid Profile',                  category: 'Biochemistry', price: 55000, sampleType: 'Blood', turnaroundHrs: 12 },
+      { code: 'THYROID',name: 'Thyroid Function (T3/T4/TSH)',   category: 'Biochemistry', price: 65000, sampleType: 'Blood', turnaroundHrs: 24 },
+      { code: 'VITD',   name: 'Vitamin D (25-OH)',              category: 'Biochemistry', price: 85000, sampleType: 'Blood', turnaroundHrs: 24 },
+      { code: 'VITB12', name: 'Vitamin B12',                    category: 'Biochemistry', price: 65000, sampleType: 'Blood', turnaroundHrs: 24 },
+      { code: 'UA',     name: 'Uric Acid',                      category: 'Biochemistry', price: 12000, sampleType: 'Blood', turnaroundHrs: 4 },
+      { code: 'CRP',    name: 'C-Reactive Protein',             category: 'Biochemistry', price: 35000, sampleType: 'Blood', turnaroundHrs: 6 },
+      { code: 'UCR',    name: 'Urine Complete Routine',         category: 'Urine',        price: 12000, sampleType: 'Urine', turnaroundHrs: 2 },
+      { code: 'HBsAg',  name: 'Hepatitis B Surface Antigen',    category: 'Serology',     price: 25000, sampleType: 'Blood', turnaroundHrs: 4 },
+      { code: 'HIVAB',  name: 'HIV Antibody Test',              category: 'Serology',     price: 25000, sampleType: 'Blood', turnaroundHrs: 4 },
+      { code: 'DENGUE', name: 'Dengue NS1 Antigen',             category: 'Serology',     price: 55000, sampleType: 'Blood', turnaroundHrs: 4 },
+      { code: 'TSH',    name: 'Thyroid Stimulating Hormone',    category: 'Biochemistry', price: 35000, sampleType: 'Blood', turnaroundHrs: 24 },
+      { code: 'WIDAL',  name: 'Widal Test',                     category: 'Serology',     price: 18000, sampleType: 'Blood', turnaroundHrs: 4 },
+      { code: 'STOOL',  name: 'Stool Routine & Microscopy',     category: 'Stool',        price: 10000, sampleType: 'Stool', turnaroundHrs: 4 },
+      { code: 'BC',     name: 'Blood Culture & Sensitivity',    category: 'Microbiology', price: 85000, sampleType: 'Blood', turnaroundHrs: 72 },
+    ];
+    for (const test of DEFAULT_TESTS) {
+      await this.prisma.testCatalog.upsert({
+        where: { tenantId_code: { tenantId, code: test.code } },
+        create: { tenantId, ...test, isHomeCollectionAllowed: true },
+        update: {},
+      }).catch(() => {});
+    }
+
+    // 2. Seed 5 default Revenue Engine rules (inactive by default)
+    const DEFAULT_RULES = [
+      { name: 'HbA1c 90-day reminder',  testCode: 'HBA1C',   triggerEvent: 'TEST_COMPLETED', waitDays: 90,  templateCode: 'T15' },
+      { name: 'Thyroid annual reminder', testCode: 'THYROID', triggerEvent: 'TEST_COMPLETED', waitDays: 365, templateCode: 'T17' },
+      { name: 'Lipid 6-month reminder',  testCode: 'LIPID',   triggerEvent: 'TEST_COMPLETED', waitDays: 180, templateCode: 'T15' },
+      { name: 'Vitamin D yearly',        testCode: 'VITD',    triggerEvent: 'TEST_COMPLETED', waitDays: 365, templateCode: 'T17' },
+      { name: 'Birthday health offer',   testCode: null,      triggerEvent: 'BIRTHDAY',       waitDays: 0,   templateCode: 'T20' },
+    ];
+    for (const rule of DEFAULT_RULES) {
+      const exists = await this.prisma.diagnosticAutomationRule
+        .findFirst({ where: { tenantId, name: rule.name } }).catch(() => null);
+      if (!exists) {
+        await this.prisma.diagnosticAutomationRule.create({
+          data: { tenantId, ...rule, isActive: false, messageText: null },
+        }).catch(() => {});
+      }
+    }
+
+    this.logger.log(`Diagnostic tenant ${tenantId} auto-setup complete: 20 tests + 5 automation rules`);
+  }
+
 }
