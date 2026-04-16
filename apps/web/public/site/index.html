@@ -170,7 +170,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;height:68px;padding:0 2.5re
 .portal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:8px}
 @media(max-width:900px){.portal-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:540px){.portal-grid{grid-template-columns:1fr}}
-.portal-card{position:relative;border-radius:24px;overflow:hidden;cursor:pointer;transition:transform .38s cubic-bezier(.34,1.56,.64,1),box-shadow .38s ease,border-color .3s;background:#fff;border:1.5px solid #e8edf5;padding:36px 28px 28px;font-family:'Poppins',sans-serif}
+.portal-card{position:relative;border-radius:24px;overflow:hidden;cursor:pointer;transition:transform .38s cubic-bezier(.34,1.56,.64,1),box-shadow .38s ease,border-color .3s;background:#fff;border:1.5px solid #e8edf5;padding:36px 28px 28px;font-family:'Poppins',sans-serif;display:block;text-decoration:none;color:inherit}
 .portal-card:hover{transform:translateY(-10px) scale(1.015);box-shadow:0 28px 70px rgba(0,0,0,.14);border-color:var(--card-color,#0d9488)}
 .portal-card-inner{position:relative;z-index:1}
 .portal-card-icon{width:72px;height:72px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:2.1rem;margin:0 auto 20px;transition:transform .38s cubic-bezier(.34,1.56,.64,1);box-shadow:0 4px 16px rgba(0,0,0,.08)}
@@ -590,6 +590,197 @@ textarea.fi{resize:vertical;min-height:100px}
           </div>
         </div>
 
+      </div>
+
+      <!-- Feature Detail Modal -->
+      <div class="feat-modal-overlay" id="featModal" onclick="closeFeatModal(event)">
+        <div class="feat-modal" id="featModalContent">
+          <button class="feat-modal-close" onclick="closeFeatModal()">✕</button>
+          <div class="feat-modal-header">
+            <div class="feat-modal-icon" id="fmi-icon"></div>
+            <h2 id="fmi-title"></h2>
+            <p class="feat-modal-subtitle" id="fmi-subtitle"></p>
+          </div>
+          <div class="feat-modal-body">
+            <div class="feat-modal-stat-row" id="fmi-stats"></div>
+            <div class="feat-modal-section">
+              <h4>Key Capabilities</h4>
+              <ul class="feat-modal-points" id="fmi-points"></ul>
+            </div>
+            <div class="feat-modal-section" id="fmi-portals-wrap">
+              <h4>Available In</h4>
+              <ul class="feat-modal-points" id="fmi-portals"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="sec bg-surf">
+    <div class="sec-inner">
+      <div class="sec-hd">
+        <span class="sec-tag">Simple Setup</span>
+        <h2>Live in 3 simple steps</h2>
+        <p>From signup to first patient booking — in less than a week. No IT team, no training required.</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <h3>Onboard & Configure</h3>
+          <p>Sign up, set up your departments, add doctors, and configure billing rules through our guided wizard. Your dedicated WhatsApp number is provisioned automatically.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <h3>Connect & Go Live</h3>
+          <p>Share your WhatsApp number with patients. The AI chatbot handles bookings, routing, and confirmations from day one. Staff access their role-specific portal instantly.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <h3>Grow & Automate</h3>
+          <p>Activate pre-built clinical protocols. Automate follow-ups, refill reminders, and campaigns. Watch your revenue grow while no-show rates drop by 60%.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Portal Families — All 10 -->
+  <section class="sec portal-section">
+    <div class="sec-inner">
+      <div class="sec-hd">
+        <span class="sec-tag">9 Portal Families</span>
+        <h2>One platform. Every type of healthcare provider.</h2>
+        <p>From solo practitioners to 500-bed hospital chains, veterinary clinics to medical colleges — HospiBot has a dedicated portal for every healthcare entity in India and beyond.</p>
+        <div class="portal-grid-badge"><span>231</span> subtypes across <span>10</span> portal families — click any portal to explore</div>
+      </div>
+      <div class="portal-grid">
+
+        <!-- Clinical Portal -->
+        <a class="portal-card" target="_top" href="/clinical/login" style="--card-color:#0d9488;text-decoration:none;display:block" onmouseenter="this.style.background='linear-gradient(145deg,#f0fdfa,#fff)';this.style.borderColor='#0d9488'" onmouseleave="this.style.background='#fff';this.style.borderColor='#e8edf5'">
+          <span class="portal-card-count" style="">86 types</span>
+          <div class="portal-card-inner">
+            <div class="portal-card-icon" style="background:linear-gradient(135deg,#ccfbf1,#99f6e4)">🩺</div>
+            <div class="portal-card-name">Clinical Portal</div>
+            <div class="portal-card-desc">Hospitals, clinics, doctors, specialists, surgical centers, AYUSH, rehab & mental health</div>
+            <div class="portal-card-tags">
+              <span class="portal-card-tag" style="background:#f0fdfa;color:#0d9488">Hospitals</span><span class="portal-card-tag" style="background:#f0fdfa;color:#0d9488">Clinics</span><span class="portal-card-tag" style="background:#f0fdfa;color:#0d9488">Specialists</span><span class="portal-card-tag" style="background:#f0fdfa;color:#0d9488">+83 more</span>
+            </div>
+            <div class="portal-card-cta" style="background:#0d9488;color:#fff">Login / Register →</div>
+          </div>
+        </a>
+
+        <!-- Diagnostic Portal -->
+        <a class="portal-card" target="_top" href="/diagnostic/login" style="--card-color:#1e3a5f;text-decoration:none;display:block" onmouseenter="this.style.background='linear-gradient(145deg,#eff6ff,#fff)';this.style.borderColor='#1e3a5f'" onmouseleave="this.style.background='#fff';this.style.borderColor='#e8edf5'">
+          <span class="portal-card-count" style="">20 types</span>
+          <div class="portal-card-inner">
+            <div class="portal-card-icon" style="background:linear-gradient(135deg,#dbeafe,#bfdbfe)">🔬</div>
+            <div class="portal-card-name">Diagnostic Portal</div>
+            <div class="portal-card-desc">Pathology, radiology, PCR, genetics, ultrasound, health checkup & home collection</div>
+            <div class="portal-card-tags">
+              <span class="portal-card-tag" style="background:#eff6ff;color:#1e3a5f">Pathology</span><span class="portal-card-tag" style="background:#eff6ff;color:#1e3a5f">Radiology</span><span class="portal-card-tag" style="background:#eff6ff;color:#1e3a5f">PCR Labs</span><span class="portal-card-tag" style="background:#eff6ff;color:#1e3a5f">+17 more</span>
+            </div>
+            <div class="portal-card-cta" style="background:#1e3a5f;color:#fff">Login / Register →</div>
+          </div>
+        </a>
+
+        <!-- Pharmacy Portal -->
+        <a class="portal-card" target="_top" href="/pharmacy/login" style="--card-color:#166534;text-decoration:none;display:block" onmouseenter="this.style.background='linear-gradient(145deg,#f0fdf4,#fff)';this.style.borderColor='#166534'" onmouseleave="this.style.background='#fff';this.style.borderColor='#e8edf5'">
+          <span class="portal-card-count" style="">14 types</span>
+          <div class="portal-card-inner">
+            <div class="portal-card-icon" style="background:linear-gradient(135deg,#dcfce7,#bbf7d0)">💊</div>
+            <div class="portal-card-name">Pharmacy Portal</div>
+            <div class="portal-card-desc">Retail, hospital, online, AYUSH, oncology, cold chain & pharma wholesale</div>
+            <div class="portal-card-tags">
+              <span class="portal-card-tag" style="background:#f0fdf4;color:#166534">Retail</span><span class="portal-card-tag" style="background:#f0fdf4;color:#166534">Online</span><span class="portal-card-tag" style="background:#f0fdf4;color:#166534">Wholesale</span><span class="portal-card-tag" style="background:#f0fdf4;color:#166534">+11 more</span>
+            </div>
+            <div class="portal-card-cta" style="background:#166534;color:#fff">Login / Register →</div>
+          </div>
+        </a>
+
+        <!-- Home Care Portal -->
+        <a class="portal-card" target="_top" href="/homecare/login" style="--card-color:#b45309;text-decoration:none;display:block" onmouseenter="this.style.background='linear-gradient(145deg,#fffbeb,#fff)';this.style.borderColor='#b45309'" onmouseleave="this.style.background='#fff';this.style.borderColor='#e8edf5'">
+          <span class="portal-card-count" style="">16 types</span>
+          <div class="portal-card-inner">
+            <div class="portal-card-icon" style="background:linear-gradient(135deg,#fef3c7,#fde68a)">🏠</div>
+            <div class="portal-card-name">Home Care Portal</div>
+            <div class="portal-card-desc">Home nursing, physiotherapy, elder care, ICU at home, ambulance & patient transport</div>
+            <div class="portal-card-tags">
+              <span class="portal-card-tag" style="background:#fffbeb;color:#b45309">Nursing</span><span class="portal-card-tag" style="background:#fffbeb;color:#b45309">Physio</span><span class="portal-card-tag" style="background:#fffbeb;color:#b45309">Elder Care</span><span class="portal-card-tag" style="background:#fffbeb;color:#b45309">+13 more</span>
+            </div>
+            <div class="portal-card-cta" style="background:#b45309;color:#fff">Login / Register →</div>
+          </div>
+        </a>
+
+        <!-- Equipment Portal -->
+        <a class="portal-card" target="_top" href="/equipment/login" style="--card-color:#6d28d9;text-decoration:none;display:block" onmouseenter="this.style.background='linear-gradient(145deg,#f5f3ff,#fff)';this.style.borderColor='#6d28d9'" onmouseleave="this.style.background='#fff';this.style.borderColor='#e8edf5'">
+          <span class="portal-card-count" style="">18 types</span>
+          <div class="portal-card-inner">
+            <div class="portal-card-icon" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe)">🏋️</div>
+            <div class="portal-card-name">Equipment Portal</div>
+            <div class="portal-card-desc">Medical device suppliers, surgical instruments, imaging, dental, lab & consumable distributors</div>
+            <div class="portal-card-tags">
+              <span class="portal-card-tag" style="background:#f5f3ff;color:#6d28d9">Devices</span><span class="portal-card-tag" style="background:#f5f3ff;color:#6d28d9">Imaging</span><span class="portal-card-tag" style="background:#f5f3ff;color:#6d28d9">Surgical</span><span class="portal-card-tag" style="background:#f5f3ff;color:#6d28d9">+15 more</span>
+            </div>
+            <div class="portal-card-cta" style="background:#6d28d9;color:#fff">Login / Register →</div>
+          </div>
+        </a>
+
+        <!-- Wellness Portal -->
+        <a class="portal-card" target="_top" href="/wellness/login" style="--card-color:#be185d;text-decoration:none;display:block" onmouseenter="this.style.background='linear-gradient(145deg,#fdf2f8,#fff)';this.style.borderColor='#be185d'" onmouseleave="this.style.background='#fff';this.style.borderColor='#e8edf5'">
+          <span class="portal-card-count" style="">18 types</span>
+          <div class="portal-card-inner">
+            <div class="portal-card-icon" style="background:linear-gradient(135deg,#fce7f3,#fbcfe8)">💆</div>
+            <div class="portal-card-name">Wellness Portal</div>
+            <div class="portal-card-desc">Fitness, yoga, nutrition, spa, meditation, naturopathy & holistic health centers</div>
+            <div class="portal-card-tags">
+              <span class="portal-card-tag" style="background:#fdf2f8;color:#be185d">Fitness</span><span class="portal-card-tag" style="background:#fdf2f8;color:#be185d">Yoga</span><span class="portal-card-tag" style="background:#fdf2f8;color:#be185d">Nutrition</span><span class="portal-card-tag" style="background:#fdf2f8;color:#be185d">+15 more</span>
+            </div>
+            <div class="portal-card-cta" style="background:#be185d;color:#fff">Login / Register →</div>
+          </div>
+        </a>
+
+        <!-- Services Portal -->
+        <a class="portal-card" target="_top" href="/services/login" style="--card-color:#0369a1;text-decoration:none;display:block" onmouseenter="this.style.background='linear-gradient(145deg,#f0f9ff,#fff)';this.style.borderColor='#0369a1'" onmouseleave="this.style.background='#fff';this.style.borderColor='#e8edf5'">
+          <span class="portal-card-count" style="">20 types</span>
+          <div class="portal-card-inner">
+            <div class="portal-card-icon" style="background:linear-gradient(135deg,#e0f2fe,#bae6fd)">🤝</div>
+            <div class="portal-card-name">Services Portal</div>
+            <div class="portal-card-desc">Healthcare staffing, billing agencies, TPA, medical tourism, IT & consultancy</div>
+            <div class="portal-card-tags">
+              <span class="portal-card-tag" style="background:#f0f9ff;color:#0369a1">Staffing</span><span class="portal-card-tag" style="background:#f0f9ff;color:#0369a1">Billing</span><span class="portal-card-tag" style="background:#f0f9ff;color:#0369a1">Tourism</span><span class="portal-card-tag" style="background:#f0f9ff;color:#0369a1">+17 more</span>
+            </div>
+            <div class="portal-card-cta" style="background:#0369a1;color:#fff">Login / Register →</div>
+          </div>
+        </a>
+
+        <!-- Veterinary Portal -->
+        <a class="portal-card" target="_top" href="/register/veterinary" style="--card-color:#65a30d;text-decoration:none;display:block" onmouseenter="this.style.background='linear-gradient(145deg,#f7fee7,#fff)';this.style.borderColor='#65a30d'" onmouseleave="this.style.background='#fff';this.style.borderColor='#e8edf5'">
+          <span class="portal-card-count" style="background:#ecfccb;color:#65a30d;">15 types</span>
+          <div class="portal-card-inner">
+            <div class="portal-card-icon" style="background:linear-gradient(135deg,#ecfccb,#d9f99d)">🐾</div>
+            <div class="portal-card-name">Veterinary Portal</div>
+            <div class="portal-card-desc">Pet clinics, veterinary hospitals, exotic animal care, livestock, grooming & pet boarding</div>
+            <div class="portal-card-tags">
+              <span class="portal-card-tag" style="background:#f7fee7;color:#65a30d">Pet Clinics</span><span class="portal-card-tag" style="background:#f7fee7;color:#65a30d">Livestock</span><span class="portal-card-tag" style="background:#f7fee7;color:#65a30d">+13 more</span>
+            </div>
+            <div class="portal-card-cta" style="background:#65a30d;color:#fff">Register Now →</div>
+          </div>
+        </a>
+
+        <!-- Digital Health Portal -->
+        <a class="portal-card" target="_top" href="/register/digital" style="--card-color:#0f766e;text-decoration:none;display:block" onmouseenter="this.style.background='linear-gradient(145deg,#f0fdfa,#fff)';this.style.borderColor='#0f766e'" onmouseleave="this.style.background='#fff';this.style.borderColor='#e8edf5'">
+          <span class="portal-card-count" style="background:#ccfbf1;color:#0f766e;">12 types</span>
+          <div class="portal-card-inner">
+            <div class="portal-card-icon" style="background:linear-gradient(135deg,#ccfbf1,#99f6e4)">📱</div>
+            <div class="portal-card-name">Digital Health Portal</div>
+            <div class="portal-card-desc">Telemedicine, RPM, mental health platforms, ABDM, AI diagnostics & insurtech</div>
+            <div class="portal-card-tags">
+              <span class="portal-card-tag" style="background:#f0fdfa;color:#0f766e">Telemedicine</span><span class="portal-card-tag" style="background:#f0fdfa;color:#0f766e">ABDM</span><span class="portal-card-tag" style="background:#f0fdfa;color:#0f766e">+10 more</span>
+            </div>
+            <div class="portal-card-cta" style="background:#0f766e;color:#fff">Register Now →</div>
+          </div>
+        </a>
       </div>
 
       <!-- Feature Detail Modal -->
@@ -1410,27 +1601,32 @@ function handleAuth(type) {
 function smoothNavigateTo(url) {
   const overlay = document.getElementById('pageTransition');
   const colors = {
-    '/clinical': '#0d9488', '/diagnostic': '#1e3a5f', '/pharmacy': '#166534',
-    '/homecare': '#b45309', '/equipment': '#6d28d9', '/wellness': '#be185d',
-    '/services': '#0369a1', '/register/veterinary': '#65a30d',
-    '/register/digital': '#0f766e', '/register': '#0d9488', '/auth': '#1e3a5f',
+    '/clinical':'#0d9488','/diagnostic':'#1e3a5f','/pharmacy':'#166534',
+    '/homecare':'#b45309','/equipment':'#6d28d9','/wellness':'#be185d',
+    '/services':'#0369a1','/register/veterinary':'#65a30d',
+    '/register/digital':'#0f766e','/register':'#0d9488','/auth':'#1e3a5f',
   };
   const matched = Object.keys(colors).find(k => url.startsWith(k));
-  // Show colour overlay animation
   if (overlay) {
     overlay.style.background = matched ? colors[matched] : '#0d9488';
     overlay.classList.add('out');
   }
-  // Use postMessage to parent window — works reliably from inside iframe
   setTimeout(() => {
+    // Method 1: native anchor with target=_top (most reliable from iframe)
     try {
-      // Tell parent Next.js page to navigate
-      window.parent.postMessage({ type: 'NAVIGATE', url: url }, '*');
-    } catch(e) {
-      // Fallback: try direct navigation
-      try { window.top.location.href = url; } catch(e2) { window.location.href = url; }
-    }
-  }, 440);
+      const a = document.createElement('a');
+      a.href = url;
+      a.target = '_top';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      return;
+    } catch(e) {}
+    // Method 2: postMessage to parent
+    try { window.parent.postMessage({ type: 'NAVIGATE', url }, '*'); return; } catch(e) {}
+    // Method 3: direct
+    try { window.top.location.href = url; } catch(e) { window.location.href = url; }
+  }, 380);
 }
 
 // ===== RENDER PORTAL CARDS =====
