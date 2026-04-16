@@ -1,8 +1,7 @@
 import {
   Controller, Get, Post, Patch, Put, Delete, Body, Param, Query,
-  UseGuards, HttpCode, HttpStatus, RawBodyRequest, Req,
+  UseGuards, HttpCode, HttpStatus, Req,
 } from '@nestjs/common';
-import { Request } from 'express';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { TenantGuard } from '../../common/guards/tenant.guard';

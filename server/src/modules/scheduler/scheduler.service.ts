@@ -506,14 +506,14 @@ export class SchedulerService implements OnModuleInit, OnModuleDestroy {
   async processDiagnosticAutomation() {
     try {
       const now = new Date();
-      const due = await this.prisma.diagnosticAutomationExecution.findMany({
+      const due = await (this.prisma as any).diagnosticAutomationExecution?.findMany({
         where: { status: 'PENDING', scheduledFor: { lte: now } },
         include: { rule: true },
         take: 100,
         orderBy: { scheduledFor: 'asc' },
       });
 
-      if (due.length === 0) return;
+      if (!due || due.length === 0) return;
       this.logger.log(`Processing ${due.length} diagnostic automation executions`);
 
       for (const exec of due) {
@@ -550,7 +550,7 @@ export class SchedulerService implements OnModuleInit, OnModuleDestroy {
             where: { tenantId: exec.tenantId },
             data: { waCredits: { decrement: 1.0 } },
           });
-          await this.prisma.messageUsageLog.create({
+          await (this.prisma as any).messageUsageLog?.create({
             data: {
               tenantId: exec.tenantId,
               recipientMobile: exec.patientMobile,
@@ -621,14 +621,14 @@ export class SchedulerService implements OnModuleInit, OnModuleDestroy {
     try {
       // Alerts sent >45 min ago with no ack
       const threshold = new Date(Date.now() - 45 * 60_000);
-      const unacked = await this.prisma.criticalValueAlert.findMany({
+      const unacked = await (this.prisma as any).criticalValueAlert?.findMany({
         where: { acknowledgedAt: null, alertSentAt: { lt: threshold }, escalatedAt: null },
         take: 20,
       });
 
       for (const alert of unacked) {
         this.logger.warn(`Critical value ${alert.id} unacknowledged for >45 min — escalating`);
-        await this.prisma.criticalValueAlert.update({
+        await (this.prisma as any).criticalValueAlert?.update({
           where: { id: alert.id },
           data: { escalatedAt: new Date() },
         });

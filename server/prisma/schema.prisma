@@ -1683,6 +1683,7 @@ model CriticalValueAlert {
   createdAt       DateTime  @default(now()) @map("created_at")
 
   resultEntry     ResultEntry @relation(fields: [resultEntryId], references: [id])
+  labOrder        LabOrder    @relation(fields: [labOrderId], references: [id])
 
   @@index([labOrderId])
   @@index([tenantId])
