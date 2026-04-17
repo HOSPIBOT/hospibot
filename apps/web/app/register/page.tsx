@@ -734,243 +734,233 @@ function RegisterWizard() {
   if(step===2 && portal==='diagnostic' && !showOthers) {
 
     const GROUPS = [
-      {
-        title: 'Scale & Capacity',
-        rows: [
-          {label:'Daily samples',      vals:['1 – 50','50 – 200','200 – 1,000','1,000+']},
-          {label:'Staff supported',    vals:['1 – 5','5 – 20','20 – 100','100+']},
-          {label:'Branches',           vals:['1','1 – 3','3 – 15','15+']},
-          {label:'Monthly tests',      vals:['Up to 1,500','Up to 6,000','Up to 30,000','Unlimited']},
-          {label:'WhatsApp credits',   vals:['500 / mo','2,000 / mo','5,000 / mo','Unlimited']},
-        ],
-      },
-      {
-        title: 'Core Lab Features',
-        rows: [
-          {label:'WhatsApp report delivery',   vals:[true,true,true,true]},
-          {label:'Sample tracking & barcode',  vals:[true,true,true,true]},
-          {label:'GST billing & invoicing',    vals:[true,true,true,true]},
-          {label:'Test catalog (500+ tests)',  vals:[true,true,true,true]},
-          {label:'PDF report generation',      vals:[true,true,true,true]},
-          {label:'Patient registration',       vals:[true,true,true,true]},
-          {label:'Basic analytics dashboard',  vals:[true,true,true,true]},
-        ],
-      },
-      {
-        title: 'Advanced Features',
-        rows: [
-          {label:'Home collection + GPS',          vals:[false,true,true,true]},
-          {label:'Doctor CRM & referrals',         vals:[false,true,true,true]},
-          {label:'Corporate wellness screening',   vals:[false,true,true,true]},
-          {label:'TPA / insurance claims',         vals:[false,true,true,true]},
-          {label:'Package & combo billing',        vals:[false,true,true,true]},
-          {label:'Advanced analytics',             vals:[false,true,true,true]},
-        ],
-      },
-      {
-        title: 'Quality & Compliance',
-        rows: [
-          {label:'QC module (Westgard / L-J)',     vals:[false,false,true,true]},
-          {label:'NABL compliance tools',          vals:[false,false,true,true]},
-          {label:'Multi-branch management',        vals:[false,false,true,true]},
-          {label:'Staff HRMS & payroll',           vals:[false,false,true,true]},
-          {label:'HL7 / ASTM analyser interface',  vals:[false,false,true,true]},
-          {label:'Chain analytics & MIS',          vals:[false,false,true,true]},
-        ],
-      },
-      {
-        title: 'Enterprise',
-        rows: [
-          {label:'Franchise & hub-spoke mgmt',     vals:[false,false,false,true]},
-          {label:'Revenue sharing engine',         vals:[false,false,false,true]},
-          {label:'White-label portal',             vals:[false,false,false,true]},
-          {label:'API marketplace',                vals:[false,false,false,true]},
-          {label:'ABHA / ABDM deep integration',   vals:[false,false,false,true]},
-          {label:'Dedicated account manager',      vals:[false,false,false,true]},
-          {label:'SLA-backed uptime guarantee',    vals:[false,false,false,true]},
-        ],
-      },
-      {
-        title: 'Support',
-        rows: [
-          {label:'Email support',             vals:[true,true,true,true]},
-          {label:'Live chat support',         vals:[false,true,true,true]},
-          {label:'Priority support',          vals:[false,false,true,true]},
-          {label:'Dedicated account manager', vals:[false,false,false,true]},
-        ],
-      },
+      { title:'Scale & Capacity', rows:[
+        {label:'Daily samples',      small:'1 – 50',      medium:'50 – 200',    large:'200 – 1,000',  ent:'1,000+'},
+        {label:'Staff supported',    small:'1 – 5',       medium:'5 – 20',      large:'20 – 100',     ent:'100+'},
+        {label:'Branches',           small:'1',           medium:'1 – 3',       large:'3 – 15',       ent:'15+'},
+        {label:'Monthly tests',      small:'Up to 1,500', medium:'Up to 6,000', large:'Up to 30,000', ent:'Unlimited'},
+        {label:'WhatsApp credits',   small:'500 / mo',    medium:'2,000 / mo',  large:'5,000 / mo',   ent:'Unlimited'},
+      ]},
+      { title:'Core Lab', rows:[
+        {label:'WhatsApp report delivery',   small:true,  medium:true,  large:true,  ent:true},
+        {label:'Sample tracking & barcode',  small:true,  medium:true,  large:true,  ent:true},
+        {label:'GST billing & invoicing',    small:true,  medium:true,  large:true,  ent:true},
+        {label:'Test catalog (500+ tests)',  small:true,  medium:true,  large:true,  ent:true},
+        {label:'PDF report generation',      small:true,  medium:true,  large:true,  ent:true},
+        {label:'Patient registration',       small:true,  medium:true,  large:true,  ent:true},
+      ]},
+      { title:'Advanced', rows:[
+        {label:'Home collection + GPS',          small:false, medium:true,  large:true,  ent:true},
+        {label:'Doctor CRM & referrals',         small:false, medium:true,  large:true,  ent:true},
+        {label:'Corporate wellness screening',   small:false, medium:true,  large:true,  ent:true},
+        {label:'TPA / insurance claims',         small:false, medium:true,  large:true,  ent:true},
+        {label:'Package & combo billing',        small:false, medium:true,  large:true,  ent:true},
+      ]},
+      { title:'Quality & Compliance', rows:[
+        {label:'QC module (Westgard / L-J)',     small:false, medium:false, large:true,  ent:true},
+        {label:'NABL compliance tools',          small:false, medium:false, large:true,  ent:true},
+        {label:'Multi-branch management',        small:false, medium:false, large:true,  ent:true},
+        {label:'Staff HRMS & payroll',           small:false, medium:false, large:true,  ent:true},
+        {label:'HL7 / ASTM analyser interface',  small:false, medium:false, large:true,  ent:true},
+      ]},
+      { title:'Enterprise', rows:[
+        {label:'Franchise & hub-spoke mgmt',     small:false, medium:false, large:false, ent:true},
+        {label:'Revenue sharing engine',         small:false, medium:false, large:false, ent:true},
+        {label:'White-label portal',             small:false, medium:false, large:false, ent:true},
+        {label:'API marketplace',                small:false, medium:false, large:false, ent:true},
+        {label:'Dedicated account manager',      small:false, medium:false, large:false, ent:true},
+      ]},
     ];
 
     const TIERS = [
-      {id:'small',      name:'Small Lab',   color:'#0369A1', price:'₹999',   note:'/month',      popular:false, btn:'Get Started'},
-      {id:'medium',     name:'Medium Lab',  color:'#0D9488', price:'₹2,999', note:'/month',      popular:true,  btn:'Get Started'},
-      {id:'large',      name:'Large Lab',   color:'#7C3AED', price:'₹7,999', note:'/month',      popular:false, btn:'Get Started'},
-      {id:'enterprise', name:'Enterprise',  color:'#0F172A', price:'Custom', note:'contact us',  popular:false, btn:'Contact Sales'},
+      {id:'small',      name:'Small',      sub:'Solo lab / PSC',               color:'#2563EB', grad:'linear-gradient(135deg,#1D4ED8,#2563EB)', price:'₹999',   note:'/month',    popular:false, btn:'Start Free Trial'},
+      {id:'medium',     name:'Medium',     sub:'Growing diagnostic center',     color:'#0D9488', grad:'linear-gradient(135deg,#0F766E,#0D9488)', price:'₹2,999', note:'/month',    popular:true,  btn:'Start Free Trial'},
+      {id:'large',      name:'Large',      sub:'NABL-accredited chain',         color:'#7C3AED', grad:'linear-gradient(135deg,#6D28D9,#7C3AED)', price:'₹7,999', note:'/month',    popular:false, btn:'Start Free Trial'},
+      {id:'enterprise', name:'Enterprise', sub:'Reference lab / franchise',     color:'#0F172A', grad:'linear-gradient(135deg,#1E293B,#0F172A)', price:'Custom', note:'contact us', popular:false, btn:'Contact Sales'},
     ];
 
-    const Check = ({col}:{col:string}) => (
-      <svg width="16" height="14" viewBox="0 0 16 14" fill="none">
-        <path d="M1.5 7L6 12L14.5 1.5" stroke={col} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
-    );
-    const Cross = () => (
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-        <path d="M2 2L10 10M10 2L2 10" stroke="#CBD5E1" strokeWidth="1.5" strokeLinecap="round"/>
-      </svg>
-    );
+    const getVal = (row:any, id:string) => {
+      if(id==='small')      return row.small;
+      if(id==='medium')     return row.medium;
+      if(id==='large')      return row.large;
+      return row.ent;
+    };
 
     return (
-      <div style={{height:'calc(100vh - 64px)',display:'flex',flexDirection:'column',background:'#F1F5F9',fontFamily:"'Poppins',sans-serif"}}>
+      <div style={{height:'calc(100vh - 64px)',display:'flex',flexDirection:'column',background:'#F8FAFC',fontFamily:"'Poppins',sans-serif",overflow:'hidden'}}>
         <style>{`
           @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
-          *{box-sizing:border-box;margin:0;padding:0}
+          *{box-sizing:border-box}
           button{font-family:'Poppins',sans-serif;cursor:pointer}
-          .tier-table{border-collapse:collapse;width:100%}
-          .tier-table td,.tier-table th{padding:0}
-          .feat-row:hover > td{background:rgba(99,102,241,0.03)!important}
-          .sel-btn:hover{opacity:0.88!important}
-          .pop-col{background:linear-gradient(180deg,#ECFDF5 0%,rgba(236,253,245,0.4) 100%)!important}
-          ::-webkit-scrollbar{width:5px}
-          ::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:99px}
+          .tier-col-0{background:transparent}
+          .tier-col-1{background:rgba(37,99,235,0.03)}
+          .tier-col-2{background:rgba(13,148,136,0.05)}
+          .tier-col-3{background:rgba(124,58,237,0.03)}
+          .tier-col-4{background:rgba(15,23,42,0.02)}
+          .feat-row:hover .tier-col-1,.feat-row:hover .tier-col-2,.feat-row:hover .tier-col-3,.feat-row:hover .tier-col-4{filter:brightness(0.97)}
+          .cta-btn{transition:all 0.18s;border:none}
+          .cta-btn:hover{transform:translateY(-1px);filter:brightness(1.08)}
+          .cta-btn-outline{transition:all 0.18s}
+          .cta-btn-outline:hover{background:#F1F5F9!important}
         `}</style>
 
-        {/* ── NAV BAR ── */}
-        <div style={{padding:'11px 28px',background:'#fff',borderBottom:'1px solid #E2E8F0',display:'flex',alignItems:'center',justifyContent:'space-between',flexShrink:0,boxShadow:'0 1px 4px rgba(0,0,0,0.05)'}}>
-          <button onClick={()=>go(1)} style={{display:'flex',alignItems:'center',gap:6,fontSize:13,color:'#64748B',background:'none',border:'none',fontWeight:500}}>
+        {/* ─── TOP NAV ─── */}
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 28px',background:'#fff',borderBottom:'1px solid #E2E8F0',flexShrink:0,zIndex:10}}>
+          <button onClick={()=>go(1)} style={{display:'flex',alignItems:'center',gap:6,fontSize:13,color:'#64748B',background:'none',border:'none',padding:0,fontWeight:500}}>
             <ArrowLeft size={13}/> Back
           </button>
-          <div style={{display:'flex',gap:4,alignItems:'center'}}>
+          <div style={{display:'flex',gap:6,alignItems:'center'}}>
             {['Portal','Type','Size','Details','Account'].map((s,i)=>(
               <div key={s} style={{display:'flex',alignItems:'center',gap:4}}>
-                <div style={{height:6,width:i<=2?20:6,borderRadius:99,background:i<2?'#0D7C66':i===2?'#0D7C66':'#CBD5E1',transition:'all 0.3s'}}/>
-                {i<4&&<div style={{width:8,height:1,background:'#E2E8F0'}}/>}
+                <div style={{height:6,width:i<=2?18:6,borderRadius:99,background:i<=2?'#0D7C66':'#CBD5E1',transition:'all 0.3s'}}/>
+                {i<4 && <div style={{width:6,height:1,background:'#E2E8F0'}}/>}
               </div>
             ))}
-            <span style={{marginLeft:4,fontSize:11.5,color:'#94A3B8',fontWeight:500}}>Step 3 of 5</span>
+            <span style={{fontSize:11,color:'#94A3B8',marginLeft:4,fontWeight:500}}>Step 3 of 5</span>
           </div>
-          <a href="/auth/login" style={{fontSize:12.5,color:'#64748B',textDecoration:'none'}}>
+          <a href="/auth/login" style={{fontSize:12.5,color:'#94A3B8',textDecoration:'none'}}>
             Have an account? <span style={{color:'#0D7C66',fontWeight:700}}>Sign in</span>
           </a>
         </div>
 
-        {/* ── PAGE TITLE ── */}
-        <div style={{textAlign:'center',padding:'18px 0 14px',flexShrink:0,background:'#F1F5F9'}}>
-          <div style={{display:'inline-flex',alignItems:'center',gap:7,background:'#E0F2FE',border:'1px solid #BAE6FD',borderRadius:99,padding:'4px 14px',fontSize:11.5,fontWeight:700,color:'#0369A1',marginBottom:8,letterSpacing:'0.04em'}}>
-            🔬 {(subtype||'').replace(/-/g,' ').replace(/\b\w/g,(c:string)=>c.toUpperCase())}
+        {/* ─── MAIN SCROLLABLE AREA (single scroll) ─── */}
+        <div style={{flex:1,overflow:'auto',paddingBottom:32}}>
+
+          {/* Hero */}
+          <div style={{textAlign:'center',padding:'22px 24px 20px'}}>
+            <div style={{display:'inline-flex',alignItems:'center',gap:7,background:'#EFF6FF',border:'1px solid #BFDBFE',borderRadius:99,padding:'4px 14px',fontSize:11.5,fontWeight:700,color:'#1D4ED8',marginBottom:10,letterSpacing:'0.04em'}}>
+              🔬 {(subtype||'').replace(/-/g,' ').replace(/\b\w/g,(c:string)=>c.toUpperCase())}
+            </div>
+            <h1 style={{fontSize:'clamp(20px,2.5vw,30px)',fontWeight:900,color:'#0F172A',letterSpacing:'-0.025em',marginBottom:4}}>
+              Choose the right plan for your lab
+            </h1>
+            <p style={{fontSize:13.5,color:'#64748B',lineHeight:1.6}}>
+              All plans include a <strong>14-day free trial</strong>. No credit card required. Upgrade or downgrade anytime.
+            </p>
           </div>
-          <h1 style={{fontSize:'clamp(18px,2vw,26px)',fontWeight:800,color:'#0F172A',letterSpacing:'-0.02em'}}>Choose the right plan for your lab</h1>
-          <p style={{fontSize:13,color:'#64748B',marginTop:4}}>All plans include a 14-day free trial. No credit card required.</p>
-        </div>
 
-        {/* ── SCROLLABLE TABLE AREA ── */}
-        <div style={{flex:1,overflowY:'auto',overflowX:'auto',padding:'0 20px 24px'}}>
-          <div style={{minWidth:780,maxWidth:1100,margin:'0 auto'}}>
-            <table className="tier-table" style={{tableLayout:'fixed',width:'100%'}}>
-              <colgroup>
-                <col style={{width:'28%'}}/>
-                {TIERS.map((_,i)=><col key={i} style={{width:'18%'}}/>)}
-              </colgroup>
+          {/* ─── PRICING TABLE ─── */}
+          <div style={{maxWidth:1060,margin:'0 auto',padding:'0 20px'}}>
 
-              {/* ── STICKY HEADER ── */}
-              <thead>
-                <tr>
-                  <th style={{padding:'0 12px 0 0',verticalAlign:'bottom',paddingBottom:12}}>
-                    <div style={{fontSize:11,fontWeight:600,color:'#94A3B8',textTransform:'uppercase',letterSpacing:'0.08em'}}>Compare Plans</div>
-                  </th>
-                  {TIERS.map(t=>(
-                    <th key={t.id} className={t.popular?'pop-col':''} style={{verticalAlign:'top',padding:'0 8px',background:t.popular?'linear-gradient(180deg,#ECFDF5,rgba(236,253,245,0.3))':'transparent'}}>
-                      {t.popular && (
-                        <div style={{background:'#0D9488',color:'#fff',fontSize:10,fontWeight:800,padding:'3px 10px',borderRadius:'6px 6px 0 0',textAlign:'center',letterSpacing:'0.05em',marginBottom:0}}>
-                          MOST POPULAR
-                        </div>
-                      )}
-                      <div style={{background:'#fff',borderRadius:t.popular?'0 0 0 0':12,border:`1.5px solid ${t.popular?'#0D9488':'#E2E8F0'}`,padding:'14px 14px 12px',boxShadow:t.popular?'0 4px 24px rgba(13,148,136,0.15)':'0 2px 8px rgba(0,0,0,0.05)',marginBottom:0}}>
-                        <div style={{fontSize:14,fontWeight:800,color:'#0F172A',marginBottom:8}}>{t.name}</div>
-                        <div style={{display:'flex',flexWrap:'wrap',gap:3,marginBottom:10}}>
-                          {[
-                            DIAGNOSTIC_TIERS.find(d=>d.id===t.id)?.dailySamples+'/day',
-                            DIAGNOSTIC_TIERS.find(d=>d.id===t.id)?.branches+(DIAGNOSTIC_TIERS.find(d=>d.id===t.id)?.branches==='1'?' br':'+ br'),
-                          ].map(p=>(
-                            <span key={p} style={{fontSize:9.5,padding:'2px 6px',borderRadius:99,background:'#F1F5F9',color:'#475569',border:'1px solid #E2E8F0'}}>{p}</span>
-                          ))}
-                        </div>
-                        <div style={{marginBottom:12}}>
-                          <span style={{fontSize:t.id==='enterprise'?20:22,fontWeight:900,color:t.color,lineHeight:1}}>{t.price}</span>
-                          <span style={{fontSize:10.5,color:'#94A3B8',marginLeft:4}}>{t.note}</span>
-                        </div>
-                        <button onClick={()=>pickTier(t.id as LabTier)} className="sel-btn"
-                          style={{width:'100%',padding:'8px 0',borderRadius:8,border:`1.5px solid ${labTier===t.id?'transparent':t.color}`,
-                            background:labTier===t.id?t.color:t.popular?t.color:'transparent',
-                            color:labTier===t.id||t.popular?'#fff':t.color,
-                            fontSize:12,fontWeight:700,transition:'all 0.18s',
-                            boxShadow:labTier===t.id?`0 4px 14px ${t.color}40`:'none'}}>
-                          {labTier===t.id?'Selected \u2713':'Select Plan'}
-                        </button>
-                      </div>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
+            {/* Plan header cards */}
+            <div style={{display:'grid',gridTemplateColumns:'220px repeat(4,1fr)',gap:0,marginBottom:0}}>
+              <div/>
+              {TIERS.map((t,ti)=>(
+                <div key={t.id} style={{
+                  padding: t.popular ? '0 6px' : '0 6px',
+                  position:'relative',
+                  marginTop: t.popular ? 0 : 16,
+                }}>
+                  {t.popular && (
+                    <div style={{background:t.grad,borderRadius:'12px 12px 0 0',textAlign:'center',padding:'6px',fontSize:10.5,fontWeight:800,color:'#fff',letterSpacing:'0.06em'}}>
+                      ★ MOST POPULAR
+                    </div>
+                  )}
+                  <div style={{
+                    background:'#fff',
+                    borderRadius: t.popular ? '0 0 0 0' : '12px 12px 0 0',
+                    border: t.popular ? `2px solid ${t.color}` : '1px solid #E2E8F0',
+                    borderBottom: 'none',
+                    padding:'16px 16px 14px',
+                    boxShadow: t.popular ? `0 -4px 24px ${t.color}20` : '0 -2px 8px rgba(0,0,0,0.04)',
+                    height:'100%',
+                  }}>
+                    <div style={{fontWeight:800,color:'#0F172A',fontSize:15,marginBottom:2}}>{t.name}</div>
+                    <div style={{fontSize:11.5,color:'#94A3B8',marginBottom:10,fontWeight:500}}>{t.sub}</div>
+                    <div style={{marginBottom:12}}>
+                      <span style={{fontSize:t.id==='enterprise'?22:26,fontWeight:900,color:t.color,lineHeight:1}}>{t.price}</span>
+                      <span style={{fontSize:11,color:'#94A3B8',marginLeft:4}}>{t.note}</span>
+                    </div>
+                    <button onClick={()=>pickTier(t.id as LabTier)} className={labTier===t.id||t.popular?'cta-btn':'cta-btn-outline'}
+                      style={{width:'100%',padding:'8px 0',borderRadius:8,fontSize:12,fontWeight:700,
+                        background: labTier===t.id ? t.grad : t.popular ? t.grad : 'transparent',
+                        color: labTier===t.id||t.popular ? '#fff' : t.color,
+                        border: labTier===t.id||t.popular ? 'none' : `1.5px solid ${t.color}`,
+                        boxShadow: labTier===t.id ? `0 4px 16px ${t.color}40` : t.popular ? `0 4px 12px ${t.color}30` : 'none',
+                      }}>
+                      {labTier===t.id ? '✓ Selected — Continue →' : t.btn}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
 
-              <tbody>
-                {GROUPS.map((g, gi) => (
-                  <>
-                    {/* Group header */}
-                    <tr key={`gh-${gi}`}>
-                      <td colSpan={5} style={{padding:'16px 0 6px',paddingLeft:0}}>
-                        <div style={{display:'flex',alignItems:'center',gap:8}}>
-                          <div style={{height:2,width:20,background:'#0D7C66',borderRadius:99}}/>
-                          <span style={{fontSize:11,fontWeight:800,color:'#374151',textTransform:'uppercase',letterSpacing:'0.1em'}}>{g.title}</span>
+            {/* Feature table */}
+            <div style={{background:'#fff',border:'1px solid #E2E8F0',borderRadius:'0 0 16px 16px',overflow:'hidden',boxShadow:'0 8px 32px rgba(0,0,0,0.06)'}}>
+              {GROUPS.map((g, gi)=>(
+                <div key={gi}>
+                  {/* Group header */}
+                  <div style={{display:'grid',gridTemplateColumns:'220px repeat(4,1fr)',background:'#F8FAFC',borderTop: gi===0?'none':'1px solid #E2E8F0',padding:'8px 0'}}>
+                    <div style={{padding:'0 0 0 20px',display:'flex',alignItems:'center',gap:8}}>
+                      <div style={{width:3,height:14,borderRadius:99,background:'#0D7C66'}}/>
+                      <span style={{fontSize:10.5,fontWeight:800,color:'#374151',textTransform:'uppercase' as const,letterSpacing:'0.09em'}}>{g.title}</span>
+                    </div>
+                    {TIERS.map((_,ci)=>(
+                      <div key={ci} className={`tier-col-${ci+1}`} style={{borderLeft:'1px solid #E2E8F0'}}/>
+                    ))}
+                  </div>
+
+                  {/* Rows */}
+                  {g.rows.map((row,ri)=>{
+                    const rowBg = ri%2===0 ? '#fff' : '#FAFAFA';
+                    return (
+                      <div key={ri} className="feat-row" style={{display:'grid',gridTemplateColumns:'220px repeat(4,1fr)',borderTop:'1px solid #F1F5F9'}}>
+                        <div style={{padding:'10px 12px 10px 20px',background:rowBg,display:'flex',alignItems:'center'}}>
+                          <span style={{fontSize:12.5,color:'#334155',fontWeight:500,lineHeight:1.35}}>{row.label}</span>
                         </div>
-                      </td>
-                    </tr>
-                    {/* Feature rows */}
-                    {g.rows.map((row, ri) => (
-                      <tr key={`${gi}-${ri}`} className="feat-row">
-                        <td style={{padding:'8px 12px 8px 0',borderBottom:'1px solid #F1F5F9',background:'transparent'}}>
-                          <span style={{fontSize:12.5,color:'#334155',fontWeight:500,lineHeight:1.4}}>{row.label}</span>
-                        </td>
-                        {TIERS.map((t,ti) => {
-                          const val = row.vals[ti];
+                        {TIERS.map((t,ci)=>{
+                          const val = getVal(row, t.id);
                           const isBool = typeof val === 'boolean';
                           return (
-                            <td key={t.id} className={t.popular?'pop-col':''} style={{padding:'8px',textAlign:'center',borderBottom:'1px solid #F1F5F9',background:t.popular?'rgba(236,253,245,0.25)':'transparent'}}>
+                            <div key={ci} className={`tier-col-${ci+1}`} style={{padding:'10px 8px',background:rowBg,borderLeft:'1px solid #F1F5F9',display:'flex',alignItems:'center',justifyContent:'center'}}>
                               {isBool ? (
-                                val ? <Check col={t.color}/> : <Cross/>
+                                val ? (
+                                  <div style={{width:22,height:22,borderRadius:6,background:`${t.color}12`,display:'flex',alignItems:'center',justifyContent:'center'}}>
+                                    <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
+                                      <path d="M1 4.5L4 7.5L10 1" stroke={t.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                  </div>
+                                ) : (
+                                  <div style={{width:22,height:22,borderRadius:6,background:'#F8FAFC',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                                    <svg width="9" height="9" viewBox="0 0 9 9" fill="none">
+                                      <path d="M1.5 1.5L7.5 7.5M7.5 1.5L1.5 7.5" stroke="#CBD5E1" strokeWidth="1.5" strokeLinecap="round"/>
+                                    </svg>
+                                  </div>
+                                )
                               ) : (
-                                <span style={{fontSize:12,color:'#334155',fontWeight:500}}>{val as string}</span>
+                                <span style={{fontSize:11.5,color:val==='Unlimited'?t.color:'#475569',fontWeight:val==='Unlimited'?700:500,textAlign:'center',lineHeight:1.3}}>{val as string}</span>
                               )}
-                            </td>
+                            </div>
                           );
                         })}
-                      </tr>
-                    ))}
-                  </>
-                ))}
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
 
-                {/* Bottom CTA row */}
-                <tr>
-                  <td style={{padding:'16px 12px 8px 0'}}>
-                    <div style={{fontSize:12,color:'#64748B',fontWeight:500,lineHeight:1.5}}>
-                      14-day free trial<br/>
-                      <span style={{color:'#94A3B8',fontSize:11}}>No credit card needed</span>
-                    </div>
-                  </td>
-                  {TIERS.map(t=>(
-                    <td key={t.id} className={t.popular?'pop-col':''} style={{padding:'16px 8px 8px',background:t.popular?'rgba(236,253,245,0.25)':'transparent'}}>
-                      <button onClick={()=>pickTier(t.id as LabTier)} className="sel-btn"
-                        style={{width:'100%',padding:'9px 0',borderRadius:8,border:`1.5px solid ${t.color}`,
-                          background:labTier===t.id?t.color:'#fff',
-                          color:labTier===t.id?'#fff':t.color,
-                          fontSize:12,fontWeight:700,transition:'all 0.18s',
-                          boxShadow:labTier===t.id?`0 4px 14px ${t.color}40`:'none'}}>
-                        {labTier===t.id?'Continue \u2192':t.btn}
-                      </button>
-                    </td>
-                  ))}
-                </tr>
-              </tbody>
-            </table>
+              {/* Bottom CTA strip */}
+              <div style={{display:'grid',gridTemplateColumns:'220px repeat(4,1fr)',background:'linear-gradient(135deg,#F0F9FF,#EFF6FF)',borderTop:'1px solid #BFDBFE',padding:'14px 0'}}>
+                <div style={{padding:'0 12px 0 20px',display:'flex',alignItems:'center'}}>
+                  <div>
+                    <div style={{fontSize:12,fontWeight:700,color:'#0F172A'}}>Ready to start?</div>
+                    <div style={{fontSize:11,color:'#94A3B8',marginTop:2}}>14-day free trial included</div>
+                  </div>
+                </div>
+                {TIERS.map(t=>(
+                  <div key={t.id} style={{padding:'0 6px',display:'flex',alignItems:'center'}}>
+                    <button onClick={()=>pickTier(t.id as LabTier)} className="cta-btn"
+                      style={{width:'100%',padding:'9px 0',borderRadius:9,fontSize:12,fontWeight:700,
+                        background: labTier===t.id ? t.grad : t.popular ? t.grad : `${t.color}12`,
+                        color: labTier===t.id||t.popular ? '#fff' : t.color,
+                        boxShadow: labTier===t.id ? `0 4px 16px ${t.color}40` : 'none',
+                      }}>
+                      {labTier===t.id ? 'Continue \u2192' : t.btn}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
