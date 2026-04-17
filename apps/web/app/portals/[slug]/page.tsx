@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 
-/* ── PORTAL DATA ─────────────────────────────────────────────────────────── */
+
 
 import { PORTALS } from './portal-data';
 
@@ -24,7 +24,7 @@ export default function PortalDetailPage({ params }: { params: { slug: string } 
   return (
     <div style={{ fontFamily:"'Poppins',sans-serif", background:'#F8FAFC', minHeight:'100vh' }}>
 
-      {/* ── HERO ──────────────────────────────────────────────────────────── */}
+      {}
       <section style={{ background:portal.dark, padding:'80px clamp(20px,5vw,80px) 72px', position:'relative', overflow:'hidden', minHeight:480 }}>
         {/* Mesh gradient base */}
         <div style={{ position:'absolute',inset:0, background:`linear-gradient(135deg,${portal.dark} 0%,${portal.color}ee 45%,${portal.color}88 100%)`, pointerEvents:'none' }}/>
@@ -77,7 +77,7 @@ export default function PortalDetailPage({ params }: { params: { slug: string } 
         </div>
       </section>
 
-      {/* ── FEATURES ──────────────────────────────────────────────────────── */}
+      {}
       <section style={{ padding:'80px clamp(20px,5vw,80px)', background:'#fff', position:'relative', overflow:'hidden' }}>
         {/* Subtle dot grid */}
         <div style={{ position:'absolute',inset:0,backgroundImage:`radial-gradient(${portal.color}18 1.5px,transparent 1.5px)`,backgroundSize:'28px 28px',pointerEvents:'none' }}/>
@@ -102,7 +102,7 @@ export default function PortalDetailPage({ params }: { params: { slug: string } 
         </div>
       </section>
 
-      {/* ── HOW IT WORKS ─────────────────────────────────────────────────── */}
+      {}
       <section style={{ background:'#0A0F1E', padding:'80px clamp(20px,5vw,80px)', position:'relative', overflow:'hidden' }}>
         {/* Colored glow behind section */}
         <div style={{ position:'absolute',top:'50%',left:'50%',transform:'translate(-50%,-50%)',width:700,height:500,borderRadius:'50%',background:`radial-gradient(ellipse,${portal.color}30 0%,${portal.color}10 40%,transparent 70%)`,filter:'blur(60px)',pointerEvents:'none' }}/>
@@ -132,7 +132,7 @@ export default function PortalDetailPage({ params }: { params: { slug: string } 
         </div>
       </section>
 
-      {/* ── BENEFITS ─────────────────────────────────────────────────────── */}
+      {}
       <section style={{ padding:'80px clamp(20px,5vw,80px)', background:'#F8FAFC', position:'relative', overflow:'hidden' }}>
         {/* Subtle diagonal stripes */}
         <div style={{ position:'absolute',inset:0,backgroundImage:`repeating-linear-gradient(135deg,transparent,transparent 40px,${portal.color}06 40px,${portal.color}06 41px)`,pointerEvents:'none' }}/>
@@ -174,7 +174,7 @@ export default function PortalDetailPage({ params }: { params: { slug: string } 
       </section>
 
         </div>
-      {/* ── FINAL CTA ─────────────────────────────────────────────────────── */}
+      {}
       <section style={{ background:'#0F172A', padding:'72px clamp(20px,5vw,80px)', position:'relative', overflow:'hidden' }}>
         {/* Large portal-colored glow */}
         <div style={{ position:'absolute',top:'50%',left:'50%',transform:'translate(-50%,-50%)',width:800,height:400,background:`radial-gradient(ellipse,${portal.color}35 0%,${portal.color}10 50%,transparent 70%)`,filter:'blur(50px)',pointerEvents:'none' }}/>
