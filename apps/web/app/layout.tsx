@@ -1,9 +1,15 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Poppins } from 'next/font/google';
 import '@/styles/globals.css';
 import { Toaster } from 'react-hot-toast';
+import GlobalHeader from '@/components/layout/GlobalHeader';
+import GlobalFooter from '@/components/layout/GlobalFooter';
 
-const inter = Inter({ subsets: ['latin'] });
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['400','500','600','700','800'],
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'HospiBot - Healthcare Operating System',
@@ -11,15 +17,15 @@ export const metadata: Metadata = {
   icons: { icon: '/favicon.ico' },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        {children}
+      <body className={poppins.className} style={{ margin:0, padding:0 }}>
+        <GlobalHeader />
+        <main style={{ minHeight: 'calc(100vh - 64px)' }}>
+          {children}
+        </main>
+        <GlobalFooter />
         <Toaster
           position="top-right"
           toastOptions={{
@@ -29,6 +35,7 @@ export default function RootLayout({
               background: '#1E293B',
               color: '#fff',
               fontSize: '14px',
+              fontFamily: "'Poppins', sans-serif",
             },
           }}
         />

@@ -1375,6 +1375,13 @@ function navigate(page, portalId) {
     activeLink.style.color = '#fff';
     activeLink.style.fontWeight = '700';
   }
+  // Update parent window URL hash so browser shows correct section
+  try {
+    const urlMap = {home:'/',solutions:'/#solutions',features:'/#features',about:'/#about',contact:'/#contact',portals:'/#portals',pricing:'/#pricing'};
+    const url = urlMap[page] || '/' + page;
+    window.parent.postMessage({ type: 'URL_UPDATE', url: url }, '*');
+    history.replaceState({page, portalId}, '', url);
+  } catch(e) {}
   // Close mobile menu
   const mm = document.getElementById('mobileMenu');
   if (mm) mm.classList.remove('open');

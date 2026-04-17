@@ -705,7 +705,7 @@ function RegisterWizard() {
 
   /* ── MAIN ────────────────────────────────────────────────────────────────── */
   return (
-    <div style={{height:'100vh',display:'flex',overflow:'hidden',fontFamily:"'Poppins',sans-serif"}}>
+    <div style={{height:'calc(100vh - 64px)',display:'flex',overflow:'hidden',fontFamily:"'Poppins',sans-serif"}}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
         *{box-sizing:border-box;margin:0;padding:0}
@@ -777,11 +777,11 @@ function RegisterWizard() {
 
       {/* ── RIGHT PANEL ────────────────────────────────────────────────────── */}
       <div style={{width:'50%',background: step===0 ? '#F0F4F8' : (pp?.light||'#F0F4F8'),display:'flex',flexDirection:'column',overflow:'hidden',position:'relative',transition:'background 0.6s ease'}}>
-        {/* Top bar */}
-        <div style={{padding:'20px 40px',display:'flex',justifyContent:'space-between',alignItems:'center',borderBottom:'1px solid rgba(0,0,0,0.08)',flexShrink:0,background:'rgba(255,255,255,0.7)',backdropFilter:'blur(8px)'}}>
+        {/* Step nav bar */}
+        <div style={{padding:'14px 40px',display:'flex',justifyContent:'space-between',alignItems:'center',borderBottom:'1px solid rgba(0,0,0,0.06)',flexShrink:0}}>
           {step>0 ? (
-            <button onClick={()=>go(step-1)} style={{display:'flex',alignItems:'center',gap:6,fontSize:13,color:'#64748B',background:'none',border:'none',cursor:'pointer',padding:'6px 0'}}>
-              <ArrowLeft size={15}/> Back
+            <button onClick={()=>go(step-1)} style={{display:'flex',alignItems:'center',gap:6,fontSize:13,color:'#64748B',background:'none',border:'none',cursor:'pointer',padding:'4px 0',fontFamily:"'Poppins',sans-serif"}}>
+              <ArrowLeft size={14}/> Back
             </button>
           ) : <div/>}
           <a href="/auth/login" style={{fontSize:13,color:'#64748B',textDecoration:'none'}}>
