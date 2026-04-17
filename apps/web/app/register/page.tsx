@@ -436,7 +436,7 @@ function getLeft(step:number, portal:string): LeftContent {
     services: artServices1,
   };
 
-  if(step===0) return {  if(step===0) return {
+  if(step===0) return {
     headline:'One platform for every healthcare provider',
     sub:'9 purpose-built portals. 231 practice types. WhatsApp-first automation from day one.',
     bullets:['Go live in under 7 days','No credit card required','HIPAA & DPDPA compliant'],
