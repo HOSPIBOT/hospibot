@@ -29,6 +29,8 @@ export interface Tenant {
   type: string;
   status?: string;
   plan?: string;
+  labTier?: 'small' | 'medium' | 'large' | 'enterprise';
+  subtypeSlug?: string;
   logoUrl?: string;
   portalFamily?: PortalFamily | null;
   subType?: SubType | null;

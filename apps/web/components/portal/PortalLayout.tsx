@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { useAuthStore } from '@/lib/store';
 import { cn } from '@/lib/utils';
 import { FALLBACK_THEMES, getPlatformAssets, type PortalTheme, type PlatformAssets } from '@/lib/portal/portal-types';
+import { getSubtypeNavConfig, isFeatureEnabled, type FeatureGate } from '@/lib/portal-feature-flags';
 import {
   LayoutDashboard, MessageSquare, Calendar, Users, CreditCard,
   Stethoscope, BarChart3, Zap, Settings, LogOut, Bell, Search,
@@ -255,7 +256,59 @@ export default function PortalLayout({ children, portalSlug }: PortalLayoutProps
     }, 300);
     return () => clearTimeout(t);
   }, [globalSearch]);
-  const navItems = NAV_BY_PORTAL[portalSlug] || NAV_BY_PORTAL.clinical;
+  // Base nav for the portal family
+  let navItems = NAV_BY_PORTAL[portalSlug] || NAV_BY_PORTAL.clinical;
+
+  // For diagnostic portal: apply subtype-specific filtering + tier-based feature gates
+  if (portalSlug === 'diagnostic' && tenant) {
+    const subtype = tenant.subtypeSlug || tenant.subType?.slug;
+    const tier = tenant.labTier as 'small' | 'medium' | 'large' | 'enterprise' | undefined;
+    const subtypeConfig = getSubtypeNavConfig(subtype);
+
+    // Apply label overrides
+    if (subtypeConfig.labelOverrides) {
+      navItems = navItems.map(item => {
+        const override = subtypeConfig.labelOverrides?.[item.href];
+        return override ? { ...item, label: override } : item;
+      });
+    }
+
+    // Hide items that don't apply to this subtype
+    if (subtypeConfig.hideItems?.length) {
+      const hideSet = new Set(subtypeConfig.hideItems);
+      navItems = navItems.filter(item => {
+        // Match exact href or flag
+        if (hideSet.has(item.href)) return false;
+        if (item.flag && hideSet.has(item.flag)) return false;
+        return true;
+      });
+    }
+
+    // Add subtype-specific extra items
+    if (subtypeConfig.extraItems?.length) {
+      const iconMap: Record<string, any> = {
+        Truck, Shield, Users, Activity, Heart, UserCheck, FlaskConical,
+        AlertTriangle, FileText, ClipboardList, Globe, Building2,
+        Briefcase, TrendingUp, Stethoscope, Clock,
+      };
+      const extras = subtypeConfig.extraItems.map(e => ({
+        href: e.href, label: e.label, icon: iconMap[e.iconKey] || Activity, always: true,
+      }));
+      navItems = [...navItems, ...extras];
+    }
+
+    // Apply tier-based gating to locked items (show with lock icon rather than hide)
+    if (tier) {
+      navItems = navItems.filter(item => {
+        // Keep always-on items
+        if (item.always && !['multi-branch','franchise','api-marketplace','gov-reporting','hl7-astm','qc-westgard','eqa-pt','ai-reading','pacs-integration','biobank','theranostics','tele-radiology-routing','hospital-hl7','dedicated-manager','white-label','revenue-sharing'].some(k => item.href.includes(k))) {
+          return true;
+        }
+        // For featured items with flags, check if tier allows
+        return isFeatureEnabled(item.flag || item.href, subtype, tier);
+      });
+    }
+  }
 
   const [hydrated, setHydrated] = useState(false);
 
@@ -424,6 +477,12 @@ export default function PortalLayout({ children, portalSlug }: PortalLayoutProps
             </div>
           </div>
           <div className="flex items-center gap-4">
+            {tenant?.labTier && (
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full"
+                style={{ background: '#F1F5F9', color: '#475569' }}>
+                {tenant.labTier.charAt(0).toUpperCase() + tenant.labTier.slice(1)} Lab
+              </span>
+            )}
             {tenant?.plan && (
               <span className="text-xs font-semibold px-2.5 py-1 rounded-full"
                 style={{ background: `${theme.primaryColor}15`, color: theme.primaryColor }}>
