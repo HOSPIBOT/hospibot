@@ -304,9 +304,24 @@ export default function PortalDetailPage({ params }: { params: { slug: string } 
     <div style={{ fontFamily:"'Poppins',sans-serif", background:'#F8FAFC', minHeight:'100vh' }}>
 
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
-      <section style={{ background:`linear-gradient(160deg,${p.dark} 0%,${p.color} 60%,${p.color}dd 100%)`, padding:'80px clamp(20px,5vw,80px) 72px', position:'relative', overflow:'hidden' }}>
-        {/* Background pattern */}
-        <div style={{ position:'absolute', inset:0, backgroundImage:'radial-gradient(circle at 70% 50%, rgba(255,255,255,0.06) 0%, transparent 60%)', pointerEvents:'none' }}/>
+      <section style={{ background:p.dark, padding:'80px clamp(20px,5vw,80px) 72px', position:'relative', overflow:'hidden', minHeight:480 }}>
+        {/* Mesh gradient base */}
+        <div style={{ position:'absolute',inset:0, background:`linear-gradient(135deg,${p.dark} 0%,${p.color}ee 45%,${p.color}88 100%)`, pointerEvents:'none' }}/>
+        {/* Large glow orb — top right */}
+        <div style={{ position:'absolute',top:'-15%',right:'-8%',width:500,height:500,borderRadius:'50%',background:`radial-gradient(circle,${p.color}60 0%,${p.color}20 40%,transparent 70%)`,filter:'blur(40px)',pointerEvents:'none' }}/>
+        {/* Medium glow orb — bottom left */}
+        <div style={{ position:'absolute',bottom:'-10%',left:'-5%',width:380,height:380,borderRadius:'50%',background:`radial-gradient(circle,${p.dark}ff 0%,${p.color}40 50%,transparent 70%)`,filter:'blur(50px)',pointerEvents:'none' }}/>
+        {/* Small accent orb — center right */}
+        <div style={{ position:'absolute',top:'30%',right:'15%',width:220,height:220,borderRadius:'50%',background:`radial-gradient(circle,rgba(255,255,255,0.08) 0%,transparent 70%)`,filter:'blur(20px)',pointerEvents:'none' }}/>
+        {/* Grid pattern overlay */}
+        <div style={{ position:'absolute',inset:0,backgroundImage:`linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px)`,backgroundSize:'48px 48px',pointerEvents:'none' }}/>
+        {/* Decorative rings */}
+        <div style={{ position:'absolute',top:'10%',right:'8%',width:300,height:300,borderRadius:'50%',border:`1px solid rgba(255,255,255,0.06)`,pointerEvents:'none' }}/>
+        <div style={{ position:'absolute',top:'5%',right:'3%',width:440,height:440,borderRadius:'50%',border:`1px solid rgba(255,255,255,0.04)`,pointerEvents:'none' }}/>
+        {/* Diagonal accent band */}
+        <div style={{ position:'absolute',top:0,right:0,width:'45%',height:'100%',background:`linear-gradient(to bottom left,rgba(255,255,255,0.04),transparent)`,pointerEvents:'none' }}/>
+        {/* Noise texture */}
+        <div style={{ position:'absolute',inset:0,opacity:0.04,backgroundImage:'url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")',pointerEvents:'none' }}/>
         <div style={{ maxWidth:1100, margin:'0 auto', position:'relative' }}>
           <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:99, padding:'5px 14px', fontSize:12.5, fontWeight:600, color:'rgba(255,255,255,0.85)', marginBottom:24, letterSpacing:'0.04em' }}>
             {p.emoji} HOSPIBOT {p.name.toUpperCase()}
@@ -342,8 +357,13 @@ export default function PortalDetailPage({ params }: { params: { slug: string } 
       </section>
 
       {/* ── FEATURES ──────────────────────────────────────────────────────── */}
-      <section style={{ padding:'80px clamp(20px,5vw,80px)', maxWidth:1100, margin:'0 auto' }}>
-        <div style={{ textAlign:'center', marginBottom:56 }}>
+      <section style={{ padding:'80px clamp(20px,5vw,80px)', background:'#fff', position:'relative', overflow:'hidden' }}>
+        {/* Subtle dot grid */}
+        <div style={{ position:'absolute',inset:0,backgroundImage:`radial-gradient(${p.color}18 1.5px,transparent 1.5px)`,backgroundSize:'28px 28px',pointerEvents:'none' }}/>
+        {/* Corner accent */}
+        <div style={{ position:'absolute',top:0,right:0,width:300,height:300,background:`radial-gradient(circle at top right,${p.light},transparent 70%)`,pointerEvents:'none' }}/>
+        <div style={{ position:'absolute',bottom:0,left:0,width:250,height:250,background:`radial-gradient(circle at bottom left,${p.light},transparent 70%)`,pointerEvents:'none' }}/>
+        <div style={{ textAlign:'center', marginBottom:56, position:'relative' }}>
           <div style={{ display:'inline-block', background:p.light, color:p.color, fontSize:12, fontWeight:700, padding:'4px 14px', borderRadius:99, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:14 }}>Everything you need</div>
           <h2 style={{ fontSize:'clamp(24px,3vw,38px)', fontWeight:800, color:'#0F172A', marginBottom:12, letterSpacing:'-0.02em' }}>Built for how you actually work</h2>
           <p style={{ fontSize:16, color:'#64748B', maxWidth:560, margin:'0 auto', lineHeight:1.7 }}>
@@ -362,7 +382,14 @@ export default function PortalDetailPage({ params }: { params: { slug: string } 
       </section>
 
       {/* ── HOW IT WORKS ─────────────────────────────────────────────────── */}
-      <section style={{ background:`linear-gradient(135deg,${p.dark},${p.color})`, padding:'80px clamp(20px,5vw,80px)' }}>
+      <section style={{ background:'#0A0F1E', padding:'80px clamp(20px,5vw,80px)', position:'relative', overflow:'hidden' }}>
+        {/* Colored glow behind section */}
+        <div style={{ position:'absolute',top:'50%',left:'50%',transform:'translate(-50%,-50%)',width:700,height:500,borderRadius:'50%',background:`radial-gradient(ellipse,${p.color}30 0%,${p.color}10 40%,transparent 70%)`,filter:'blur(60px)',pointerEvents:'none' }}/>
+        {/* Grid */}
+        <div style={{ position:'absolute',inset:0,backgroundImage:`linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px)`,backgroundSize:'56px 56px',pointerEvents:'none' }}/>
+        {/* Corner glows */}
+        <div style={{ position:'absolute',top:0,left:0,width:200,height:200,background:`radial-gradient(circle,${p.color}20,transparent 70%)`,filter:'blur(30px)',pointerEvents:'none' }}/>
+        <div style={{ position:'absolute',bottom:0,right:0,width:250,height:250,background:`radial-gradient(circle,${p.color}15,transparent 70%)`,filter:'blur(40px)',pointerEvents:'none' }}/>
         <div style={{ maxWidth:1000, margin:'0 auto' }}>
           <div style={{ textAlign:'center', marginBottom:52 }}>
             <div style={{ display:'inline-block', background:'rgba(255,255,255,0.15)', color:'#fff', fontSize:12, fontWeight:700, padding:'4px 14px', borderRadius:99, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:14 }}>How it works</div>
@@ -385,7 +412,12 @@ export default function PortalDetailPage({ params }: { params: { slug: string } 
       </section>
 
       {/* ── BENEFITS ─────────────────────────────────────────────────────── */}
-      <section style={{ padding:'80px clamp(20px,5vw,80px)', maxWidth:1100, margin:'0 auto' }}>
+      <section style={{ padding:'80px clamp(20px,5vw,80px)', background:'#F8FAFC', position:'relative', overflow:'hidden' }}>
+        {/* Subtle diagonal stripes */}
+        <div style={{ position:'absolute',inset:0,backgroundImage:`repeating-linear-gradient(135deg,transparent,transparent 40px,${p.color}06 40px,${p.color}06 41px)`,pointerEvents:'none' }}/>
+        {/* Side glow */}
+        <div style={{ position:'absolute',right:0,top:'20%',width:400,height:400,background:`radial-gradient(circle,${p.light} 0%,transparent 70%)`,pointerEvents:'none' }}/>
+        <div style={{ maxWidth:1100, margin:'0 auto', position:'relative' }}>
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:48, alignItems:'center' }}>
           <div>
             <div style={{ display:'inline-block', background:p.light, color:p.color, fontSize:12, fontWeight:700, padding:'4px 14px', borderRadius:99, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:16 }}>Why choose HospiBot</div>
@@ -420,8 +452,16 @@ export default function PortalDetailPage({ params }: { params: { slug: string } 
         </div>
       </section>
 
+        </div>
       {/* ── FINAL CTA ─────────────────────────────────────────────────────── */}
-      <section style={{ background:'#0F172A', padding:'72px clamp(20px,5vw,80px)' }}>
+      <section style={{ background:'#0F172A', padding:'72px clamp(20px,5vw,80px)', position:'relative', overflow:'hidden' }}>
+        {/* Large portal-colored glow */}
+        <div style={{ position:'absolute',top:'50%',left:'50%',transform:'translate(-50%,-50%)',width:800,height:400,background:`radial-gradient(ellipse,${p.color}35 0%,${p.color}10 50%,transparent 70%)`,filter:'blur(50px)',pointerEvents:'none' }}/>
+        {/* Subtle rings */}
+        <div style={{ position:'absolute',top:'50%',left:'50%',transform:'translate(-50%,-50%)',width:600,height:600,borderRadius:'50%',border:`1px solid ${p.color}20`,pointerEvents:'none' }}/>
+        <div style={{ position:'absolute',top:'50%',left:'50%',transform:'translate(-50%,-50%)',width:900,height:900,borderRadius:'50%',border:`1px solid ${p.color}10`,pointerEvents:'none' }}/>
+        {/* Grid */}
+        <div style={{ position:'absolute',inset:0,backgroundImage:`linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px)`,backgroundSize:'50px 50px',pointerEvents:'none' }}/>
         <div style={{ maxWidth:700, margin:'0 auto', textAlign:'center' }}>
           <div style={{ fontSize:36, marginBottom:16 }}>{p.emoji}</div>
           <h2 style={{ fontSize:'clamp(24px,3vw,38px)', fontWeight:800, color:'#fff', marginBottom:12, letterSpacing:'-0.02em' }}>
