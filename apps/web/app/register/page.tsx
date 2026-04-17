@@ -733,137 +733,138 @@ function RegisterWizard() {
   /* Full-screen tier selection for Diagnostic portal */
   if(step===2 && portal==='diagnostic' && !showOthers) {
     return (
-      <div style={{minHeight:'calc(100vh - 64px)',background:'#0A0F1E',fontFamily:"'Poppins',sans-serif",overflowY:'auto'}}>
+      <div style={{height:'calc(100vh - 64px)',display:'flex',flexDirection:'column',background:'#060B14',fontFamily:"'Poppins',sans-serif",overflow:'hidden'}}>
         <style>{`
           @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
-          *{box-sizing:border-box}
-          button,input,select{font-family:'Poppins',sans-serif}
-          @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-          .tier-card{transition:all 0.25s cubic-bezier(0.34,1.2,0.64,1)!important}
-          .tier-card:hover{transform:translateY(-4px)!important}
-          .tier-select-btn:hover{opacity:0.92!important;transform:translateY(-1px)!important}
-          ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:99px}
+          *{box-sizing:border-box;margin:0;padding:0}
+          button,input{font-family:'Poppins',sans-serif}
+          @keyframes cardIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+          .tc:hover{transform:translateY(-3px)!important;box-shadow:var(--hover-shadow)!important}
+          .ts-btn:hover{filter:brightness(1.12)!important;transform:translateY(-1px)!important}
         `}</style>
 
-        {/* Header bar */}
-        <div style={{padding:'16px 40px',borderBottom:'1px solid rgba(255,255,255,0.07)',display:'flex',justifyContent:'space-between',alignItems:'center',background:'rgba(0,0,0,0.3)',backdropFilter:'blur(12px)',position:'sticky',top:0,zIndex:10}}>
-          <button onClick={()=>go(1)} style={{display:'flex',alignItems:'center',gap:6,fontSize:13,color:'rgba(255,255,255,0.55)',background:'none',border:'none',cursor:'pointer',fontFamily:"'Poppins',sans-serif"}}>
-            <ArrowLeft size={14}/> Back
+        {/* Header */}
+        <div style={{padding:'12px 32px',borderBottom:'1px solid rgba(255,255,255,0.08)',display:'flex',justifyContent:'space-between',alignItems:'center',flexShrink:0}}>
+          <button onClick={()=>go(1)} style={{display:'flex',alignItems:'center',gap:6,fontSize:13,color:'rgba(255,255,255,0.5)',background:'none',border:'none',cursor:'pointer',fontFamily:"'Poppins',sans-serif"}}>
+            <ArrowLeft size={13}/> Back
           </button>
-          <div style={{display:'flex',gap:6,alignItems:'center'}}>
+          <div style={{display:'flex',gap:5,alignItems:'center'}}>
             {['Portal','Type','Size','Details','Account'].map((s,i)=>(
-              <div key={s} style={{display:'flex',alignItems:'center',gap:5}}>
-                <div style={{height:7,width:i<=2?28:7,borderRadius:99,background:i<2?'rgba(255,255,255,0.8)':i===2?'rgba(37,211,102,0.9)':'rgba(255,255,255,0.2)',transition:'all 0.3s'}}/>
-              </div>
+              <div key={s} style={{height:6,width:i<=2?24:6,borderRadius:99,background:i<2?'rgba(255,255,255,0.75)':i===2?'#25D366':'rgba(255,255,255,0.15)',transition:'all 0.3s'}}/>
             ))}
-            <span style={{marginLeft:6,fontSize:12,color:'rgba(255,255,255,0.35)',fontWeight:500}}>Step 3 of 5</span>
+            <span style={{marginLeft:6,fontSize:11.5,color:'rgba(255,255,255,0.3)',fontWeight:500}}>Step 3 of 5</span>
           </div>
-          <a href="/auth/login" style={{fontSize:13,color:'rgba(255,255,255,0.4)',textDecoration:'none'}}>
+          <a href="/auth/login" style={{fontSize:12.5,color:'rgba(255,255,255,0.35)',textDecoration:'none'}}>
             Have an account? <span style={{color:'#25D366',fontWeight:600}}>Sign in</span>
           </a>
         </div>
 
         {/* Hero */}
-        <div style={{textAlign:'center',padding:'52px 24px 36px',position:'relative',animation:'fadeUp 0.45s ease both'}}>
-          <div style={{position:'absolute',top:0,left:'50%',transform:'translateX(-50%)',width:600,height:300,background:'radial-gradient(ellipse,rgba(30,186,230,0.12) 0%,transparent 70%)',filter:'blur(40px)',pointerEvents:'none'}}/>
-          <div style={{display:'inline-flex',alignItems:'center',gap:8,background:'rgba(37,211,102,0.1)',border:'1px solid rgba(37,211,102,0.25)',borderRadius:99,padding:'5px 16px',fontSize:12,fontWeight:700,color:'#25D366',marginBottom:18,letterSpacing:'0.05em'}}>
-            🔬 DIAGNOSTIC PORTAL — {(subtype||'').replace(/-/g,' ').replace(/\b\w/g,(c:string)=>c.toUpperCase())}
+        <div style={{textAlign:'center',padding:'20px 24px 16px',flexShrink:0,position:'relative'}}>
+          <div style={{position:'absolute',top:0,left:'50%',transform:'translateX(-50%)',width:500,height:200,background:'radial-gradient(ellipse,rgba(13,186,150,0.1) 0%,transparent 70%)',pointerEvents:'none'}}/>
+          <div style={{display:'inline-flex',alignItems:'center',gap:7,background:'rgba(37,211,102,0.08)',border:'1px solid rgba(37,211,102,0.2)',borderRadius:99,padding:'4px 14px',fontSize:11.5,fontWeight:700,color:'#25D366',marginBottom:10,letterSpacing:'0.05em'}}>
+            🔬 {(subtype||'').replace(/-/g,' ').replace(/\b\w/g,(c:string)=>c.toUpperCase())}
           </div>
-          <h1 style={{fontSize:'clamp(24px,3.5vw,42px)',fontWeight:900,color:'#fff',marginBottom:12,letterSpacing:'-0.02em',position:'relative'}}>
+          <h1 style={{fontSize:'clamp(20px,2.2vw,28px)',fontWeight:900,color:'#fff',marginBottom:6,letterSpacing:'-0.02em'}}>
             Choose your lab size
           </h1>
-          <p style={{fontSize:'clamp(14px,1.4vw,16px)',color:'rgba(255,255,255,0.5)',maxWidth:520,margin:'0 auto',lineHeight:1.7}}>
-            Features and pricing are matched to your scale. You can upgrade anytime — no data migration needed.
+          <p style={{fontSize:13.5,color:'rgba(255,255,255,0.45)',maxWidth:480,margin:'0 auto',lineHeight:1.6}}>
+            Features and pricing matched to your scale. Upgrade anytime — no migration needed.
           </p>
         </div>
 
-        {/* Tier cards — 4-column grid */}
-        <div style={{padding:'0 clamp(16px,4vw,60px) 64px',display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))',gap:18,maxWidth:1280,margin:'0 auto'}}>
-          {DIAGNOSTIC_TIERS.map((tier, ti) => (
-            <div key={tier.id} className="tier-card"
-              style={{background:'rgba(255,255,255,0.04)',border:`1.5px solid ${labTier===tier.id?tier.color:'rgba(255,255,255,0.08)'}`,borderRadius:22,overflow:'hidden',display:'flex',flexDirection:'column',boxShadow:labTier===tier.id?`0 12px 48px ${tier.color}30`:'0 4px 20px rgba(0,0,0,0.3)',transition:'all 0.25s',animation:`fadeUp 0.4s ${ti*0.08}s ease both`,opacity:0,animationFillMode:'forwards'}}>
+        {/* Cards grid — flex:1, no scroll */}
+        <div style={{flex:1,display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,padding:'0 24px 16px',minHeight:0}}>
+          {DIAGNOSTIC_TIERS.map((tier, ti) => {
+            const isSelected = labTier===tier.id;
+            const cardBg = isSelected ? `linear-gradient(165deg,#1A2744,#162038)` : 'linear-gradient(165deg,#111827,#0D1424)';
+            const borderCol = isSelected ? tier.color : 'rgba(255,255,255,0.1)';
+            return (
+              <div key={tier.id} className="tc"
+                style={{background:cardBg,border:`2px solid ${borderCol}`,borderRadius:18,display:'flex',flexDirection:'column',overflow:'hidden',transition:'all 0.22s',
+                  boxShadow:isSelected?`0 8px 32px ${tier.color}35,0 0 0 1px ${tier.color}20`:'0 4px 16px rgba(0,0,0,0.5)',
+                  '--hover-shadow':`0 12px 40px ${tier.color}30,0 0 0 1px ${tier.color}25`,
+                  animation:`cardIn 0.35s ${ti*0.07}s ease both`,opacity:0,animationFillMode:'forwards'} as any}>
 
-              {/* Card header */}
-              <div style={{padding:'24px 24px 20px',background:labTier===tier.id?`linear-gradient(145deg,${tier.color}25,${tier.color}10)`:`linear-gradient(145deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02))`,borderBottom:`1px solid ${labTier===tier.id?tier.color+'30':'rgba(255,255,255,0.07)'}`,position:'relative'}}>
-                {tier.badge && (
-                  <div style={{position:'absolute',top:14,right:14,fontSize:10,fontWeight:800,padding:'3px 9px',borderRadius:99,background:tier.id==='enterprise'?'#fff':`${tier.color}`,color:tier.id==='enterprise'?'#0F172A':'#fff',letterSpacing:'0.04em'}}>
-                    {tier.badge}
-                  </div>
-                )}
-                <div style={{width:44,height:44,borderRadius:13,background:`${tier.color}20`,border:`1.5px solid ${tier.color}40`,display:'flex',alignItems:'center',justifyContent:'center',marginBottom:14}}>
-                  <span style={{fontSize:16,fontWeight:900,color:tier.color}}>{tier.label[0]}</span>
-                </div>
-                <h3 style={{fontSize:18,fontWeight:800,color:'#fff',marginBottom:4}}>{tier.label}</h3>
-                <p style={{fontSize:12.5,color:'rgba(255,255,255,0.45)',lineHeight:1.5,marginBottom:16}}>{tier.tagline}</p>
-                {/* Scale badges */}
-                <div style={{display:'flex',flexWrap:'wrap',gap:6,marginBottom:16}}>
-                  {[{icon:'🧪',v:tier.dailySamples,u:'samples/day'},{icon:'🏢',v:tier.branches,u:`branch${tier.branches==='1'?'':'es'}`},{icon:'👥',v:tier.staff,u:'staff'}].map(b=>(
-                    <div key={b.u} style={{display:'flex',alignItems:'center',gap:5,padding:'4px 10px',borderRadius:99,background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.08)'}}>
-                      <span style={{fontSize:12}}>{b.icon}</span>
-                      <span style={{fontSize:11.5,color:'rgba(255,255,255,0.65)',fontWeight:500}}>{b.v} {b.u}</span>
-                    </div>
-                  ))}
-                </div>
-                {/* Price */}
-                <div style={{display:'flex',alignItems:'baseline',gap:6}}>
-                  <span style={{fontSize:28,fontWeight:900,color:tier.id==='enterprise'?'#fff':tier.color}}>{tier.price}</span>
-                  <span style={{fontSize:13,color:'rgba(255,255,255,0.4)'}}>{tier.priceNote}</span>
-                </div>
-              </div>
+                {/* Card top — colored accent strip */}
+                <div style={{height:3,background:isSelected?tier.color:`linear-gradient(90deg,${tier.color}40,transparent)`,flexShrink:0}}/>
 
-              {/* Features list */}
-              <div style={{padding:'20px 24px',flex:1}}>
-                <div style={{fontSize:11,fontWeight:700,color:'rgba(255,255,255,0.35)',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:12}}>
-                  {tier.id==='enterprise'?'All features included':'Included in this plan'}
-                </div>
-                <div style={{display:'flex',flexDirection:'column',gap:9,marginBottom:16}}>
-                  {tier.features.map(f=>(
-                    <div key={f} style={{display:'flex',alignItems:'flex-start',gap:9}}>
-                      <div style={{width:18,height:18,borderRadius:'50%',background:`${tier.color}20`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:1}}>
-                        <svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.2 6L8 1" stroke={tier.color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                {/* Header */}
+                <div style={{padding:'14px 16px 12px',borderBottom:'1px solid rgba(255,255,255,0.07)',flexShrink:0}}>
+                  <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
+                    <div style={{display:'flex',alignItems:'center',gap:8}}>
+                      <div style={{width:32,height:32,borderRadius:9,background:`${tier.color}20`,border:`1px solid ${tier.color}40`,display:'flex',alignItems:'center',justifyContent:'center'}}>
+                        <span style={{fontSize:13,fontWeight:900,color:tier.color}}>{tier.label[0]}</span>
                       </div>
-                      <span style={{fontSize:12.5,color:'rgba(255,255,255,0.7)',lineHeight:1.5}}>{f}</span>
+                      <h3 style={{fontSize:15,fontWeight:800,color:'#fff',lineHeight:1}}>{tier.label}</h3>
                     </div>
-                  ))}
+                    {tier.badge && (
+                      <span style={{fontSize:9.5,fontWeight:800,padding:'2px 7px',borderRadius:99,background:tier.id==='enterprise'?'rgba(255,255,255,0.1)':`${tier.color}25`,color:tier.id==='enterprise'?'rgba(255,255,255,0.7)':tier.color,border:`1px solid ${tier.id==='enterprise'?'rgba(255,255,255,0.15)':tier.color+'40'}`,letterSpacing:'0.03em',whiteSpace:'nowrap'}}>
+                        {tier.badge}
+                      </span>
+                    )}
+                  </div>
+                  {/* Scale pills */}
+                  <div style={{display:'flex',flexWrap:'wrap',gap:4,marginBottom:10}}>
+                    {[tier.dailySamples+' samples/day',tier.branches+(tier.branches==='1'?' branch':' branches'),tier.staff+' staff'].map(b=>(
+                      <span key={b} style={{fontSize:10.5,padding:'2px 8px',borderRadius:99,background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',color:'rgba(255,255,255,0.55)'}}>{b}</span>
+                    ))}
+                  </div>
+                  {/* Price */}
+                  <div style={{display:'flex',alignItems:'baseline',gap:5}}>
+                    <span style={{fontSize:tier.id==='enterprise'?22:26,fontWeight:900,color:isSelected?tier.color:'#fff'}}>{tier.price}</span>
+                    <span style={{fontSize:11.5,color:'rgba(255,255,255,0.35)'}}>{tier.priceNote}</span>
+                  </div>
                 </div>
-                {tier.notIncluded.length>0 && (
-                  <>
-                    <div style={{fontSize:11,fontWeight:700,color:'rgba(255,255,255,0.2)',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:10}}>Not in this plan</div>
-                    <div style={{display:'flex',flexDirection:'column',gap:7}}>
-                      {tier.notIncluded.map(f=>(
-                        <div key={f} style={{display:'flex',alignItems:'center',gap:9,opacity:0.4}}>
-                          <div style={{width:18,height:18,borderRadius:'50%',background:'rgba(255,255,255,0.06)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-                            <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1 1L7 7M7 1L1 7" stroke="rgba(255,255,255,0.5)" strokeWidth="1.4" strokeLinecap="round"/></svg>
-                          </div>
-                          <span style={{fontSize:12,color:'rgba(255,255,255,0.4)',lineHeight:1.5,textDecoration:'line-through',textDecorationColor:'rgba(255,255,255,0.15)'}}>{f}</span>
+
+                {/* Features */}
+                <div style={{flex:1,padding:'10px 14px 8px',overflow:'hidden',minHeight:0}}>
+                  <div style={{fontSize:9.5,fontWeight:700,color:'rgba(255,255,255,0.3)',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:8}}>Included</div>
+                  <div style={{display:'flex',flexDirection:'column',gap:5}}>
+                    {tier.features.slice(0, tier.id==='small'?7:tier.id==='medium'?7:tier.id==='large'?8:9).map(f=>(
+                      <div key={f} style={{display:'flex',alignItems:'flex-start',gap:7}}>
+                        <div style={{width:14,height:14,borderRadius:'50%',background:`${tier.color}18`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:1}}>
+                          <svg width="7" height="6" viewBox="0 0 7 6" fill="none"><path d="M0.5 3L2.5 5L6.5 1" stroke={tier.color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        </div>
+                        <span style={{fontSize:11.5,color:'rgba(255,255,255,0.75)',lineHeight:1.4}}>{f}</span>
+                      </div>
+                    ))}
+                  </div>
+                  {tier.notIncluded.length>0 && (
+                    <div style={{marginTop:8,paddingTop:8,borderTop:'1px solid rgba(255,255,255,0.06)'}}>
+                      <div style={{fontSize:9.5,fontWeight:700,color:'rgba(255,255,255,0.2)',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:6}}>Not included</div>
+                      {tier.notIncluded.slice(0,3).map(f=>(
+                        <div key={f} style={{display:'flex',alignItems:'center',gap:6,marginBottom:4}}>
+                          <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 1.5L6.5 6.5M6.5 1.5L1.5 6.5" stroke="rgba(255,255,255,0.2)" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                          <span style={{fontSize:11,color:'rgba(255,255,255,0.25)',textDecoration:'line-through',textDecorationColor:'rgba(255,255,255,0.12)'}}>{f}</span>
                         </div>
                       ))}
                     </div>
-                  </>
-                )}
-              </div>
+                  )}
+                </div>
 
-              {/* Select button */}
-              <div style={{padding:'0 24px 24px'}}>
-                {tier.id==='enterprise' ? (
-                  <button onClick={()=>pickTier('enterprise')} className="tier-select-btn"
-                    style={{width:'100%',padding:'13px',borderRadius:13,border:'1.5px solid rgba(255,255,255,0.2)',background:'rgba(255,255,255,0.06)',color:'rgba(255,255,255,0.85)',fontWeight:700,fontSize:14,cursor:'pointer',transition:'all 0.2s',fontFamily:"'Poppins',sans-serif"}}>
-                    Contact Sales for Pricing
+                {/* CTA Button */}
+                <div style={{padding:'0 14px 14px',flexShrink:0}}>
+                  <button onClick={()=>pickTier(tier.id as LabTier)} className="ts-btn"
+                    style={{width:'100%',padding:'10px',borderRadius:11,border: tier.id==='enterprise'?'1px solid rgba(255,255,255,0.15)':'none',
+                      background:tier.id==='enterprise'?'rgba(255,255,255,0.05)':isSelected?tier.color:`${tier.color}dd`,
+                      color: tier.id==='enterprise'?'rgba(255,255,255,0.75)':'#fff',
+                      fontWeight:700,fontSize:13,cursor:'pointer',transition:'all 0.18s',
+                      boxShadow:tier.id!=='enterprise'?(isSelected?`0 4px 20px ${tier.color}50`:`0 3px 12px ${tier.color}30`):'none',
+                      fontFamily:"'Poppins',sans-serif"}}>
+                    {tier.id==='enterprise'?'Contact Sales'
+                      :isSelected?'Selected — Continue →'
+                      :`Select ${tier.label}`}
                   </button>
-                ) : (
-                  <button onClick={()=>pickTier(tier.id as LabTier)} className="tier-select-btn"
-                    style={{width:'100%',padding:'13px',borderRadius:13,border:'none',background:labTier===tier.id?`linear-gradient(135deg,${tier.color},${tier.color}bb)`:`linear-gradient(135deg,${tier.color},${tier.color}cc)`,color:'#fff',fontWeight:700,fontSize:14,cursor:'pointer',transition:'all 0.2s',boxShadow:labTier===tier.id?`0 6px 24px ${tier.color}50`:`0 4px 16px ${tier.color}30`,fontFamily:"'Poppins',sans-serif"}}>
-                    {labTier===tier.id ? 'Selected — Continue →' : `Select ${tier.label}`}
-                  </button>
-                )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        {/* Footer note */}
-        <div style={{textAlign:'center',paddingBottom:40,fontSize:13,color:'rgba(255,255,255,0.25)'}}>
-          All plans include a 14-day free trial. No credit card required. Upgrade or downgrade anytime.
+        {/* Footer */}
+        <div style={{textAlign:'center',paddingBottom:12,fontSize:11.5,color:'rgba(255,255,255,0.2)',flexShrink:0}}>
+          14-day free trial on all plans · No credit card required · Upgrade or downgrade anytime
         </div>
       </div>
     );
