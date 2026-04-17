@@ -6,7 +6,6 @@ import toast from 'react-hot-toast';
 import { api } from '@/lib/api';
 import { DIAGNOSTIC_TIERS, TIER_FEATURES_DETAIL, type LabTier } from '@/lib/diagnostic-tiers';
 import { getSubtypeFeatures } from '@/lib/diagnostic-subtype-features';
-import { getSubtypeFeatures } from '@/lib/diagnostic-subtype-features';
 
 /* ── PORTAL CONFIG ─────────────────────────────────────────────────────────── */
 const P = {
