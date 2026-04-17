@@ -102,28 +102,345 @@ type LeftContent = { headline:string; sub:string; bullets:string[]; art:React.Re
 function getLeft(step:number, portal:string): LeftContent {
   const port = P[portal as PortalSlug];
   const c = port?.c3 || '#10B981';
-  const art0 = (
-    <svg viewBox="0 0 320 280" fill="none" style={{width:'100%',maxWidth:300}}>
-      {/* Abstract medical cross with orbiting circles */}
-      <circle cx="160" cy="140" r="100" stroke="rgba(255,255,255,0.06)" strokeWidth="40"/>
-      <circle cx="160" cy="140" r="60" stroke="rgba(255,255,255,0.08)" strokeWidth="2"/>
-      <rect x="140" y="80" width="40" height="120" rx="8" fill="rgba(255,255,255,0.12)"/>
-      <rect x="100" y="120" width="120" height="40" rx="8" fill="rgba(255,255,255,0.12)"/>
-      {/* Portal dots orbit */}
-      {['🩺','🔬','💊','🏠','⚙️','💆','🤝'].map((e,i)=>{
-        const a = (i/7)*Math.PI*2 - Math.PI/2;
-        const x = 160 + 100*Math.cos(a), y = 140 + 100*Math.sin(a);
-        return <text key={i} x={x-10} y={y+8} fontSize="18" style={{opacity:0.7}}>{e}</text>;
+  const c2 = port?.c2 || '#047857';
+
+  // ── PREMIUM SVG ILLUSTRATIONS ──────────────────────────────────────────────
+  const artStep0 = (
+    <svg viewBox="0 0 340 300" fill="none" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',maxWidth:300}}>
+      <defs>
+        <radialGradient id="g0a" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="rgba(255,255,255,0.15)"/><stop offset="100%" stopColor="rgba(255,255,255,0)"/></radialGradient>
+        <filter id="glow0"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      {/* Outer rings */}
+      <circle cx="170" cy="150" r="120" stroke="rgba(255,255,255,0.06)" strokeWidth="40"/>
+      <circle cx="170" cy="150" r="90" stroke="rgba(255,255,255,0.05)" strokeWidth="1" strokeDasharray="6 4"/>
+      <circle cx="170" cy="150" r="55" fill="url(#g0a)"/>
+      {/* Centre cross */}
+      <rect x="155" y="105" width="30" height="90" rx="7" fill="rgba(255,255,255,0.12)"/>
+      <rect x="125" y="135" width="90" height="30" rx="7" fill="rgba(255,255,255,0.12)"/>
+      <rect x="159" y="109" width="22" height="82" rx="5" fill="rgba(255,255,255,0.08)"/>
+      <rect x="129" y="139" width="82" height="22" rx="5" fill="rgba(255,255,255,0.08)"/>
+      {/* Portal icons on orbit */}
+      {[['🩺',0],['🔬',1],['💊',2],['🏠',3],['⚙️',4],['💆',5],['🤝',6]].map(([e,i])=>{
+        const angle = (Number(i)/7)*Math.PI*2 - Math.PI/2;
+        const x = 170 + 112*Math.cos(angle), y = 150 + 112*Math.sin(angle);
+        return (
+          <g key={Number(i)} filter="url(#glow0)">
+            <circle cx={x} cy={y} r="18" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
+            <text x={x-9} y={y+7} fontSize="16">{e as string}</text>
+          </g>
+        );
       })}
-      <circle cx="160" cy="140" r="28" fill="rgba(255,255,255,0.15)"/>
-      <text x="150" y="150" fontSize="22">🏥</text>
+      <circle cx="170" cy="150" r="32" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5"/>
+      <text x="158" y="159" fontSize="22">🏥</text>
+      {/* Pulse line */}
+      <polyline points="30,240 60,240 72,215 84,265 96,230 108,250 130,240 210,240" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
     </svg>
   );
-  if(step===0) return {
+
+  const artClinical1 = (
+    <svg viewBox="0 0 340 300" fill="none" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',maxWidth:300}}>
+      <defs>
+        <linearGradient id="ecg" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor="rgba(255,255,255,0)"/><stop offset="40%" stopColor={`${c}cc`}/><stop offset="100%" stopColor="rgba(255,255,255,0)"/></linearGradient>
+        <filter id="glowC"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      {/* Background rings */}
+      <circle cx="170" cy="145" r="110" stroke="rgba(255,255,255,0.04)" strokeWidth="35"/>
+      <circle cx="170" cy="145" r="75" stroke="rgba(255,255,255,0.06)" strokeWidth="1.5" strokeDasharray="5 3"/>
+      {/* Doctor silhouette */}
+      <circle cx="170" cy="100" r="32" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.18)" strokeWidth="1.5"/>
+      <path d="M130 175 Q130 155 170 155 Q210 155 210 175 L215 230 L125 230 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.12)" strokeWidth="1"/>
+      {/* White coat detail */}
+      <path d="M145 175 L148 225 M195 175 L192 225" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5"/>
+      <rect x="155" y="180" width="30" height="18" rx="4" fill="rgba(255,255,255,0.08)"/>
+      {/* Stethoscope */}
+      <path d="M185 148 Q205 148 205 168 Q205 188 185 188 Q175 188 175 180" stroke={`${c}bb`} strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+      <circle cx="175" cy="183" r="8" fill="none" stroke={`${c}aa`} strokeWidth="2" filter="url(#glowC)"/>
+      <path d="M185 128 L185 148" stroke={`${c}bb`} strokeWidth="2.5" strokeLinecap="round"/>
+      <circle cx="185" cy="124" r="6" fill={`${c}60`} stroke={c} strokeWidth="1.5" filter="url(#glowC)"/>
+      {/* ECG wave */}
+      <polyline points="30,255 65,255 78,225 92,280 106,240 118,260 140,255 210,255 225,255" stroke="url(#ecg)" strokeWidth="2" fill="none" strokeLinecap="round" filter="url(#glowC)"/>
+      <circle cx="170" cy="100" r="20" fill="rgba(255,255,255,0.08)"/>
+      <text x="160" y="107" fontSize="18">👨‍⚕️</text>
+    </svg>
+  );
+
+  const artDiagnostic1 = (
+    <svg viewBox="0 0 340 300" fill="none" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',maxWidth:300}}>
+      <defs>
+        <linearGradient id="dnaG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={c} stopOpacity="0.8"/><stop offset="100%" stopColor={c} stopOpacity="0.2"/></linearGradient>
+        <filter id="glowD"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      {/* DNA helix — two strands */}
+      {[0,1,2,3,4,5,6,7,8].map(i => {
+        const y = 35 + i * 27;
+        const wave1 = Math.sin(i * 0.75) * 45;
+        const wave2 = Math.sin(i * 0.75 + Math.PI) * 45;
+        const x1 = 115 + wave1, x2 = 115 + wave2;
+        return (
+          <g key={i} filter="url(#glowD)">
+            <circle cx={x1} cy={y} r="7" fill={`${c}70`} stroke={c} strokeWidth="1"/>
+            <circle cx={x2} cy={y} r="7" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.35)" strokeWidth="1"/>
+            {i < 8 && (
+              <line x1={x1} y1={y} x2={115 + Math.sin((i+1)*0.75)*45} y2={y+27}
+                stroke={`${c}40`} strokeWidth="1.5"/>
+            )}
+            {Math.abs(wave1-wave2) < 15 && (
+              <line x1={x1} y1={y} x2={x2} y2={y} stroke="rgba(255,255,255,0.15)" strokeWidth="1" strokeDasharray="3 2"/>
+            )}
+          </g>
+        );
+      })}
+      {/* Microscope base */}
+      <rect x="210" y="190" width="90" height="8" rx="4" fill="rgba(255,255,255,0.2)"/>
+      <rect x="245" y="145" width="20" height="50" rx="4" fill="rgba(255,255,255,0.12)"/>
+      <path d="M240 145 L260 145 L265 130 L235 130 Z" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" strokeWidth="1"/>
+      <circle cx="255" cy="125" r="16" fill={`${c}20`} stroke={c} strokeWidth="1.5" filter="url(#glowD)"/>
+      <text x="247" y="131" fontSize="14">🔬</text>
+      {/* Test tube */}
+      <rect x="28" y="160" width="18" height="55" rx="9" fill={`${c}25`} stroke={`${c}60`} strokeWidth="1.5"/>
+      <rect x="28" y="190" width="18" height="25" rx="0 0 9 9" fill={`${c}40`}/>
+      <line x1="32" y1="170" x2="42" y2="170" stroke="rgba(255,255,255,0.3)" strokeWidth="1"/>
+      <line x1="32" y1="180" x2="42" y2="180" stroke="rgba(255,255,255,0.2)" strokeWidth="1"/>
+    </svg>
+  );
+
+  const artPharmacy1 = (
+    <svg viewBox="0 0 340 300" fill="none" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',maxWidth:300}}>
+      <defs>
+        <linearGradient id="pillG" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor={`${c}60`}/><stop offset="50%" stopColor={`${c}20`}/><stop offset="100%" stopColor="rgba(255,255,255,0.1)"/></linearGradient>
+        <filter id="glowP"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      {/* Green cross (pharmacy) */}
+      <rect x="140" y="60" width="60" height="180" rx="10" fill="rgba(255,255,255,0.06)"/>
+      <rect x="80" y="120" width="180" height="60" rx="10" fill="rgba(255,255,255,0.06)"/>
+      <rect x="148" y="68" width="44" height="164" rx="7" fill={`${c}20`}/>
+      <rect x="88" y="128" width="164" height="44" rx="7" fill={`${c}20`}/>
+      {/* Large pill center */}
+      <rect x="118" y="128" width="104" height="44" rx="22" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5"/>
+      <rect x="118" y="128" width="52" height="44" rx="22 0 0 22" fill={`${c}35`} filter="url(#glowP)"/>
+      <line x1="170" y1="128" x2="170" y2="172" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5"/>
+      {/* Floating pills */}
+      {[[55,80,35,16],[270,90,30,14],[50,200,28,13],[280,195,32,14]].map(([cx,cy,rw,rh],i)=>(
+        <g key={i} filter="url(#glowP)">
+          <rect x={cx-rw/2} y={cy-rh/2} width={rw} height={rh} rx={rh/2} fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" strokeWidth="1"/>
+          <rect x={cx-rw/2} y={cy-rh/2} width={rw/2} height={rh} rx={`${rh/2} 0 0 ${rh/2}`} fill={`${c}40`}/>
+        </g>
+      ))}
+      {/* Molecule nodes */}
+      {[[170,260],[130,245],[210,245]].map(([x,y],i)=>(
+        <g key={i}><circle cx={x} cy={y} r={i===0?9:7} fill={`${c}${i===0?'50':'30'}`} stroke={`${c}60`} strokeWidth="1"/></g>
+      ))}
+      <line x1="170" y1="251" x2="130" y2="245" stroke={`${c}40`} strokeWidth="1.5"/>
+      <line x1="170" y1="251" x2="210" y2="245" stroke={`${c}40`} strokeWidth="1.5"/>
+    </svg>
+  );
+
+  const artHomecare1 = (
+    <svg viewBox="0 0 340 300" fill="none" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',maxWidth:300}}>
+      <defs>
+        <linearGradient id="hcG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={`${c}60`}/><stop offset="100%" stopColor={`${c}20`}/></linearGradient>
+        <filter id="glowH"><feGaussianBlur stdDeviation="3.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      {/* House */}
+      <path d="M85 155 L170 70 L255 155 L255 250 L85 250 Z" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.18)" strokeWidth="2"/>
+      {/* Roof shine */}
+      <path d="M170 74 L250 152" stroke="rgba(255,255,255,0.12)" strokeWidth="1"/>
+      {/* Door */}
+      <rect x="148" y="200" width="44" height="50" rx="4" fill={`${c}20`} stroke={`${c}40`} strokeWidth="1.5"/>
+      <circle cx="188" cy="225" r="3" fill={`${c}60`}/>
+      {/* Windows */}
+      <rect x="98" y="165" width="44" height="36" rx="5" fill={`${c}15`} stroke={`${c}35`} strokeWidth="1.5"/>
+      <rect x="198" y="165" width="44" height="36" rx="5" fill={`${c}15`} stroke={`${c}35`} strokeWidth="1.5"/>
+      {/* Window cross */}
+      <line x1="120" y1="165" x2="120" y2="201" stroke={`${c}30`} strokeWidth="1"/>
+      <line x1="98" y1="183" x2="142" y2="183" stroke={`${c}30`} strokeWidth="1"/>
+      <line x1="220" y1="165" x2="220" y2="201" stroke={`${c}30`} strokeWidth="1"/>
+      <line x1="198" y1="183" x2="242" y2="183" stroke={`${c}30`} strokeWidth="1"/>
+      {/* Glowing heart above house */}
+      <path d="M170 50 C170 50 148 32 148 18 C148 9 157 4 170 14 C183 4 192 9 192 18 C192 32 170 50 170 50Z" fill={`${c}60`} stroke={c} strokeWidth="1" filter="url(#glowH)"/>
+      {/* Care hands at base */}
+      <path d="M60 265 Q75 245 100 245 L240 245 Q265 245 280 265" stroke={`${c}50`} strokeWidth="3" fill="none" strokeLinecap="round"/>
+      {/* Plus signs floating */}
+      <text x="38" y="140" fontSize="20" fill={`${c}60`} filter="url(#glowH)">+</text>
+      <text x="290" y="155" fontSize="16" fill={`${c}50`} filter="url(#glowH)">+</text>
+    </svg>
+  );
+
+  const artEquipment1 = (
+    <svg viewBox="0 0 340 300" fill="none" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',maxWidth:300}}>
+      <defs>
+        <filter id="glowE"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      {/* Center gear */}
+      <circle cx="170" cy="150" r="52" stroke={`${c}40`} strokeWidth="18" strokeDasharray="22 10"/>
+      <circle cx="170" cy="150" r="28" fill={`${c}20`} stroke={c} strokeWidth="2" filter="url(#glowE)"/>
+      <circle cx="170" cy="150" r="14" fill={`${c}40`}/>
+      {/* Satellite nodes */}
+      {[[170,55],[265,150],[170,245],[75,150]].map(([x,y],i)=>(
+        <g key={i} filter="url(#glowE)">
+          <circle cx={x} cy={y} r="20" fill="rgba(255,255,255,0.08)" stroke={`${c}50`} strokeWidth="1.5"/>
+          <line x1={x} y1={y} x2="170" y2="150" stroke={`${c}25`} strokeWidth="1.5" strokeDasharray="4 3"/>
+        </g>
+      ))}
+      <text x="160" y="48" fontSize="16">📡</text>
+      <text x="256" y="158" fontSize="16">💉</text>
+      <text x="160" y="250" fontSize="16">🔬</text>
+      <text x="60" y="158" fontSize="16">🩺</text>
+      {/* Diagonal nodes */}
+      {[[110,90],[230,90],[230,210],[110,210]].map(([x,y],i)=>(
+        <g key={i}>
+          <circle cx={x} cy={y} r="10" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
+          <line x1={x} y1={y} x2="170" y2="150" stroke="rgba(255,255,255,0.07)" strokeWidth="1"/>
+        </g>
+      ))}
+      <text x="162" y="156" fontSize="16" filter="url(#glowE)">⚙️</text>
+    </svg>
+  );
+
+  const artWellness1 = (
+    <svg viewBox="0 0 340 300" fill="none" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',maxWidth:300}}>
+      <defs>
+        <radialGradient id="wG" cx="50%" cy="60%" r="50%"><stop offset="0%" stopColor={`${c}30`}/><stop offset="100%" stopColor="transparent"/></radialGradient>
+        <filter id="glowW"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <ellipse cx="170" cy="210" rx="120" ry="18" fill="url(#wG)"/>
+      {/* Meditation figure */}
+      <circle cx="170" cy="95" r="22" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5"/>
+      <path d="M135 145 Q135 130 170 130 Q205 130 205 145 L200 180 L140 180 Z" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5"/>
+      {/* Arms in meditation pose */}
+      <path d="M140 155 Q110 155 105 145 Q100 135 115 130 Q125 127 135 135" stroke="rgba(255,255,255,0.2)" strokeWidth="2" fill="none" strokeLinecap="round"/>
+      <path d="M200 155 Q230 155 235 145 Q240 135 225 130 Q215 127 205 135" stroke="rgba(255,255,255,0.2)" strokeWidth="2" fill="none" strokeLinecap="round"/>
+      {/* Lotus petals */}
+      {[0,1,2,3,4,5,6,7].map(i=>{
+        const a=(i/8)*Math.PI*2, r=55, cx2=170+r*Math.cos(a), cy2=210+r*0.3*Math.sin(a);
+        return <ellipse key={i} cx={cx2} cy={cy2} rx="22" ry="40" fill={`${c}${i%2===0?'25':'15'}`} stroke={`${c}35`} strokeWidth="1" transform={`rotate(${i*45},${cx2},${cy2})`}/>;
+      })}
+      <circle cx="170" cy="210" r="20" fill={`${c}40`} filter="url(#glowW)"/>
+      <text x="162" y="217" fontSize="14">🌸</text>
+      {/* Aura rings */}
+      {[35,50,65].map(r=>(
+        <circle key={r} cx="170" cy="95" r={r} stroke={`${c}${20-r/5}`} strokeWidth="1" strokeDasharray="4 3"/>
+      ))}
+    </svg>
+  );
+
+  const artServices1 = (
+    <svg viewBox="0 0 340 300" fill="none" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',maxWidth:300}}>
+      <defs>
+        <filter id="glowS"><feGaussianBlur stdDeviation="3.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      {/* Central hub */}
+      <circle cx="170" cy="150" r="30" fill={`${c}25`} stroke={c} strokeWidth="2" filter="url(#glowS)"/>
+      <circle cx="170" cy="150" r="18" fill={`${c}40`}/>
+      <text x="161" y="157" fontSize="16">🤝</text>
+      {/* Outer nodes */}
+      {[[170,55],[265,102],[265,198],[170,245],[75,198],[75,102]].map(([x,y],i)=>{
+        const icons=['🏥','💊','🔬','🏠','⚙️','💆'];
+        return (
+          <g key={i} filter="url(#glowS)">
+            <line x1={x} y1={y} x2="170" y2="150" stroke={`${c}${30+i*3}`} strokeWidth="1.5" strokeDasharray="5 3"/>
+            <circle cx={x} cy={y} r="22" fill="rgba(255,255,255,0.08)" stroke={`${c}50`} strokeWidth="1.5"/>
+            <text x={x-9} y={y+7} fontSize="15">{icons[i]}</text>
+          </g>
+        );
+      })}
+      {/* Mid-ring connection circle */}
+      <circle cx="170" cy="150" r="78" stroke={`${c}15`} strokeWidth="1" strokeDasharray="3 4"/>
+      {/* Activity dots on connection lines */}
+      {[[170,103],[234,126],[234,175],[170,197],[106,175],[106,126]].map(([x,y],i)=>(
+        <circle key={i} cx={x} cy={y} r="4" fill={`${c}60`} filter="url(#glowS)"/>
+      ))}
+    </svg>
+  );
+
+  // Org & admin art (shared)
+  const artOrg = (
+    <svg viewBox="0 0 340 300" fill="none" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',maxWidth:300}}>
+      <defs>
+        <linearGradient id="bldG" x1="0.5" y1="0" x2="0.5" y2="1"><stop offset="0%" stopColor={`${c}40`}/><stop offset="100%" stopColor={`${c}10`}/></linearGradient>
+        <filter id="glowO"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      {/* Main building */}
+      <rect x="90" y="100" width="160" height="165" rx="6" fill="url(#bldG)" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5"/>
+      {/* Roof accent */}
+      <rect x="90" y="100" width="160" height="28" rx="6" fill={`${c}30`}/>
+      {/* Windows grid */}
+      {[130,175,220].map(x=>[130,165,200].map(y=>(
+        <rect key={`${x}${y}`} x={x-13} y={y-10} width="26" height="20" rx="3" fill="rgba(255,255,255,0.08)" stroke={`${c}30`} strokeWidth="1"/>
+      )))}
+      {/* Door */}
+      <rect x="153" y="225" width="34" height="40" rx="4" fill={`${c}20`} stroke={`${c}40`} strokeWidth="1.5"/>
+      <circle cx="183" cy="245" r="2.5" fill={`${c}60`}/>
+      {/* Location pin */}
+      <circle cx="245" cy="78" r="20" fill={`${c}30`} stroke={c} strokeWidth="1.5" filter="url(#glowO)"/>
+      <circle cx="245" cy="74" r="10" fill={`${c}60`}/>
+      <path d="M245 83 L245 100" stroke={c} strokeWidth="2" strokeLinecap="round"/>
+      {/* Side building (smaller) */}
+      <rect x="255" y="155" width="55" height="110" rx="4" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" strokeWidth="1"/>
+      <rect x="30" y="170" width="55" height="95" rx="4" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" strokeWidth="1"/>
+      {/* Ground line */}
+      <line x1="25" y1="268" x2="315" y2="268" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5"/>
+      {/* Stars */}
+      {[[55,80],[295,100],[45,250],[305,240]].map(([x,y],i)=>(
+        <circle key={i} cx={x} cy={y} r="2.5" fill="rgba(255,255,255,0.4)" filter="url(#glowO)"/>
+      ))}
+    </svg>
+  );
+
+  const artAdmin = (
+    <svg viewBox="0 0 340 300" fill="none" xmlns="http://www.w3.org/2000/svg" style={{width:'100%',maxWidth:300}}>
+      <defs>
+        <linearGradient id="shG" x1="0.5" y1="0" x2="0.5" y2="1"><stop offset="0%" stopColor={`${c}50`}/><stop offset="100%" stopColor={`${c}20`}/></linearGradient>
+        <filter id="glowA"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      {/* Shield */}
+      <path d="M170 42 L235 70 L235 148 Q235 210 170 232 Q105 210 105 148 L105 70 Z" fill="url(#shG)" stroke={c} strokeWidth="2" filter="url(#glowA)"/>
+      <path d="M170 52 L224 77 L224 148 Q224 202 170 221 Q116 202 116 148 L116 77 Z" fill={`${c}15`} stroke={`${c}40`} strokeWidth="1"/>
+      {/* Check mark */}
+      <path d="M138 142 L158 163 L205 115" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" filter="url(#glowA)"/>
+      {/* User avatar */}
+      <circle cx="170" cy="120" r="22" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5"/>
+      <circle cx="170" cy="112" r="13" fill="rgba(255,255,255,0.15)"/>
+      <path d="M145 138 Q145 128 170 128 Q195 128 195 138" fill="rgba(255,255,255,0.1)"/>
+      {/* Orbiting security icons */}
+      {[[170,258],[55,160],[285,160]].map(([x,y],i)=>{
+        const icons=['🔑','🛡️','🔒'];
+        return (
+          <g key={i} filter="url(#glowA)">
+            <circle cx={x} cy={y} r="20" fill="rgba(255,255,255,0.07)" stroke={`${c}40`} strokeWidth="1"/>
+            <text x={x-9} y={y+7} fontSize="15">{icons[i]}</text>
+          </g>
+        );
+      })}
+      {/* Connection lines */}
+      <line x1="170" y1="232" x2="170" y2="238" stroke={`${c}40`} strokeWidth="1.5"/>
+      <line x1="108" y1="148" x2="75" y2="160" stroke={`${c}25`} strokeWidth="1.5"/>
+      <line x1="232" y1="148" x2="265" y2="160" stroke={`${c}25`} strokeWidth="1.5"/>
+      {/* Floating stars/sparkles */}
+      {[[42,65],[298,70],[38,235],[302,230],[110,38],[230,38]].map(([x,y],i)=>(
+        <g key={i} filter="url(#glowA)">
+          <circle cx={x} cy={y} r={i<2?3:2} fill={`${c}80`}/>
+        </g>
+      ))}
+    </svg>
+  );
+
+  const artByPortal: Record<string, React.ReactNode> = {
+    clinical: artClinical1,
+    diagnostic: artDiagnostic1,
+    pharmacy: artPharmacy1,
+    homecare: artHomecare1,
+    equipment: artEquipment1,
+    wellness: artWellness1,
+    services: artServices1,
+  };
+
+  if(step===0) return {  if(step===0) return {
     headline:'One platform for every healthcare provider',
     sub:'9 purpose-built portals. 231 practice types. WhatsApp-first automation from day one.',
     bullets:['Go live in under 7 days','No credit card required','HIPAA & DPDPA compliant'],
-    art: art0,
+    art: artStep0,
   };
   const artsByPortal: Record<string,React.ReactNode> = {
     clinical:(
@@ -235,7 +552,6 @@ function getLeft(step:number, portal:string): LeftContent {
       </svg>
     ),
   };
-  const stepArts = [artsByPortal[portal]||art0, artsByPortal[portal]||art0];
   const orgArt = (
     <svg viewBox="0 0 300 260" fill="none" style={{width:'100%',maxWidth:280}}>
       {/* Building */}
@@ -274,19 +590,19 @@ function getLeft(step:number, portal:string): LeftContent {
     headline:`What type of ${port?.short||'practice'} are you?`,
     sub:'Your selection configures your portal with the right workflows, report templates, and WhatsApp automation for your specific practice.',
     bullets:['Auto-configured workflows','Pre-built WhatsApp templates','Purpose-built dashboard'],
-    art: stepArts[0],
+    art: artByPortal[portal] || artStep0,
   };
   if(step===2) return {
     headline:'Set up your organisation profile',
     sub:'This becomes your portal identity — visible to your patients, staff, and on all reports and invoices you generate.',
     bullets:['Appears on patient reports','Used for GST & billing','Portal URL: hospibot.in/your-slug'],
-    art: orgArt,
+    art: artOrg,
   };
   return {
     headline:'Create your secure admin account',
     sub:'You\'ll use these credentials to log in and manage your portal. You can add more staff members after your account is set up.',
     bullets:['Role-based access control','Add unlimited staff','Change anytime in settings'],
-    art: adminArt,
+    art: artAdmin,
   };
 }
 
@@ -349,7 +665,7 @@ function RegisterWizard() {
   const fi = (e:any) => { e.target.style.borderColor=c3; e.target.style.background='#fff'; e.target.style.boxShadow=`0 0 0 3px ${c3}25`; };
   const fo = (e:any) => { e.target.style.borderColor='#E2E8F0'; e.target.style.background='#F8FAFC'; e.target.style.boxShadow='none'; };
 
-  const inputSt = {width:'100%',padding:'11px 14px',fontSize:15,borderRadius:10,border:'1.5px solid #E2E8F0',background:'#F8FAFC',outline:'none',fontFamily:"'Poppins',sans-serif",transition:'all 0.18s',boxSizing:'border-box',color:'#0F172A'} as any;
+  const inputSt = {width:'100%',padding:'11px 14px',fontSize:15,borderRadius:10,border:'1.5px solid rgba(0,0,0,0.12)',background:'#fff',outline:'none',fontFamily:"'Poppins',sans-serif",transition:'all 0.18s',boxSizing:'border-box',color:'#0F172A',boxShadow:'0 1px 4px rgba(0,0,0,0.06)'} as any;
 
   async function submit() {
     if(!admin.firstName||!admin.email||!admin.password){toast.error('Please fill all required fields');return;}
@@ -460,9 +776,9 @@ function RegisterWizard() {
       </div>
 
       {/* ── RIGHT PANEL ────────────────────────────────────────────────────── */}
-      <div style={{width:'50%',background:'#fff',display:'flex',flexDirection:'column',overflow:'hidden',position:'relative'}}>
+      <div style={{width:'50%',background: step===0 ? '#F0F4F8' : (pp?.light||'#F0F4F8'),display:'flex',flexDirection:'column',overflow:'hidden',position:'relative',transition:'background 0.6s ease'}}>
         {/* Top bar */}
-        <div style={{padding:'20px 40px',display:'flex',justifyContent:'space-between',alignItems:'center',borderBottom:'1px solid #F1F5F9',flexShrink:0}}>
+        <div style={{padding:'20px 40px',display:'flex',justifyContent:'space-between',alignItems:'center',borderBottom:'1px solid rgba(0,0,0,0.08)',flexShrink:0,background:'rgba(255,255,255,0.7)',backdropFilter:'blur(8px)'}}>
           {step>0 ? (
             <button onClick={()=>go(step-1)} style={{display:'flex',alignItems:'center',gap:6,fontSize:13,color:'#64748B',background:'none',border:'none',cursor:'pointer',padding:'6px 0'}}>
               <ArrowLeft size={15}/> Back
@@ -487,7 +803,7 @@ function RegisterWizard() {
                 {(Object.entries(P) as [PortalSlug,typeof P[PortalSlug]][]).map(([slug,p])=>(
                   <button key={slug} onClick={()=>pickPortal(slug)}
                     className="portal-card"
-                    style={{textAlign:'left',padding:'18px 16px',borderRadius:16,border:`1.5px solid ${portal===slug?p.c3:'#E8EDF5'}`,background:portal===slug?`linear-gradient(145deg,${p.light},#fff)`:'#FAFBFC',cursor:'pointer',position:'relative',transition:'all 0.25s cubic-bezier(0.34,1.56,0.64,1)',boxShadow:portal===slug?`0 8px 24px ${p.c3}20`:'0 1px 4px rgba(0,0,0,0.04)'}}>
+                    style={{textAlign:'left',padding:'18px 16px',borderRadius:16,border:`1.5px solid ${portal===slug?p.c3:'#E8EDF5'}`,background:portal===slug?`linear-gradient(145deg,#fff,${p.light})`:'#fff',cursor:'pointer',position:'relative',transition:'all 0.25s cubic-bezier(0.34,1.56,0.64,1)',boxShadow:portal===slug?`0 8px 24px ${p.c3}35`:'0 2px 8px rgba(0,0,0,0.08)',borderColor:portal===slug?p.c3:'rgba(255,255,255,0.9)'}}>
                     {portal===slug && <div style={{position:'absolute',top:10,right:10,width:20,height:20,borderRadius:'50%',background:p.c3,display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:10,fontWeight:800}}>✓</div>}
                     <div style={{fontSize:28,marginBottom:10}}>{p.emoji}</div>
                     <div style={{fontSize:13.5,fontWeight:700,color:'#0F172A',marginBottom:4,lineHeight:1.3}}>{p.name}</div>
@@ -521,7 +837,7 @@ function RegisterWizard() {
               <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(175px,1fr))',gap:10}}>
                 {subtypeList.map(s=>(
                   <button key={s.slug} onClick={()=>pickSub(s.slug)} className="sub-card"
-                    style={{textAlign:'left',padding:'13px',borderRadius:13,border:`1.5px solid ${subtype===s.slug?c2:'#E8EDF5'}`,background:subtype===s.slug?`linear-gradient(145deg,${pp.light},#fff)`:'#FAFBFC',cursor:'pointer',position:'relative',transition:'all 0.22s',boxShadow:subtype===s.slug?`0 4px 16px ${c3}20`:'0 1px 3px rgba(0,0,0,0.04)'}}>
+                    style={{textAlign:'left',padding:'13px',borderRadius:13,border:`1.5px solid ${subtype===s.slug?c2:'#E8EDF5'}`,background:subtype===s.slug?`linear-gradient(145deg,#fff,${pp.light})`:'#fff',cursor:'pointer',position:'relative',transition:'all 0.22s',boxShadow:subtype===s.slug?`0 6px 20px ${c3}30`:'0 2px 8px rgba(0,0,0,0.08)',borderColor:subtype===s.slug?c2:'rgba(0,0,0,0.06)'}}>
                     {s.popular&&subtype!==s.slug&&<span style={{position:'absolute',top:7,right:7,fontSize:9,fontWeight:700,background:'#FEF3C7',color:'#92400E',padding:'2px 6px',borderRadius:20}}>POPULAR</span>}
                     {subtype===s.slug&&<div style={{position:'absolute',top:7,right:7,width:18,height:18,borderRadius:'50%',background:c2,display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:9,fontWeight:800}}>✓</div>}
                     <div style={{fontSize:22,marginBottom:7}}>{s.icon}</div>
@@ -530,7 +846,7 @@ function RegisterWizard() {
                 ))}
                 {/* Others card */}
                 <button onClick={()=>pickSub('__others__')} className="sub-card"
-                  style={{textAlign:'left',padding:'13px',borderRadius:13,border:'1.5px dashed #CBD5E1',background:'#FAFBFC',cursor:'pointer',transition:'all 0.22s'}}>
+                  style={{textAlign:'left',padding:'13px',borderRadius:13,border:'1.5px dashed #94A3B8',background:'#fff',cursor:'pointer',transition:'all 0.22s',boxShadow:'0 2px 8px rgba(0,0,0,0.06)'}}>
                   <div style={{fontSize:22,marginBottom:7}}>❓</div>
                   <div style={{fontSize:12.5,fontWeight:700,color:'#64748B',marginBottom:3}}>Others / Not Listed</div>
                   <div style={{fontSize:11,color:'#94A3B8',lineHeight:1.4}}>Don&apos;t see your type?</div>
@@ -640,7 +956,7 @@ function RegisterWizard() {
                     <button type="button" onClick={()=>setShowPwd(v=>!v)} style={{position:'absolute',right:13,top:'50%',transform:'translateY(-50%)',background:'none',border:'none',cursor:'pointer',color:'#94A3B8',display:'flex',padding:0}}>
                       {showPwd?<EyeOff size={17}/>:<Eye size={17}/>}</button></div></div>
                 {/* Summary */}
-                <div style={{padding:'16px 18px',background:'#F8FAFC',borderRadius:14,border:'1px solid #E2E8F0',marginTop:4}}>
+                <div style={{padding:'16px 18px',background:'#fff',borderRadius:14,border:'1px solid rgba(0,0,0,0.1)',marginTop:4,boxShadow:'0 2px 8px rgba(0,0,0,0.05)'}}>
                   <div style={{fontSize:11.5,fontWeight:700,color:'#94A3B8',textTransform:'uppercase',letterSpacing:'0.07em',marginBottom:12}}>Registration Summary</div>
                   {[['Portal',pp.name],['Type',typeName],['Organisation',org.name||'—'],['City',org.city||'—'],['Plan','14-day Free Trial']].map(([k,v])=>(
                     <div key={k} style={{display:'flex',justifyContent:'space-between',padding:'5px 0',borderBottom:'1px solid #F1F5F9'}}>
