@@ -733,230 +733,181 @@ function RegisterWizard() {
   /* Full-screen tier selection for Diagnostic portal */
   if(step===2 && portal==='diagnostic' && !showOthers) {
 
-    const GROUPS = [
-      { title:'Scale & Capacity', rows:[
-        {label:'Daily samples',      small:'1 – 50',      medium:'50 – 200',    large:'200 – 1,000',  ent:'1,000+'},
-        {label:'Staff supported',    small:'1 – 5',       medium:'5 – 20',      large:'20 – 100',     ent:'100+'},
-        {label:'Branches',           small:'1',           medium:'1 – 3',       large:'3 – 15',       ent:'15+'},
-        {label:'Monthly tests',      small:'Up to 1,500', medium:'Up to 6,000', large:'Up to 30,000', ent:'Unlimited'},
-        {label:'WhatsApp credits',   small:'500 / mo',    medium:'2,000 / mo',  large:'5,000 / mo',   ent:'Unlimited'},
-      ]},
-      { title:'Core Lab', rows:[
-        {label:'WhatsApp report delivery',   small:true,  medium:true,  large:true,  ent:true},
-        {label:'Sample tracking & barcode',  small:true,  medium:true,  large:true,  ent:true},
-        {label:'GST billing & invoicing',    small:true,  medium:true,  large:true,  ent:true},
-        {label:'Test catalog (500+ tests)',  small:true,  medium:true,  large:true,  ent:true},
-        {label:'PDF report generation',      small:true,  medium:true,  large:true,  ent:true},
-        {label:'Patient registration',       small:true,  medium:true,  large:true,  ent:true},
-      ]},
-      { title:'Advanced', rows:[
-        {label:'Home collection + GPS',          small:false, medium:true,  large:true,  ent:true},
-        {label:'Doctor CRM & referrals',         small:false, medium:true,  large:true,  ent:true},
-        {label:'Corporate wellness screening',   small:false, medium:true,  large:true,  ent:true},
-        {label:'TPA / insurance claims',         small:false, medium:true,  large:true,  ent:true},
-        {label:'Package & combo billing',        small:false, medium:true,  large:true,  ent:true},
-      ]},
-      { title:'Quality & Compliance', rows:[
-        {label:'QC module (Westgard / L-J)',     small:false, medium:false, large:true,  ent:true},
-        {label:'NABL compliance tools',          small:false, medium:false, large:true,  ent:true},
-        {label:'Multi-branch management',        small:false, medium:false, large:true,  ent:true},
-        {label:'Staff HRMS & payroll',           small:false, medium:false, large:true,  ent:true},
-        {label:'HL7 / ASTM analyser interface',  small:false, medium:false, large:true,  ent:true},
-      ]},
-      { title:'Enterprise', rows:[
-        {label:'Franchise & hub-spoke mgmt',     small:false, medium:false, large:false, ent:true},
-        {label:'Revenue sharing engine',         small:false, medium:false, large:false, ent:true},
-        {label:'White-label portal',             small:false, medium:false, large:false, ent:true},
-        {label:'API marketplace',                small:false, medium:false, large:false, ent:true},
-        {label:'Dedicated account manager',      small:false, medium:false, large:false, ent:true},
-      ]},
-    ];
-
+    // Each tier has its own distinct color identity
     const TIERS = [
-      {id:'small',      name:'Small',      sub:'Solo lab / PSC',               color:'#2563EB', grad:'linear-gradient(135deg,#1D4ED8,#2563EB)', price:'₹999',   note:'/month',    btn:'Start Free Trial'},
-      {id:'medium',     name:'Medium',     sub:'Growing diagnostic center',     color:'#0D9488', grad:'linear-gradient(135deg,#0F766E,#0D9488)', price:'₹2,999', note:'/month',    btn:'Start Free Trial'},
-      {id:'large',      name:'Large',      sub:'NABL-accredited chain',         color:'#7C3AED', grad:'linear-gradient(135deg,#6D28D9,#7C3AED)', price:'₹7,999', note:'/month',    btn:'Start Free Trial'},
-      {id:'enterprise', name:'Enterprise', sub:'Reference lab / franchise',     color:'#0F172A', grad:'linear-gradient(135deg,#1E293B,#0F172A)', price:'Custom', note:'contact us', btn:'Contact Sales'},
+      {
+        id:'small', name:'Small Lab', sub:'Solo lab or sample collection center',
+        color:'#0EA5E9', dark:'#0284C7', light:'#E0F2FE', bg:'linear-gradient(145deg,#0284C7,#0EA5E9)',
+        price:'₹999', note:'/month',
+        scale:{ samples:'1 – 50',staff:'1 – 5',branches:'1',tests:'Up to 1,500',credits:'500 / month'},
+        features:['WhatsApp report delivery','Sample tracking & barcode','GST billing & invoices','Test catalog (500+ tests)','PDF report generation','Patient registration & lookup','Basic daily dashboard','Email support'],
+        notIncluded:['Home collection management','Doctor CRM & referrals','QC module','NABL compliance tools','Multi-branch management'],
+      },
+      {
+        id:'medium', name:'Medium Lab', sub:'Growing diagnostic center',
+        color:'#10B981', dark:'#059669', light:'#D1FAE5', bg:'linear-gradient(145deg,#059669,#10B981)',
+        price:'₹2,999', note:'/month',
+        scale:{ samples:'50 – 200',staff:'5 – 20',branches:'1 – 3',tests:'Up to 6,000',credits:'2,000 / month'},
+        features:['Everything in Small Lab','Home collection + GPS tracking','Doctor CRM & referral tracking','Corporate wellness screening','TPA / insurance claims','Package & combo billing','2,000 WhatsApp credits/month','Chat + email support'],
+        notIncluded:['QC module (Westgard / L-J)','NABL compliance tools','Multi-branch management','Staff HRMS & payroll'],
+      },
+      {
+        id:'large', name:'Large Lab', sub:'NABL-accredited city chain',
+        color:'#8B5CF6', dark:'#7C3AED', light:'#EDE9FE', bg:'linear-gradient(145deg,#7C3AED,#8B5CF6)',
+        price:'₹7,999', note:'/month',
+        scale:{ samples:'200 – 1,000',staff:'20 – 100',branches:'3 – 15',tests:'Up to 30,000',credits:'5,000 / month'},
+        features:['Everything in Medium Lab','QC module — Westgard + Levey-Jennings','NABL compliance documentation','Multi-branch management','Staff HRMS, attendance & payroll','HL7/ASTM analyser interface','Chain analytics dashboard','Priority support'],
+        notIncluded:['Franchise management','Hub-spoke routing','Revenue sharing engine','White-label capability'],
+      },
+      {
+        id:'enterprise', name:'Enterprise', sub:'Reference lab, hospital network, franchise',
+        color:'#F59E0B', dark:'#D97706', light:'#FEF3C7', bg:'linear-gradient(145deg,#D97706,#F59E0B)',
+        price:'Custom', note:'contact us',
+        scale:{ samples:'1,000+',staff:'100+',branches:'15+',tests:'Unlimited',credits:'Unlimited'},
+        features:['Everything in Large Lab','Franchise & hub-spoke management','Revenue sharing engine','White-label portal capability','API marketplace access','ABHA/ABDM deep integration','Unlimited WhatsApp credits','Dedicated account manager','SLA-backed uptime guarantee'],
+        notIncluded:[],
+      },
     ];
 
-    const getVal = (row:any, id:string) => {
-      if(id==='small')      return row.small;
-      if(id==='medium')     return row.medium;
-      if(id==='large')      return row.large;
-      return row.ent;
+    const SCALE_ICONS:{[k:string]:string} = {
+      samples:'🧪', staff:'👥', branches:'🏢', tests:'📋', credits:'💬',
+    };
+    const SCALE_LABELS:{[k:string]:string} = {
+      samples:'Daily Samples', staff:'Staff', branches:'Branches', tests:'Monthly Tests', credits:'WhatsApp Credits',
     };
 
     return (
-      <div style={{height:'calc(100vh - 64px)',display:'flex',flexDirection:'column',background:'#F8FAFC',fontFamily:"'Poppins',sans-serif",overflow:'hidden'}}>
+      <div style={{height:'calc(100vh - 64px)',display:'flex',flexDirection:'column',background:'#F1F5F9',fontFamily:"'Poppins',sans-serif",overflow:'hidden'}}>
         <style>{`
           @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
-          *{box-sizing:border-box}
+          *{box-sizing:border-box;margin:0;padding:0}
           button{font-family:'Poppins',sans-serif;cursor:pointer}
-          .tier-col-0{background:transparent}
-          .tier-col-1{background:rgba(37,99,235,0.03)}
-          .tier-col-2{background:rgba(13,148,136,0.05)}
-          .tier-col-3{background:rgba(124,58,237,0.03)}
-          .tier-col-4{background:rgba(15,23,42,0.02)}
-          .feat-row:hover .tier-col-1,.feat-row:hover .tier-col-2,.feat-row:hover .tier-col-3,.feat-row:hover .tier-col-4{filter:brightness(0.97)}
-          .cta-btn{transition:all 0.18s;border:none}
-          .cta-btn:hover{transform:translateY(-1px);filter:brightness(1.08)}
-          .cta-btn-outline{transition:all 0.18s}
-          .cta-btn-outline:hover{background:#F1F5F9!important}
+          .tc{transition:transform 0.2s,box-shadow 0.2s}
+          .tc:hover{transform:translateY(-2px)}
+          .sel:hover{filter:brightness(1.06)}
+          ::-webkit-scrollbar{width:5px}
+          ::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:99px}
+          @keyframes cardIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
         `}</style>
 
-        {/* ─── TOP NAV ─── */}
-        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 28px',background:'#fff',borderBottom:'1px solid #E2E8F0',flexShrink:0,zIndex:10}}>
+        {/* NAV */}
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 28px',background:'#fff',borderBottom:'1px solid #E2E8F0',flexShrink:0}}>
           <button onClick={()=>go(1)} style={{display:'flex',alignItems:'center',gap:6,fontSize:13,color:'#64748B',background:'none',border:'none',padding:0,fontWeight:500}}>
             <ArrowLeft size={13}/> Back
           </button>
-          <div style={{display:'flex',gap:6,alignItems:'center'}}>
+          <div style={{display:'flex',gap:4,alignItems:'center'}}>
             {['Portal','Type','Size','Details','Account'].map((s,i)=>(
-              <div key={s} style={{display:'flex',alignItems:'center',gap:4}}>
-                <div style={{height:6,width:i<=2?18:6,borderRadius:99,background:i<=2?'#0D7C66':'#CBD5E1',transition:'all 0.3s'}}/>
-                {i<4 && <div style={{width:6,height:1,background:'#E2E8F0'}}/>}
+              <div key={s} style={{display:'flex',alignItems:'center',gap:3}}>
+                <div style={{height:6,width:i<=2?18:6,borderRadius:99,background:i<=2?'#0D7C66':'#CBD5E1'}}/>
+                {i<4&&<div style={{width:5,height:1,background:'#E2E8F0'}}/>}
               </div>
             ))}
-            <span style={{fontSize:11,color:'#94A3B8',marginLeft:4,fontWeight:500}}>Step 3 of 5</span>
+            <span style={{fontSize:11,color:'#94A3B8',marginLeft:4}}>Step 3 of 5</span>
           </div>
           <a href="/auth/login" style={{fontSize:12.5,color:'#94A3B8',textDecoration:'none'}}>
             Have an account? <span style={{color:'#0D7C66',fontWeight:700}}>Sign in</span>
           </a>
         </div>
 
-        {/* ─── MAIN SCROLLABLE AREA (single scroll) ─── */}
-        <div style={{flex:1,overflow:'auto',paddingBottom:32}}>
+        {/* SINGLE SCROLL AREA */}
+        <div style={{flex:1,overflow:'auto',padding:'0 20px 32px'}}>
 
           {/* Hero */}
-          <div style={{textAlign:'center',padding:'22px 24px 20px'}}>
-            <div style={{display:'inline-flex',alignItems:'center',gap:7,background:'#EFF6FF',border:'1px solid #BFDBFE',borderRadius:99,padding:'4px 14px',fontSize:11.5,fontWeight:700,color:'#1D4ED8',marginBottom:10,letterSpacing:'0.04em'}}>
+          <div style={{textAlign:'center',padding:'20px 0 18px'}}>
+            <div style={{display:'inline-flex',alignItems:'center',gap:7,background:'#EFF6FF',border:'1px solid #BFDBFE',borderRadius:99,padding:'4px 14px',fontSize:11.5,fontWeight:700,color:'#2563EB',marginBottom:10,letterSpacing:'0.04em'}}>
               🔬 {(subtype||'').replace(/-/g,' ').replace(/\b\w/g,(c:string)=>c.toUpperCase())}
             </div>
-            <h1 style={{fontSize:'clamp(20px,2.5vw,30px)',fontWeight:900,color:'#0F172A',letterSpacing:'-0.025em',marginBottom:4}}>
+            <h1 style={{fontSize:'clamp(20px,2.5vw,28px)',fontWeight:900,color:'#0F172A',letterSpacing:'-0.025em',marginBottom:4}}>
               Choose the right plan for your lab
             </h1>
-            <p style={{fontSize:13.5,color:'#64748B',lineHeight:1.6}}>
-              All plans include a <strong>14-day free trial</strong>. No credit card required. Upgrade or downgrade anytime.
+            <p style={{fontSize:13,color:'#64748B'}}>
+              All plans include a <strong style={{color:'#0F172A'}}>14-day free trial</strong>. No credit card required.
             </p>
           </div>
 
-          {/* ─── PRICING TABLE ─── */}
-          <div style={{maxWidth:1060,margin:'0 auto',padding:'0 20px'}}>
+          {/* CARDS GRID */}
+          <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:16,maxWidth:1100,margin:'0 auto 24px'}}>
+            {TIERS.map((t,ti)=>{
+              const selected = labTier===t.id;
+              return (
+                <div key={t.id} className="tc"
+                  style={{background:'#fff',borderRadius:20,overflow:'hidden',boxShadow:selected?`0 12px 40px ${t.color}35`:'0 2px 16px rgba(0,0,0,0.07)',border:`2px solid ${selected?t.color:'transparent'}`,display:'flex',flexDirection:'column',
+                    animation:`cardIn 0.35s ${ti*0.07}s ease both`,opacity:0,animationFillMode:'forwards'}}>
 
-            {/* Plan header cards */}
-            <div style={{display:'grid',gridTemplateColumns:'220px repeat(4,1fr)',gap:0,marginBottom:0}}>
-              <div/>
-              {TIERS.map((t,ti)=>(
-                <div key={t.id} style={{
-                  padding: '0 6px',
-                  position:'relative',
-                  marginTop: 16,
-                }}>
-
-                  <div style={{
-                    background:'#fff',
-                    borderRadius: '12px 12px 0 0',
-                    border: `1px solid ${labTier===t.id ? t.color : '#E2E8F0'}`,
-                    borderBottom: 'none',
-                    padding:'16px 16px 14px',
-                    boxShadow: labTier===t.id ? `0 -4px 24px ${t.color}20` : '0 -2px 8px rgba(0,0,0,0.04)',
-                    height:'100%',
-                  }}>
-                    <div style={{fontWeight:800,color:'#0F172A',fontSize:15,marginBottom:2}}>{t.name}</div>
-                    <div style={{fontSize:11.5,color:'#94A3B8',marginBottom:10,fontWeight:500}}>{t.sub}</div>
-                    <div style={{marginBottom:12}}>
-                      <span style={{fontSize:t.id==='enterprise'?22:26,fontWeight:900,color:t.color,lineHeight:1}}>{t.price}</span>
-                      <span style={{fontSize:11,color:'#94A3B8',marginLeft:4}}>{t.note}</span>
+                  {/* Colored gradient header */}
+                  <div style={{background:t.bg,padding:'18px 18px 16px',position:'relative',overflow:'hidden'}}>
+                    <div style={{position:'absolute',top:-20,right:-20,width:100,height:100,borderRadius:'50%',background:'rgba(255,255,255,0.1)',pointerEvents:'none'}}/>
+                    <div style={{position:'absolute',bottom:-30,left:-10,width:80,height:80,borderRadius:'50%',background:'rgba(255,255,255,0.06)',pointerEvents:'none'}}/>
+                    <div style={{fontSize:11,fontWeight:800,color:'rgba(255,255,255,0.7)',textTransform:'uppercase' as const,letterSpacing:'0.1em',marginBottom:6}}>{t.name}</div>
+                    <div style={{fontSize:11.5,color:'rgba(255,255,255,0.75)',marginBottom:12,lineHeight:1.4}}>{t.sub}</div>
+                    <div style={{display:'flex',alignItems:'baseline',gap:4}}>
+                      <span style={{fontSize:t.id==='enterprise'?26:30,fontWeight:900,color:'#fff',lineHeight:1}}>{t.price}</span>
+                      <span style={{fontSize:11,color:'rgba(255,255,255,0.65)'}}>{t.note}</span>
                     </div>
-                    <button onClick={()=>pickTier(t.id as LabTier)} className={labTier===t.id?'cta-btn':'cta-btn-outline'}
-                      style={{width:'100%',padding:'8px 0',borderRadius:8,fontSize:12,fontWeight:700,
-                        background: labTier===t.id ? t.grad : 'transparent',
-                        color: labTier===t.id ? '#fff' : t.color,
-                        border: labTier===t.id ? 'none' : `1.5px solid ${t.color}`,
-                        boxShadow: labTier===t.id ? `0 4px 16px ${t.color}40` : 'none',
-                      }}>
-                      {labTier===t.id ? '✓ Selected — Continue →' : t.btn}
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Feature table */}
-            <div style={{background:'#fff',border:'1px solid #E2E8F0',borderRadius:'0 0 16px 16px',overflow:'hidden',boxShadow:'0 8px 32px rgba(0,0,0,0.06)'}}>
-              {GROUPS.map((g, gi)=>(
-                <div key={gi}>
-                  {/* Group header */}
-                  <div style={{display:'grid',gridTemplateColumns:'220px repeat(4,1fr)',background:'#F8FAFC',borderTop: gi===0?'none':'1px solid #E2E8F0',padding:'8px 0'}}>
-                    <div style={{padding:'0 0 0 20px',display:'flex',alignItems:'center',gap:8}}>
-                      <div style={{width:3,height:14,borderRadius:99,background:'#0D7C66'}}/>
-                      <span style={{fontSize:10.5,fontWeight:800,color:'#374151',textTransform:'uppercase' as const,letterSpacing:'0.09em'}}>{g.title}</span>
-                    </div>
-                    {TIERS.map((_,ci)=>(
-                      <div key={ci} className={`tier-col-${ci+1}`} style={{borderLeft:'1px solid #E2E8F0'}}/>
-                    ))}
                   </div>
 
-                  {/* Rows */}
-                  {g.rows.map((row,ri)=>{
-                    const rowBg = ri%2===0 ? '#fff' : '#FAFAFA';
-                    return (
-                      <div key={ri} className="feat-row" style={{display:'grid',gridTemplateColumns:'220px repeat(4,1fr)',borderTop:'1px solid #F1F5F9'}}>
-                        <div style={{padding:'10px 12px 10px 20px',background:rowBg,display:'flex',alignItems:'center'}}>
-                          <span style={{fontSize:12.5,color:'#334155',fontWeight:500,lineHeight:1.35}}>{row.label}</span>
+                  {/* ── SCALE OF OPERATIONS SECTION ── */}
+                  <div style={{padding:'14px 16px',borderBottom:`1px solid ${t.light}`,background:`${t.light}50`}}>
+                    <div style={{fontSize:10,fontWeight:800,color:t.dark,textTransform:'uppercase' as const,letterSpacing:'0.09em',marginBottom:10}}>
+                      Scale of Operations
+                    </div>
+                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:7}}>
+                      {(Object.entries(t.scale) as [string,string][]).map(([k,v])=>(
+                        <div key={k} style={{background:'#fff',borderRadius:9,padding:'7px 9px',border:`1px solid ${t.light}`}}>
+                          <div style={{fontSize:9.5,color:'#94A3B8',fontWeight:600,marginBottom:2}}>{SCALE_ICONS[k]} {SCALE_LABELS[k]}</div>
+                          <div style={{fontSize:12,fontWeight:700,color:v==='Unlimited'?t.dark:'#0F172A'}}>{v}</div>
                         </div>
-                        {TIERS.map((t,ci)=>{
-                          const val = getVal(row, t.id);
-                          const isBool = typeof val === 'boolean';
-                          return (
-                            <div key={ci} className={`tier-col-${ci+1}`} style={{padding:'10px 8px',background:rowBg,borderLeft:'1px solid #F1F5F9',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                              {isBool ? (
-                                val ? (
-                                  <div style={{width:22,height:22,borderRadius:6,background:`${t.color}12`,display:'flex',alignItems:'center',justifyContent:'center'}}>
-                                    <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
-                                      <path d="M1 4.5L4 7.5L10 1" stroke={t.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                    </svg>
-                                  </div>
-                                ) : (
-                                  <div style={{width:22,height:22,borderRadius:6,background:'#F8FAFC',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                                    <svg width="9" height="9" viewBox="0 0 9 9" fill="none">
-                                      <path d="M1.5 1.5L7.5 7.5M7.5 1.5L1.5 7.5" stroke="#CBD5E1" strokeWidth="1.5" strokeLinecap="round"/>
-                                    </svg>
-                                  </div>
-                                )
-                              ) : (
-                                <span style={{fontSize:11.5,color:val==='Unlimited'?t.color:'#475569',fontWeight:val==='Unlimited'?700:500,textAlign:'center',lineHeight:1.3}}>{val as string}</span>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    );
-                  })}
-                </div>
-              ))}
-
-              {/* Bottom CTA strip */}
-              <div style={{display:'grid',gridTemplateColumns:'220px repeat(4,1fr)',background:'linear-gradient(135deg,#F0F9FF,#EFF6FF)',borderTop:'1px solid #BFDBFE',padding:'14px 0'}}>
-                <div style={{padding:'0 12px 0 20px',display:'flex',alignItems:'center'}}>
-                  <div>
-                    <div style={{fontSize:12,fontWeight:700,color:'#0F172A'}}>Ready to start?</div>
-                    <div style={{fontSize:11,color:'#94A3B8',marginTop:2}}>14-day free trial included</div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-                {TIERS.map(t=>(
-                  <div key={t.id} style={{padding:'0 6px',display:'flex',alignItems:'center'}}>
-                    <button onClick={()=>pickTier(t.id as LabTier)} className="cta-btn"
-                      style={{width:'100%',padding:'9px 0',borderRadius:9,fontSize:12,fontWeight:700,
-                        background: labTier===t.id ? t.grad : `${t.color}12`,
-                        color: labTier===t.id ? '#fff' : t.color,
-                        boxShadow: labTier===t.id ? `0 4px 16px ${t.color}40` : 'none',
-                      }}>
-                      {labTier===t.id ? 'Continue \u2192' : t.btn}
+
+                  {/* ── FEATURES SECTION ── */}
+                  <div style={{padding:'12px 16px',flex:1}}>
+                    <div style={{fontSize:10,fontWeight:800,color:t.dark,textTransform:'uppercase' as const,letterSpacing:'0.09em',marginBottom:9}}>
+                      Features Included
+                    </div>
+                    <div style={{display:'flex',flexDirection:'column' as const,gap:6}}>
+                      {t.features.map(f=>(
+                        <div key={f} style={{display:'flex',alignItems:'flex-start',gap:8}}>
+                          <div style={{width:16,height:16,borderRadius:5,background:`${t.color}15`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:1}}>
+                            <svg width="8" height="7" viewBox="0 0 8 7" fill="none"><path d="M0.5 3.5L2.8 6L7.5 1" stroke={t.color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                          </div>
+                          <span style={{fontSize:11.5,color:'#374151',lineHeight:1.4}}>{f}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {t.notIncluded.length>0 && (
+                      <div style={{marginTop:10,paddingTop:10,borderTop:`1px dashed ${t.light}`}}>
+                        <div style={{fontSize:9.5,fontWeight:700,color:'#94A3B8',textTransform:'uppercase' as const,letterSpacing:'0.07em',marginBottom:7}}>Not in this plan</div>
+                        {t.notIncluded.map(f=>(
+                          <div key={f} style={{display:'flex',alignItems:'center',gap:7,marginBottom:5}}>
+                            <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 1.5L7.5 7.5M7.5 1.5L1.5 7.5" stroke="#CBD5E1" strokeWidth="1.3" strokeLinecap="round"/></svg>
+                            <span style={{fontSize:11,color:'#94A3B8',textDecoration:'line-through',textDecorationColor:'#E2E8F0'}}>{f}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* SELECT BUTTON */}
+                  <div style={{padding:'12px 16px 16px'}}>
+                    <button onClick={()=>pickTier(t.id as LabTier)} className="sel"
+                      style={{width:'100%',padding:'10px 0',borderRadius:11,border:'none',fontSize:13,fontWeight:700,color:'#fff',
+                        background: selected ? t.bg : `${t.color}cc`,
+                        boxShadow: selected ? `0 4px 20px ${t.color}50` : `0 2px 8px ${t.color}25`,
+                        transition:'all 0.18s'}}>
+                      {selected ? 'Selected — Continue \u2192' : `Select ${t.name}`}
                     </button>
                   </div>
-                ))}
-              </div>
-            </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Bottom note */}
+          <div style={{textAlign:'center',fontSize:12,color:'#94A3B8'}}>
+            All plans start with a 14-day free trial \u00b7 No credit card required \u00b7 Upgrade anytime
           </div>
         </div>
       </div>
