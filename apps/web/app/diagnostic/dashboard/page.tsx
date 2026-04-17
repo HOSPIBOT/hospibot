@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
 import { formatINR } from '@/lib/utils';
+import { useAuthStore } from '@/lib/store';
+import { isFeatureEnabled } from '@/lib/portal-feature-flags';
 import Link from 'next/link';
 import {
   FlaskConical, Clock, CheckCircle2, AlertTriangle, TrendingUp, Home,
@@ -15,6 +17,104 @@ import {
 
 const NAVY = '#1E3A5F';
 const TEAL = '#0D7C66';
+
+/**
+ * Contextual banner shown on dashboard.
+ * Recommends the next tier-up based on the subtype's most-valued feature.
+ */
+function SubtypeTierBanner({ subtype, tier }: { subtype: string; tier: string }) {
+  // Next-tier upgrade value prop per subtype
+  const upgradeHints: Record<string, { small?: string; medium?: string; large?: string }> = {
+    'pathology-lab': {
+      small:  'Unlock Home Collection, Doctor CRM, and Critical Value Alerts with Medium plan.',
+      medium: 'Add HL7/ASTM analyser integration, Westgard QC, and NABL documentation with Large plan.',
+      large:  'Enable franchise management, ABHA integration, and ICMR reporting with Enterprise.',
+    },
+    'sample-collection': {
+      small:  'Unlock cold chain monitoring, online booking, and runner tracking with Medium plan.',
+      medium: 'Add multi-branch operations, NABL 111 audit, and staff HRMS with Large plan.',
+      large:  'Scale to franchise PSC network and aggregator integrations with Enterprise.',
+    },
+    'home-collection': {
+      small:  'Unlock live GPS tracking, phlebotomist mobile app, and call-masking with Medium plan.',
+      medium: 'Add AI route optimization, fleet management, and IoT cold-chain with Large plan.',
+      large:  'Launch white-label patient app and franchise agent network with Enterprise.',
+    },
+    'radiology-center': {
+      small:  'Unlock DICOM viewer, multi-modality scheduling, and PNDT Form F with Medium plan.',
+      medium: 'Add full DICOM PACS, tele-radiology routing, and AI reading with Large plan.',
+      large:  'Scale to federated PACS, advanced AI (mammography/bone-age), and hospital HL7 with Enterprise.',
+    },
+    'ultrasound-center': {
+      small:  'Unlock full PC-PNDT digital compliance, OB biometry, and 4D Doppler with Medium plan.',
+      medium: 'Add multi-machine optimization, NABL for USG, and CA audit readiness with Large plan.',
+      large:  'Enable AI fetal anomaly screening and franchise USG network with Enterprise.',
+    },
+    'pet-scan': {
+      small:  'Unlock DICOM viewer, multi-tracer inventory, and AERB records with Medium plan.',
+      medium: 'Add full PET-CT PACS, AI SUV quantification, and multi-machine ops with Large plan.',
+      large:  'Launch theranostics (Lu-177 PSMA) and multi-center network with Enterprise.',
+    },
+    'cardiac-diagnostics': {
+      small:  'Unlock TMT Bruce protocol, Holter analysis, and ABPM with Medium plan.',
+      medium: 'Add Cath lab scheduling, EP study templates, and cardiac rehab with Large plan.',
+      large:  'Enable AI ECG, cardiac registries, and hospital FHIR with Enterprise.',
+    },
+    'molecular-lab': {
+      small:  'Unlock ICMR reporting, multiplex panels, and reflex testing with Medium plan.',
+      medium: 'Add RT-PCR auto-import, NACO/Nikshay reporting, and NABL molecular with Large plan.',
+      large:  'Enable NGS (WES/WGS), bioinformatics pipeline, and franchise with Enterprise.',
+    },
+    'health-checkup': {
+      small:  'Unlock custom package builder, HRA scoring, and Y-o-Y trends with Medium plan.',
+      medium: 'Add population health analytics and multi-branch management with Large plan.',
+      large:  'Enable white-label corporate portal and AI risk stratification with Enterprise.',
+    },
+    'corporate-screening': {
+      small:  'Unlock employer HR portal, TPA billing, and multi-corporate contracts with Medium plan.',
+      medium: 'Add population health analytics and HRMS API integrations with Large plan.',
+      large:  'Scale to white-label employer app and Ayushman integration with Enterprise.',
+    },
+    'genetic-lab': {
+      small:  'Unlock NGS panels, ACMG variant classification, and family pedigree with Medium plan.',
+      medium: 'Add WES/WGS, bioinformatics, and pharmacogenomics with Large plan.',
+      large:  'Enable research biobank and rare disease registry with Enterprise.',
+    },
+    'reference-lab': {
+      small:  'Unlock NABL ISO 15189, QC Westgard, and HL7/ASTM with Medium plan.',
+      medium: 'Add franchise lab management, revenue sharing, and EQA/PT with Large plan.',
+      large:  'Enable ABHA HIP, government reporting, and API marketplace with Enterprise.',
+    },
+    'tele-radiology': {
+      small:  'Unlock DICOM cloud archive, sub-specialty routing, and 24/7 management with Medium plan.',
+      medium: 'Add AI preliminary reads, PACS-HIS integration, and multi-country ops with Large plan.',
+      large:  'Enable franchise teleradiology network and white-label client portals with Enterprise.',
+    },
+  };
+
+  const hint = (upgradeHints as any)[subtype]?.[tier];
+  if (!hint) return null;
+
+  const nextTier = tier === 'small' ? 'Medium' : tier === 'medium' ? 'Large' : 'Enterprise';
+
+  return (
+    <div className="flex items-center justify-between bg-gradient-to-r from-indigo-50 to-sky-50 border border-indigo-200 rounded-2xl px-5 py-3.5">
+      <div className="flex items-center gap-3">
+        <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-indigo-100 flex-shrink-0">
+          <Zap className="w-4.5 h-4.5 text-indigo-600" />
+        </div>
+        <div>
+          <p className="text-sm font-bold text-indigo-900">Ready to scale up to {nextTier}?</p>
+          <p className="text-xs text-indigo-700 mt-0.5">{hint}</p>
+        </div>
+      </div>
+      <Link href="/diagnostic/settings/plan"
+        className="text-xs font-bold px-3 py-1.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors flex-shrink-0">
+        Upgrade
+      </Link>
+    </div>
+  );
+}
 
 function StatCard({ label, value, icon: Icon, color = NAVY, sub, href }: any) {
   const inner = (
@@ -97,6 +197,12 @@ function MorningChecklist() {
 }
 
 export default function DiagnosticDashboard() {
+  const { tenant } = useAuthStore();
+  const subtype = tenant?.subtypeSlug || tenant?.subType?.slug;
+  const tier = tenant?.labTier;
+  const subtypeLabel = (subtype || 'diagnostic-lab').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const tierLabel = tier ? tier.charAt(0).toUpperCase() + tier.slice(1) : '';
+
   const [stats, setStats] = useState<any>(null);
   const [trend, setTrend] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -135,9 +241,21 @@ export default function DiagnosticDashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Diagnostic Dashboard</h1>
+          <h1 className="text-2xl font-bold text-slate-900">
+            {subtypeLabel} Dashboard
+          </h1>
           <p className="text-sm text-slate-500 mt-0.5">
-            {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })} · Live
+            {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
+            {tier && (
+              <>
+                {' · '}
+                <span className="inline-block px-2 py-0.5 rounded-md text-xs font-semibold align-middle"
+                  style={{ background: '#F1F5F9', color: '#475569' }}>
+                  {tierLabel} Plan
+                </span>
+              </>
+            )}
+            {' · Live'}
           </p>
         </div>
         <button onClick={() => load(true)} disabled={refreshing}
@@ -145,6 +263,11 @@ export default function DiagnosticDashboard() {
           <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} /> Refresh
         </button>
       </div>
+
+      {/* Subtype-aware upgrade banner — shows when a common feature is locked */}
+      {subtype && tier && tier !== 'enterprise' && (
+        <SubtypeTierBanner subtype={subtype} tier={tier} />
+      )}
 
       {/* Wallet low balance warning */}
       {s.walletCredits !== undefined && s.walletCredits < 200 && (
@@ -167,8 +290,8 @@ export default function DiagnosticDashboard() {
         </div>
       )}
 
-      {/* Critical value alert */}
-      {(s.criticalUnacked ?? 0) > 0 && (
+      {/* Critical value alert — Medium+ feature */}
+      {(s.criticalUnacked ?? 0) > 0 && isFeatureEnabled('critical-alerts', subtype, tier) && (
         <Link href="/diagnostic/lab-orders?critical=true">
           <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-2xl px-5 py-3.5 hover:bg-red-100 transition-colors cursor-pointer">
             <AlertCircle className="w-5 h-5 text-red-600 animate-pulse" />
@@ -187,14 +310,29 @@ export default function DiagnosticDashboard() {
       {/* 6-stage status board */}
       <StatusBoard data={s} />
 
-      {/* KPI row */}
-      <div className="grid grid-cols-5 gap-4">
-        <StatCard label="Today's Orders" value={s.todayOrders ?? 0} icon={FlaskConical} color={NAVY} href="/diagnostic/lab-orders" />
-        <StatCard label="Today's Revenue" value={formatINR(s.todayRevenue ?? 0)} icon={IndianRupee} color={TEAL} />
-        <StatCard label="Home Collections" value={s.homeCollections ?? 0} icon={Home} color="#8B5CF6" href="/diagnostic/collection" />
-        <StatCard label="TAT Breached" value={s.tatBreached ?? 0} icon={Clock} color={s.tatBreached > 0 ? '#EF4444' : '#94A3B8'} />
-        <StatCard label="WA Credits" value={(s.walletCredits ?? 0).toFixed(0)} icon={Zap} color="#F59E0B" sub="remaining" href="/diagnostic/billing" />
-      </div>
+      {/* KPI row — cards adapt to subtype */}
+      {(() => {
+        const cards = [];
+        // "Today's Orders" label changes per subtype
+        const orderLabel = subtype === 'radiology-center' || subtype === 'ultrasound-center' || subtype === 'pet-scan' ? "Today's Scans"
+                         : subtype === 'home-collection' ? "Today's Bookings"
+                         : subtype === 'tele-radiology' ? "Today's Reports"
+                         : subtype === 'corporate-screening' ? "Today's Employees"
+                         : "Today's Orders";
+        cards.push(<StatCard key="orders" label={orderLabel} value={s.todayOrders ?? 0} icon={FlaskConical} color={NAVY} href="/diagnostic/lab-orders" />);
+        cards.push(<StatCard key="revenue" label="Today's Revenue" value={formatINR(s.todayRevenue ?? 0)} icon={IndianRupee} color={TEAL} />);
+
+        // Home Collections — only show for subtypes that do it
+        if (isFeatureEnabled('home-collection-basic', subtype, tier)) {
+          cards.push(<StatCard key="home" label="Home Collections" value={s.homeCollections ?? 0} icon={Home} color="#8B5CF6" href="/diagnostic/collection" />);
+        }
+        // TAT Breached — all subtypes
+        cards.push(<StatCard key="tat" label="TAT Breached" value={s.tatBreached ?? 0} icon={Clock} color={s.tatBreached > 0 ? '#EF4444' : '#94A3B8'} />);
+        cards.push(<StatCard key="wa" label="WA Credits" value={(s.walletCredits ?? 0).toFixed(0)} icon={Zap} color="#F59E0B" sub="remaining" href="/diagnostic/billing" />);
+
+        const gridCols = cards.length === 5 ? 'grid-cols-5' : cards.length === 4 ? 'grid-cols-4' : 'grid-cols-3';
+        return <div className={`grid ${gridCols} gap-4`}>{cards}</div>;
+      })()}
 
       {/* Chart + Quick actions */}
       <div className="grid grid-cols-4 gap-5">

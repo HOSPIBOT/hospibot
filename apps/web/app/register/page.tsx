@@ -633,7 +633,21 @@ function RegisterWizard() {
   const [showPwd, setShowPwd] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [org, setOrg] = useState({name:'',slug:'',phone:'',email:'',address:'',city:'',state:'Telangana',pincode:'',gstNumber:''});
+  const [org, setOrg] = useState({
+    name:'',slug:'',phone:'',email:'',address:'',city:'',state:'Telangana',pincode:'',
+    gstNumber:'',
+    // Medium+ extras
+    nablNumber:'',
+    collectionPoints:'',
+    // Large+ extras
+    branchCount:'',
+    analyserBrands:'',
+    // Enterprise extras
+    groupName:'',
+    isFranchise:'no',
+    existingSoftware:'',
+    monthlyVolume:'',
+  });
   const [admin, setAdmin] = useState({firstName:'',lastName:'',email:'',password:''});
 
   const pp = portal ? P[portal] : null;
@@ -705,6 +719,15 @@ function RegisterWizard() {
         plan: labTier==='enterprise' ? 'ENTERPRISE' : labTier==='large' ? 'GROWTH' : 'STARTER',
         portalFamily:portal,subTypeSlug:subtype,
         labTier: labTier || undefined,
+        // Tier-specific organisation details
+        nablNumber: org.nablNumber || undefined,
+        collectionPoints: org.collectionPoints || undefined,
+        branchCount: org.branchCount || undefined,
+        analyserBrands: org.analyserBrands || undefined,
+        groupName: org.groupName || undefined,
+        isFranchise: org.isFranchise || undefined,
+        existingSoftware: org.existingSoftware || undefined,
+        monthlyVolume: org.monthlyVolume || undefined,
       });
       setSuccess(true);
     } catch(err:any){toast.error(err?.response?.data?.message||'Registration failed. Please try again.');}
@@ -1123,6 +1146,80 @@ function RegisterWizard() {
                 </div>
                 <div><label style={{fontSize:11.5,fontWeight:700,color:'#475569',textTransform:'uppercase',letterSpacing:'0.07em',display:'block',marginBottom:5}}>GST Number <span style={{fontSize:11,color:'#94A3B8',fontWeight:400,textTransform:'none'}}>(optional)</span></label>
                   <input value={org.gstNumber} onChange={oSet('gstNumber')} placeholder="29AAAAA0000A1Z5" style={inputSt} onFocus={fi} onBlur={fo}/></div>
+
+                {/* ── TIER-SPECIFIC EXTRA FIELDS (DIAGNOSTIC ONLY) ── */}
+                {portal==='diagnostic' && labTier && ['medium','large','enterprise'].includes(labTier) && (
+                  <div style={{background:'#F0F9FF',border:'1px solid #BFDBFE',borderRadius:12,padding:'14px 16px',marginTop:2}}>
+                    <div style={{fontSize:10.5,fontWeight:800,color:'#1D4ED8',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:10,display:'flex',alignItems:'center',gap:6}}>
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="#1D4ED8" strokeWidth="1.4"/><path d="M6 3.5V6.5M6 8V8.5" stroke="#1D4ED8" strokeWidth="1.4" strokeLinecap="round"/></svg>
+                      Additional details for {labTier==='medium'?'Medium':labTier==='large'?'Large':'Enterprise'} Lab
+                    </div>
+
+                    {/* Medium+ fields */}
+                    {['medium','large','enterprise'].includes(labTier) && (
+                      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:10}}>
+                        <div>
+                          <label style={{fontSize:11,fontWeight:700,color:'#475569',textTransform:'uppercase',letterSpacing:'0.07em',display:'block',marginBottom:4}}>NABL Cert Number <span style={{fontSize:10,color:'#94A3B8',fontWeight:400,textTransform:'none'}}>(optional)</span></label>
+                          <input value={org.nablNumber} onChange={oSet('nablNumber')} placeholder="M-1234" style={inputSt} onFocus={fi} onBlur={fo}/>
+                        </div>
+                        <div>
+                          <label style={{fontSize:11,fontWeight:700,color:'#475569',textTransform:'uppercase',letterSpacing:'0.07em',display:'block',marginBottom:4}}>Collection Points</label>
+                          <input value={org.collectionPoints} onChange={oSet('collectionPoints')} placeholder="e.g. 3" style={inputSt} onFocus={fi} onBlur={fo}/>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Large+ fields */}
+                    {['large','enterprise'].includes(labTier) && (
+                      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:10}}>
+                        <div>
+                          <label style={{fontSize:11,fontWeight:700,color:'#475569',textTransform:'uppercase',letterSpacing:'0.07em',display:'block',marginBottom:4}}>Number of Branches</label>
+                          <input value={org.branchCount} onChange={oSet('branchCount')} placeholder="e.g. 5" style={inputSt} onFocus={fi} onBlur={fo}/>
+                        </div>
+                        <div>
+                          <label style={{fontSize:11,fontWeight:700,color:'#475569',textTransform:'uppercase',letterSpacing:'0.07em',display:'block',marginBottom:4}}>Analyser Brands</label>
+                          <input value={org.analyserBrands} onChange={oSet('analyserBrands')} placeholder="Sysmex, Roche, Beckman..." style={inputSt} onFocus={fi} onBlur={fo}/>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Enterprise-only fields */}
+                    {labTier==='enterprise' && (
+                      <>
+                        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:10}}>
+                          <div>
+                            <label style={{fontSize:11,fontWeight:700,color:'#475569',textTransform:'uppercase',letterSpacing:'0.07em',display:'block',marginBottom:4}}>Group / Chain Name</label>
+                            <input value={org.groupName} onChange={oSet('groupName')} placeholder="e.g. Apollo Diagnostics" style={inputSt} onFocus={fi} onBlur={fo}/>
+                          </div>
+                          <div>
+                            <label style={{fontSize:11,fontWeight:700,color:'#475569',textTransform:'uppercase',letterSpacing:'0.07em',display:'block',marginBottom:4}}>Franchise Model?</label>
+                            <select value={org.isFranchise} onChange={oSet('isFranchise')} style={{...inputSt,cursor:'pointer'}} onFocus={fi} onBlur={fo}>
+                              <option value="no">No — owned branches only</option>
+                              <option value="yes">Yes — franchise model</option>
+                              <option value="hybrid">Hybrid — owned + franchise</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+                          <div>
+                            <label style={{fontSize:11,fontWeight:700,color:'#475569',textTransform:'uppercase',letterSpacing:'0.07em',display:'block',marginBottom:4}}>Existing Software</label>
+                            <input value={org.existingSoftware} onChange={oSet('existingSoftware')} placeholder="Crelio, Flabs, none..." style={inputSt} onFocus={fi} onBlur={fo}/>
+                          </div>
+                          <div>
+                            <label style={{fontSize:11,fontWeight:700,color:'#475569',textTransform:'uppercase',letterSpacing:'0.07em',display:'block',marginBottom:4}}>Monthly Test Volume</label>
+                            <input value={org.monthlyVolume} onChange={oSet('monthlyVolume')} placeholder="e.g. 50000" style={inputSt} onFocus={fi} onBlur={fo}/>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    <div style={{fontSize:11,color:'#64748B',marginTop:10,lineHeight:1.5}}>
+                      These help us pre-configure your portal with the right modules and set up integrations.
+                      {labTier==='enterprise' && ' Our team will contact you within 24h with an enterprise quote.'}
+                    </div>
+                  </div>
+                )}
+
                 <button onClick={()=>{if(!org.name||!org.phone||!org.city){toast.error('Name, Phone & City required');return;}go(portal==='diagnostic'?4:3);}}
                   style={{marginTop:8,padding:'13px',borderRadius:13,border:'none',background:`linear-gradient(135deg,${c1},${c2})`,color:'#fff',fontSize:15,fontWeight:700,cursor:'pointer',boxShadow:`0 6px 20px ${c3}40`}}>
                   Continue to Admin Account →
