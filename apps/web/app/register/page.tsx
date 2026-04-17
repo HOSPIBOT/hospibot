@@ -1,9 +1,10 @@
 'use client';
 import { useState, useCallback, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff, CheckCircle2, Send, Phone, ArrowLeft } from 'lucide-react';
+import { Eye, EyeOff, CheckCircle2, Send, Phone, ArrowLeft, Building2, BarChart3 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { api } from '@/lib/api';
+import { DIAGNOSTIC_TIERS, TIER_FEATURES_DETAIL, type LabTier } from '@/lib/diagnostic-tiers';
 
 /* ── PORTAL CONFIG ─────────────────────────────────────────────────────────── */
 const P = {
@@ -592,7 +593,13 @@ function getLeft(step:number, portal:string): LeftContent {
     bullets:['Auto-configured workflows','Pre-built WhatsApp templates','Purpose-built dashboard'],
     art: artByPortal[portal] || artStep0,
   };
-  if(step===2) return {
+  if(step===2 && portal==='diagnostic') return {
+    headline:'How big is your diagnostic lab?',
+    sub:'Choose the tier that matches your current scale. You can upgrade anytime as your lab grows.',
+    bullets:['Features matched to your scale','Transparent pricing — no hidden charges','Upgrade anytime in settings'],
+    art: artDiagnostic1,
+  };
+  if((step===2 && portal!=='diagnostic') || (step===3 && portal==='diagnostic')) return {
     headline:'Set up your organisation profile',
     sub:'This becomes your portal identity — visible to your patients, staff, and on all reports and invoices you generate.',
     bullets:['Appears on patient reports','Used for GST & billing','Portal URL: hospibot.in/your-slug'],
@@ -616,6 +623,7 @@ function RegisterWizard() {
   const [animKey, setAnimKey] = useState(0);
   const [portal, setPortal] = useState<PortalSlug|''>('');
   const [subtype, setSubtype] = useState('');
+  const [labTier, setLabTier] = useState<LabTier|''>('');
   const [search, setSearch] = useState('');
   const [showOthers, setShowOthers] = useState(false);
   const [contactPhone, setContactPhone] = useState('');
@@ -653,7 +661,23 @@ function RegisterWizard() {
   const pickSub = (slug:string) => {
     if(slug==='__others__'){setShowOthers(true);return;}
     setSubtype(slug);
-    setTimeout(()=>go(2), 260);
+    setLabTier('');
+    // Diagnostic portal gets an extra tier-selection step
+    if(portal === 'diagnostic') {
+      setTimeout(()=>go(2), 260);
+    } else {
+      setTimeout(()=>go(3), 260);
+    }
+  };
+
+  const pickTier = (tier: LabTier) => {
+    setLabTier(tier);
+    if(tier === 'enterprise') {
+      // Enterprise goes directly to contact form
+      setTimeout(()=>go(3), 260);
+    } else {
+      setTimeout(()=>go(3), 260);
+    }
   };
 
   const subtypeList = portal
@@ -677,7 +701,9 @@ function RegisterWizard() {
         pincode:org.pincode,gstNumber:org.gstNumber,
         adminFirstName:admin.firstName,adminLastName:admin.lastName,
         adminEmail:admin.email,adminPassword:admin.password,
-        plan:'STARTER',portalFamily:portal,subTypeSlug:subtype,
+        plan: labTier==='enterprise' ? 'ENTERPRISE' : labTier==='large' ? 'GROWTH' : 'STARTER',
+        portalFamily:portal,subTypeSlug:subtype,
+        labTier: labTier || undefined,
       });
       setSuccess(true);
     } catch(err:any){toast.error(err?.response?.data?.message||'Registration failed. Please try again.');}
@@ -735,12 +761,12 @@ function RegisterWizard() {
 
           {/* Step progress dots */}
           <div style={{display:'flex',gap:6,marginBottom:48}}>
-            {['Portal','Type','Details','Account'].map((s,i)=>(
+            {(portal==='diagnostic'?['Portal','Type','Size','Details','Account']:['Portal','Type','Details','Account']).map((s,i)=>(
               <div key={s} style={{display:'flex',alignItems:'center',gap:6}}>
                 <div style={{width:i<step?28:i===step?28:8,height:8,borderRadius:99,background:i<step?'rgba(255,255,255,0.9)':i===step?'rgba(255,255,255,0.9)':'rgba(255,255,255,0.2)',transition:'all 0.4s ease'}}/>
               </div>
             ))}
-            <span style={{marginLeft:8,fontSize:12.5,color:'rgba(255,255,255,0.5)',fontWeight:500}}>Step {step+1} of 4</span>
+            <span style={{marginLeft:8,fontSize:12.5,color:'rgba(255,255,255,0.5)',fontWeight:500}}>Step {step+1} of {portal==='diagnostic'?5:4}</span>
           </div>
 
           {/* Animated content */}
@@ -896,7 +922,81 @@ function RegisterWizard() {
           )}
 
           {/* ── STEP 2: Org Details ────────────────────────────────────────── */}
-          {step===2 && pp && (
+
+          {/* STEP 2 (DIAGNOSTIC ONLY): Lab Size/Tier Selection */}
+          {step===2 && portal==='diagnostic' && pp && !showOthers && (
+            <>
+              <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:22}}>
+                <div style={{width:42,height:42,borderRadius:12,background:'linear-gradient(135deg,#152A47,#1E3A5F)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,flexShrink:0}}>🔬</div>
+                <div>
+                  <div style={{fontWeight:700,fontSize:15,color:'#0F172A'}}>Diagnostic Portal</div>
+                  <div style={{fontSize:12.5,color:'#94A3B8'}}>{subtype.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase())} — select your lab size</div>
+                </div>
+              </div>
+              <h2 style={{fontSize:22,fontWeight:800,color:'#0F172A',marginBottom:6,letterSpacing:'-0.02em'}}>How big is your diagnostic lab?</h2>
+              <p style={{fontSize:14,color:'#64748B',marginBottom:24}}>Features and pricing are matched to your current scale. Upgrade anytime.</p>
+              <div style={{display:'flex',flexDirection:'column',gap:14}}>
+                {DIAGNOSTIC_TIERS.map(tier => (
+                  <button key={tier.id} onClick={()=>pickTier(tier.id as LabTier)}
+                    style={{textAlign:'left',padding:'18px 20px',borderRadius:16,border:`2px solid ${labTier===tier.id?tier.color:'#E2E8F0'}`,background:labTier===tier.id?`linear-gradient(145deg,#fff,${tier.color}0d)`:'#FAFCFF',cursor:'pointer',transition:'all 0.22s',boxShadow:labTier===tier.id?`0 6px 24px ${tier.color}25`:'0 1px 4px rgba(0,0,0,0.05)',position:'relative',overflow:'hidden'}}>
+                    {tier.badge && (
+                      <span style={{position:'absolute',top:12,right:12,fontSize:10,fontWeight:800,padding:'3px 8px',borderRadius:99,background:tier.id==='enterprise'?'#1E293B':`${tier.color}15`,color:tier.id==='enterprise'?'#fff':tier.color}}>
+                        {tier.badge}
+                      </span>
+                    )}
+                    <div style={{display:'grid',gridTemplateColumns:'auto 1fr auto',gap:14,alignItems:'center'}}>
+                      <div style={{width:44,height:44,borderRadius:12,background:`${tier.color}15`,border:`1.5px solid ${tier.color}30`,display:'flex',alignItems:'center',justifyContent:'center'}}>
+                        <span style={{fontSize:13,fontWeight:900,color:tier.color}}>{tier.id[0].toUpperCase()}</span>
+                      </div>
+                      <div>
+                        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:3}}>
+                          <span style={{fontSize:15,fontWeight:800,color:'#0F172A'}}>{tier.label}</span>
+                          <span style={{fontSize:12,color:'#94A3B8',fontWeight:400}}>{tier.tagline}</span>
+                        </div>
+                        <div style={{display:'flex',flexWrap:'wrap',gap:10}}>
+                          {[`${tier.dailySamples} samples/day`,`${tier.branches} branch${tier.branches==='1'?'':'es'}`,`${tier.staff} staff`].map(s=>(
+                            <span key={s} style={{fontSize:11.5,color:'#64748B',background:'#F1F5F9',padding:'2px 8px',borderRadius:99}}>{s}</span>
+                          ))}
+                        </div>
+                      </div>
+                      <div style={{textAlign:'right',flexShrink:0}}>
+                        <div style={{fontSize:16,fontWeight:800,color:tier.id==='enterprise'?'#1E293B':tier.color}}>{tier.price}</div>
+                        <div style={{fontSize:11,color:'#94A3B8'}}>{tier.priceNote}</div>
+                      </div>
+                    </div>
+                    {/* Feature highlights */}
+                    {labTier===tier.id && (
+                      <div style={{marginTop:14,paddingTop:14,borderTop:`1px solid ${tier.color}20`}}>
+                        <div style={{fontSize:11.5,fontWeight:700,color:'#94A3B8',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:10}}>Included features</div>
+                        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(200px,1fr))',gap:6}}>
+                          {tier.features.slice(0,6).map(f=>(
+                            <div key={f} style={{display:'flex',alignItems:'center',gap:7,fontSize:12.5,color:'#334155'}}>
+                              <svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke={tier.color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                              {f}
+                            </div>
+                          ))}
+                          {tier.notIncluded.length > 0 && tier.notIncluded.slice(0,3).map(f=>(
+                            <div key={f} style={{display:'flex',alignItems:'center',gap:7,fontSize:12.5,color:'#94A3B8'}}>
+                              <svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 1L11 9M11 1L1 9" stroke="#CBD5E1" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                              {f}
+                            </div>
+                          ))}
+                        </div>
+                        {tier.id === 'enterprise' && (
+                          <div style={{marginTop:12,padding:'10px 14px',background:'#0F172A',borderRadius:10,fontSize:12.5,color:'rgba(255,255,255,0.75)'}}>
+                            Enterprise pricing is custom — our team will contact you within 24 hours with a personalised quote.
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+              <p style={{textAlign:'center',fontSize:12.5,color:'#CBD5E1',marginTop:16}}>All plans include a 14-day free trial. Upgrade or downgrade anytime.</p>
+            </>
+          )}
+
+          {((step===2 && portal!=='diagnostic') || (step===3 && portal==='diagnostic')) && pp && (
             <>
               <h2 style={{fontSize:22,fontWeight:800,color:'#0F172A',marginBottom:6,letterSpacing:'-0.02em'}}>Organisation Details</h2>
               <p style={{fontSize:14,color:'#64748B',marginBottom:24}}>Tell us about your healthcare facility.</p>
@@ -928,7 +1028,7 @@ function RegisterWizard() {
                 </div>
                 <div><label style={{fontSize:11.5,fontWeight:700,color:'#475569',textTransform:'uppercase',letterSpacing:'0.07em',display:'block',marginBottom:5}}>GST Number <span style={{fontSize:11,color:'#94A3B8',fontWeight:400,textTransform:'none'}}>(optional)</span></label>
                   <input value={org.gstNumber} onChange={oSet('gstNumber')} placeholder="29AAAAA0000A1Z5" style={inputSt} onFocus={fi} onBlur={fo}/></div>
-                <button onClick={()=>{if(!org.name||!org.phone||!org.city){toast.error('Name, Phone & City required');return;}go(3);}}
+                <button onClick={()=>{if(!org.name||!org.phone||!org.city){toast.error('Name, Phone & City required');return;}go(portal==='diagnostic'?4:3);}}
                   style={{marginTop:8,padding:'13px',borderRadius:13,border:'none',background:`linear-gradient(135deg,${c1},${c2})`,color:'#fff',fontSize:15,fontWeight:700,cursor:'pointer',boxShadow:`0 6px 20px ${c3}40`}}>
                   Continue to Admin Account →
                 </button>
@@ -937,7 +1037,7 @@ function RegisterWizard() {
           )}
 
           {/* ── STEP 3: Admin Account ─────────────────────────────────────── */}
-          {step===3 && pp && (
+          {((step===3 && portal!=='diagnostic') || (step===4 && portal==='diagnostic')) && pp && (
             <>
               <h2 style={{fontSize:22,fontWeight:800,color:'#0F172A',marginBottom:6,letterSpacing:'-0.02em'}}>Admin Account</h2>
               <p style={{fontSize:14,color:'#64748B',marginBottom:24}}>Create your primary login for the {pp.name}.</p>
