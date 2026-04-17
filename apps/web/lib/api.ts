@@ -64,6 +64,31 @@ api.interceptors.response.use(
       }
     }
 
+    // ── Tier-gated 403 — fire upgrade event for UI to pick up ───────────────
+    // Backend sends: { message, currentTier, requiredTier, feature?, upgradeUrl }
+    if (error.response?.status === 403 && error.response?.data?.requiredTier) {
+      const payload = error.response.data;
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('hospibot:tier-upgrade-required', {
+          detail: {
+            message: payload.message,
+            currentTier: payload.currentTier,
+            requiredTier: payload.requiredTier,
+            feature: payload.feature,
+            upgradeUrl: payload.upgradeUrl || '/diagnostic/settings/plan',
+          },
+        }));
+      }
+      // Reject with enriched error so caller .catch() can branch on it
+      const enriched: any = new Error(payload.message || 'Tier upgrade required');
+      enriched.tierUpgradeRequired = true;
+      enriched.requiredTier = payload.requiredTier;
+      enriched.feature = payload.feature;
+      enriched.upgradeUrl = payload.upgradeUrl || '/diagnostic/settings/plan';
+      enriched.response = error.response;
+      return Promise.reject(enriched);
+    }
+
     return Promise.reject(error);
   }
 );

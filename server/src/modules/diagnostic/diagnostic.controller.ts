@@ -349,10 +349,12 @@ export class DiagnosticController {
     return this.svc.adjustStock(tenantId, id, user.id, dto);
   }
 
-  // ── QC ────────────────────────────────────────────────────────────────────
+  // ── QC (Large tier and above — Westgard + Levey-Jennings) ───────────────
 
   @Post('qc/results')
-  @ApiOperation({ summary: 'Submit QC run result + auto Westgard evaluation' })
+  @UseGuards(TierGuard)
+  @RequireFeature('qc-westgard')
+  @ApiOperation({ summary: 'Submit QC run result + auto Westgard evaluation (Large+)' })
   submitQc(
     @CurrentTenant() tenantId: string,
     @CurrentUser() user: any,
@@ -362,7 +364,9 @@ export class DiagnosticController {
   }
 
   @Get('qc/history/:testCode')
-  @ApiOperation({ summary: 'QC history + Levey-Jennings chart data' })
+  @UseGuards(TierGuard)
+  @RequireFeature('qc-westgard')
+  @ApiOperation({ summary: 'QC history + Levey-Jennings chart data (Large+)' })
   getQcHistory(
     @CurrentTenant() tenantId: string,
     @Param('testCode') testCode: string,
