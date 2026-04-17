@@ -2,12 +2,15 @@ import { Controller, Get, Post, Body, UseGuards, Query } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { TenantGuard } from '../../common/guards/tenant.guard';
+import { TierGuard } from '../../common/guards/tier.guard';
+import { RequireFeature } from '../../common/decorators/tier.decorator';
 import { CurrentTenant } from '../../common/decorators/current-user.decorator';
 import { PrismaService } from '../../database/prisma.service';
 
 @ApiTags('HRMS')
 @Controller('hrms')
-@UseGuards(JwtAuthGuard, TenantGuard)
+@UseGuards(JwtAuthGuard, TenantGuard, TierGuard)
+@RequireFeature('staff-hrms')
 @ApiBearerAuth()
 export class HrmsController {
   constructor(private prisma: PrismaService) {}
