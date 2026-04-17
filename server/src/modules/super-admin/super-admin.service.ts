@@ -376,5 +376,122 @@ export class SuperAdminService {
     return { tenants, lowBalance: lowBalance.length, totalWaCredits };
   }
 
+  // ─── Tier Upgrade Requests ────────────────────────────────────────────────
+
+  /**
+   * List all upgrade requests across all tenants.
+   * Requests are stored in tenant.settings.upgradeRequests[] — we iterate
+   * and flatten, attaching tenant identity to each request for display.
+   */
+  async listUpgradeRequests(status: string = 'pending') {
+    // Only pull tenants that have at least something in upgradeRequests.
+    // Can't do a JSON contains filter portably, so fetch tenants that have
+    // any settings and filter in memory. For larger scale, introduce a
+    // dedicated UpgradeRequest table.
+    const tenants = await this.prisma.tenant.findMany({
+      where: { status: { not: 'CANCELLED' } },
+      select: {
+        id: true, name: true, slug: true, settings: true,
+        portalFamily: { select: { name: true, slug: true } },
+        subType:      { select: { name: true, slug: true } },
+      },
+    });
+
+    const flat: any[] = [];
+    for (const t of tenants) {
+      const settings = (t.settings ?? {}) as Record<string, any>;
+      const requests = Array.isArray(settings.upgradeRequests) ? settings.upgradeRequests : [];
+      for (const r of requests) {
+        if (status === 'all' || r.status === status) {
+          flat.push({
+            ...r,
+            tenantId: t.id,
+            tenantName: t.name,
+            tenantSlug: t.slug,
+            portalFamily: t.portalFamily?.name ?? null,
+            subType: t.subType?.name ?? null,
+          });
+        }
+      }
+    }
+    // Sort newest first
+    flat.sort((a, b) => (b.requestedAt || '').localeCompare(a.requestedAt || ''));
+    return flat;
+  }
+
+  /**
+   * Approve or reject a tenant upgrade request.
+   * If approved, also updates tenant.settings.labTier to the target tier.
+   * Writes an audit log entry tagged with the reviewing admin.
+   */
+  async updateUpgradeRequest(
+    tenantId: string,
+    requestId: string,
+    dto: { status: 'approved' | 'rejected'; note?: string },
+    adminId: string,
+  ) {
+    if (!['approved', 'rejected'].includes(dto.status)) {
+      throw new BadRequestException('Status must be approved or rejected');
+    }
+
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { id: true, settings: true },
+    });
+    if (!tenant) throw new NotFoundException('Tenant not found');
+
+    const settings = (tenant.settings ?? {}) as Record<string, any>;
+    const requests = Array.isArray(settings.upgradeRequests) ? [...settings.upgradeRequests] : [];
+    const idx = requests.findIndex((r: any) => r.id === requestId);
+    if (idx < 0) throw new NotFoundException('Upgrade request not found');
+
+    const prevRequest = requests[idx];
+    if (prevRequest.status !== 'pending') {
+      throw new BadRequestException(
+        `Request already ${prevRequest.status}. Cannot re-review.`,
+      );
+    }
+
+    // Update the request entry
+    requests[idx] = {
+      ...prevRequest,
+      status: dto.status,
+      adminNote: dto.note || null,
+      reviewedBy: adminId,
+      reviewedAt: new Date().toISOString(),
+    };
+
+    // Build new settings — if approved, also switch the active labTier
+    const newSettings = {
+      ...settings,
+      upgradeRequests: requests,
+      ...(dto.status === 'approved' ? { labTier: prevRequest.targetTier } : {}),
+    };
+
+    await this.prisma.tenant.update({
+      where: { id: tenantId },
+      data: { settings: newSettings },
+    });
+
+    // Audit trail
+    await this.prisma.auditLog.create({
+      data: {
+        tenantId,
+        userId: adminId,
+        action: 'UPGRADE_REQUEST_REVIEW',
+        entityType: 'Tenant',
+        entityId: tenantId,
+        changes: {
+          requestId,
+          fromTier: prevRequest.fromTier,
+          targetTier: prevRequest.targetTier,
+          decision: dto.status,
+          note: dto.note || null,
+        },
+      },
+    }).catch(() => {});
+
+    return { success: true, request: requests[idx] };
+  }
 
 }

@@ -173,4 +173,24 @@ export class SuperAdminController {
   ) {
     return this.superAdminService.adminCreditWallet(tenantId, dto.walletType, dto.amount, dto.reason, admin.id);
   }
+
+  // ─── Tier Upgrade Requests ────────────────────────────────────────────────
+
+  @Get('upgrade-requests')
+  @ApiOperation({ summary: 'List all tenant upgrade requests across platform' })
+  @ApiQuery({ name: 'status', required: false, enum: ['pending', 'approved', 'rejected', 'all'] })
+  listUpgradeRequests(@Query('status') status = 'pending') {
+    return this.superAdminService.listUpgradeRequests(status);
+  }
+
+  @Patch('upgrade-requests/:tenantId/:requestId')
+  @ApiOperation({ summary: 'Approve or reject a tenant upgrade request' })
+  updateUpgradeRequest(
+    @Param('tenantId') tenantId: string,
+    @Param('requestId') requestId: string,
+    @Body() dto: { status: 'approved' | 'rejected'; note?: string },
+    @CurrentUser() admin: any,
+  ) {
+    return this.superAdminService.updateUpgradeRequest(tenantId, requestId, dto, admin.id);
+  }
 }
