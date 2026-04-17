@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { api } from '@/lib/api';
 import { DIAGNOSTIC_TIERS, TIER_FEATURES_DETAIL, type LabTier } from '@/lib/diagnostic-tiers';
 import { getSubtypeFeatures } from '@/lib/diagnostic-subtype-features';
+import { getSubtypeFeatures } from '@/lib/diagnostic-subtype-features';
 
 /* ── PORTAL CONFIG ─────────────────────────────────────────────────────────── */
 const P = {
@@ -734,16 +735,24 @@ function RegisterWizard() {
   /* Full-screen tier selection for Diagnostic portal */
   if(step===2 && portal==='diagnostic' && !showOthers) {
 
-    // Load subtype-specific features
-    const subtypeCfg = getSubtypeFeatures(subtype);
-    const tierData = subtypeCfg.tiers;
+    // Get subtype-specific feature data
+    const subtypeData = getSubtypeFeatures(subtype);
+    const tierDefs = subtypeData.tiers;
 
     const TIERS = [
-      {id:'small',      name:'Small',      sub:'Starter plan',         color:'#0EA5E9', dark:'#0284C7', light:'#E0F2FE', grad:'linear-gradient(145deg,#0284C7,#0EA5E9)', price:'₹999',   note:'/month',     data: tierData.small},
-      {id:'medium',     name:'Medium',     sub:'Growth plan',          color:'#10B981', dark:'#059669', light:'#D1FAE5', grad:'linear-gradient(145deg,#059669,#10B981)', price:'₹2,999', note:'/month',     data: tierData.medium},
-      {id:'large',      name:'Large',      sub:'Professional plan',    color:'#8B5CF6', dark:'#7C3AED', light:'#EDE9FE', grad:'linear-gradient(145deg,#7C3AED,#8B5CF6)', price:'₹7,999', note:'/month',     data: tierData.large},
-      {id:'enterprise', name:'Enterprise', sub:'Enterprise plan',      color:'#F59E0B', dark:'#D97706', light:'#FEF3C7', grad:'linear-gradient(145deg,#D97706,#F59E0B)', price:'Custom', note:'contact us', data: tierData.enterprise},
-    ];
+      {id:'small',      name:'Small',      data:tierDefs.small,
+       color:'#0EA5E9', dark:'#0284C7', light:'#E0F2FE', bg:'linear-gradient(145deg,#0284C7,#0EA5E9)',
+       price:'₹999',   note:'/month',    btn:'Select Small Lab'},
+      {id:'medium',     name:'Medium',     data:tierDefs.medium,
+       color:'#10B981', dark:'#059669', light:'#D1FAE5', bg:'linear-gradient(145deg,#059669,#10B981)',
+       price:'₹2,999', note:'/month',    btn:'Select Medium Lab'},
+      {id:'large',      name:'Large',      data:tierDefs.large,
+       color:'#8B5CF6', dark:'#7C3AED', light:'#EDE9FE', bg:'linear-gradient(145deg,#7C3AED,#8B5CF6)',
+       price:'₹7,999', note:'/month',    btn:'Select Large Lab'},
+      {id:'enterprise', name:'Enterprise', data:tierDefs.enterprise,
+       color:'#F59E0B', dark:'#D97706', light:'#FEF3C7', bg:'linear-gradient(145deg,#D97706,#F59E0B)',
+       price:'Custom',  note:'contact us', btn:'Contact Sales'},
+    ] as const;
 
     return (
       <div style={{height:'calc(100vh - 64px)',display:'flex',flexDirection:'column',background:'#F1F5F9',fontFamily:"'Poppins',sans-serif",overflow:'hidden'}}>
@@ -751,16 +760,17 @@ function RegisterWizard() {
           @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
           *{box-sizing:border-box;margin:0;padding:0}
           button{font-family:'Poppins',sans-serif;cursor:pointer}
-          @keyframes cardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-          .tc{transition:transform 0.2s,box-shadow 0.2s}
+          .tc{transition:transform 0.22s,box-shadow 0.22s}
           .tc:hover{transform:translateY(-3px)}
-          .selb:hover{filter:brightness(1.08);transform:translateY(-1px)}
+          .sel{transition:all 0.18s;border:none}
+          .sel:hover{filter:brightness(1.07)}
           ::-webkit-scrollbar{width:5px}
           ::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:99px}
+          @keyframes cardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
         `}</style>
 
-        {/* NAV BAR */}
-        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 28px',background:'#fff',borderBottom:'1px solid #E2E8F0',flexShrink:0}}>
+        {/* NAV */}
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 28px',background:'#fff',borderBottom:'1px solid #E2E8F0',flexShrink:0,boxShadow:'0 1px 3px rgba(0,0,0,0.05)'}}>
           <button onClick={()=>go(1)} style={{display:'flex',alignItems:'center',gap:6,fontSize:13,color:'#64748B',background:'none',border:'none',padding:0,fontWeight:500}}>
             <ArrowLeft size={13}/> Back
           </button>
@@ -778,61 +788,59 @@ function RegisterWizard() {
           </a>
         </div>
 
-        {/* SINGLE SCROLL WRAPPER */}
+        {/* SINGLE SCROLL */}
         <div style={{flex:1,overflow:'auto',padding:'0 20px 32px'}}>
 
           {/* Hero */}
-          <div style={{textAlign:'center',padding:'18px 0 16px'}}>
+          <div style={{textAlign:'center',padding:'20px 0 18px'}}>
             <div style={{display:'inline-flex',alignItems:'center',gap:7,background:'#EFF6FF',border:'1px solid #BFDBFE',borderRadius:99,padding:'4px 14px',fontSize:11.5,fontWeight:700,color:'#2563EB',marginBottom:10,letterSpacing:'0.04em'}}>
-              {subtypeCfg.scaleIcon} {(subtype||'').replace(/-/g,' ').replace(/\b\w/g,(c:string)=>c.toUpperCase())}
+              🔬 {(subtype||'').replace(/-/g,' ').replace(/\b\w/g,(c:string)=>c.toUpperCase())}
             </div>
-            <h1 style={{fontSize:'clamp(20px,2.4vw,28px)',fontWeight:900,color:'#0F172A',letterSpacing:'-0.025em',marginBottom:4}}>
+            <h1 style={{fontSize:'clamp(20px,2.5vw,28px)',fontWeight:900,color:'#0F172A',letterSpacing:'-0.025em',marginBottom:4}}>
               Choose the right plan for your lab
             </h1>
             <p style={{fontSize:13,color:'#64748B'}}>
-              Plans are tailored for <strong style={{color:'#0F172A'}}>{(subtype||'').replace(/-/g,' ').replace(/\b\w/g,(c:string)=>c.toUpperCase())}</strong>.
-              All include a 14-day free trial.
+              Features shown are specific to <strong style={{color:'#0F172A'}}>{(subtype||'').replace(/-/g,' ').replace(/\b\w/g,(c:string)=>c.toUpperCase())}</strong> operations.
+              All plans include a <strong style={{color:'#0F172A'}}>14-day free trial</strong>.
             </p>
           </div>
 
-          {/* FOUR CARDS */}
+          {/* 4-COLUMN CARD GRID */}
           <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:16,maxWidth:1120,margin:'0 auto'}}>
             {TIERS.map((t,ti)=>{
               const selected = labTier===t.id;
-              const scaleEntries = Object.entries(t.data.scale) as [string,string][];
               return (
                 <div key={t.id} className="tc"
-                  style={{background:'#fff',borderRadius:20,overflow:'hidden',
-                    boxShadow: selected ? `0 12px 40px ${t.color}30` : '0 2px 16px rgba(0,0,0,0.07)',
-                    border: `2px solid ${selected ? t.color : 'transparent'}`,
-                    display:'flex',flexDirection:'column',
-                    animation:`cardIn 0.35s ${ti*0.07}s ease both`,opacity:0,animationFillMode:'forwards'}}>
+                  style={{background:'#fff',borderRadius:20,overflow:'hidden',display:'flex',flexDirection:'column',
+                    border:`2px solid ${selected?t.color:'#E8EDF5'}`,
+                    boxShadow:selected?`0 12px 40px ${t.color}30`:'0 2px 12px rgba(0,0,0,0.06)',
+                    animation:`cardIn 0.35s ${ti*0.08}s ease both`,opacity:0,animationFillMode:'forwards'}}>
 
-                  {/* ── GRADIENT HEADER ── */}
-                  <div style={{background:t.grad,padding:'16px 16px 14px',position:'relative',overflow:'hidden'}}>
-                    <div style={{position:'absolute',top:-20,right:-20,width:90,height:90,borderRadius:'50%',background:'rgba(255,255,255,0.1)',pointerEvents:'none'}}/>
-                    <div style={{position:'absolute',bottom:-30,left:-10,width:70,height:70,borderRadius:'50%',background:'rgba(255,255,255,0.06)',pointerEvents:'none'}}/>
-                    <div style={{fontSize:11,fontWeight:800,color:'rgba(255,255,255,0.65)',textTransform:'uppercase' as const,letterSpacing:'0.1em',marginBottom:2}}>{t.sub}</div>
-                    <div style={{fontSize:18,fontWeight:900,color:'#fff',marginBottom:10}}>{t.name}</div>
+                  {/* ── COLORED GRADIENT HEADER ── */}
+                  <div style={{background:t.bg,padding:'16px 18px 14px',position:'relative',overflow:'hidden',flexShrink:0}}>
+                    <div style={{position:'absolute',top:-16,right:-16,width:80,height:80,borderRadius:'50%',background:'rgba(255,255,255,0.1)',pointerEvents:'none'}}/>
+                    <div style={{position:'absolute',bottom:-20,left:-8,width:60,height:60,borderRadius:'50%',background:'rgba(255,255,255,0.07)',pointerEvents:'none'}}/>
+                    <div style={{fontSize:10.5,fontWeight:800,color:'rgba(255,255,255,0.65)',textTransform:'uppercase' as const,letterSpacing:'0.1em',marginBottom:4}}>{t.name}</div>
+                    <div style={{fontSize:11,color:'rgba(255,255,255,0.7)',marginBottom:10,lineHeight:1.3}}>
+                      {t.id==='small'?'Solo lab or PSC':t.id==='medium'?'Growing diagnostic center':t.id==='large'?'NABL-accredited chain':'Reference lab / franchise'}
+                    </div>
                     <div style={{display:'flex',alignItems:'baseline',gap:4}}>
-                      <span style={{fontSize:t.id==='enterprise'?24:28,fontWeight:900,color:'#fff',lineHeight:1}}>{t.price}</span>
-                      <span style={{fontSize:11,color:'rgba(255,255,255,0.65)'}}>{t.note}</span>
+                      <span style={{fontSize:t.id==='enterprise'?22:26,fontWeight:900,color:'#fff',lineHeight:1}}>{t.price}</span>
+                      <span style={{fontSize:10.5,color:'rgba(255,255,255,0.6)'}}>{t.note}</span>
                     </div>
                   </div>
 
                   {/* ── SCALE OF OPERATIONS ── */}
-                  <div style={{padding:'12px 14px',background:`linear-gradient(135deg,${t.light}80,${t.light}40)`,borderBottom:`1px solid ${t.light}`}}>
-                    <div style={{fontSize:9.5,fontWeight:800,color:t.dark,textTransform:'uppercase' as const,letterSpacing:'0.09em',marginBottom:8,display:'flex',alignItems:'center',gap:5}}>
-                      <div style={{width:14,height:14,borderRadius:4,background:t.color,display:'flex',alignItems:'center',justifyContent:'center'}}>
-                        <svg width="7" height="7" viewBox="0 0 7 7" fill="white"><rect width="3" height="7" rx="1"/><rect x="4" y="3" width="3" height="4" rx="1"/></svg>
-                      </div>
+                  <div style={{padding:'12px 14px',background:`${t.light}60`,borderBottom:`1px solid ${t.light}`,flexShrink:0}}>
+                    <div style={{fontSize:9.5,fontWeight:800,color:t.dark,textTransform:'uppercase' as const,letterSpacing:'0.1em',marginBottom:8,display:'flex',alignItems:'center',gap:5}}>
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="0.5" y="5.5" width="2" height="4" rx="0.5" fill={t.dark}/><rect x="3.5" y="3.5" width="2" height="6" rx="0.5" fill={t.dark}/><rect x="6.5" y="1.5" width="2" height="8" rx="0.5" fill={t.dark}/></svg>
                       Scale of Operations
                     </div>
                     <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:5}}>
-                      {scaleEntries.map(([k,v])=>(
-                        <div key={k} style={{background:'#fff',borderRadius:8,padding:'6px 8px',border:`1px solid ${t.light}`}}>
-                          <div style={{fontSize:9,color:'#94A3B8',fontWeight:600,marginBottom:1,lineHeight:1.3}}>{k}</div>
-                          <div style={{fontSize:11.5,fontWeight:700,color: v==='Unlimited'||v==='Pan-India'?t.dark:'#0F172A',lineHeight:1.2}}>{v}</div>
+                      {t.data.scale.map(s=>(
+                        <div key={s.label} style={{background:'#fff',borderRadius:8,padding:'6px 8px',border:`1px solid ${t.light}`}}>
+                          <div style={{fontSize:9,color:'#94A3B8',fontWeight:600,marginBottom:1,lineHeight:1.2}}>{s.label}</div>
+                          <div style={{fontSize:11,fontWeight:700,color:s.value==='Unlimited'?t.dark:'#0F172A',lineHeight:1.2}}>{s.value}</div>
                         </div>
                       ))}
                     </div>
@@ -840,44 +848,41 @@ function RegisterWizard() {
 
                   {/* ── FEATURES INCLUDED ── */}
                   <div style={{padding:'12px 14px',flex:1}}>
-                    <div style={{fontSize:9.5,fontWeight:800,color:t.dark,textTransform:'uppercase' as const,letterSpacing:'0.09em',marginBottom:8,display:'flex',alignItems:'center',gap:5}}>
-                      <div style={{width:14,height:14,borderRadius:4,background:t.color,display:'flex',alignItems:'center',justifyContent:'center'}}>
-                        <svg width="8" height="7" viewBox="0 0 8 7" fill="none"><path d="M1 3.5L3 6L7 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                      </div>
+                    <div style={{fontSize:9.5,fontWeight:800,color:t.dark,textTransform:'uppercase' as const,letterSpacing:'0.1em',marginBottom:8,display:'flex',alignItems:'center',gap:5}}>
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 5.5L3.5 8L9 2" stroke={t.dark} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                       Features Included
                     </div>
                     <div style={{display:'flex',flexDirection:'column' as const,gap:5}}>
-                      {t.data.features.map((f:string)=>(
+                      {t.data.features.map(f=>(
                         <div key={f} style={{display:'flex',alignItems:'flex-start',gap:7}}>
-                          <div style={{width:14,height:14,borderRadius:4,background:`${t.color}15`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:1}}>
-                            <svg width="7" height="6" viewBox="0 0 7 6" fill="none"><path d="M0.5 3L2.5 5.5L6.5 1" stroke={t.color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                          <div style={{width:14,height:14,borderRadius:4,background:`${t.color}15`,border:`1px solid ${t.color}30`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:1}}>
+                            <svg width="7" height="6" viewBox="0 0 7 6" fill="none"><path d="M0.5 3L2.5 5.5L6.5 0.5" stroke={t.color} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
                           </div>
-                          <span style={{fontSize:11,color:'#374151',lineHeight:1.4}}>{f}</span>
+                          <span style={{fontSize:11,color:'#334155',lineHeight:1.4}}>{f}</span>
                         </div>
                       ))}
                     </div>
 
                     {t.data.notIncluded.length>0 && (
-                      <div style={{marginTop:9,paddingTop:9,borderTop:`1px dashed ${t.light}`}}>
-                        <div style={{fontSize:9,fontWeight:700,color:'#94A3B8',textTransform:'uppercase' as const,letterSpacing:'0.07em',marginBottom:6}}>Not in this plan</div>
-                        {(t.data.notIncluded as string[]).map((f:string)=>(
-                          <div key={f} style={{display:'flex',alignItems:'flex-start',gap:6,marginBottom:4}}>
-                            <svg style={{marginTop:2,flexShrink:0}} width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 1.5L6.5 6.5M6.5 1.5L1.5 6.5" stroke="#CBD5E1" strokeWidth="1.2" strokeLinecap="round"/></svg>
-                            <span style={{fontSize:10.5,color:'#94A3B8',textDecoration:'line-through',textDecorationColor:'#E2E8F0',lineHeight:1.35}}>{f}</span>
+                      <div style={{marginTop:10,paddingTop:9,borderTop:`1px dashed ${t.light}`}}>
+                        <div style={{fontSize:9,fontWeight:700,color:'#94A3B8',textTransform:'uppercase' as const,letterSpacing:'0.08em',marginBottom:6}}>Not in this plan</div>
+                        {t.data.notIncluded.map(f=>(
+                          <div key={f} style={{display:'flex',alignItems:'center',gap:6,marginBottom:4}}>
+                            <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 1.5L6.5 6.5M6.5 1.5L1.5 6.5" stroke="#CBD5E1" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                            <span style={{fontSize:10.5,color:'#94A3B8',textDecoration:'line-through',textDecorationColor:'#E2E8F0'}}>{f}</span>
                           </div>
                         ))}
                       </div>
                     )}
                   </div>
 
-                  {/* ── SELECT BUTTON ── */}
+                  {/* SELECT BUTTON */}
                   <div style={{padding:'10px 14px 14px',flexShrink:0}}>
-                    <button onClick={()=>pickTier(t.id as LabTier)} className="selb"
-                      style={{width:'100%',padding:'10px 0',borderRadius:11,border:'none',fontSize:13,fontWeight:700,color:'#fff',
-                        background: selected ? t.grad : `linear-gradient(135deg,${t.color}dd,${t.color})`,
-                        boxShadow: selected ? `0 6px 20px ${t.color}45` : `0 3px 10px ${t.color}25`,
-                        transition:'all 0.18s'}}>
-                      {selected ? `Selected \u2014 Continue \u2192` : `Select ${t.name} Plan`}
+                    <button onClick={()=>pickTier(t.id as LabTier)} className="sel"
+                      style={{width:'100%',padding:'10px 0',borderRadius:11,fontSize:13,fontWeight:700,color:'#fff',
+                        background:t.bg,
+                        boxShadow:selected?`0 4px 20px ${t.color}45`:`0 2px 10px ${t.color}25`}}>
+                      {selected ? `Selected \u2713 \u2014 Continue \u2192` : t.btn}
                     </button>
                   </div>
                 </div>
@@ -885,9 +890,8 @@ function RegisterWizard() {
             })}
           </div>
 
-          {/* Footer note */}
-          <div style={{textAlign:'center',fontSize:12,color:'#94A3B8',marginTop:16}}>
-            All plans start with a 14-day free trial \u00b7 No credit card required \u00b7 Upgrade anytime from your dashboard
+          <div style={{textAlign:'center',fontSize:11.5,color:'#94A3B8',marginTop:20}}>
+            14-day free trial on all plans \u00b7 No credit card required \u00b7 Upgrade or downgrade anytime
           </div>
         </div>
       </div>
