@@ -732,139 +732,214 @@ function RegisterWizard() {
 
   /* Full-screen tier selection for Diagnostic portal */
   if(step===2 && portal==='diagnostic' && !showOthers) {
+
+    const FEATURE_MATRIX = [
+      {label:'WhatsApp report delivery',          small:true,  medium:true,  large:true,  ent:true},
+      {label:'Sample tracking',                    small:true,  medium:true,  large:true,  ent:true},
+      {label:'GST billing & invoicing',            small:true,  medium:true,  large:true,  ent:true},
+      {label:'Test catalog (500+ tests)',          small:true,  medium:true,  large:true,  ent:true},
+      {label:'PDF report generation',              small:true,  medium:true,  large:true,  ent:true},
+      {label:'Patient registration & lookup',      small:true,  medium:true,  large:true,  ent:true},
+      {label:'Home collection + GPS',              small:false, medium:true,  large:true,  ent:true},
+      {label:'Doctor CRM & referrals',             small:false, medium:true,  large:true,  ent:true},
+      {label:'Corporate wellness screening',       small:false, medium:true,  large:true,  ent:true},
+      {label:'TPA / insurance claims',             small:false, medium:true,  large:true,  ent:true},
+      {label:'Package & combo billing',            small:false, medium:true,  large:true,  ent:true},
+      {label:'QC module (Westgard / L-J)',         small:false, medium:false, large:true,  ent:true},
+      {label:'NABL compliance tools',              small:false, medium:false, large:true,  ent:true},
+      {label:'Multi-branch management',            small:false, medium:false, large:true,  ent:true},
+      {label:'Staff HRMS & payroll',               small:false, medium:false, large:true,  ent:true},
+      {label:'HL7 / ASTM analyser interface',      small:false, medium:false, large:true,  ent:true},
+      {label:'Franchise & hub-spoke management',   small:false, medium:false, large:false, ent:true},
+      {label:'Revenue sharing engine',             small:false, medium:false, large:false, ent:true},
+      {label:'White-label portal capability',      small:false, medium:false, large:false, ent:true},
+      {label:'API marketplace access',             small:false, medium:false, large:false, ent:true},
+      {label:'Unlimited WhatsApp credits',         small:false, medium:false, large:false, ent:true},
+      {label:'Dedicated account manager',          small:false, medium:false, large:false, ent:true},
+    ];
+
+    const TIER_META = [
+      {id:'small',      color:'#0369A1', light:'#DBEAFE', badge:null,           price:'₹999',   note:'/ month', btnTxt:'Select Small Lab'},
+      {id:'medium',     color:'#0D9488', light:'#CCFBF1', badge:'Most Popular', price:'₹2,999', note:'/ month', btnTxt:'Select Medium Lab'},
+      {id:'large',      color:'#7C3AED', light:'#EDE9FE', badge:null,           price:'₹7,999', note:'/ month', btnTxt:'Select Large Lab'},
+      {id:'enterprise', color:'#1E3A5F', light:'#DBEAFE', badge:'Custom',       price:'Custom', note:'contact us', btnTxt:'Contact Sales'},
+    ];
+
+    const colForId = (id:string) => TIER_META.find(t=>t.id===id)?.color ?? '#0369A1';
+    const valForId = (row:{small:boolean;medium:boolean;large:boolean;ent:boolean}, id:string) => {
+      if(id==='small')      return row.small;
+      if(id==='medium')     return row.medium;
+      if(id==='large')      return row.large;
+      return row.ent;
+    };
+
     return (
-      <div style={{height:'calc(100vh - 64px)',display:'flex',flexDirection:'column',background:'#060B14',fontFamily:"'Poppins',sans-serif",overflow:'hidden'}}>
+      <div style={{height:'calc(100vh - 64px)',display:'flex',flexDirection:'column',background:'linear-gradient(160deg,#EFF6FF 0%,#E0F2FE 50%,#DBEAFE 100%)',fontFamily:"'Poppins',sans-serif",overflow:'hidden'}}>
         <style>{`
-          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
           *{box-sizing:border-box;margin:0;padding:0}
-          button,input{font-family:'Poppins',sans-serif}
-          @keyframes cardIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-          .tc:hover{transform:translateY(-3px)!important;box-shadow:var(--hover-shadow)!important}
-          .ts-btn:hover{filter:brightness(1.12)!important;transform:translateY(-1px)!important}
+          button{font-family:'Poppins',sans-serif;cursor:pointer}
+          @keyframes cardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+          .tc{transition:transform 0.2s,box-shadow 0.2s}
+          .tc:hover{transform:translateY(-3px)!important}
+          .sel-btn:hover{filter:brightness(1.08)!important}
+          ::-webkit-scrollbar{width:4px}
+          ::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.12);border-radius:99px}
         `}</style>
 
-        {/* Header */}
-        <div style={{padding:'12px 32px',borderBottom:'1px solid rgba(255,255,255,0.08)',display:'flex',justifyContent:'space-between',alignItems:'center',flexShrink:0}}>
-          <button onClick={()=>go(1)} style={{display:'flex',alignItems:'center',gap:6,fontSize:13,color:'rgba(255,255,255,0.5)',background:'none',border:'none',cursor:'pointer',fontFamily:"'Poppins',sans-serif"}}>
+        {/* ─── STICKY HEADER ─── */}
+        <div style={{padding:'10px 32px',borderBottom:'1px solid rgba(0,0,0,0.07)',display:'flex',justifyContent:'space-between',alignItems:'center',background:'rgba(255,255,255,0.7)',backdropFilter:'blur(16px)',flexShrink:0}}>
+          <button onClick={()=>go(1)} style={{display:'flex',alignItems:'center',gap:6,fontSize:13,color:'#475569',background:'none',border:'none'}}>
             <ArrowLeft size={13}/> Back
           </button>
           <div style={{display:'flex',gap:5,alignItems:'center'}}>
             {['Portal','Type','Size','Details','Account'].map((s,i)=>(
-              <div key={s} style={{height:6,width:i<=2?24:6,borderRadius:99,background:i<2?'rgba(255,255,255,0.75)':i===2?'#25D366':'rgba(255,255,255,0.15)',transition:'all 0.3s'}}/>
+              <div key={s} style={{height:6,width:i<=2?22:6,borderRadius:99,transition:'all 0.3s',
+                background:i<2?'#0D7C66':i===2?'#0D7C66':'rgba(0,0,0,0.15)'}}/>
             ))}
-            <span style={{marginLeft:6,fontSize:11.5,color:'rgba(255,255,255,0.3)',fontWeight:500}}>Step 3 of 5</span>
+            <span style={{marginLeft:6,fontSize:11.5,color:'#64748B',fontWeight:500}}>Step 3 of 5</span>
           </div>
-          <a href="/auth/login" style={{fontSize:12.5,color:'rgba(255,255,255,0.35)',textDecoration:'none'}}>
-            Have an account? <span style={{color:'#25D366',fontWeight:600}}>Sign in</span>
+          <a href="/auth/login" style={{fontSize:12.5,color:'#64748B',textDecoration:'none'}}>
+            Have an account? <span style={{color:'#0D7C66',fontWeight:700}}>Sign in</span>
           </a>
         </div>
 
-        {/* Hero */}
-        <div style={{textAlign:'center',padding:'20px 24px 16px',flexShrink:0,position:'relative'}}>
-          <div style={{position:'absolute',top:0,left:'50%',transform:'translateX(-50%)',width:500,height:200,background:'radial-gradient(ellipse,rgba(13,186,150,0.1) 0%,transparent 70%)',pointerEvents:'none'}}/>
-          <div style={{display:'inline-flex',alignItems:'center',gap:7,background:'rgba(37,211,102,0.08)',border:'1px solid rgba(37,211,102,0.2)',borderRadius:99,padding:'4px 14px',fontSize:11.5,fontWeight:700,color:'#25D366',marginBottom:10,letterSpacing:'0.05em'}}>
+        {/* ─── HERO ─── */}
+        <div style={{textAlign:'center',padding:'16px 24px 12px',flexShrink:0}}>
+          <div style={{display:'inline-flex',alignItems:'center',gap:7,background:'rgba(13,124,102,0.1)',border:'1px solid rgba(13,124,102,0.2)',borderRadius:99,padding:'4px 14px',fontSize:11.5,fontWeight:700,color:'#0D7C66',marginBottom:8,letterSpacing:'0.04em'}}>
             🔬 {(subtype||'').replace(/-/g,' ').replace(/\b\w/g,(c:string)=>c.toUpperCase())}
           </div>
-          <h1 style={{fontSize:'clamp(20px,2.2vw,28px)',fontWeight:900,color:'#fff',marginBottom:6,letterSpacing:'-0.02em'}}>
-            Choose your lab size
-          </h1>
-          <p style={{fontSize:13.5,color:'rgba(255,255,255,0.45)',maxWidth:480,margin:'0 auto',lineHeight:1.6}}>
-            Features and pricing matched to your scale. Upgrade anytime — no migration needed.
-          </p>
+          <h1 style={{fontSize:'clamp(20px,2vw,28px)',fontWeight:900,color:'#0F172A',marginBottom:4,letterSpacing:'-0.02em'}}>Choose your lab size</h1>
+          <p style={{fontSize:13,color:'#64748B',lineHeight:1.6}}>Select the plan that matches your lab. Features, scale limits, and pricing are shown for each option.</p>
         </div>
 
-        {/* Cards grid — flex:1, no scroll */}
-        <div style={{flex:1,display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,padding:'0 24px 16px',minHeight:0}}>
-          {DIAGNOSTIC_TIERS.map((tier, ti) => {
-            const isSelected = labTier===tier.id;
-            const cardBg = isSelected ? `linear-gradient(165deg,#1A2744,#162038)` : 'linear-gradient(165deg,#111827,#0D1424)';
-            const borderCol = isSelected ? tier.color : 'rgba(255,255,255,0.1)';
-            return (
-              <div key={tier.id} className="tc"
-                style={{background:cardBg,border:`2px solid ${borderCol}`,borderRadius:18,display:'flex',flexDirection:'column',overflow:'hidden',transition:'all 0.22s',
-                  boxShadow:isSelected?`0 8px 32px ${tier.color}35,0 0 0 1px ${tier.color}20`:'0 4px 16px rgba(0,0,0,0.5)',
-                  '--hover-shadow':`0 12px 40px ${tier.color}30,0 0 0 1px ${tier.color}25`,
-                  animation:`cardIn 0.35s ${ti*0.07}s ease both`,opacity:0,animationFillMode:'forwards'} as any}>
+        {/* ─── CARDS + FEATURE TABLE ─── */}
+        <div style={{flex:1,minHeight:0,overflowY:'auto',padding:'0 20px 16px'}}>
+          <div style={{maxWidth:1300,margin:'0 auto'}}>
 
-                {/* Card top — colored accent strip */}
-                <div style={{height:3,background:isSelected?tier.color:`linear-gradient(90deg,${tier.color}40,transparent)`,flexShrink:0}}/>
-
-                {/* Header */}
-                <div style={{padding:'14px 16px 12px',borderBottom:'1px solid rgba(255,255,255,0.07)',flexShrink:0}}>
-                  <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
-                    <div style={{display:'flex',alignItems:'center',gap:8}}>
-                      <div style={{width:32,height:32,borderRadius:9,background:`${tier.color}20`,border:`1px solid ${tier.color}40`,display:'flex',alignItems:'center',justifyContent:'center'}}>
-                        <span style={{fontSize:13,fontWeight:900,color:tier.color}}>{tier.label[0]}</span>
-                      </div>
-                      <h3 style={{fontSize:15,fontWeight:800,color:'#fff',lineHeight:1}}>{tier.label}</h3>
+            {/* ── CARD HEADER ROW ── */}
+            <div style={{display:'grid',gridTemplateColumns:'220px repeat(4,1fr)',gap:12,marginBottom:0}}>
+              {/* Empty top-left cell */}
+              <div/>
+              {/* Tier header cards */}
+              {TIER_META.map((t,ti) => (
+                <div key={t.id} className="tc"
+                  style={{background: labTier===t.id ? t.color : '#fff',
+                    border:`2px solid ${labTier===t.id?t.color:'rgba(0,0,0,0.08)'}`,
+                    borderRadius:'16px 16px 0 0',padding:'16px 16px 12px',
+                    boxShadow:labTier===t.id?`0 8px 32px ${t.color}35`:'0 2px 12px rgba(0,0,0,0.06)',
+                    animation:`cardIn 0.35s ${ti*0.07}s ease both`,opacity:0,animationFillMode:'forwards',
+                    position:'relative',transition:'all 0.22s'}}>
+                  {t.badge && (
+                    <div style={{position:'absolute',top:-10,left:'50%',transform:'translateX(-50%)',
+                      fontSize:9.5,fontWeight:800,padding:'3px 10px',borderRadius:99,
+                      background:t.badge==='Custom'?'#1E3A5F':'#F59E0B',color:'#fff',
+                      letterSpacing:'0.04em',whiteSpace:'nowrap',boxShadow:'0 2px 8px rgba(0,0,0,0.2)'}}>
+                      {t.badge==='Custom'?'ENTERPRISE':t.badge.toUpperCase()}
                     </div>
-                    {tier.badge && (
-                      <span style={{fontSize:9.5,fontWeight:800,padding:'2px 7px',borderRadius:99,background:tier.id==='enterprise'?'rgba(255,255,255,0.1)':`${tier.color}25`,color:tier.id==='enterprise'?'rgba(255,255,255,0.7)':tier.color,border:`1px solid ${tier.id==='enterprise'?'rgba(255,255,255,0.15)':tier.color+'40'}`,letterSpacing:'0.03em',whiteSpace:'nowrap'}}>
-                        {tier.badge}
-                      </span>
-                    )}
-                  </div>
+                  )}
+                  <h3 style={{fontSize:15,fontWeight:800,color:labTier===t.id?'#fff':'#0F172A',marginBottom:6}}>
+                    {DIAGNOSTIC_TIERS.find(d=>d.id===t.id)?.label}
+                  </h3>
                   {/* Scale pills */}
                   <div style={{display:'flex',flexWrap:'wrap',gap:4,marginBottom:10}}>
-                    {[tier.dailySamples+' samples/day',tier.branches+(tier.branches==='1'?' branch':' branches'),tier.staff+' staff'].map(b=>(
-                      <span key={b} style={{fontSize:10.5,padding:'2px 8px',borderRadius:99,background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',color:'rgba(255,255,255,0.55)'}}>{b}</span>
+                    {[
+                      DIAGNOSTIC_TIERS.find(d=>d.id===t.id)?.dailySamples+'/day',
+                      DIAGNOSTIC_TIERS.find(d=>d.id===t.id)?.branches+(DIAGNOSTIC_TIERS.find(d=>d.id===t.id)?.branches==='1'?' branch':' branches'),
+                      DIAGNOSTIC_TIERS.find(d=>d.id===t.id)?.staff+' staff',
+                    ].map(pill=>(
+                      <span key={pill} style={{fontSize:10,padding:'2px 7px',borderRadius:99,
+                        background:labTier===t.id?'rgba(255,255,255,0.2)':'rgba(0,0,0,0.05)',
+                        border:`1px solid ${labTier===t.id?'rgba(255,255,255,0.3)':'rgba(0,0,0,0.08)'}`,
+                        color:labTier===t.id?'rgba(255,255,255,0.9)':'#475569'}}>
+                        {pill}
+                      </span>
                     ))}
                   </div>
                   {/* Price */}
-                  <div style={{display:'flex',alignItems:'baseline',gap:5}}>
-                    <span style={{fontSize:tier.id==='enterprise'?22:26,fontWeight:900,color:isSelected?tier.color:'#fff'}}>{tier.price}</span>
-                    <span style={{fontSize:11.5,color:'rgba(255,255,255,0.35)'}}>{tier.priceNote}</span>
+                  <div style={{marginBottom:10}}>
+                    <span style={{fontSize:t.id==='enterprise'?22:26,fontWeight:900,color:labTier===t.id?'#fff':t.color}}>
+                      {t.price}
+                    </span>
+                    <span style={{fontSize:11.5,color:labTier===t.id?'rgba(255,255,255,0.7)':'#94A3B8',marginLeft:5}}>
+                      {t.note}
+                    </span>
                   </div>
-                </div>
-
-                {/* Features */}
-                <div style={{flex:1,padding:'10px 14px 8px',overflow:'hidden',minHeight:0}}>
-                  <div style={{fontSize:9.5,fontWeight:700,color:'rgba(255,255,255,0.3)',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:8}}>Included</div>
-                  <div style={{display:'flex',flexDirection:'column',gap:5}}>
-                    {tier.features.slice(0, tier.id==='small'?7:tier.id==='medium'?7:tier.id==='large'?8:9).map(f=>(
-                      <div key={f} style={{display:'flex',alignItems:'flex-start',gap:7}}>
-                        <div style={{width:14,height:14,borderRadius:'50%',background:`${tier.color}18`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:1}}>
-                          <svg width="7" height="6" viewBox="0 0 7 6" fill="none"><path d="M0.5 3L2.5 5L6.5 1" stroke={tier.color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                        </div>
-                        <span style={{fontSize:11.5,color:'rgba(255,255,255,0.75)',lineHeight:1.4}}>{f}</span>
-                      </div>
-                    ))}
-                  </div>
-                  {tier.notIncluded.length>0 && (
-                    <div style={{marginTop:8,paddingTop:8,borderTop:'1px solid rgba(255,255,255,0.06)'}}>
-                      <div style={{fontSize:9.5,fontWeight:700,color:'rgba(255,255,255,0.2)',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:6}}>Not included</div>
-                      {tier.notIncluded.slice(0,3).map(f=>(
-                        <div key={f} style={{display:'flex',alignItems:'center',gap:6,marginBottom:4}}>
-                          <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 1.5L6.5 6.5M6.5 1.5L1.5 6.5" stroke="rgba(255,255,255,0.2)" strokeWidth="1.2" strokeLinecap="round"/></svg>
-                          <span style={{fontSize:11,color:'rgba(255,255,255,0.25)',textDecoration:'line-through',textDecorationColor:'rgba(255,255,255,0.12)'}}>{f}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* CTA Button */}
-                <div style={{padding:'0 14px 14px',flexShrink:0}}>
-                  <button onClick={()=>pickTier(tier.id as LabTier)} className="ts-btn"
-                    style={{width:'100%',padding:'10px',borderRadius:11,border: tier.id==='enterprise'?'1px solid rgba(255,255,255,0.15)':'none',
-                      background:tier.id==='enterprise'?'rgba(255,255,255,0.05)':isSelected?tier.color:`${tier.color}dd`,
-                      color: tier.id==='enterprise'?'rgba(255,255,255,0.75)':'#fff',
-                      fontWeight:700,fontSize:13,cursor:'pointer',transition:'all 0.18s',
-                      boxShadow:tier.id!=='enterprise'?(isSelected?`0 4px 20px ${tier.color}50`:`0 3px 12px ${tier.color}30`):'none',
-                      fontFamily:"'Poppins',sans-serif"}}>
-                    {tier.id==='enterprise'?'Contact Sales'
-                      :isSelected?'Selected — Continue →'
-                      :`Select ${tier.label}`}
+                  <button onClick={()=>pickTier(t.id as LabTier)} className="sel-btn"
+                    style={{width:'100%',padding:'9px 0',borderRadius:9,border:'none',fontSize:12.5,fontWeight:700,
+                      transition:'all 0.18s',
+                      background:labTier===t.id?'rgba(255,255,255,0.25)':t.color,
+                      color:'#fff',
+                      boxShadow:labTier===t.id?'none':`0 3px 12px ${t.color}40`}}>
+                    {labTier===t.id ? '✓ Selected — Continue →' : t.btnTxt}
                   </button>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              ))}
+            </div>
 
-        {/* Footer */}
-        <div style={{textAlign:'center',paddingBottom:12,fontSize:11.5,color:'rgba(255,255,255,0.2)',flexShrink:0}}>
-          14-day free trial on all plans · No credit card required · Upgrade or downgrade anytime
+            {/* ── FEATURE ROWS ── */}
+            <div style={{border:'1px solid rgba(0,0,0,0.08)',borderRadius:'0 0 16px 16px',overflow:'hidden',background:'#fff',boxShadow:'0 4px 24px rgba(0,0,0,0.06)'}}>
+              {FEATURE_MATRIX.map((row, ri) => {
+                const isGroupStart = [6,11,16].includes(ri);
+                const groupLabels: Record<number,string> = {6:'Advanced Features',11:'Enterprise-grade Features',16:'Enterprise-only'};
+                return (
+                  <div key={row.label}>
+                    {isGroupStart && (
+                      <div style={{padding:'7px 20px',background:'#F8FAFC',borderTop:'1px solid rgba(0,0,0,0.06)',
+                        fontSize:10,fontWeight:800,color:'#94A3B8',textTransform:'uppercase',letterSpacing:'0.08em',
+                        display:'grid',gridTemplateColumns:'220px repeat(4,1fr)',gap:12}}>
+                        <span>{groupLabels[ri]}</span>
+                        <span/><span/><span/><span/>
+                      </div>
+                    )}
+                    <div style={{display:'grid',gridTemplateColumns:'220px repeat(4,1fr)',gap:12,padding:'9px 20px',
+                      background: ri%2===0?'#fff':'#F8FAFC',
+                      borderTop: isGroupStart ? 'none' : '1px solid rgba(0,0,0,0.04)',
+                      alignItems:'center'}}>
+                      <span style={{fontSize:12.5,color:'#334155',fontWeight:500}}>{row.label}</span>
+                      {(['small','medium','large','enterprise'] as const).map(tier => {
+                        const has = valForId(row, tier);
+                        const col = colForId(tier);
+                        return (
+                          <div key={tier} style={{display:'flex',justifyContent:'center',alignItems:'center'}}>
+                            {has ? (
+                              <div style={{width:22,height:22,borderRadius:6,background:`${col}18`,display:'flex',alignItems:'center',justifyContent:'center'}}>
+                                <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
+                                  <path d="M1 5L4.5 8.5L11 1" stroke={col} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                              </div>
+                            ) : (
+                              <div style={{width:22,height:22,borderRadius:6,background:'rgba(0,0,0,0.03)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                                <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                                  <path d="M2 2L8 8M8 2L2 8" stroke="#CBD5E1" strokeWidth="1.5" strokeLinecap="round"/>
+                                </svg>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+              {/* Bottom CTA row */}
+              <div style={{display:'grid',gridTemplateColumns:'220px repeat(4,1fr)',gap:12,padding:'14px 20px',background:'#F0F9FF',borderTop:'2px solid #BFDBFE'}}>
+                <div style={{fontSize:11.5,color:'#64748B',fontWeight:600,display:'flex',alignItems:'center'}}>
+                  14-day free trial<br/>No credit card needed
+                </div>
+                {TIER_META.map(t => (
+                  <button key={t.id} onClick={()=>pickTier(t.id as LabTier)} className="sel-btn"
+                    style={{padding:'9px 0',borderRadius:9,border:'none',fontSize:12,fontWeight:700,
+                      background:labTier===t.id?t.color:`${t.color}15`,
+                      color:labTier===t.id?'#fff':t.color,
+                      transition:'all 0.18s',
+                      boxShadow:labTier===t.id?`0 4px 16px ${t.color}40`:'none'}}>
+                    {labTier===t.id ? '✓ Selected — Continue →' : t.btnTxt}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
