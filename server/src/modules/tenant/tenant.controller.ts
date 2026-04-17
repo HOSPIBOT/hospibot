@@ -47,4 +47,16 @@ export class TenantController {
   update(@CurrentTenant() tenantId: string, @Body() dto: any) {
     return this.tenantService.update(tenantId, dto);
   }
+
+  @Post('current/upgrade-request')
+  @ApiOperation({ summary: 'Request a plan upgrade — queued for billing team follow-up' })
+  requestUpgrade(@CurrentTenant() tenantId: string, @Body() dto: { targetTier: string; note?: string }) {
+    return this.tenantService.requestUpgrade(tenantId, dto);
+  }
+
+  @Get('current/upgrade-requests')
+  @ApiOperation({ summary: 'List pending upgrade requests for this tenant' })
+  listUpgradeRequests(@CurrentTenant() tenantId: string) {
+    return this.tenantService.listUpgradeRequests(tenantId);
+  }
 }

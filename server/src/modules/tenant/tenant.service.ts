@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 
 @Injectable()
@@ -72,5 +72,71 @@ export class TenantService {
       if (dto[key] !== undefined) data[key] = dto[key];
     }
     return this.prisma.tenant.update({ where: { id: tenantId }, data });
+  }
+
+  /**
+   * Queue an upgrade request for billing team follow-up.
+   * Stored in tenant.settings.upgradeRequests[] to avoid a schema migration.
+   * In production, this would trigger an email to sales/billing.
+   */
+  async requestUpgrade(
+    tenantId: string,
+    dto: { targetTier: string; note?: string },
+  ): Promise<{ success: boolean; request: any }> {
+    const validTiers = ['small', 'medium', 'large', 'enterprise'];
+    if (!dto.targetTier || !validTiers.includes(dto.targetTier)) {
+      throw new BadRequestException('Invalid target tier. Must be one of: small, medium, large, enterprise');
+    }
+
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { settings: true },
+    });
+    if (!tenant) throw new NotFoundException('Tenant not found');
+
+    const settings = (tenant.settings ?? {}) as Record<string, any>;
+    const currentTier = settings.labTier || 'small';
+    const existing = Array.isArray(settings.upgradeRequests) ? settings.upgradeRequests : [];
+
+    // Prevent duplicate pending requests for same target
+    const alreadyPending = existing.some(
+      (r: any) => r.targetTier === dto.targetTier && r.status === 'pending',
+    );
+    if (alreadyPending) {
+      throw new BadRequestException(
+        `An upgrade request to ${dto.targetTier} is already pending. Our team will contact you shortly.`,
+      );
+    }
+
+    const newRequest = {
+      id: `upreq_${Date.now()}`,
+      fromTier: currentTier,
+      targetTier: dto.targetTier,
+      note: dto.note || null,
+      status: 'pending' as const,
+      requestedAt: new Date().toISOString(),
+    };
+
+    await this.prisma.tenant.update({
+      where: { id: tenantId },
+      data: {
+        settings: {
+          ...settings,
+          upgradeRequests: [...existing, newRequest],
+        },
+      },
+    });
+
+    return { success: true, request: newRequest };
+  }
+
+  async listUpgradeRequests(tenantId: string): Promise<any[]> {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { settings: true },
+    });
+    if (!tenant) return [];
+    const settings = (tenant.settings ?? {}) as Record<string, any>;
+    return Array.isArray(settings.upgradeRequests) ? settings.upgradeRequests : [];
   }
 }

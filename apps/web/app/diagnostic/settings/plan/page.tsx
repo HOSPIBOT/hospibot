@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useAuthStore } from '@/lib/store';
+import { api } from '@/lib/api';
 import { DIAGNOSTIC_TIERS, type LabTier } from '@/lib/diagnostic-tiers';
 import { getSubtypeFeatures } from '@/lib/diagnostic-subtype-features';
 import { Check, Zap, ArrowRight, Crown, TrendingUp, Shield } from 'lucide-react';
@@ -33,13 +34,18 @@ export default function PlanSettingsPage() {
 
   const handleUpgradeRequest = async (targetTier: LabTier) => {
     setRequestingTier(targetTier);
-    // For now — just show success. Real impl would POST to /tenant/upgrade-request
-    await new Promise(r => setTimeout(r, 800));
-    toast.success(
-      `Upgrade request sent! Our team will contact you within 24 hours to assist with switching to the ${DIAGNOSTIC_TIERS.find(t=>t.id===targetTier)?.label}.`,
-      { duration: 5000 }
-    );
-    setRequestingTier(null);
+    try {
+      await api.post('/tenants/current/upgrade-request', { targetTier });
+      toast.success(
+        `Upgrade request received! Our team will contact you within 24 hours to assist with switching to the ${DIAGNOSTIC_TIERS.find(t=>t.id===targetTier)?.label}.`,
+        { duration: 5000 }
+      );
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || err?.message || 'Could not submit upgrade request. Please try again.';
+      toast.error(msg);
+    } finally {
+      setRequestingTier(null);
+    }
   };
 
   const currentTierData = DIAGNOSTIC_TIERS.find(t => t.id === currentTier);
