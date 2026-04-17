@@ -7,10 +7,10 @@ import { Menu, X, ChevronDown } from 'lucide-react';
 
 const NAV_LINKS = [
   { label: 'Home',      href: '/' },
-  { label: 'Solutions', href: '/#solutions' },
-  { label: 'Features',  href: '/#features' },
-  { label: 'About',     href: '/#about' },
-  { label: 'Contact',   href: '/#contact' },
+  { label: 'Solutions', href: '/solutions' },
+  { label: 'Features',  href: '/features' },
+  { label: 'About',     href: '/about' },
+  { label: 'Contact',   href: '/contact' },
 ];
 
 const PORTALS = [
@@ -73,13 +73,11 @@ export default function GlobalHeader() {
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9000,
         height: 64,
         background: scrolled
-          ? 'rgba(6,13,24,0.92)'
-          : isRegister || isAuth
-            ? 'rgba(6,13,24,0.75)'
-            : 'rgba(6,13,24,0.65)',
+          ? 'rgba(0,0,0,0.94)'
+          : 'rgba(0,0,0,0.72)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
-        borderBottom: scrolled ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.04)',
+        borderBottom: '1px solid rgba(255,255,255,0.08)',
         transition: 'all 0.3s ease',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '0 clamp(16px, 4vw, 48px)',
