@@ -3,6 +3,9 @@ import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, Opti
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { MarketplaceService } from './marketplace.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { TenantGuard } from '../../common/guards/tenant.guard';
+import { TierGuard } from '../../common/guards/tier.guard';
+import { RequireFeature } from '../../common/decorators/tier.decorator';
 import { CurrentTenant } from '../../common/decorators/current-user.decorator';
 
 @ApiTags('Marketplace')
@@ -41,33 +44,37 @@ export class MarketplaceController {
   // ── Authenticated tenant endpoints ─────────────────────────────────────────
 
   @Get('my-products')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, TenantGuard, TierGuard)
+  @RequireFeature('api-marketplace')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'List this tenant\'s marketplace products' })
+  @ApiOperation({ summary: 'List this tenant\'s marketplace products (Enterprise only)' })
   getMyProducts(@CurrentTenant() tenantId: string, @Query() query: any) {
     return this.marketplaceService.getTenantProducts(tenantId, query);
   }
 
   @Post('my-products')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, TenantGuard, TierGuard)
+  @RequireFeature('api-marketplace')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Upload a product to the marketplace' })
+  @ApiOperation({ summary: 'Upload a product to the marketplace (Enterprise only)' })
   uploadProduct(@CurrentTenant() tenantId: string, @Body() dto: any) {
     return this.marketplaceService.uploadProduct(tenantId, dto);
   }
 
   @Put('my-products/:id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, TenantGuard, TierGuard)
+  @RequireFeature('api-marketplace')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update a marketplace product' })
+  @ApiOperation({ summary: 'Update a marketplace product (Enterprise only)' })
   updateProduct(@CurrentTenant() tenantId: string, @Param('id') id: string, @Body() dto: any) {
     return this.marketplaceService.updateProduct(tenantId, id, dto);
   }
 
   @Delete('my-products/:id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, TenantGuard, TierGuard)
+  @RequireFeature('api-marketplace')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Remove a product from marketplace' })
+  @ApiOperation({ summary: 'Remove a product from marketplace (Enterprise only)' })
   deleteProduct(@CurrentTenant() tenantId: string, @Param('id') id: string) {
     return this.marketplaceService.deleteProduct(tenantId, id);
   }

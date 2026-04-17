@@ -5,6 +5,8 @@ import {
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { TenantGuard } from '../../common/guards/tenant.guard';
+import { TierGuard } from '../../common/guards/tier.guard';
+import { RequireFeature } from '../../common/decorators/tier.decorator';
 import { CurrentTenant } from '../../common/decorators/current-user.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { DiagnosticService } from './diagnostic.service';
@@ -300,30 +302,38 @@ export class DiagnosticController {
     return this.svc.getDoctorStats(tenantId, id);
   }
 
-  // ── Corporate Clients ─────────────────────────────────────────────────────
+  // ── Corporate Clients (Medium tier and above) ───────────────────────────
 
   @Get('crm/corporates')
-  @ApiOperation({ summary: 'List corporate wellness clients' })
+  @UseGuards(TierGuard)
+  @RequireFeature('corporate-clients')
+  @ApiOperation({ summary: 'List corporate wellness clients (Medium+)' })
   listCorporates(@CurrentTenant() tenantId: string) {
     return this.svc.listCorporates(tenantId);
   }
 
   @Post('crm/corporates')
-  @ApiOperation({ summary: 'Add corporate client' })
+  @UseGuards(TierGuard)
+  @RequireFeature('corporate-clients')
+  @ApiOperation({ summary: 'Add corporate client (Medium+)' })
   createCorporate(@CurrentTenant() tenantId: string, @Body() dto: CreateCorporateClientDto) {
     return this.svc.createCorporate(tenantId, dto);
   }
 
-  // ── Reagent Inventory ─────────────────────────────────────────────────────
+  // ── Reagent Inventory (Large tier and above) ────────────────────────────
 
   @Get('inventory/reagents')
-  @ApiOperation({ summary: 'Reagent stock with expiry alerts' })
+  @UseGuards(TierGuard)
+  @RequireFeature('inventory-reagents')
+  @ApiOperation({ summary: 'Reagent stock with expiry alerts (Large+)' })
   listReagents(@CurrentTenant() tenantId: string) {
     return this.svc.listReagents(tenantId);
   }
 
   @Post('inventory/reagents')
-  @ApiOperation({ summary: 'Add reagent to inventory' })
+  @UseGuards(TierGuard)
+  @RequireFeature('inventory-reagents')
+  @ApiOperation({ summary: 'Add reagent to inventory (Large+)' })
   createReagent(@CurrentTenant() tenantId: string, @Body() dto: CreateReagentDto) {
     return this.svc.createReagent(tenantId, dto);
   }
