@@ -54,6 +54,23 @@ export class AuthService {
     const passwordHash = await bcrypt.hash(dto.adminPassword, 12);
 
     const result = await this.prisma.$transaction(async (tx) => {
+      // Build settings JSON with labTier + tier-specific details
+      const settingsPayload: Record<string, any> = {};
+      if (dto.registrationDetails) settingsPayload.registrationDetails = dto.registrationDetails;
+      if (dto.labTier) settingsPayload.labTier = dto.labTier;
+
+      // Collect any non-empty tier-specific fields under settings.tierDetails
+      const tierDetails: Record<string, string> = {};
+      if (dto.nablNumber)       tierDetails.nablNumber       = dto.nablNumber;
+      if (dto.collectionPoints) tierDetails.collectionPoints = dto.collectionPoints;
+      if (dto.branchCount)      tierDetails.branchCount      = dto.branchCount;
+      if (dto.analyserBrands)   tierDetails.analyserBrands   = dto.analyserBrands;
+      if (dto.groupName)        tierDetails.groupName        = dto.groupName;
+      if (dto.isFranchise)      tierDetails.isFranchise      = dto.isFranchise;
+      if (dto.existingSoftware) tierDetails.existingSoftware = dto.existingSoftware;
+      if (dto.monthlyVolume)    tierDetails.monthlyVolume    = dto.monthlyVolume;
+      if (Object.keys(tierDetails).length > 0) settingsPayload.tierDetails = tierDetails;
+
       const tenant = await tx.tenant.create({
         data: {
           name: dto.name,
@@ -71,10 +88,7 @@ export class AuthService {
           plan: (dto.plan || 'STARTER') as any,
           portalFamilyId: portalFamilyId ?? null,
           subTypeId: subTypeId ?? null,
-          // Store extra registration details (drug licence, NABL etc.) in settings
-          settings: dto.registrationDetails
-            ? { registrationDetails: dto.registrationDetails }
-            : {},
+          settings: settingsPayload,
         },
         include: {
           portalFamily: { select: { id: true, name: true, slug: true } },
@@ -136,6 +150,8 @@ export class AuthService {
         plan: result.tenant.plan,
         portalFamily: result.tenant.portalFamily,
         subType: result.tenant.subType,
+        subtypeSlug: result.tenant.subType?.slug ?? null,
+        labTier: dto.labTier ?? null,
         featureFlags: subTypeFeatureFlags,
       },
       user: {
@@ -185,6 +201,7 @@ export class AuthService {
         tenant: {
           select: {
             id: true, name: true, slug: true, type: true, status: true, plan: true, logoUrl: true,
+            settings: true,
             portalFamily: { select: { id: true, name: true, slug: true } },
             subType: {
               select: { id: true, name: true, slug: true, featureFlags: true },
@@ -212,6 +229,13 @@ export class AuthService {
 
     const tokens = await this.generateTokens(user.id, user.tenantId, user.role);
 
+    // Extract labTier from tenant.settings (stored at registration)
+    const tenantSettings = (user.tenant?.settings ?? {}) as Record<string, any>;
+    const labTier: string | null = tenantSettings.labTier ?? null;
+
+    // Strip settings from the response (internal) but keep derived values
+    const { settings: _s, ...tenantRest } = (user.tenant as any) ?? {};
+
     return {
       user: {
         id: user.id,
@@ -222,8 +246,10 @@ export class AuthService {
         branchId: user.branchId,
       },
       tenant: {
-        ...user.tenant,
-        featureFlags: (user.tenant.subType?.featureFlags ?? {}) as Record<string, boolean>,
+        ...tenantRest,
+        subtypeSlug: user.tenant?.subType?.slug ?? null,
+        labTier,
+        featureFlags: (user.tenant?.subType?.featureFlags ?? {}) as Record<string, boolean>,
       },
       ...tokens,
     };

@@ -26,6 +26,46 @@ export class RegisterTenantDto {
   @IsOptional() @IsString()
   subTypeSlug?: string;
 
+  // ── Diagnostic-specific tier selection ──────────────────────────────────────
+  @ApiPropertyOptional({ example: 'medium', enum: ['small', 'medium', 'large', 'enterprise'] })
+  @IsOptional() @IsString()
+  labTier?: string;
+
+  // ── Diagnostic tier-specific org details (Medium+) ──────────────────────────
+  @ApiPropertyOptional({ description: 'NABL accreditation certificate number' })
+  @IsOptional() @IsString()
+  nablNumber?: string;
+
+  @ApiPropertyOptional({ description: 'Number of sample collection points' })
+  @IsOptional() @IsString()
+  collectionPoints?: string;
+
+  // ── Diagnostic tier-specific org details (Large+) ───────────────────────────
+  @ApiPropertyOptional({ description: 'Total branch count' })
+  @IsOptional() @IsString()
+  branchCount?: string;
+
+  @ApiPropertyOptional({ description: 'Analyser brands in use (Sysmex, Beckman, etc.)' })
+  @IsOptional() @IsString()
+  analyserBrands?: string;
+
+  // ── Diagnostic tier-specific org details (Enterprise) ───────────────────────
+  @ApiPropertyOptional({ description: 'Lab chain / group name' })
+  @IsOptional() @IsString()
+  groupName?: string;
+
+  @ApiPropertyOptional({ example: 'no', enum: ['no', 'yes', 'hybrid'] })
+  @IsOptional() @IsString()
+  isFranchise?: string;
+
+  @ApiPropertyOptional({ description: 'Existing software they may be migrating from' })
+  @IsOptional() @IsString()
+  existingSoftware?: string;
+
+  @ApiPropertyOptional({ description: 'Estimated monthly test volume' })
+  @IsOptional() @IsString()
+  monthlyVolume?: string;
+
   @ApiPropertyOptional({ description: 'Extra registration details: GST, drug licence, NABL etc.' })
   @IsOptional()
   registrationDetails?: Record<string, string>;
