@@ -5,6 +5,7 @@ import { Eye, EyeOff, CheckCircle2, Send, Phone, ArrowLeft, Building2, BarChart3
 import toast from 'react-hot-toast';
 import { api } from '@/lib/api';
 import { DIAGNOSTIC_TIERS, TIER_FEATURES_DETAIL, type LabTier } from '@/lib/diagnostic-tiers';
+import { getSubtypeFeatures } from '@/lib/diagnostic-subtype-features';
 
 /* ── PORTAL CONFIG ─────────────────────────────────────────────────────────── */
 const P = {
@@ -733,48 +734,16 @@ function RegisterWizard() {
   /* Full-screen tier selection for Diagnostic portal */
   if(step===2 && portal==='diagnostic' && !showOthers) {
 
-    // Each tier has its own distinct color identity
-    const TIERS = [
-      {
-        id:'small', name:'Small Lab', sub:'Solo lab or sample collection center',
-        color:'#0EA5E9', dark:'#0284C7', light:'#E0F2FE', bg:'linear-gradient(145deg,#0284C7,#0EA5E9)',
-        price:'₹999', note:'/month',
-        scale:{ samples:'1 – 50',staff:'1 – 5',branches:'1',tests:'Up to 1,500',credits:'500 / month'},
-        features:['WhatsApp report delivery','Sample tracking & barcode','GST billing & invoices','Test catalog (500+ tests)','PDF report generation','Patient registration & lookup','Basic daily dashboard','Email support'],
-        notIncluded:['Home collection management','Doctor CRM & referrals','QC module','NABL compliance tools','Multi-branch management'],
-      },
-      {
-        id:'medium', name:'Medium Lab', sub:'Growing diagnostic center',
-        color:'#10B981', dark:'#059669', light:'#D1FAE5', bg:'linear-gradient(145deg,#059669,#10B981)',
-        price:'₹2,999', note:'/month',
-        scale:{ samples:'50 – 200',staff:'5 – 20',branches:'1 – 3',tests:'Up to 6,000',credits:'2,000 / month'},
-        features:['Everything in Small Lab','Home collection + GPS tracking','Doctor CRM & referral tracking','Corporate wellness screening','TPA / insurance claims','Package & combo billing','2,000 WhatsApp credits/month','Chat + email support'],
-        notIncluded:['QC module (Westgard / L-J)','NABL compliance tools','Multi-branch management','Staff HRMS & payroll'],
-      },
-      {
-        id:'large', name:'Large Lab', sub:'NABL-accredited city chain',
-        color:'#8B5CF6', dark:'#7C3AED', light:'#EDE9FE', bg:'linear-gradient(145deg,#7C3AED,#8B5CF6)',
-        price:'₹7,999', note:'/month',
-        scale:{ samples:'200 – 1,000',staff:'20 – 100',branches:'3 – 15',tests:'Up to 30,000',credits:'5,000 / month'},
-        features:['Everything in Medium Lab','QC module — Westgard + Levey-Jennings','NABL compliance documentation','Multi-branch management','Staff HRMS, attendance & payroll','HL7/ASTM analyser interface','Chain analytics dashboard','Priority support'],
-        notIncluded:['Franchise management','Hub-spoke routing','Revenue sharing engine','White-label capability'],
-      },
-      {
-        id:'enterprise', name:'Enterprise', sub:'Reference lab, hospital network, franchise',
-        color:'#F59E0B', dark:'#D97706', light:'#FEF3C7', bg:'linear-gradient(145deg,#D97706,#F59E0B)',
-        price:'Custom', note:'contact us',
-        scale:{ samples:'1,000+',staff:'100+',branches:'15+',tests:'Unlimited',credits:'Unlimited'},
-        features:['Everything in Large Lab','Franchise & hub-spoke management','Revenue sharing engine','White-label portal capability','API marketplace access','ABHA/ABDM deep integration','Unlimited WhatsApp credits','Dedicated account manager','SLA-backed uptime guarantee'],
-        notIncluded:[],
-      },
-    ];
+    // Load subtype-specific features
+    const subtypeCfg = getSubtypeFeatures(subtype);
+    const tierData = subtypeCfg.tiers;
 
-    const SCALE_ICONS:{[k:string]:string} = {
-      samples:'🧪', staff:'👥', branches:'🏢', tests:'📋', credits:'💬',
-    };
-    const SCALE_LABELS:{[k:string]:string} = {
-      samples:'Daily Samples', staff:'Staff', branches:'Branches', tests:'Monthly Tests', credits:'WhatsApp Credits',
-    };
+    const TIERS = [
+      {id:'small',      name:'Small',      sub:'Starter plan',         color:'#0EA5E9', dark:'#0284C7', light:'#E0F2FE', grad:'linear-gradient(145deg,#0284C7,#0EA5E9)', price:'₹999',   note:'/month',     data: tierData.small},
+      {id:'medium',     name:'Medium',     sub:'Growth plan',          color:'#10B981', dark:'#059669', light:'#D1FAE5', grad:'linear-gradient(145deg,#059669,#10B981)', price:'₹2,999', note:'/month',     data: tierData.medium},
+      {id:'large',      name:'Large',      sub:'Professional plan',    color:'#8B5CF6', dark:'#7C3AED', light:'#EDE9FE', grad:'linear-gradient(145deg,#7C3AED,#8B5CF6)', price:'₹7,999', note:'/month',     data: tierData.large},
+      {id:'enterprise', name:'Enterprise', sub:'Enterprise plan',      color:'#F59E0B', dark:'#D97706', light:'#FEF3C7', grad:'linear-gradient(145deg,#D97706,#F59E0B)', price:'Custom', note:'contact us', data: tierData.enterprise},
+    ];
 
     return (
       <div style={{height:'calc(100vh - 64px)',display:'flex',flexDirection:'column',background:'#F1F5F9',fontFamily:"'Poppins',sans-serif",overflow:'hidden'}}>
@@ -782,15 +751,15 @@ function RegisterWizard() {
           @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
           *{box-sizing:border-box;margin:0;padding:0}
           button{font-family:'Poppins',sans-serif;cursor:pointer}
+          @keyframes cardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
           .tc{transition:transform 0.2s,box-shadow 0.2s}
-          .tc:hover{transform:translateY(-2px)}
-          .sel:hover{filter:brightness(1.06)}
+          .tc:hover{transform:translateY(-3px)}
+          .selb:hover{filter:brightness(1.08);transform:translateY(-1px)}
           ::-webkit-scrollbar{width:5px}
           ::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:99px}
-          @keyframes cardIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
         `}</style>
 
-        {/* NAV */}
+        {/* NAV BAR */}
         <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 28px',background:'#fff',borderBottom:'1px solid #E2E8F0',flexShrink:0}}>
           <button onClick={()=>go(1)} style={{display:'flex',alignItems:'center',gap:6,fontSize:13,color:'#64748B',background:'none',border:'none',padding:0,fontWeight:500}}>
             <ArrowLeft size={13}/> Back
@@ -809,95 +778,106 @@ function RegisterWizard() {
           </a>
         </div>
 
-        {/* SINGLE SCROLL AREA */}
+        {/* SINGLE SCROLL WRAPPER */}
         <div style={{flex:1,overflow:'auto',padding:'0 20px 32px'}}>
 
           {/* Hero */}
-          <div style={{textAlign:'center',padding:'20px 0 18px'}}>
+          <div style={{textAlign:'center',padding:'18px 0 16px'}}>
             <div style={{display:'inline-flex',alignItems:'center',gap:7,background:'#EFF6FF',border:'1px solid #BFDBFE',borderRadius:99,padding:'4px 14px',fontSize:11.5,fontWeight:700,color:'#2563EB',marginBottom:10,letterSpacing:'0.04em'}}>
-              🔬 {(subtype||'').replace(/-/g,' ').replace(/\b\w/g,(c:string)=>c.toUpperCase())}
+              {subtypeCfg.scaleIcon} {(subtype||'').replace(/-/g,' ').replace(/\b\w/g,(c:string)=>c.toUpperCase())}
             </div>
-            <h1 style={{fontSize:'clamp(20px,2.5vw,28px)',fontWeight:900,color:'#0F172A',letterSpacing:'-0.025em',marginBottom:4}}>
+            <h1 style={{fontSize:'clamp(20px,2.4vw,28px)',fontWeight:900,color:'#0F172A',letterSpacing:'-0.025em',marginBottom:4}}>
               Choose the right plan for your lab
             </h1>
             <p style={{fontSize:13,color:'#64748B'}}>
-              All plans include a <strong style={{color:'#0F172A'}}>14-day free trial</strong>. No credit card required.
+              Plans are tailored for <strong style={{color:'#0F172A'}}>{(subtype||'').replace(/-/g,' ').replace(/\b\w/g,(c:string)=>c.toUpperCase())}</strong>.
+              All include a 14-day free trial.
             </p>
           </div>
 
-          {/* CARDS GRID */}
-          <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:16,maxWidth:1100,margin:'0 auto 24px'}}>
+          {/* FOUR CARDS */}
+          <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:16,maxWidth:1120,margin:'0 auto'}}>
             {TIERS.map((t,ti)=>{
               const selected = labTier===t.id;
+              const scaleEntries = Object.entries(t.data.scale) as [string,string][];
               return (
                 <div key={t.id} className="tc"
-                  style={{background:'#fff',borderRadius:20,overflow:'hidden',boxShadow:selected?`0 12px 40px ${t.color}35`:'0 2px 16px rgba(0,0,0,0.07)',border:`2px solid ${selected?t.color:'transparent'}`,display:'flex',flexDirection:'column',
+                  style={{background:'#fff',borderRadius:20,overflow:'hidden',
+                    boxShadow: selected ? `0 12px 40px ${t.color}30` : '0 2px 16px rgba(0,0,0,0.07)',
+                    border: `2px solid ${selected ? t.color : 'transparent'}`,
+                    display:'flex',flexDirection:'column',
                     animation:`cardIn 0.35s ${ti*0.07}s ease both`,opacity:0,animationFillMode:'forwards'}}>
 
-                  {/* Colored gradient header */}
-                  <div style={{background:t.bg,padding:'18px 18px 16px',position:'relative',overflow:'hidden'}}>
-                    <div style={{position:'absolute',top:-20,right:-20,width:100,height:100,borderRadius:'50%',background:'rgba(255,255,255,0.1)',pointerEvents:'none'}}/>
-                    <div style={{position:'absolute',bottom:-30,left:-10,width:80,height:80,borderRadius:'50%',background:'rgba(255,255,255,0.06)',pointerEvents:'none'}}/>
-                    <div style={{fontSize:11,fontWeight:800,color:'rgba(255,255,255,0.7)',textTransform:'uppercase' as const,letterSpacing:'0.1em',marginBottom:6}}>{t.name}</div>
-                    <div style={{fontSize:11.5,color:'rgba(255,255,255,0.75)',marginBottom:12,lineHeight:1.4}}>{t.sub}</div>
+                  {/* ── GRADIENT HEADER ── */}
+                  <div style={{background:t.grad,padding:'16px 16px 14px',position:'relative',overflow:'hidden'}}>
+                    <div style={{position:'absolute',top:-20,right:-20,width:90,height:90,borderRadius:'50%',background:'rgba(255,255,255,0.1)',pointerEvents:'none'}}/>
+                    <div style={{position:'absolute',bottom:-30,left:-10,width:70,height:70,borderRadius:'50%',background:'rgba(255,255,255,0.06)',pointerEvents:'none'}}/>
+                    <div style={{fontSize:11,fontWeight:800,color:'rgba(255,255,255,0.65)',textTransform:'uppercase' as const,letterSpacing:'0.1em',marginBottom:2}}>{t.sub}</div>
+                    <div style={{fontSize:18,fontWeight:900,color:'#fff',marginBottom:10}}>{t.name}</div>
                     <div style={{display:'flex',alignItems:'baseline',gap:4}}>
-                      <span style={{fontSize:t.id==='enterprise'?26:30,fontWeight:900,color:'#fff',lineHeight:1}}>{t.price}</span>
+                      <span style={{fontSize:t.id==='enterprise'?24:28,fontWeight:900,color:'#fff',lineHeight:1}}>{t.price}</span>
                       <span style={{fontSize:11,color:'rgba(255,255,255,0.65)'}}>{t.note}</span>
                     </div>
                   </div>
 
-                  {/* ── SCALE OF OPERATIONS SECTION ── */}
-                  <div style={{padding:'14px 16px',borderBottom:`1px solid ${t.light}`,background:`${t.light}50`}}>
-                    <div style={{fontSize:10,fontWeight:800,color:t.dark,textTransform:'uppercase' as const,letterSpacing:'0.09em',marginBottom:10}}>
+                  {/* ── SCALE OF OPERATIONS ── */}
+                  <div style={{padding:'12px 14px',background:`linear-gradient(135deg,${t.light}80,${t.light}40)`,borderBottom:`1px solid ${t.light}`}}>
+                    <div style={{fontSize:9.5,fontWeight:800,color:t.dark,textTransform:'uppercase' as const,letterSpacing:'0.09em',marginBottom:8,display:'flex',alignItems:'center',gap:5}}>
+                      <div style={{width:14,height:14,borderRadius:4,background:t.color,display:'flex',alignItems:'center',justifyContent:'center'}}>
+                        <svg width="7" height="7" viewBox="0 0 7 7" fill="white"><rect width="3" height="7" rx="1"/><rect x="4" y="3" width="3" height="4" rx="1"/></svg>
+                      </div>
                       Scale of Operations
                     </div>
-                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:7}}>
-                      {(Object.entries(t.scale) as [string,string][]).map(([k,v])=>(
-                        <div key={k} style={{background:'#fff',borderRadius:9,padding:'7px 9px',border:`1px solid ${t.light}`}}>
-                          <div style={{fontSize:9.5,color:'#94A3B8',fontWeight:600,marginBottom:2}}>{SCALE_ICONS[k]} {SCALE_LABELS[k]}</div>
-                          <div style={{fontSize:12,fontWeight:700,color:v==='Unlimited'?t.dark:'#0F172A'}}>{v}</div>
+                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:5}}>
+                      {scaleEntries.map(([k,v])=>(
+                        <div key={k} style={{background:'#fff',borderRadius:8,padding:'6px 8px',border:`1px solid ${t.light}`}}>
+                          <div style={{fontSize:9,color:'#94A3B8',fontWeight:600,marginBottom:1,lineHeight:1.3}}>{k}</div>
+                          <div style={{fontSize:11.5,fontWeight:700,color: v==='Unlimited'||v==='Pan-India'?t.dark:'#0F172A',lineHeight:1.2}}>{v}</div>
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  {/* ── FEATURES SECTION ── */}
-                  <div style={{padding:'12px 16px',flex:1}}>
-                    <div style={{fontSize:10,fontWeight:800,color:t.dark,textTransform:'uppercase' as const,letterSpacing:'0.09em',marginBottom:9}}>
+                  {/* ── FEATURES INCLUDED ── */}
+                  <div style={{padding:'12px 14px',flex:1}}>
+                    <div style={{fontSize:9.5,fontWeight:800,color:t.dark,textTransform:'uppercase' as const,letterSpacing:'0.09em',marginBottom:8,display:'flex',alignItems:'center',gap:5}}>
+                      <div style={{width:14,height:14,borderRadius:4,background:t.color,display:'flex',alignItems:'center',justifyContent:'center'}}>
+                        <svg width="8" height="7" viewBox="0 0 8 7" fill="none"><path d="M1 3.5L3 6L7 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      </div>
                       Features Included
                     </div>
-                    <div style={{display:'flex',flexDirection:'column' as const,gap:6}}>
-                      {t.features.map(f=>(
-                        <div key={f} style={{display:'flex',alignItems:'flex-start',gap:8}}>
-                          <div style={{width:16,height:16,borderRadius:5,background:`${t.color}15`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:1}}>
-                            <svg width="8" height="7" viewBox="0 0 8 7" fill="none"><path d="M0.5 3.5L2.8 6L7.5 1" stroke={t.color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    <div style={{display:'flex',flexDirection:'column' as const,gap:5}}>
+                      {t.data.features.map((f:string)=>(
+                        <div key={f} style={{display:'flex',alignItems:'flex-start',gap:7}}>
+                          <div style={{width:14,height:14,borderRadius:4,background:`${t.color}15`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:1}}>
+                            <svg width="7" height="6" viewBox="0 0 7 6" fill="none"><path d="M0.5 3L2.5 5.5L6.5 1" stroke={t.color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
                           </div>
-                          <span style={{fontSize:11.5,color:'#374151',lineHeight:1.4}}>{f}</span>
+                          <span style={{fontSize:11,color:'#374151',lineHeight:1.4}}>{f}</span>
                         </div>
                       ))}
                     </div>
 
-                    {t.notIncluded.length>0 && (
-                      <div style={{marginTop:10,paddingTop:10,borderTop:`1px dashed ${t.light}`}}>
-                        <div style={{fontSize:9.5,fontWeight:700,color:'#94A3B8',textTransform:'uppercase' as const,letterSpacing:'0.07em',marginBottom:7}}>Not in this plan</div>
-                        {t.notIncluded.map(f=>(
-                          <div key={f} style={{display:'flex',alignItems:'center',gap:7,marginBottom:5}}>
-                            <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 1.5L7.5 7.5M7.5 1.5L1.5 7.5" stroke="#CBD5E1" strokeWidth="1.3" strokeLinecap="round"/></svg>
-                            <span style={{fontSize:11,color:'#94A3B8',textDecoration:'line-through',textDecorationColor:'#E2E8F0'}}>{f}</span>
+                    {t.data.notIncluded.length>0 && (
+                      <div style={{marginTop:9,paddingTop:9,borderTop:`1px dashed ${t.light}`}}>
+                        <div style={{fontSize:9,fontWeight:700,color:'#94A3B8',textTransform:'uppercase' as const,letterSpacing:'0.07em',marginBottom:6}}>Not in this plan</div>
+                        {(t.data.notIncluded as string[]).map((f:string)=>(
+                          <div key={f} style={{display:'flex',alignItems:'flex-start',gap:6,marginBottom:4}}>
+                            <svg style={{marginTop:2,flexShrink:0}} width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 1.5L6.5 6.5M6.5 1.5L1.5 6.5" stroke="#CBD5E1" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                            <span style={{fontSize:10.5,color:'#94A3B8',textDecoration:'line-through',textDecorationColor:'#E2E8F0',lineHeight:1.35}}>{f}</span>
                           </div>
                         ))}
                       </div>
                     )}
                   </div>
 
-                  {/* SELECT BUTTON */}
-                  <div style={{padding:'12px 16px 16px'}}>
-                    <button onClick={()=>pickTier(t.id as LabTier)} className="sel"
+                  {/* ── SELECT BUTTON ── */}
+                  <div style={{padding:'10px 14px 14px',flexShrink:0}}>
+                    <button onClick={()=>pickTier(t.id as LabTier)} className="selb"
                       style={{width:'100%',padding:'10px 0',borderRadius:11,border:'none',fontSize:13,fontWeight:700,color:'#fff',
-                        background: selected ? t.bg : `${t.color}cc`,
-                        boxShadow: selected ? `0 4px 20px ${t.color}50` : `0 2px 8px ${t.color}25`,
+                        background: selected ? t.grad : `linear-gradient(135deg,${t.color}dd,${t.color})`,
+                        boxShadow: selected ? `0 6px 20px ${t.color}45` : `0 3px 10px ${t.color}25`,
                         transition:'all 0.18s'}}>
-                      {selected ? 'Selected — Continue \u2192' : `Select ${t.name}`}
+                      {selected ? `Selected \u2014 Continue \u2192` : `Select ${t.name} Plan`}
                     </button>
                   </div>
                 </div>
@@ -905,9 +885,9 @@ function RegisterWizard() {
             })}
           </div>
 
-          {/* Bottom note */}
-          <div style={{textAlign:'center',fontSize:12,color:'#94A3B8'}}>
-            All plans start with a 14-day free trial \u00b7 No credit card required \u00b7 Upgrade anytime
+          {/* Footer note */}
+          <div style={{textAlign:'center',fontSize:12,color:'#94A3B8',marginTop:16}}>
+            All plans start with a 14-day free trial \u00b7 No credit card required \u00b7 Upgrade anytime from your dashboard
           </div>
         </div>
       </div>
