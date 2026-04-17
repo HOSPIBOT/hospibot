@@ -773,10 +773,10 @@ function RegisterWizard() {
     ];
 
     const TIERS = [
-      {id:'small',      name:'Small',      sub:'Solo lab / PSC',               color:'#2563EB', grad:'linear-gradient(135deg,#1D4ED8,#2563EB)', price:'₹999',   note:'/month',    popular:false, btn:'Start Free Trial'},
-      {id:'medium',     name:'Medium',     sub:'Growing diagnostic center',     color:'#0D9488', grad:'linear-gradient(135deg,#0F766E,#0D9488)', price:'₹2,999', note:'/month',    popular:true,  btn:'Start Free Trial'},
-      {id:'large',      name:'Large',      sub:'NABL-accredited chain',         color:'#7C3AED', grad:'linear-gradient(135deg,#6D28D9,#7C3AED)', price:'₹7,999', note:'/month',    popular:false, btn:'Start Free Trial'},
-      {id:'enterprise', name:'Enterprise', sub:'Reference lab / franchise',     color:'#0F172A', grad:'linear-gradient(135deg,#1E293B,#0F172A)', price:'Custom', note:'contact us', popular:false, btn:'Contact Sales'},
+      {id:'small',      name:'Small',      sub:'Solo lab / PSC',               color:'#2563EB', grad:'linear-gradient(135deg,#1D4ED8,#2563EB)', price:'₹999',   note:'/month',    btn:'Start Free Trial'},
+      {id:'medium',     name:'Medium',     sub:'Growing diagnostic center',     color:'#0D9488', grad:'linear-gradient(135deg,#0F766E,#0D9488)', price:'₹2,999', note:'/month',    btn:'Start Free Trial'},
+      {id:'large',      name:'Large',      sub:'NABL-accredited chain',         color:'#7C3AED', grad:'linear-gradient(135deg,#6D28D9,#7C3AED)', price:'₹7,999', note:'/month',    btn:'Start Free Trial'},
+      {id:'enterprise', name:'Enterprise', sub:'Reference lab / franchise',     color:'#0F172A', grad:'linear-gradient(135deg,#1E293B,#0F172A)', price:'Custom', note:'contact us', btn:'Contact Sales'},
     ];
 
     const getVal = (row:any, id:string) => {
@@ -847,22 +847,18 @@ function RegisterWizard() {
               <div/>
               {TIERS.map((t,ti)=>(
                 <div key={t.id} style={{
-                  padding: t.popular ? '0 6px' : '0 6px',
+                  padding: '0 6px',
                   position:'relative',
-                  marginTop: t.popular ? 0 : 16,
+                  marginTop: 16,
                 }}>
-                  {t.popular && (
-                    <div style={{background:t.grad,borderRadius:'12px 12px 0 0',textAlign:'center',padding:'6px',fontSize:10.5,fontWeight:800,color:'#fff',letterSpacing:'0.06em'}}>
-                      ★ MOST POPULAR
-                    </div>
-                  )}
+
                   <div style={{
                     background:'#fff',
-                    borderRadius: t.popular ? '0 0 0 0' : '12px 12px 0 0',
-                    border: t.popular ? `2px solid ${t.color}` : '1px solid #E2E8F0',
+                    borderRadius: '12px 12px 0 0',
+                    border: `1px solid ${labTier===t.id ? t.color : '#E2E8F0'}`,
                     borderBottom: 'none',
                     padding:'16px 16px 14px',
-                    boxShadow: t.popular ? `0 -4px 24px ${t.color}20` : '0 -2px 8px rgba(0,0,0,0.04)',
+                    boxShadow: labTier===t.id ? `0 -4px 24px ${t.color}20` : '0 -2px 8px rgba(0,0,0,0.04)',
                     height:'100%',
                   }}>
                     <div style={{fontWeight:800,color:'#0F172A',fontSize:15,marginBottom:2}}>{t.name}</div>
@@ -871,12 +867,12 @@ function RegisterWizard() {
                       <span style={{fontSize:t.id==='enterprise'?22:26,fontWeight:900,color:t.color,lineHeight:1}}>{t.price}</span>
                       <span style={{fontSize:11,color:'#94A3B8',marginLeft:4}}>{t.note}</span>
                     </div>
-                    <button onClick={()=>pickTier(t.id as LabTier)} className={labTier===t.id||t.popular?'cta-btn':'cta-btn-outline'}
+                    <button onClick={()=>pickTier(t.id as LabTier)} className={labTier===t.id?'cta-btn':'cta-btn-outline'}
                       style={{width:'100%',padding:'8px 0',borderRadius:8,fontSize:12,fontWeight:700,
-                        background: labTier===t.id ? t.grad : t.popular ? t.grad : 'transparent',
-                        color: labTier===t.id||t.popular ? '#fff' : t.color,
-                        border: labTier===t.id||t.popular ? 'none' : `1.5px solid ${t.color}`,
-                        boxShadow: labTier===t.id ? `0 4px 16px ${t.color}40` : t.popular ? `0 4px 12px ${t.color}30` : 'none',
+                        background: labTier===t.id ? t.grad : 'transparent',
+                        color: labTier===t.id ? '#fff' : t.color,
+                        border: labTier===t.id ? 'none' : `1.5px solid ${t.color}`,
+                        boxShadow: labTier===t.id ? `0 4px 16px ${t.color}40` : 'none',
                       }}>
                       {labTier===t.id ? '✓ Selected — Continue →' : t.btn}
                     </button>
@@ -951,8 +947,8 @@ function RegisterWizard() {
                   <div key={t.id} style={{padding:'0 6px',display:'flex',alignItems:'center'}}>
                     <button onClick={()=>pickTier(t.id as LabTier)} className="cta-btn"
                       style={{width:'100%',padding:'9px 0',borderRadius:9,fontSize:12,fontWeight:700,
-                        background: labTier===t.id ? t.grad : t.popular ? t.grad : `${t.color}12`,
-                        color: labTier===t.id||t.popular ? '#fff' : t.color,
+                        background: labTier===t.id ? t.grad : `${t.color}12`,
+                        color: labTier===t.id ? '#fff' : t.color,
                         boxShadow: labTier===t.id ? `0 4px 16px ${t.color}40` : 'none',
                       }}>
                       {labTier===t.id ? 'Continue \u2192' : t.btn}
