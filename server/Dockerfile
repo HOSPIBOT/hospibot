@@ -43,4 +43,4 @@ ENV API_PREFIX=api/v1
 # HOSPIBOT_GSTIN — your GST number
 # WHATSAPP_PHONE_NUMBER_ID / WHATSAPP_ACCESS_TOKEN
 
-CMD sh -c "echo 'Running prisma db push...' && PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1 npx prisma db push --accept-data-loss && echo 'Running prisma db seed (idempotent upserts)...' && (PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1 npx prisma db seed || echo '⚠️  Seed failed but continuing — check logs') && echo 'Database ready!' && node dist/src/main"
+CMD sh -c "echo 'Running prisma db push...' && PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1 npx prisma db push --accept-data-loss && echo 'DB ready. Scheduling seed in background (idempotent upserts)...' && ( sleep 10 && PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1 npx prisma db seed && echo '✅ Seed complete' || echo '⚠️  Seed failed — check logs' ) & echo 'Starting app...' && node dist/src/main"
