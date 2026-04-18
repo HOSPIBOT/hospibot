@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import { Plus, RefreshCw, X, Loader2, Tag, Layers } from 'lucide-react';
+import { Plus, RefreshCw, X, Loader2, Tag, Layers, Settings2 } from 'lucide-react';
+import Link from 'next/link';
 import { getPortalFamilies, getPortalSubTypes } from '@/lib/super-admin-api';
 
 const inputCls = 'w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-slate-400 outline-none transition-all placeholder:text-slate-400';
@@ -130,9 +131,12 @@ export default function SubTypesPage() {
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-full text-white" style={{ background: color }}>
                         {familySlug}
                       </span>
-                      <span className="text-[10px] text-slate-400">
-                        {Object.keys(st.featureFlags || st.defaultFeatureFlags || {}).length} flags
-                      </span>
+                      <Link
+                        href={`/super-admin/subtypes/${st.slug}/features`}
+                        className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 hover:text-teal-600 transition-colors"
+                      >
+                        <Settings2 className="w-3 h-3" /> Features
+                      </Link>
                     </div>
                   </div>
                 ))}
