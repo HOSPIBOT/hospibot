@@ -57,7 +57,7 @@ export class ComplianceService {
     const order = await this.prisma.labOrder.findFirst({
       where: { id: labOrderId, tenantId },
       include: {
-        orderItems: { include: { testCatalog: true } },
+        orderItems: true,
       },
     });
     if (!order) throw new NotFoundException('Lab order not found for compliance check');
@@ -68,7 +68,7 @@ export class ComplianceService {
 
     // Determine which conditional guards apply based on order contents
     const testCodes = this.extractTestCodes(order);
-    const examTypes = this.extractExamTypes(order);
+    const examTypes = this.inferExamTypes(testCodes);
 
     const isPrenatal = testCodes.some((c) => PRENATAL_IMAGING_CODES.includes(c));
     const hasRadiation = examTypes.some((t) => RADIATION_EXAM_TYPES.includes(t));
@@ -225,20 +225,35 @@ export class ComplianceService {
   // ────────────────────────────────────────────────────────────────────────
 
   private extractTestCodes(order: any): string[] {
-    const fromItems = (order.orderItems ?? [])
-      .map((i: any) => i.testCatalog?.code ?? i.testCode ?? null)
-      .filter(Boolean);
-    const fromTests = Array.isArray(order.tests)
-      ? order.tests.map((t: any) => (typeof t === 'string' ? t : t.code)).filter(Boolean)
+    const fromItems: string[] = (order.orderItems ?? [])
+      .map((i: any) => (i.testCode ?? null) as string | null)
+      .filter((x: string | null): x is string => !!x);
+    const fromTests: string[] = Array.isArray(order.tests)
+      ? order.tests
+          .map((t: any) => (typeof t === 'string' ? t : t?.code ?? null) as string | null)
+          .filter((x: string | null): x is string => !!x)
       : [];
-    return [...new Set([...fromItems, ...fromTests])];
+    return [...new Set<string>([...fromItems, ...fromTests])];
   }
 
-  private extractExamTypes(order: any): string[] {
-    const fromItems: string[] = (order.orderItems ?? [])
-      .map((i: any) => (i.testCatalog?.examType ?? null) as string | null)
-      .filter((x: string | null): x is string => !!x);
-    return [...new Set(fromItems)];
+  /**
+   * Infer AERB exam-type flags from test codes by prefix matching. Tenants
+   * seed their test catalogs with standardized prefixes (XRAY_, CT_, MAMMO_,
+   * FLUORO_, NUCL_) — these are converted to canonical exam types here.
+   * Prenatal USG codes (USG_OBS, FETAL_MRI, etc.) are handled separately via
+   * PRENATAL_IMAGING_CODES and don't flow through this function.
+   */
+  private inferExamTypes(testCodes: string[]): string[] {
+    const types = new Set<string>();
+    for (const code of testCodes) {
+      const upper = code.toUpperCase();
+      if (upper.startsWith('MAMMO'))        types.add('MAMMO');
+      else if (upper.startsWith('CT_') || upper === 'CT') types.add('CT');
+      else if (upper.startsWith('XRAY'))    types.add('XRAY');
+      else if (upper.startsWith('FLUORO'))  types.add('FLUORO');
+      else if (upper.startsWith('NUCL') || upper.startsWith('PET')) types.add('NUCLEAR_MEDICINE');
+    }
+    return [...types];
   }
 
   // ────────────────────────────────────────────────────────────────────────
