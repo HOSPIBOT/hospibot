@@ -176,14 +176,20 @@ export class PortalService {
         where: { portalFamilyId: family.id, isActive: true },
         orderBy: { sortOrder: 'asc' },
       });
-      // Enrich each group with a live count of active subtypes inside it
-      const counts = await this.prisma.tenantSubType.groupBy({
-        by: ['groupSlug'] as any,
-        where: { portalFamilyId: family.id, isActive: true },
-        _count: { _all: true },
-      } as any).catch(() => [] as any[]);
+      // Enrich each group with a live count of active subtypes inside it.
+      // Cast the client to `any` before calling groupBy — Prisma's generic
+      // signature triggers a TS2615 circular-mapped-type evaluation when
+      // applied to tenantSubType with its 17+ scalar fields. At runtime
+      // this is still a real groupBy call.
+      const prismaAny = this.prisma as any;
+      const counts: Array<{ groupSlug: string | null; _count: { _all: number } }> =
+        await prismaAny.tenantSubType.groupBy({
+          by: ['groupSlug'],
+          where: { portalFamilyId: family.id, isActive: true },
+          _count: { _all: true },
+        }).catch(() => [] as any[]);
       const countMap: Record<string, number> = {};
-      for (const c of counts as any[]) {
+      for (const c of counts) {
         if (c.groupSlug) countMap[c.groupSlug] = c._count?._all ?? 0;
       }
       return groups.map((g: any) => ({ ...g, subtypeCount: countMap[g.slug] ?? 0 }));

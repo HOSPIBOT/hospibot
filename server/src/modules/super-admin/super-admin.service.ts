@@ -479,7 +479,7 @@ export class SuperAdminService {
         tenantId,
         userId: adminId,
         action: 'UPGRADE_REQUEST_REVIEW',
-        entityType: 'Tenant',
+        entity: 'Tenant',
         entityId: tenantId,
         changes: {
           requestId,
