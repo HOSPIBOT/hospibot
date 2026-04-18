@@ -53,30 +53,13 @@ ENV API_PREFIX=api/v1
 # HOSPIBOT_GSTIN — your GST number
 # WHATSAPP_PHONE_NUMBER_ID / WHATSAPP_ACCESS_TOKEN
 
-# Runtime startup sequence:
-#   1. prisma db push (sync, bounded to 60s) — creates/alters tables for
-#      any schema additions since last deploy. Uses --skip-generate since
-#      the client was already generated at build time.
-#   2. If db push hangs or fails, we log and start the app anyway — the
-#      container must come up so Railway healthcheck passes. Requests that
-#      depend on missing tables will 500, but the container is "up".
-#   3. Seed runs in the background 15s after boot so it doesn't block
-#      healthcheck. Seed is idempotent (upserts).
-#   4. node dist/src/main starts the NestJS app on $PORT.
-CMD sh -c '\
-echo "═══════════════════════════════════════════════════════════" && \
-echo "HospiBot API — boot sequence" && \
-echo "Node: $(node --version)   PORT: ${PORT:-4000}   DB: ${DATABASE_URL:+set}${DATABASE_URL:-UNSET!}" && \
-echo "═══════════════════════════════════════════════════════════" && \
-echo "[1/3] Running prisma db push (60s timeout)..." && \
-timeout 60 env PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1 npx prisma db push --accept-data-loss --skip-generate \
-  && echo "      ✅ db push complete" \
-  || echo "      ⚠️  db push failed or timed out — starting app anyway" ; \
-echo "[2/3] Scheduling background seed (idempotent, starts in 15s)..." && \
-( sleep 15 && \
-  PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1 npx prisma db seed \
-  && echo "      ✅ seed complete" \
-  || echo "      ⚠️  seed failed — see logs above" \
-) & \
-echo "[3/3] Starting node dist/src/main..." && \
-exec node dist/src/main'
+# Runtime startup: just start the app. DbBootstrapService (wired as a
+# NestJS provider at server/src/db-bootstrap.service.ts) handles migration
+# and seeding inside the app after boot — sequentially, with proper
+# timeouts, and without racing against an external seed process.
+#
+# We used to run `prisma db push` + `prisma db seed` here synchronously,
+# but on Supabase Session Pooler with 40+ tables the first-time push can
+# take 90+ seconds and would either time out or race with the seed that
+# was also running from this same CMD. DbBootstrapService does it right.
+CMD ["node", "dist/src/main"]
