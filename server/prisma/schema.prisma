@@ -870,6 +870,175 @@ model LabOrder {
 }
 
 // ==============================================
+// COMPLIANCE — Sprint 3 Regulatory Hard-Blocks
+// ==============================================
+// These surfaces enforce Indian regulatory compliance for diagnostic
+// operations. The `ComplianceService.assertCanReleaseReport` method is
+// called from `DiagnosticService.signAndRelease` to block final report
+// release if any applicable compliance guard fails.
+//
+// Laws referenced:
+//   PcpndtFormF             — PC-PNDT Act, 1994 (prenatal imaging)
+//   AerbDoseEntry           — Atomic Energy (Radiation Protection) Rules 2004
+//   PregnancyScreening      — PC-PNDT Act sex-determination safeguards
+//   MammographyOperatorLog  — AERB Mammography Guidelines
+//   BmwWasteLog             — Bio-Medical Waste Management Rules 2016
+//   BiosafetyChecklist      — ICMR Biosafety Guidelines (BSL-2 labs)
+
+model PcpndtFormF {
+  id                         String    @id @default(uuid())
+  tenantId                   String    @map("tenant_id")
+  labOrderId                 String?   @map("lab_order_id")
+  patientId                  String    @map("patient_id")
+
+  // Form F mandatory fields per PC-PNDT Act
+  formFNumber                String    @map("form_f_number")
+  referringDoctorName        String    @map("referring_doctor_name")
+  referringDoctorRegNo       String    @map("referring_doctor_reg_no")
+  performedByDoctorName      String    @map("performed_by_doctor_name")
+  performedByDoctorRegNo     String    @map("performed_by_doctor_reg_no")
+
+  gestationalAgeWeeks        Int?      @map("gestational_age_weeks")
+  indicationForScan          String    @map("indication_for_scan")
+  scanType                   String    @map("scan_type")      // USG, fetal-MRI, etc.
+  findings                   String?
+  informedConsentTaken       Boolean   @default(false) @map("informed_consent_taken")
+
+  // Monthly submission tracking
+  submittedToAuthority       Boolean   @default(false) @map("submitted_to_authority")
+  submittedAt                DateTime? @map("submitted_at")
+
+  createdAt                  DateTime  @default(now()) @map("created_at")
+  updatedAt                  DateTime  @updatedAt       @map("updated_at")
+
+  @@unique([tenantId, formFNumber])
+  @@index([tenantId, labOrderId])
+  @@index([tenantId, patientId])
+  @@index([tenantId, submittedToAuthority, createdAt])
+  @@map("pcpndt_form_f")
+}
+
+model AerbDoseEntry {
+  id                         String    @id @default(uuid())
+  tenantId                   String    @map("tenant_id")
+  labOrderId                 String?   @map("lab_order_id")
+  patientId                  String?   @map("patient_id")
+  equipmentId                String?   @map("equipment_id")
+
+  examDate                   DateTime  @map("exam_date")
+  examType                   String    @map("exam_type")       // XRAY | CT | MAMMO | NUCLEAR_MEDICINE | FLUORO
+  doseMSv                    Float     @map("dose_msv")        // radiation dose delivered
+  operatorUserId             String    @map("operator_user_id")
+  operatorTldBadgeReading    Float?    @map("operator_tld_badge_reading") // personal dosimeter mSv
+
+  notes                      String?
+  createdAt                  DateTime  @default(now()) @map("created_at")
+
+  @@index([tenantId, labOrderId])
+  @@index([tenantId, examDate])
+  @@index([tenantId, equipmentId, examDate])
+  @@index([tenantId, operatorUserId, examDate])
+  @@map("aerb_dose_entries")
+}
+
+model PregnancyScreening {
+  id                                  String    @id @default(uuid())
+  tenantId                            String    @map("tenant_id")
+  patientId                           String    @map("patient_id")
+  labOrderId                          String?   @map("lab_order_id")
+
+  screenedAt                          DateTime  @default(now()) @map("screened_at")
+  gestationalAgeWeeks                 Int?      @map("gestational_age_weeks")
+
+  // PC-PNDT safeguards
+  hasConsentForm                      Boolean   @default(false) @map("has_consent_form")
+  sexDeterminationDeclarationSigned   Boolean   @default(false) @map("sex_determination_declaration_signed")
+  flaggedForReview                    Boolean   @default(false) @map("flagged_for_review")
+
+  screenedByUserId                    String    @map("screened_by_user_id")
+  notes                               String?
+  createdAt                           DateTime  @default(now()) @map("created_at")
+
+  @@index([tenantId, labOrderId])
+  @@index([tenantId, patientId, screenedAt])
+  @@index([tenantId, flaggedForReview])
+  @@map("pregnancy_screenings")
+}
+
+model MammographyOperatorLog {
+  id                         String    @id @default(uuid())
+  tenantId                   String    @map("tenant_id")
+  operatorUserId             String    @map("operator_user_id")
+
+  certificationNumber        String    @map("certification_number")
+  certificationExpiresAt     DateTime  @map("certification_expires_at")
+
+  // Daily QC (phantom scan)
+  dailyQcDate                DateTime  @map("daily_qc_date")
+  dailyQcPassed              Boolean   @default(false) @map("daily_qc_passed")
+  phantomImageScore          Int?      @map("phantom_image_score") // 0–100
+
+  notes                      String?
+  createdAt                  DateTime  @default(now()) @map("created_at")
+
+  @@index([tenantId, operatorUserId, dailyQcDate])
+  @@index([tenantId, certificationExpiresAt])
+  @@map("mammography_operator_logs")
+}
+
+model BmwWasteLog {
+  id                         String    @id @default(uuid())
+  tenantId                   String    @map("tenant_id")
+  branchId                   String?   @map("branch_id")
+
+  logDate                    DateTime  @map("log_date")
+
+  // Category-wise weight in kilograms (BMW Rules 2016)
+  yellowBagKg                Float     @default(0) @map("yellow_bag_kg")  // anatomical, contaminated
+  redBagKg                   Float     @default(0) @map("red_bag_kg")     // plastic, contaminated
+  whiteBagKg                 Float     @default(0) @map("white_bag_kg")   // sharps
+  blueBagKg                  Float     @default(0) @map("blue_bag_kg")    // glass, metal
+
+  authorizedDisposerName     String    @map("authorized_disposer_name")
+  authorizedDisposerReceipt  String    @map("authorized_disposer_receipt") // CPCB authorized vendor receipt no.
+
+  loggedByUserId             String    @map("logged_by_user_id")
+  notes                      String?
+  createdAt                  DateTime  @default(now()) @map("created_at")
+
+  @@unique([tenantId, branchId, logDate])
+  @@index([tenantId, logDate])
+  @@map("bmw_waste_logs")
+}
+
+model BiosafetyChecklist {
+  id                                  String    @id @default(uuid())
+  tenantId                            String    @map("tenant_id")
+  branchId                            String?   @map("branch_id")
+
+  checklistDate                       DateTime  @map("checklist_date")
+
+  // ICMR BSL-2 mandatory items
+  bsc2CertCurrentWithin12Mo           Boolean   @default(false) @map("bsc2_cert_current_within_12mo")
+  ppeInventoryAdequate                Boolean   @default(false) @map("ppe_inventory_adequate")
+  spillKitsAvailable                  Boolean   @default(false) @map("spill_kits_available")
+  eyewashStationFunctional            Boolean   @default(false) @map("eyewash_station_functional")
+  autoclaveSporeTestPassedWithin30D   Boolean   @default(false) @map("autoclave_spore_test_passed_within_30d")
+  trainingLogCurrent                  Boolean   @default(false) @map("training_log_current")
+
+  // Aggregate — true only if ALL above are true
+  passed                              Boolean   @default(false)
+  notes                               String?
+
+  completedByUserId                   String    @map("completed_by_user_id")
+  createdAt                           DateTime  @default(now()) @map("created_at")
+
+  @@index([tenantId, checklistDate])
+  @@index([tenantId, passed, checklistDate])
+  @@map("biosafety_checklists")
+}
+
+// ==============================================
 // AUDIT LOG
 // ==============================================
 

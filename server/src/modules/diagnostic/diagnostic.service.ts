@@ -3,6 +3,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { WhatsappService } from '../whatsapp/whatsapp.service';
+import { ComplianceService } from '../compliance/compliance.service';
 import {
   CreateOrderDto, UpdateOrderStatusDto, ListOrdersDto, CollectSampleDto,
   DispatchSampleDto, ReceiveSampleDto, RejectSampleDto,
@@ -73,6 +74,7 @@ export class DiagnosticService {
   constructor(
     private prisma: PrismaService,
     private whatsapp: WhatsappService,
+    private compliance: ComplianceService,
   ) {}
 
   // ════════════════════════════════════════════════════════════════════════════
@@ -679,6 +681,13 @@ export class DiagnosticService {
   }
 
   async signAndRelease(tenantId: string, orderId: string, userId: string, dto: SignReportDto) {
+    // ── Regulatory hard-block (Sprint 3) ──────────────────────────────────
+    // This throws ForbiddenException with a specific, actionable message if
+    // any applicable compliance surface fails (BMW, biosafety, PC-PNDT Form F,
+    // AERB dose entry, mammography operator QC). The release MUST NOT happen
+    // unless every gate passes.
+    await this.compliance.assertCanReleaseReport(tenantId, orderId);
+
     const order = await this.prisma.labOrder.findFirst({
       where: { id: orderId, tenantId, status: { in: ['VALIDATED', 'RESULTED'] } },
       include: {

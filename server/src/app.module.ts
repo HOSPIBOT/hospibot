@@ -27,6 +27,7 @@ import { LabModule } from './modules/lab/lab.module';
 import { PharmacyModule } from './modules/pharmacy/pharmacy.module';
 import { MarketplaceModule } from './modules/marketplace/marketplace.module';
 import { SecurityModule } from './modules/security/security.module';
+import { ComplianceModule } from './modules/compliance/compliance.module';
 import { PrescriptionModule } from './modules/prescription/prescription.module';
 import { VisitModule } from './modules/visit/visit.module';
 import { BedModule } from './modules/bed/bed.module';
@@ -75,6 +76,7 @@ import { DiagnosticModule } from './modules/diagnostic/diagnostic.module';
     PharmacyModule,
     MarketplaceModule,
     SecurityModule,
+    ComplianceModule,
     PrescriptionModule,
     VisitModule,
     BedModule,
