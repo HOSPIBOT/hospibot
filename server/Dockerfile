@@ -18,7 +18,12 @@ COPY . .
 
 RUN npm run build
 
-RUN ls -la dist/src/main.js && echo "✅ dist/src/main.js exists"
+# Create dist/main.js shim so Railway works whether its (possibly cached)
+# dashboard startCommand is `node dist/main` or `node dist/src/main`.
+# Both paths will work — they both end up executing dist/src/main.js.
+RUN echo "require('./src/main');" > dist/main.js
+
+RUN ls -la dist/src/main.js dist/main.js && echo "✅ both entrypoints exist"
 
 # Do NOT run `npm prune --production` here.
 # The runtime CMD below calls `npx prisma db push` and `npx prisma db seed`,
