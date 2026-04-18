@@ -1,8 +1,20 @@
+# Railway deploy configuration
+#
+# Only source of truth for Railway. The Dockerfile at server/Dockerfile
+# provides the runtime CMD (db push + background seed + node dist/src/main).
+# Do NOT add a [deploy] startCommand here — it would override the Dockerfile
+# CMD silently and we have spent many hours debugging that failure mode.
+#
+# Healthcheck uses the /api/v1/health route (HealthController in server/src).
+# Timeout is generous (5 min) to cover Prisma engine download + schema push
+# on cold starts.
+
 [build]
 builder = "dockerfile"
 dockerfilePath = "server/Dockerfile"
 
 [deploy]
-startCommand = "node dist/src/main"
 healthcheckPath = "/api/v1/health"
 healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
