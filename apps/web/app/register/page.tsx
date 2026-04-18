@@ -196,6 +196,8 @@ export default function RegisterPage() {
 
       {step === 4 && (
         <Step4TierPicker
+          familySlug={state.portalFamily}
+          subtypeSlug={state.subtypeSlug}
           value={state.tierKey}
           billingCycle={state.billingCycle}
           onChange={(tier) => patch({ tierKey: tier })}
