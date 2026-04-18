@@ -1025,6 +1025,100 @@ model RegistrationDraft {
   @@map("registration_drafts")
 }
 
+// ──────────────────────────────────────────────────────────────────────────────
+// Super Admin Control Plane — pricing & feature gates in DB (not code)
+//
+// Problem these models solve: pricing and feature flags used to live in
+// hardcoded TS files (diagnostic-tiers.ts, portal-feature-flags.ts). Every
+// price change required a code deploy. Now pricing is DB-backed and editable
+// from the Super Admin portal without any code change.
+//
+// Scope convention on TierConfig:
+//   'default'                 — applies to all portals / subtypes
+//   'family:<familySlug>'     — overrides for an entire portal family
+//   'subtype:<subtypeSlug>'   — overrides for a specific subtype
+// The registration wizard resolves pricing by checking subtype → family
+// → default in that order and using the first match it finds.
+// ──────────────────────────────────────────────────────────────────────────────
+
+model TierConfig {
+  id                 String   @id @default(uuid())
+  /// 'default' | 'family:<slug>' | 'subtype:<slug>'
+  scope              String
+  /// 'small' | 'medium' | 'large' | 'enterprise'
+  tierKey            String   @map("tier_key")
+  displayName        String   @map("display_name")      // "Small Lab"
+  tagline            String
+  /// Monthly price in paise (₹1,499 → 149900). Null = "Contact sales".
+  priceMonthly       Int?     @map("price_monthly")
+  /// Annual price in paise. If null, derived as monthly × 10 (2 months free).
+  priceAnnual        Int?     @map("price_annual")
+  currency           String   @default("INR")
+  color              String   @default("#0EA5E9")
+  badge              String?                            // "Most Popular" / "Contact Sales"
+  /// Optional daily sample volume lower bound (for UI display only).
+  dailyVolumeMin     Int?     @map("daily_volume_min")
+  dailyVolumeMax     Int?     @map("daily_volume_max")
+  /// Hard limits the tenant is held to until upgrade.
+  branchesAllowed    Int      @default(1)    @map("branches_allowed")
+  staffAllowed       Int      @default(3)    @map("staff_allowed")
+  waMessagesPerMonth Int      @default(2000) @map("wa_messages_per_month")
+  smsPerMonth        Int      @default(500)  @map("sms_per_month")
+  storageGB          Int      @default(10)   @map("storage_gb")
+  isActive           Boolean  @default(true) @map("is_active")
+  sortOrder          Int      @default(0)    @map("sort_order")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt     @map("updated_at")
+  updatedBy          String?                 @map("updated_by")
+
+  @@unique([scope, tierKey])
+  @@index([scope])
+  @@map("tier_configs")
+}
+
+model FeatureDefinition {
+  id          String   @id @default(uuid())
+  /// Stable key used in code — e.g. 'qc-westgard', 'home-collection-gps'.
+  /// Never rename after creation; create a new key and deprecate the old one.
+  key         String   @unique
+  name        String                   // "Westgard QC + Levey-Jennings"
+  description String   @db.Text
+  /// 'operations' | 'compliance' | 'integration' | 'billing' | 'analytics'
+  category    String
+  /// 'diagnostic' | 'clinical' | 'pharmacy' | ... | null (all portals)
+  portalFamilySlug String? @map("portal_family_slug")
+  isActive    Boolean  @default(true) @map("is_active")
+  sortOrder   Int      @default(0)    @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt     @map("updated_at")
+
+  gates       FeatureGate[]
+
+  @@index([portalFamilySlug, category])
+  @@map("feature_definitions")
+}
+
+model FeatureGate {
+  id            String   @id @default(uuid())
+  /// Matches TenantSubType.slug or 'default' for a subtype-wide rule.
+  subtypeSlug   String   @map("subtype_slug")
+  /// 'small' | 'medium' | 'large' | 'enterprise' or 'default' for all tiers.
+  tierKey       String   @map("tier_key")
+  /// FK to FeatureDefinition.key (logical, not enforced at DB level so we
+  /// can pre-seed gates for features added later).
+  featureKey    String   @map("feature_key")
+  isEnabled     Boolean  @default(true) @map("is_enabled")
+  notes         String?  @db.Text
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  updatedBy     String?  @map("updated_by")
+
+  feature       FeatureDefinition @relation(fields: [featureKey], references: [key], onDelete: Cascade)
+
+  @@unique([subtypeSlug, tierKey, featureKey])
+  @@index([subtypeSlug, tierKey])
+  @@map("feature_gates")
+}
+
 model PortalTheme {
   id              String    @id @default(uuid())
   portalFamilyId  String    @unique @map("portal_family_id")

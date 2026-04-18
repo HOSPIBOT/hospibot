@@ -820,6 +820,254 @@ async function seedSubtypeGroups() {
   console.log(`✅ ${seeded} diagnostic subtype groups seeded`);
 }
 
+// ── Tier Configs — default pricing (editable from Super Admin) ──────────────
+//
+// Mirrors the current hardcoded values in apps/web/lib/diagnostic-tiers.ts so
+// migrating hardcoded → DB is a no-op for existing users. Super Admin edits
+// these rows from /super-admin/plans.
+//
+// Prices stored in paise (smallest currency unit) to avoid float rounding.
+
+const DEFAULT_TIER_CONFIGS = [
+  {
+    scope: 'default', tierKey: 'small',
+    displayName: 'Small Lab',
+    tagline: 'Perfect for solo-run labs and PSCs just getting started',
+    priceMonthly: 99900, priceAnnual: 999000,  // ₹999/mo, ~₹9,990/yr (~2 mo free)
+    color: '#0369A1',
+    dailyVolumeMin: 1, dailyVolumeMax: 50,
+    branchesAllowed: 1, staffAllowed: 3,
+    waMessagesPerMonth: 2000, smsPerMonth: 500, storageGB: 10,
+    sortOrder: 1,
+  },
+  {
+    scope: 'default', tierKey: 'medium',
+    displayName: 'Medium Lab',
+    tagline: 'For growing diagnostic centers handling 50–200 samples/day',
+    priceMonthly: 299900, priceAnnual: 2999000,
+    color: '#0D7C66', badge: 'Most Popular',
+    dailyVolumeMin: 50, dailyVolumeMax: 200,
+    branchesAllowed: 3, staffAllowed: 15,
+    waMessagesPerMonth: 10000, smsPerMonth: 2000, storageGB: 50,
+    sortOrder: 2,
+  },
+  {
+    scope: 'default', tierKey: 'large',
+    displayName: 'Large Lab',
+    tagline: 'For city-level chains with NABL accreditation needs',
+    priceMonthly: 799900, priceAnnual: 7999000,
+    color: '#7C3AED',
+    dailyVolumeMin: 200, dailyVolumeMax: 1000,
+    branchesAllowed: 10, staffAllowed: 50,
+    waMessagesPerMonth: 50000, smsPerMonth: 10000, storageGB: 500,
+    sortOrder: 3,
+  },
+  {
+    scope: 'default', tierKey: 'enterprise',
+    displayName: 'Enterprise',
+    tagline: 'For reference labs, hospital networks, and franchise chains',
+    priceMonthly: null, priceAnnual: null,  // null = "Contact sales"
+    color: '#1E293B', badge: 'Contact Sales',
+    dailyVolumeMin: 1000, dailyVolumeMax: null,
+    branchesAllowed: 9999, staffAllowed: 9999,
+    waMessagesPerMonth: 999999, smsPerMonth: 999999, storageGB: 9999,
+    sortOrder: 4,
+  },
+];
+
+async function seedTierConfigs() {
+  let seeded = 0;
+  for (const t of DEFAULT_TIER_CONFIGS) {
+    await (prisma as any).tierConfig.upsert({
+      where: { scope_tierKey: { scope: t.scope, tierKey: t.tierKey } },
+      create: t,
+      // Only update display metadata and limits — NEVER overwrite prices on
+      // re-seed, because Super Admin may have edited them since the first run.
+      update: {
+        displayName: t.displayName, tagline: t.tagline, color: t.color,
+        badge: t.badge ?? null,
+        dailyVolumeMin: t.dailyVolumeMin, dailyVolumeMax: t.dailyVolumeMax,
+        sortOrder: t.sortOrder,
+      },
+    }).catch((err: any) => {
+      console.warn(`⚠️  Could not upsert tier config ${t.tierKey}: ${err?.message ?? err}`);
+    });
+    seeded++;
+  }
+  console.log(`✅ ${seeded} tier configs seeded`);
+}
+
+// ── Feature catalog — 40+ features across categories ────────────────────────
+//
+// Keys are stable identifiers used in code. Human-readable name/description
+// can be edited in Super Admin without breaking integrations.
+
+const DEFAULT_FEATURES = [
+  // Core (always on, all tiers)
+  { key: 'dashboard',         name: 'Portal Dashboard',          category: 'operations',  description: 'KPI cards, today summary, alerts.' },
+  { key: 'patients',          name: 'Patient Records',           category: 'operations',  description: 'Patient registration, demographics, history.' },
+  { key: 'lab-orders',        name: 'Lab Orders',                category: 'operations',  description: 'Order test panels, track sample lifecycle.' },
+  { key: 'billing-basic',     name: 'GST Billing',               category: 'billing',     description: 'GST-compliant invoices, UPI/cash, daily collection.' },
+  { key: 'reports-pdf',       name: 'PDF Reports',               category: 'operations',  description: 'Test report generation with tenant letterhead.' },
+  { key: 'test-catalog',      name: 'Test Catalog',              category: 'operations',  description: '500+ pre-loaded tests, custom tests, panels.' },
+  { key: 'whatsapp-basic',    name: 'WhatsApp Report Delivery',  category: 'operations',  description: 'Send reports via WhatsApp with opt-in management.' },
+
+  // Medium+ unlocks
+  { key: 'home-collection-basic',     name: 'Home Collection',              category: 'operations',  description: 'Phlebotomist scheduling, collection slots, manifest.' },
+  { key: 'home-collection-gps',       name: 'Home Collection GPS Tracking', category: 'operations',  description: 'Real-time runner location, ETA to customer.' },
+  { key: 'doctor-crm',                name: 'Doctor CRM',                   category: 'operations',  description: 'Referring doctor tracking, commission rules, reminders.' },
+  { key: 'corporate-clients',         name: 'Corporate Clients',            category: 'operations',  description: 'B2B client management, contracts, rate cards.' },
+  { key: 'tpa-claims',                name: 'TPA / Insurance Claims',       category: 'billing',     description: 'Cashless claim submission, pre-auth tracking.' },
+  { key: 'package-billing',           name: 'Package Billing',              category: 'billing',     description: 'Bundled packages, combo discounts, annual recall.' },
+  { key: 'critical-alerts',           name: 'Critical Value Alerts',        category: 'operations',  description: 'Auto-flag critical results, page clinician, WA notify.' },
+  { key: 'delta-check',               name: 'Delta Check',                  category: 'operations',  description: 'Compare current vs previous result, flag outliers.' },
+  { key: 'reflex-testing',            name: 'Reflex Testing',               category: 'operations',  description: 'Auto-order confirmatory tests based on rules.' },
+  { key: 'analytics-basic',           name: 'Basic Analytics',              category: 'analytics',   description: 'TAT, test volume, revenue by category.' },
+
+  // Large+ unlocks
+  { key: 'hl7-astm',                  name: 'HL7/ASTM Analyser Interface',  category: 'integration', description: 'Bidirectional analyser connectivity.' },
+  { key: 'qc-westgard',               name: 'QC — Westgard + Levey-Jennings', category: 'compliance', description: 'Statistical QC, multi-rule, auto-reject.' },
+  { key: 'nabl-compliance',           name: 'NABL Compliance Suite',        category: 'compliance',  description: 'Quality manual, audit trail, EQA/PT logs.' },
+  { key: 'multi-branch',              name: 'Multi-branch Management',      category: 'operations',  description: 'Central + branch consoles, inter-branch routing.' },
+  { key: 'staff-hrms',                name: 'Staff HRMS + Payroll',         category: 'operations',  description: 'Attendance, shifts, salary, PF/ESI.' },
+  { key: 'inventory-reagents',        name: 'Reagent Inventory',            category: 'operations',  description: 'Batch tracking, expiry alerts, vendor POs.' },
+  { key: 'equipment-log',             name: 'Equipment Log',                category: 'compliance',  description: 'Calibration, maintenance, breakdowns, warranty.' },
+  { key: 'ai-assisted-reporting',     name: 'AI-Assisted Reporting',        category: 'operations',  description: 'Template suggestions, auto-comments, peer-review.' },
+  { key: 'pacs-integration',          name: 'PACS Integration',             category: 'integration', description: 'DICOM store + viewer, hanging protocols.' },
+  { key: 'tele-radiology-routing',    name: 'Tele-Radiology Routing',       category: 'operations',  description: 'Route studies to remote radiologists, SLA tracking.' },
+
+  // Enterprise unlocks
+  { key: 'franchise-mgmt',            name: 'Franchise Management',         category: 'operations',  description: 'Franchisee dashboards, royalty, onboarding.' },
+  { key: 'revenue-sharing',           name: 'Revenue Sharing Engine',       category: 'billing',     description: 'Auto-split revenue between hub + spokes.' },
+  { key: 'white-label',               name: 'White-Label Portal',           category: 'operations',  description: 'Custom domain, logo, theme per tenant.' },
+  { key: 'api-marketplace',           name: 'API Marketplace',              category: 'integration', description: 'Webhook builder, OAuth apps, developer portal.' },
+  { key: 'abha-abdm',                 name: 'ABHA / ABDM Integration',      category: 'integration', description: 'HIP + HPR registration, FHIR R4 push/pull.' },
+  { key: 'gov-reporting',             name: 'Gov Reporting (ICMR/NACO)',    category: 'compliance',  description: 'Nikshay, NACO, ICMR auto-submission.' },
+  { key: 'dedicated-manager',         name: 'Dedicated Account Manager',    category: 'operations',  description: 'Named AM, quarterly reviews, SLA backed support.' },
+
+  // Regulatory features — always-on when applicable subtype
+  { key: 'pndt-form-f',               name: 'PC-PNDT Form F Register',      category: 'compliance',  description: 'Mandatory form for every ultrasound. Blocks USG report release without it.' },
+  { key: 'aerb-dose-register',        name: 'AERB Radiation Dose Register', category: 'compliance',  description: 'Per-patient dose log (kVp/mAs/CTDIvol). Blocks X-Ray/CT completion.' },
+  { key: 'pregnancy-pre-radiation',   name: 'Pregnancy Screen Pre-Radiation', category: 'compliance',description: '10-day rule hard-block for women 12-55 before ionising scans.' },
+  { key: 'female-radiographer',       name: 'Female Radiographer Enforcement', category: 'compliance', description: 'Mammography operator role restricted to female staff.' },
+  { key: 'bmw-waste-log',             name: 'Biomedical Waste Daily Log',   category: 'compliance',  description: 'Daily BMW log by color code + CPCB monthly export.' },
+  { key: 'biosafety-bsl2',            name: 'BSL-2 Morning Checklist',      category: 'compliance',  description: 'Hood certification, autoclave log, spill kit check.' },
+  { key: 'tracer-log',                name: 'Radiopharmacy Tracer Log',     category: 'compliance',  description: 'PET tracer activity, decay tracking, BARC reporting.' },
+  { key: 'bi-rads',                   name: 'BI-RADS Reporting',            category: 'operations',  description: 'Mammography standard reporting with risk scoring.' },
+];
+
+async function seedFeatureDefinitions() {
+  let seeded = 0;
+  for (const f of DEFAULT_FEATURES) {
+    await (prisma as any).featureDefinition.upsert({
+      where: { key: f.key },
+      create: { ...f, portalFamilySlug: 'diagnostic' },
+      update: { name: f.name, description: f.description, category: f.category },
+    }).catch((err: any) => {
+      console.warn(`⚠️  Could not upsert feature ${f.key}: ${err?.message ?? err}`);
+    });
+    seeded++;
+  }
+  console.log(`✅ ${seeded} feature definitions seeded`);
+}
+
+// ── Default feature gates — which features are unlocked at each tier ────────
+//
+// Rule: scope = 'default' means "applies to every diagnostic subtype at this
+// tier unless overridden by a subtype-specific row." Subtype overrides (e.g.
+// 'pndt-form-f' always-on for ultrasound-center regardless of tier) live in
+// a separate list below.
+
+const DEFAULT_TIER_GATES: Record<string, string[]> = {
+  small: [
+    'dashboard', 'patients', 'lab-orders', 'billing-basic', 'reports-pdf',
+    'test-catalog', 'whatsapp-basic',
+  ],
+  medium: [
+    // Small features
+    'dashboard', 'patients', 'lab-orders', 'billing-basic', 'reports-pdf',
+    'test-catalog', 'whatsapp-basic',
+    // Medium unlocks
+    'home-collection-basic', 'home-collection-gps', 'doctor-crm',
+    'corporate-clients', 'tpa-claims', 'package-billing',
+    'critical-alerts', 'delta-check', 'reflex-testing', 'analytics-basic',
+  ],
+  large: [
+    // All medium features
+    'dashboard', 'patients', 'lab-orders', 'billing-basic', 'reports-pdf',
+    'test-catalog', 'whatsapp-basic',
+    'home-collection-basic', 'home-collection-gps', 'doctor-crm',
+    'corporate-clients', 'tpa-claims', 'package-billing',
+    'critical-alerts', 'delta-check', 'reflex-testing', 'analytics-basic',
+    // Large unlocks
+    'hl7-astm', 'qc-westgard', 'nabl-compliance', 'multi-branch',
+    'staff-hrms', 'inventory-reagents', 'equipment-log',
+    'ai-assisted-reporting', 'pacs-integration', 'tele-radiology-routing',
+  ],
+  enterprise: [
+    // Everything
+    ...([] as string[]),
+  ],
+};
+// Enterprise = all features on
+DEFAULT_TIER_GATES.enterprise = DEFAULT_FEATURES.map((f) => f.key);
+
+// Subtype-specific regulatory overrides (always-on regardless of tier)
+const SUBTYPE_REGULATORY_GATES: Record<string, string[]> = {
+  'ultrasound-center':     ['pndt-form-f'],
+  'radiology-center':      ['aerb-dose-register', 'pregnancy-pre-radiation'],
+  'pet-scan-center':       ['aerb-dose-register', 'pregnancy-pre-radiation', 'tracer-log'],
+  'nuclear-medicine-center': ['aerb-dose-register', 'tracer-log'],
+  'mammography-center':    ['female-radiographer', 'pregnancy-pre-radiation', 'bi-rads'],
+  'dental-radiology-center': ['aerb-dose-register'],
+  'molecular-lab':         ['biosafety-bsl2', 'bmw-waste-log'],
+  'micro-lab':             ['biosafety-bsl2', 'bmw-waste-log'],
+  'pathology-lab':         ['bmw-waste-log'],
+  'histopathology-lab':    ['bmw-waste-log'],
+  'blood-bank':            ['bmw-waste-log'],
+  'genetic-lab':           ['bmw-waste-log'],
+};
+
+async function seedFeatureGates() {
+  let seeded = 0;
+  // 1. Default gates (scope = subtype:'default', tierKey = actual tier)
+  for (const [tierKey, features] of Object.entries(DEFAULT_TIER_GATES)) {
+    for (const featureKey of features) {
+      await (prisma as any).featureGate.upsert({
+        where: {
+          subtypeSlug_tierKey_featureKey: {
+            subtypeSlug: 'default',
+            tierKey,
+            featureKey,
+          },
+        },
+        create: { subtypeSlug: 'default', tierKey, featureKey, isEnabled: true },
+        update: { isEnabled: true },
+      }).catch(() => {});
+      seeded++;
+    }
+  }
+  // 2. Subtype-specific regulatory overrides (scope = subtype:<slug>, tierKey = 'default')
+  for (const [subtypeSlug, features] of Object.entries(SUBTYPE_REGULATORY_GATES)) {
+    for (const featureKey of features) {
+      await (prisma as any).featureGate.upsert({
+        where: {
+          subtypeSlug_tierKey_featureKey: {
+            subtypeSlug,
+            tierKey: 'default',
+            featureKey,
+          },
+        },
+        create: { subtypeSlug, tierKey: 'default', featureKey, isEnabled: true,
+                  notes: 'Regulatory requirement — always on for this subtype.' },
+        update: { isEnabled: true },
+      }).catch(() => {});
+      seeded++;
+    }
+  }
+  console.log(`✅ ${seeded} feature gates seeded`);
+}
+
 async function runAll() {
   await main();
   await migrateExistingTenants();
@@ -827,6 +1075,9 @@ async function runAll() {
   await seedRechargePacks();
   await seedDiagnosticWATemplates();
   await seedSubtypeGroups();
+  await seedTierConfigs();
+  await seedFeatureDefinitions();
+  await seedFeatureGates();
 }
 
 runAll()

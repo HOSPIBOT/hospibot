@@ -18,6 +18,7 @@ import { StartupService } from './startup.service';
 import { HrmsModule } from './modules/hrms/hrms.module';
 import { SuperAdminModule } from './modules/super-admin/super-admin.module';
 import { PortalModule } from './modules/portal/portal.module';
+import { ControlPlaneModule } from './modules/control-plane/control-plane.module';
 import { ChatbotModule } from './modules/chatbot/chatbot.module';
 import { SchedulerModule } from './modules/scheduler/scheduler.module';
 import { VaultModule } from './modules/vault/vault.module';
@@ -64,6 +65,7 @@ import { DiagnosticModule } from './modules/diagnostic/diagnostic.module';
     HrmsModule,
     SuperAdminModule,
     PortalModule,
+    ControlPlaneModule,
     ChatbotModule,
     SchedulerModule,
     VaultModule,
