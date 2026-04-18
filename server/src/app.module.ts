@@ -15,6 +15,7 @@ import { AutomationModule } from './modules/automation/automation.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { HealthController } from './health.controller';
 import { StartupService } from './startup.service';
+import { DbBootstrapService } from './db-bootstrap.service';
 import { HrmsModule } from './modules/hrms/hrms.module';
 import { SuperAdminModule } from './modules/super-admin/super-admin.module';
 import { PortalModule } from './modules/portal/portal.module';
@@ -81,6 +82,6 @@ import { DiagnosticModule } from './modules/diagnostic/diagnostic.module';
     SubscriptionModule,
   ],
   controllers: [HealthController],
-  providers: [StartupService],
+  providers: [StartupService, DbBootstrapService],
 })
 export class AppModule {}
