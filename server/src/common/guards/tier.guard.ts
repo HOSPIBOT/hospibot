@@ -125,7 +125,7 @@ const FEATURE_GATES: Record<string, { minTier: string; allowedSubtypes?: string[
   'delta-check':        { minTier: 'medium' },
   'home-collection-basic': {
     minTier: 'medium',
-    allowedSubtypes: ['pathology-lab', 'home-collection', 'reference-lab'],
+    allowedSubtypes: ['pathology-lab', 'home-sample-collection', 'reference-lab'],
   },
   'doctor-crm':         { minTier: 'medium' },
   'corporate-clients':  { minTier: 'medium' },
@@ -143,7 +143,7 @@ const FEATURE_GATES: Record<string, { minTier: string; allowedSubtypes?: string[
   'staff-hrms':         { minTier: 'large' },
   'pacs-integration':   {
     minTier: 'large',
-    allowedSubtypes: ['radiology-center', 'tele-radiology', 'pet-scan'],
+    allowedSubtypes: ['radiology-center', 'tele-radiology', 'pet-scan-center'],
   },
   'tele-radiology-routing': {
     minTier: 'large',

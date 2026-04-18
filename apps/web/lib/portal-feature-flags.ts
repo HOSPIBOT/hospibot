@@ -58,14 +58,14 @@ export const DIAGNOSTIC_FEATURES: Record<string, FeatureGate> = {
 
   // ─── Subtype-specific core features ──────────────────────────────────────
   // Only relevant for labs that physically collect samples
-  'sample-collection':  {
+  'sample-collection-center':  {
     minTier: 'small',
-    allowedSubtypes: ['pathology-lab','sample-collection','home-collection','molecular-lab','genetic-lab','reference-lab'],
+    allowedSubtypes: ['pathology-lab','sample-collection-center','home-sample-collection','molecular-lab','genetic-lab','reference-lab'],
   },
   // Only labs that produce images
   'dicom-viewer':       {
     minTier: 'small',
-    allowedSubtypes: ['radiology-center','ultrasound-center','pet-scan','tele-radiology'],
+    allowedSubtypes: ['radiology-center','ultrasound-center','pet-scan-center','tele-radiology'],
   },
   // PC-PNDT is mandatory for centers doing pregnancy sonography
   'pndt-form-f':        {
@@ -75,12 +75,12 @@ export const DIAGNOSTIC_FEATURES: Record<string, FeatureGate> = {
   // AERB is for radiation equipment
   'aerb-compliance':    {
     minTier: 'medium',
-    allowedSubtypes: ['radiology-center','pet-scan'],
+    allowedSubtypes: ['radiology-center','pet-scan-center'],
   },
   // Radiotracer management
   'radiotracer-log':    {
     minTier: 'small',
-    allowedSubtypes: ['pet-scan'],
+    allowedSubtypes: ['pet-scan-center'],
   },
   // Cardiac-specific
   'tmt-holter':         {
@@ -107,15 +107,15 @@ export const DIAGNOSTIC_FEATURES: Record<string, FeatureGate> = {
   // Home collection
   'home-collection-basic': {
     minTier: 'medium',
-    allowedSubtypes: ['pathology-lab','home-collection','reference-lab'],
+    allowedSubtypes: ['pathology-lab','home-sample-collection','reference-lab'],
   },
   'home-collection-gps': {
     minTier: 'medium',
-    allowedSubtypes: ['pathology-lab','home-collection','reference-lab'],
+    allowedSubtypes: ['pathology-lab','home-sample-collection','reference-lab'],
   },
   'home-collection-ai-route': {
     minTier: 'large',
-    allowedSubtypes: ['pathology-lab','home-collection','reference-lab'],
+    allowedSubtypes: ['pathology-lab','home-sample-collection','reference-lab'],
   },
 
   // ─── Medium tier unlocks ─────────────────────────────────────────────────
@@ -159,7 +159,7 @@ export const DIAGNOSTIC_FEATURES: Record<string, FeatureGate> = {
   'equipment-log':      { minTier: 'medium' },
   'pacs-integration':   {
     minTier: 'large',
-    allowedSubtypes: ['radiology-center','tele-radiology','pet-scan'],
+    allowedSubtypes: ['radiology-center','tele-radiology','pet-scan-center'],
   },
 
   // ─── Enterprise tier unlocks ─────────────────────────────────────────────
@@ -175,7 +175,7 @@ export const DIAGNOSTIC_FEATURES: Record<string, FeatureGate> = {
   'dedicated-manager':  { minTier: 'enterprise' },
   'theranostics':       {
     minTier: 'enterprise',
-    allowedSubtypes: ['pet-scan'],
+    allowedSubtypes: ['pet-scan-center'],
   },
   'ep-study':           {
     minTier: 'enterprise',
@@ -253,7 +253,7 @@ export const DIAG_SUBTYPE_NAV: Record<DiagSubtype, SubtypeNavConfig> = {
     // Standard lab flow — keep everything
     hideItems: ['dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling'],
   },
-  'sample-collection': {
+  'sample-collection-center': {
     labelOverrides: { 'lab-orders': 'Sample Orders', 'collection': 'Walk-in Collection' },
     hideItems: ['qc','results','catalog','dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling','inventory'],
     extraItems: [
@@ -261,7 +261,7 @@ export const DIAG_SUBTYPE_NAV: Record<DiagSubtype, SubtypeNavConfig> = {
       { href: 'cold-chain', label: 'Cold Chain Log',     iconKey: 'Shield' },
     ],
   },
-  'home-collection': {
+  'home-sample-collection': {
     labelOverrides: { 'collection': 'Home Visits', 'lab-orders': 'Bookings' },
     hideItems: ['qc','results','catalog','dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling','inventory','equipment'],
     extraItems: [
@@ -289,7 +289,7 @@ export const DIAG_SUBTYPE_NAV: Record<DiagSubtype, SubtypeNavConfig> = {
       { href: 'sonologists',  label: 'Sonologist Panel', iconKey: 'Users' },
     ],
   },
-  'pet-scan': {
+  'pet-scan-center': {
     labelOverrides: { 'lab-orders': 'Scan Orders', 'results': 'PET-CT Reports' },
     hideItems: ['collection','qc','tmt-holter','cath-lab','genetic-counseling','pndt-register'],
     extraItems: [

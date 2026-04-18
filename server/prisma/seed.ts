@@ -175,34 +175,189 @@ const PORTAL_FAMILIES = [
       accentColor: '#06B6D4', sidebarBg: '#0F1E33', loginBg: '#1E3A5F', loginGradient: '#152A47',
     },
     subTypes: [
-      { name: 'Pathology / Blood Test Lab', slug: 'pathology-lab', icon: 'TestTube', sortOrder: 1,
-        featureFlags: { labReports: true, billing: true, whatsapp: true, homeCollection: true, reportDelivery: true } },
-      { name: 'Radiology Center (X-Ray, CT, MRI)', slug: 'radiology-center', icon: 'ScanLine', sortOrder: 2,
-        featureFlags: { labReports: true, scanReports: true, billing: true, whatsapp: true, reportDelivery: true } },
-      { name: 'Ultrasound Center', slug: 'ultrasound-center', icon: 'Activity', sortOrder: 3,
-        featureFlags: { labReports: true, scanReports: true, billing: true, whatsapp: true, reportDelivery: true } },
-      { name: 'PET Scan Center', slug: 'pet-scan-center', icon: 'ScanLine', sortOrder: 4,
-        featureFlags: { labReports: true, scanReports: true, billing: true, whatsapp: true, appointments: true } },
-      { name: 'Mammography Center', slug: 'mammography-center', icon: 'ScanLine', sortOrder: 5,
-        featureFlags: { labReports: true, scanReports: true, billing: true, whatsapp: true, appointments: true } },
-      { name: 'Cardiac Diagnostics (Echo, TMT, Holter)', slug: 'cardiac-diagnostics', icon: 'Heart', sortOrder: 6,
-        featureFlags: { labReports: true, appointments: true, billing: true, whatsapp: true, reportDelivery: true } },
-      { name: 'Pulmonary Function Testing Center', slug: 'pft-center', icon: 'Wind', sortOrder: 7,
-        featureFlags: { labReports: true, appointments: true, billing: true, whatsapp: true } },
-      { name: 'Neurophysiology (EEG, EMG) Center', slug: 'neurophysiology-center', icon: 'Brain', sortOrder: 8,
-        featureFlags: { labReports: true, appointments: true, billing: true, whatsapp: true } },
-      { name: 'Genetic Testing Lab', slug: 'genetic-lab', icon: 'Dna', sortOrder: 9,
-        featureFlags: { labReports: true, billing: true, whatsapp: true, reportDelivery: true } },
-      { name: 'Molecular Diagnostics / PCR Lab', slug: 'molecular-lab', icon: 'Microscope', sortOrder: 10,
-        featureFlags: { labReports: true, billing: true, whatsapp: true, reportDelivery: true } },
-      { name: 'Microbiological Lab', slug: 'micro-lab', icon: 'Microscope', sortOrder: 11,
-        featureFlags: { labReports: true, billing: true, whatsapp: true, reportDelivery: true } },
-      { name: 'Health Checkup Center', slug: 'health-checkup', icon: 'ClipboardCheck', sortOrder: 12,
-        featureFlags: { labReports: true, appointments: true, billing: true, whatsapp: true, packages: true } },
-      { name: 'Corporate Wellness Screening', slug: 'corporate-screening', icon: 'Briefcase', sortOrder: 13,
-        featureFlags: { labReports: true, billing: true, whatsapp: true, packages: true, bulkBooking: true } },
-      { name: 'Home Sample Collection Service', slug: 'home-sample-collection', icon: 'Home', sortOrder: 14,
-        featureFlags: { labReports: true, billing: true, whatsapp: true, homeCollection: true, gpsTracking: true } },
+      // ── Group A: Collection & Logistics (3) ─────────────────────────────────
+      { name: 'Sample Collection Center (PSC)', slug: 'sample-collection-center', icon: 'Droplet', sortOrder: 10,
+        groupSlug: 'collection',
+        subtypeTagline: 'Walk-in collection center that dispatches samples to a parent lab for processing.',
+        volumeHint: '30–500 samples/day',
+        featureFlags: { billing: true, whatsapp: true, collection: true, dispatch: true, barcoding: true } },
+      { name: 'Pickup Point (PUP)', slug: 'pickup-point', icon: 'MapPin', sortOrder: 11,
+        groupSlug: 'collection',
+        subtypeTagline: 'Counter inside a pharmacy or clinic where patients hand over samples.',
+        volumeHint: '5–50 samples/day',
+        featureFlags: { billing: true, whatsapp: true, collection: true, lightweight: true } },
+      { name: 'Home Sample Collection Service', slug: 'home-sample-collection', icon: 'Home', sortOrder: 12,
+        groupSlug: 'collection',
+        subtypeTagline: 'Phlebotomist teams visit patient homes at booked time slots with cold-chain transport.',
+        volumeHint: '10–500 bookings/day',
+        featureFlags: { billing: true, whatsapp: true, homeCollection: true, gpsTracking: true, scheduling: true } },
+
+      // ── Group B: Pathology & Lab Testing (6) ────────────────────────────────
+      { name: 'Clinical Pathology Lab', slug: 'pathology-lab', icon: 'TestTube', sortOrder: 20,
+        groupSlug: 'pathology',
+        subtypeTagline: 'Biochemistry, haematology, serology — CBC, LFT, KFT, thyroid, lipid, HbA1c.',
+        volumeHint: '20–1000+ patients/day',
+        featureFlags: { labReports: true, billing: true, whatsapp: true, homeCollection: true, reportDelivery: true, accession: true } },
+      { name: 'Histopathology & Cytopathology Lab', slug: 'histopathology-lab', icon: 'Microscope', sortOrder: 21,
+        groupSlug: 'pathology',
+        subtypeTagline: 'Tissue biopsies, IHC, FNAC, Pap smears, frozen sections for oncology.',
+        volumeHint: '5–200 specimens/day',
+        featureFlags: { labReports: true, billing: true, whatsapp: true, slideScanning: true, ihc: true, reportDelivery: true } },
+      { name: 'Molecular Diagnostics / PCR Lab', slug: 'molecular-lab', icon: 'Dna', sortOrder: 22,
+        groupSlug: 'pathology',
+        subtypeTagline: 'RT-PCR, viral load quantification, HPV genotyping, NGS panels.',
+        volumeHint: '20–500 samples/day',
+        featureFlags: { labReports: true, billing: true, whatsapp: true, reportDelivery: true, bsl2: true, batchRuns: true } },
+      { name: 'Microbiological Laboratory', slug: 'micro-lab', icon: 'Bug', sortOrder: 23,
+        groupSlug: 'pathology',
+        subtypeTagline: 'Culture, sensitivity, antibiogram, AMR reporting.',
+        volumeHint: '10–400 cultures/day',
+        featureFlags: { labReports: true, billing: true, whatsapp: true, culture: true, antibiogram: true, bsl2: true } },
+      { name: 'Clinical Genetic Testing Laboratory', slug: 'genetic-lab', icon: 'Sparkles', sortOrder: 24,
+        groupSlug: 'pathology',
+        subtypeTagline: 'Karyotype, BRCA, NIPT, newborn screen, ACMG variant reporting with counselling.',
+        volumeHint: '2–200 tests/day',
+        featureFlags: { labReports: true, billing: true, whatsapp: true, reportDelivery: true, counselling: true, variantReporting: true } },
+      { name: 'Blood Bank & Transfusion Center', slug: 'blood-bank', icon: 'Droplets', sortOrder: 25,
+        groupSlug: 'pathology',
+        subtypeTagline: 'Blood collection, component separation, cross-match, transfusion dispatch.',
+        volumeHint: '10–500 units/day',
+        featureFlags: { billing: true, whatsapp: true, donorRegistry: true, crossmatch: true, inventory: true, dghsReporting: true } },
+
+      // ── Group C: Imaging & Scans (8) ────────────────────────────────────────
+      { name: 'Radiology Center (X-Ray, CT, MRI)', slug: 'radiology-center', icon: 'ScanLine', sortOrder: 30,
+        groupSlug: 'imaging',
+        subtypeTagline: 'X-Ray, CT, MRI, fluoroscopy with DICOM viewer and AERB dose register.',
+        volumeHint: '20–300+ scans/day',
+        featureFlags: { scanReports: true, billing: true, whatsapp: true, reportDelivery: true, dicom: true, aerb: true } },
+      { name: 'Ultrasound Center', slug: 'ultrasound-center', icon: 'Activity', sortOrder: 31,
+        groupSlug: 'imaging',
+        subtypeTagline: 'USG, Doppler, 3D/4D — includes mandatory PC-PNDT Form F compliance.',
+        volumeHint: '15–200 scans/day',
+        featureFlags: { scanReports: true, billing: true, whatsapp: true, reportDelivery: true, pndt: true, dicom: true } },
+      { name: 'PET Scan Center', slug: 'pet-scan-center', icon: 'Target', sortOrder: 32,
+        groupSlug: 'imaging',
+        subtypeTagline: 'PET-CT, PET-MRI oncology imaging with radiopharmacy tracer log.',
+        volumeHint: '3–50 scans/day',
+        featureFlags: { scanReports: true, billing: true, whatsapp: true, appointments: true, tracerLog: true, aerb: true } },
+      { name: 'Nuclear Medicine Center', slug: 'nuclear-medicine-center', icon: 'Atom', sortOrder: 33,
+        groupSlug: 'imaging',
+        subtypeTagline: 'SPECT, gamma camera, thyroid uptake, radioisotope therapy.',
+        volumeHint: '3–40 scans/day',
+        featureFlags: { scanReports: true, billing: true, whatsapp: true, appointments: true, tracerLog: true, aerb: true, barc: true } },
+      { name: 'Mammography Center', slug: 'mammography-center', icon: 'Shield', sortOrder: 34,
+        groupSlug: 'imaging',
+        subtypeTagline: 'Screening and diagnostic mammography with BI-RADS reporting. Female radiographer mandatory.',
+        volumeHint: '10–80 scans/day',
+        featureFlags: { scanReports: true, billing: true, whatsapp: true, appointments: true, biRads: true, femaleRadiographer: true, aerb: true } },
+      { name: 'DEXA / Bone Density Center', slug: 'dexa-center', icon: 'Bone', sortOrder: 35,
+        groupSlug: 'imaging',
+        subtypeTagline: 'Bone mineral density scans, body composition, fracture-risk (FRAX) assessment.',
+        volumeHint: '5–80 scans/day',
+        featureFlags: { scanReports: true, billing: true, whatsapp: true, appointments: true, frax: true } },
+      { name: 'Dental Radiology Center', slug: 'dental-radiology-center', icon: 'Smile', sortOrder: 36,
+        groupSlug: 'imaging',
+        subtypeTagline: 'OPG panoramic, CBCT 3D, intraoral imaging with dentist collaboration tools.',
+        volumeHint: '20–200 scans/day',
+        featureFlags: { scanReports: true, billing: true, whatsapp: true, appointments: true, opgCbct: true, aerb: true } },
+      { name: 'Ophthalmic Diagnostic Imaging Center', slug: 'ophthalmic-center', icon: 'Eye', sortOrder: 37,
+        groupSlug: 'imaging',
+        subtypeTagline: 'OCT, perimetry, fundus photography, ERG, IOLMaster for retina and glaucoma.',
+        volumeHint: '10–120 patients/day',
+        featureFlags: { scanReports: true, billing: true, whatsapp: true, appointments: true, oct: true, perimetry: true } },
+
+      // ── Group D: Physiological Testing (8) ──────────────────────────────────
+      { name: 'Cardiac Diagnostics Center', slug: 'cardiac-diagnostics', icon: 'Heart', sortOrder: 40,
+        groupSlug: 'physiological',
+        subtypeTagline: 'ECG, 2D Echo, TMT, Holter, ABPM with cardiologist review workflow.',
+        volumeHint: '25–300+ patients/day',
+        featureFlags: { labReports: true, appointments: true, billing: true, whatsapp: true, reportDelivery: true, tmt: true, holter: true } },
+      { name: 'Pulmonary Function Testing (PFT) Center', slug: 'pft-center', icon: 'Wind', sortOrder: 41,
+        groupSlug: 'physiological',
+        subtypeTagline: 'Spirometry, DLCO, FeNO, ABG, body plethysmography.',
+        volumeHint: '5–80 patients/day',
+        featureFlags: { labReports: true, appointments: true, billing: true, whatsapp: true, spirometry: true } },
+      { name: 'Neurophysiology (EEG/EMG) Center', slug: 'neurophysiology-center', icon: 'Brain', sortOrder: 42,
+        groupSlug: 'physiological',
+        subtypeTagline: 'EEG, EMG, NCS, evoked potentials with waveform capture and neurologist review.',
+        volumeHint: '3–60 studies/day',
+        featureFlags: { labReports: true, appointments: true, billing: true, whatsapp: true, waveformCapture: true } },
+      { name: 'Allergy Testing Center', slug: 'allergy-center', icon: 'Flower', sortOrder: 43,
+        groupSlug: 'physiological',
+        subtypeTagline: 'Skin prick, patch tests, challenge tests, allergen immunotherapy planning.',
+        volumeHint: '5–80 patients/day',
+        featureFlags: { labReports: true, appointments: true, billing: true, whatsapp: true, allergenPanels: true } },
+      { name: 'Sleep Lab / Polysomnography', slug: 'sleep-lab', icon: 'Moon', sortOrder: 44,
+        groupSlug: 'physiological',
+        subtypeTagline: 'Overnight polysomnography, CPAP titration, home sleep testing.',
+        volumeHint: '2–30 studies/day',
+        featureFlags: { labReports: true, appointments: true, billing: true, whatsapp: true, psg: true, cpapTitration: true } },
+      { name: 'Audiology & ENT Diagnostic Center', slug: 'audiology-center', icon: 'Ear', sortOrder: 45,
+        groupSlug: 'physiological',
+        subtypeTagline: 'Audiometry, tympanometry, BERA, OAE, VNG for hearing and balance.',
+        volumeHint: '10–120 patients/day',
+        featureFlags: { labReports: true, appointments: true, billing: true, whatsapp: true, audiometry: true } },
+      { name: 'Urodynamics Diagnostic Center', slug: 'urodynamics-center', icon: 'Gauge', sortOrder: 46,
+        groupSlug: 'physiological',
+        subtypeTagline: 'Cystometry, uroflowmetry, pressure-flow studies for bladder dysfunction.',
+        volumeHint: '2–30 studies/day',
+        featureFlags: { labReports: true, appointments: true, billing: true, whatsapp: true, urodynamics: true } },
+      { name: 'Endoscopy Diagnostic Center', slug: 'endoscopy-center', icon: 'Telescope', sortOrder: 47,
+        groupSlug: 'physiological',
+        subtypeTagline: 'Upper GI, colonoscopy, bronchoscopy with video capture and sedation tracking.',
+        volumeHint: '5–60 procedures/day',
+        featureFlags: { labReports: true, appointments: true, billing: true, whatsapp: true, videoCapture: true, sedationLog: true } },
+
+      // ── Group E: Health Packages (2) ────────────────────────────────────────
+      { name: 'Health Checkup / Wellness Screening Center', slug: 'health-checkup', icon: 'ClipboardCheck', sortOrder: 50,
+        groupSlug: 'packages',
+        subtypeTagline: 'Comprehensive preventive checkup packages with annual recall and risk scoring.',
+        volumeHint: '30–12,000 patients/month',
+        featureFlags: { labReports: true, appointments: true, billing: true, whatsapp: true, packages: true, healthRiskAssessment: true } },
+      { name: 'Corporate Wellness Screening', slug: 'corporate-screening', icon: 'Briefcase', sortOrder: 51,
+        groupSlug: 'packages',
+        subtypeTagline: 'B2B employee screening, camp management, employer dashboard, aggregate HR reports.',
+        volumeHint: '50–15,000 employees/month',
+        featureFlags: { labReports: true, billing: true, whatsapp: true, packages: true, bulkBooking: true, employerPortal: true, campMode: true } },
+
+      // ── Group F: Specialty & Advanced (4) ───────────────────────────────────
+      { name: 'IVF / Embryology & Andrology Lab', slug: 'ivf-embryology', icon: 'Baby', sortOrder: 60,
+        groupSlug: 'specialty',
+        subtypeTagline: 'Embryology, ICSI, cryopreservation, andrology — ART Act 2021 compliant.',
+        volumeHint: '2–50 cycles/month',
+        featureFlags: { labReports: true, billing: true, whatsapp: true, cycleTracking: true, cryopreservation: true, casa: true, artAct: true } },
+      { name: 'Stem Cell & HLA / Bone Marrow Registry', slug: 'stem-cell-registry', icon: 'Layers', sortOrder: 61,
+        groupSlug: 'specialty',
+        subtypeTagline: 'HLA typing, bone marrow donor registry, stem cell processing — WMDA workflow.',
+        volumeHint: '5–100 specimens/day',
+        featureFlags: { labReports: true, billing: true, whatsapp: true, hlaTyping: true, donorRegistry: true, wmdaSync: true } },
+      { name: 'Forensic / Drug Testing / Toxicology Lab', slug: 'forensic-toxicology', icon: 'Shield', sortOrder: 62,
+        groupSlug: 'specialty',
+        subtypeTagline: 'GC-MS/LC-MS based drug-of-abuse, doping, forensic samples with chain-of-custody.',
+        volumeHint: '10–200 samples/day',
+        featureFlags: { labReports: true, billing: true, whatsapp: true, chainOfCustody: true, cdsco: true, gcms: true } },
+      { name: 'Cancer Screening / Early Detection Center', slug: 'cancer-screening', icon: 'ShieldAlert', sortOrder: 63,
+        groupSlug: 'specialty',
+        subtypeTagline: 'AI-scored tumor marker panels + imaging + clinician review. NURA-style preventive model.',
+        volumeHint: '10–200 screenings/day',
+        featureFlags: { labReports: true, billing: true, whatsapp: true, packages: true, tumorMarkers: true, aiScoring: true } },
+
+      // ── Group G: Hubs & Digital Operations (3) ──────────────────────────────
+      { name: 'Reference / Central Processing Lab', slug: 'reference-lab', icon: 'Network', sortOrder: 70,
+        groupSlug: 'hub-digital',
+        subtypeTagline: 'Central hub processing samples from 20–100+ PSCs with franchise & revenue sharing.',
+        volumeHint: '300–3,000+ samples/day',
+        featureFlags: { labReports: true, billing: true, whatsapp: true, hubSpoke: true, franchiseMgmt: true, revenueSharing: true, partnerLabs: true } },
+      { name: 'Tele-Radiology Reporting Service', slug: 'tele-radiology', icon: 'Radio', sortOrder: 71,
+        groupSlug: 'hub-digital',
+        subtypeTagline: 'Remote DICOM reading for hospitals and centers with radiologist state-registration tracking.',
+        volumeHint: '30–500 reports/day',
+        featureFlags: { scanReports: true, billing: true, whatsapp: true, dicom: true, teleRadiology: true, nmcTracking: true } },
+      { name: 'Preventive Genomics / DTC Testing Platform', slug: 'dtc-genomics', icon: 'Globe', sortOrder: 72,
+        groupSlug: 'hub-digital',
+        subtypeTagline: 'Direct-to-consumer saliva-kit genetic wellness, pharmacogenomics, ancestry.',
+        volumeHint: '100–10,000 kits/month',
+        featureFlags: { labReports: true, billing: true, whatsapp: true, kitLogistics: true, dtc: true, counselling: true } },
     ],
   },
   {
@@ -430,10 +585,27 @@ async function main() {
 
     // Upsert sub-types
     for (const st of subTypes) {
+      const stData: any = {
+        name: st.name,
+        slug: st.slug,
+        icon: st.icon,
+        sortOrder: st.sortOrder,
+        featureFlags: st.featureFlags,
+        groupSlug: (st as any).groupSlug ?? null,
+        subtypeTagline: (st as any).subtypeTagline ?? null,
+        volumeHint: (st as any).volumeHint ?? null,
+      };
       await prisma.tenantSubType.upsert({
         where: { portalFamilyId_slug: { portalFamilyId: pf.id, slug: st.slug } },
-        create: { ...st, portalFamilyId: pf.id },
-        update: { name: st.name, icon: st.icon, sortOrder: st.sortOrder },
+        create: { ...stData, portalFamilyId: pf.id },
+        update: {
+          name: stData.name,
+          icon: stData.icon,
+          sortOrder: stData.sortOrder,
+          groupSlug: stData.groupSlug,
+          subtypeTagline: stData.subtypeTagline,
+          volumeHint: stData.volumeHint,
+        },
       });
     }
 
@@ -599,12 +771,62 @@ async function seedRechargePacks() {
   console.log(`✅ ${seeded} recharge packs seeded`);
 }
 
+// ── Subtype Groups (Diagnostic only for now) ────────────────────────────────
+// These seven operational groups partition the 34 diagnostic subtypes for the
+// registration wizard's group-picker step.
+
+const DIAGNOSTIC_SUBTYPE_GROUPS = [
+  { slug: 'collection', name: 'Collection & Logistics', icon: 'Droplet',
+    description: 'Sample pickup centers, pickup points, and home collection services.',
+    sortOrder: 1 },
+  { slug: 'pathology', name: 'Pathology & Lab Testing', icon: 'TestTube',
+    description: 'In-house blood tests, cultures, biopsies, PCR, genetics, blood banks.',
+    sortOrder: 2 },
+  { slug: 'imaging', name: 'Imaging & Scans', icon: 'ScanLine',
+    description: 'X-Ray, CT, MRI, USG, PET, nuclear medicine, mammography, DEXA, dental, ophthalmic.',
+    sortOrder: 3 },
+  { slug: 'physiological', name: 'Physiological Testing', icon: 'Activity',
+    description: 'Cardiac, pulmonary, neuro, sleep, audiology, endoscopy — body-function studies.',
+    sortOrder: 4 },
+  { slug: 'packages', name: 'Health Packages', icon: 'ClipboardCheck',
+    description: 'Preventive checkup packages and corporate wellness screening.',
+    sortOrder: 5 },
+  { slug: 'specialty', name: 'Specialty & Advanced', icon: 'Sparkles',
+    description: 'IVF, stem cell registry, forensic testing, AI-powered cancer screening.',
+    sortOrder: 6 },
+  { slug: 'hub-digital', name: 'Hubs & Digital', icon: 'Network',
+    description: 'Reference labs, tele-radiology reporting, direct-to-consumer genomics platforms.',
+    sortOrder: 7 },
+];
+
+async function seedSubtypeGroups() {
+  const diagnostic = await prisma.portalFamily.findUnique({ where: { slug: 'diagnostic' } });
+  if (!diagnostic) {
+    console.log('⚠️  Diagnostic portal family not found — skipping subtype groups seed');
+    return;
+  }
+
+  let seeded = 0;
+  for (const g of DIAGNOSTIC_SUBTYPE_GROUPS) {
+    await (prisma as any).subtypeGroup.upsert({
+      where: { portalFamilyId_slug: { portalFamilyId: diagnostic.id, slug: g.slug } },
+      create: { ...g, portalFamilyId: diagnostic.id },
+      update: { name: g.name, description: g.description, icon: g.icon, sortOrder: g.sortOrder },
+    }).catch((err: any) => {
+      console.warn(`⚠️  Could not upsert subtype group ${g.slug}: ${err?.message ?? err}`);
+    });
+    seeded++;
+  }
+  console.log(`✅ ${seeded} diagnostic subtype groups seeded`);
+}
+
 async function runAll() {
   await main();
   await migrateExistingTenants();
   await seedWATemplates();
   await seedRechargePacks();
   await seedDiagnosticWATemplates();
+  await seedSubtypeGroups();
 }
 
 runAll()

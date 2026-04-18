@@ -216,7 +216,7 @@ export default function MySchedulePage() {
                             <Stethoscope className="w-3.5 h-3.5" /> Open Console
                           </a>
                         )}
-                        {s.next && (
+                        {('next' in s) && s.next && (
                           <button onClick={() => advance(appt)} disabled={updating === appt.id}
                             className="flex items-center gap-1.5 text-xs font-bold text-white px-3 py-2 rounded-xl hover:opacity-90 disabled:opacity-60 transition-opacity"
                             style={{ background: s.color }}>
@@ -227,7 +227,7 @@ export default function MySchedulePage() {
                             ) : (
                               <CheckCircle2 className="w-3.5 h-3.5" />
                             )}
-                            {s.nextLabel}
+                            {('nextLabel' in s) ? s.nextLabel : ''}
                           </button>
                         )}
                         {appt.status === 'COMPLETED' && (

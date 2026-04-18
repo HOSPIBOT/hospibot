@@ -30,12 +30,12 @@ function SubtypeTierBanner({ subtype, tier }: { subtype: string; tier: string })
       medium: 'Add HL7/ASTM analyser integration, Westgard QC, and NABL documentation with Large plan.',
       large:  'Enable franchise management, ABHA integration, and ICMR reporting with Enterprise.',
     },
-    'sample-collection': {
+    'sample-collection-center': {
       small:  'Unlock cold chain monitoring, online booking, and runner tracking with Medium plan.',
       medium: 'Add multi-branch operations, NABL 111 audit, and staff HRMS with Large plan.',
       large:  'Scale to franchise PSC network and aggregator integrations with Enterprise.',
     },
-    'home-collection': {
+    'home-sample-collection': {
       small:  'Unlock live GPS tracking, phlebotomist mobile app, and call-masking with Medium plan.',
       medium: 'Add AI route optimization, fleet management, and IoT cold-chain with Large plan.',
       large:  'Launch white-label patient app and franchise agent network with Enterprise.',
@@ -50,7 +50,7 @@ function SubtypeTierBanner({ subtype, tier }: { subtype: string; tier: string })
       medium: 'Add multi-machine optimization, NABL for USG, and CA audit readiness with Large plan.',
       large:  'Enable AI fetal anomaly screening and franchise USG network with Enterprise.',
     },
-    'pet-scan': {
+    'pet-scan-center': {
       small:  'Unlock DICOM viewer, multi-tracer inventory, and AERB records with Medium plan.',
       medium: 'Add full PET-CT PACS, AI SUV quantification, and multi-machine ops with Large plan.',
       large:  'Launch theranostics (Lu-177 PSMA) and multi-center network with Enterprise.',
@@ -314,8 +314,8 @@ export default function DiagnosticDashboard() {
       {(() => {
         const cards = [];
         // "Today's Orders" label changes per subtype
-        const orderLabel = subtype === 'radiology-center' || subtype === 'ultrasound-center' || subtype === 'pet-scan' ? "Today's Scans"
-                         : subtype === 'home-collection' ? "Today's Bookings"
+        const orderLabel = subtype === 'radiology-center' || subtype === 'ultrasound-center' || subtype === 'pet-scan-center' ? "Today's Scans"
+                         : subtype === 'home-sample-collection' ? "Today's Bookings"
                          : subtype === 'tele-radiology' ? "Today's Reports"
                          : subtype === 'corporate-screening' ? "Today's Employees"
                          : "Today's Orders";

@@ -61,6 +61,41 @@ export class PortalController {
     return this.portalService.getAllThemes();
   }
 
+  // ── Registration wizard: subtype groups + drafts ────────────────────────
+
+  @Get('families/:slug/groups')
+  @ApiOperation({ summary: 'List active subtype groups for a portal family' })
+  getGroupsByFamily(@Param('slug') slug: string) {
+    return this.portalService.getGroupsByFamily(slug);
+  }
+
+  @Get('families/:familySlug/groups/:groupSlug/subtypes')
+  @ApiOperation({ summary: 'List active subtypes within a given group' })
+  getSubtypesByGroup(
+    @Param('familySlug') familySlug: string,
+    @Param('groupSlug') groupSlug: string,
+  ) {
+    return this.portalService.getSubtypesByGroup(familySlug, groupSlug);
+  }
+
+  @Post('registration-drafts')
+  @ApiOperation({ summary: 'Create an anonymous registration draft (save-and-resume session)' })
+  createRegistrationDraft(@Body() body: any) {
+    return this.portalService.createRegistrationDraft(body ?? {});
+  }
+
+  @Get('registration-drafts/:token')
+  @ApiOperation({ summary: 'Fetch an existing registration draft by token (for resume)' })
+  getRegistrationDraft(@Param('token') token: string) {
+    return this.portalService.getRegistrationDraft(token);
+  }
+
+  @Patch('registration-drafts/:token')
+  @ApiOperation({ summary: 'Patch an existing registration draft (auto-save on every step)' })
+  updateRegistrationDraft(@Param('token') token: string, @Body() body: any) {
+    return this.portalService.updateRegistrationDraft(token, body ?? {});
+  }
+
   // ── Super Admin only ──────────────────────────────────────────────────────
 
   @Post('families')

@@ -18,8 +18,8 @@
  */
 
 export type DiagSubtype =
-  | 'pathology-lab' | 'sample-collection' | 'home-collection'
-  | 'radiology-center' | 'ultrasound-center' | 'pet-scan'
+  | 'pathology-lab' | 'sample-collection-center' | 'home-sample-collection'
+  | 'radiology-center' | 'ultrasound-center' | 'pet-scan-center'
   | 'cardiac-diagnostics' | 'molecular-lab' | 'health-checkup'
   | 'corporate-screening' | 'genetic-lab' | 'reference-lab'
   | 'tele-radiology';
@@ -249,7 +249,7 @@ const SUBTYPE_DATA: Record<DiagSubtype, SubtypeTierData> = {
    *   Satellite centers that collect samples and dispatch to parent lab.
    *   Focus: fast registration, cold chain, dispatch manifest, no testing.
    * ================================================================ */
-  'sample-collection': {
+  'sample-collection-center': {
     scaleLabel: 'Daily Samples', scaleUnit: 'samples/day',
     tiers: {
       small: {
@@ -412,7 +412,7 @@ const SUBTYPE_DATA: Record<DiagSubtype, SubtypeTierData> = {
    * HOME SAMPLE COLLECTION
    *   Doorstep phlebotomy service — booking, dispatch, route, cold chain.
    * ================================================================ */
-  'home-collection': {
+  'home-sample-collection': {
     scaleLabel: 'Daily Bookings', scaleUnit: 'bookings/day',
     tiers: {
       small: {
@@ -966,7 +966,7 @@ const SUBTYPE_DATA: Record<DiagSubtype, SubtypeTierData> = {
    * PET SCAN CENTER
    *   Nuclear medicine — radiotracer ordering, dosing, AERB, SUV analysis
    * ================================================================ */
-  'pet-scan': {
+  'pet-scan-center': {
     scaleLabel: 'Daily Scans', scaleUnit: 'scans/day',
     tiers: {
       small: {
