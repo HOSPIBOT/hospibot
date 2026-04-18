@@ -721,22 +721,35 @@ const DIAGNOSTIC_WA_TEMPLATES: Array<{
     bodyText: 'Happy Birthday {{name}}! Enjoy 20% off any health package this month. Book at {{booking_link}}' },
 ];
 async function seedDiagnosticWATemplates() {
+  // Same Prisma limitation as seedWATemplates — see comment there.
   let seeded = 0;
   for (const tmpl of DIAGNOSTIC_WA_TEMPLATES) {
-    await prisma.whatsappTemplate.upsert({
-      where: { name_tenantId: { name: tmpl.name, tenantId: null } } as any,
-      create: {
-        ...(tmpl as any),
-        tenantId: null,
-        isDefault: true,
-        status: 'APPROVED',
-        buttons: (tmpl as any).buttons ?? [],
-      },
-      update: { status: 'APPROVED' },
-    }).catch(() => {});
-    seeded++;
+    try {
+      const existing = await prisma.whatsappTemplate.findFirst({
+        where: { name: tmpl.name, tenantId: null },
+      });
+      if (existing) {
+        await prisma.whatsappTemplate.update({
+          where: { id: existing.id },
+          data: { status: 'APPROVED' },
+        });
+      } else {
+        await prisma.whatsappTemplate.create({
+          data: {
+            ...(tmpl as any),
+            tenantId: null,
+            isDefault: true,
+            status: 'APPROVED',
+            buttons: (tmpl as any).buttons ?? [],
+          },
+        });
+      }
+      seeded++;
+    } catch (err: any) {
+      console.warn(`⚠️  Diagnostic WA template '${tmpl.name}' failed: ${err?.message ?? err}`);
+    }
   }
-  console.log(`✅ ${seeded} diagnostic WhatsApp templates seeded`);
+  console.log(`✅ ${seeded}/${DIAGNOSTIC_WA_TEMPLATES.length} diagnostic WhatsApp templates seeded`);
 }
 
 // ── Diagnostic Recharge Packs seed ──────────────────────────────────────────
@@ -1069,15 +1082,37 @@ async function seedFeatureGates() {
 }
 
 async function runAll() {
-  await main();
-  await migrateExistingTenants();
-  await seedWATemplates();
-  await seedRechargePacks();
-  await seedDiagnosticWATemplates();
-  await seedSubtypeGroups();
-  await seedTierConfigs();
-  await seedFeatureDefinitions();
-  await seedFeatureGates();
+  // Each seed step is isolated so one failure doesn't block the rest. This
+  // matters because main() and migrateExistingTenants() set up base data,
+  // but portal setup (subtype groups, tier configs, features) comes AFTER
+  // WhatsApp template seeding — and we don't want a WA template issue to
+  // prevent portal control-plane data from being seeded.
+  const steps: Array<[string, () => Promise<unknown>]> = [
+    ['main',                      main],
+    ['migrateExistingTenants',    migrateExistingTenants],
+    ['seedWATemplates',           seedWATemplates],
+    ['seedRechargePacks',         seedRechargePacks],
+    ['seedDiagnosticWATemplates', seedDiagnosticWATemplates],
+    ['seedSubtypeGroups',         seedSubtypeGroups],
+    ['seedTierConfigs',           seedTierConfigs],
+    ['seedFeatureDefinitions',    seedFeatureDefinitions],
+    ['seedFeatureGates',          seedFeatureGates],
+  ];
+  const failures: string[] = [];
+  for (const [name, fn] of steps) {
+    try {
+      await fn();
+    } catch (err: any) {
+      failures.push(name);
+      console.error(`⚠️  Seed step '${name}' failed: ${err?.message ?? err}`);
+      // continue with remaining steps
+    }
+  }
+  if (failures.length) {
+    console.warn(`⚠️  Seed finished with ${failures.length} failed step(s): ${failures.join(', ')}`);
+  } else {
+    console.log(`✅ All ${steps.length} seed steps completed successfully`);
+  }
 }
 
 runAll()
@@ -1131,12 +1166,30 @@ const WA_TEMPLATES = [
 ];
 
 async function seedWATemplates() {
+  // NOTE: WhatsappTemplate has @@unique([name, tenantId]) with tenantId String?
+  // nullable. Prisma client rejects `tenantId: null` inside compound-unique
+  // `where` clauses — a documented limitation of Prisma with nullable unique
+  // fields. The fix is findFirst + create/update instead of upsert.
+  let seeded = 0;
   for (const tmpl of WA_TEMPLATES) {
-    await prisma.whatsappTemplate.upsert({
-      where: { name_tenantId: { name: tmpl.name, tenantId: null } },
-      create: { ...tmpl, tenantId: null, isDefault: true, status: 'APPROVED' } as any,
-      update: { status: 'APPROVED' },
-    });
+    try {
+      const existing = await prisma.whatsappTemplate.findFirst({
+        where: { name: tmpl.name, tenantId: null },
+      });
+      if (existing) {
+        await prisma.whatsappTemplate.update({
+          where: { id: existing.id },
+          data: { status: 'APPROVED' },
+        });
+      } else {
+        await prisma.whatsappTemplate.create({
+          data: { ...(tmpl as any), tenantId: null, isDefault: true, status: 'APPROVED' },
+        });
+      }
+      seeded++;
+    } catch (err: any) {
+      console.warn(`⚠️  WA template '${tmpl.name}' failed: ${err?.message ?? err}`);
+    }
   }
-  console.log(`✅ ${WA_TEMPLATES.length} WhatsApp templates seeded`);
+  console.log(`✅ ${seeded}/${WA_TEMPLATES.length} WhatsApp templates seeded`);
 }
