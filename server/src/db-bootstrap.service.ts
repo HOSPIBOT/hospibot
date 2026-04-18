@@ -79,7 +79,10 @@ export class DbBootstrapService implements OnModuleInit {
       'db-seed',
       'npx prisma db seed',
       process.env.SKIP_DB_SEED === 'true',
-      5 * 60 * 1000, // 5 min
+      15 * 60 * 1000, // 15 min — seed chain is large (18+10 WA templates,
+                      // 41 features, 7 groups, 4 tiers, feature gates matrix).
+                      // Each Prisma query is ~100-300ms over Supabase pooler,
+                      // so hundreds of sequential calls need ample headroom.
     );
 
     this.logger.log('═══ DB bootstrap chain finished ═══');

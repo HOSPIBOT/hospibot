@@ -722,15 +722,19 @@ const DIAGNOSTIC_WA_TEMPLATES: Array<{
 ];
 async function seedDiagnosticWATemplates() {
   // Same Prisma limitation as seedWATemplates — see comment there.
+  // Same perf pattern: one findMany, then local decision.
   let seeded = 0;
+  const existing = await prisma.whatsappTemplate.findMany({
+    where: { tenantId: null, name: { in: DIAGNOSTIC_WA_TEMPLATES.map(t => t.name) } },
+    select: { id: true, name: true },
+  });
+  const existingByName = new Map(existing.map(e => [e.name, e.id]));
   for (const tmpl of DIAGNOSTIC_WA_TEMPLATES) {
     try {
-      const existing = await prisma.whatsappTemplate.findFirst({
-        where: { name: tmpl.name, tenantId: null },
-      });
-      if (existing) {
+      const existingId = existingByName.get(tmpl.name);
+      if (existingId) {
         await prisma.whatsappTemplate.update({
-          where: { id: existing.id },
+          where: { id: existingId },
           data: { status: 'APPROVED' },
         });
       } else {
@@ -1099,19 +1103,25 @@ async function runAll() {
     ['seedFeatureGates',          seedFeatureGates],
   ];
   const failures: string[] = [];
+  const totalStart = Date.now();
   for (const [name, fn] of steps) {
+    const stepStart = Date.now();
     try {
       await fn();
+      const elapsed = ((Date.now() - stepStart) / 1000).toFixed(1);
+      console.log(`⏱  [${name}] completed in ${elapsed}s`);
     } catch (err: any) {
+      const elapsed = ((Date.now() - stepStart) / 1000).toFixed(1);
       failures.push(name);
-      console.error(`⚠️  Seed step '${name}' failed: ${err?.message ?? err}`);
+      console.error(`⚠️  [${name}] failed after ${elapsed}s: ${err?.message ?? err}`);
       // continue with remaining steps
     }
   }
+  const totalElapsed = ((Date.now() - totalStart) / 1000).toFixed(1);
   if (failures.length) {
-    console.warn(`⚠️  Seed finished with ${failures.length} failed step(s): ${failures.join(', ')}`);
+    console.warn(`⚠️  Seed finished in ${totalElapsed}s with ${failures.length} failed step(s): ${failures.join(', ')}`);
   } else {
-    console.log(`✅ All ${steps.length} seed steps completed successfully`);
+    console.log(`✅ All ${steps.length} seed steps completed successfully in ${totalElapsed}s`);
   }
 }
 
@@ -1170,15 +1180,22 @@ async function seedWATemplates() {
   // nullable. Prisma client rejects `tenantId: null` inside compound-unique
   // `where` clauses — a documented limitation of Prisma with nullable unique
   // fields. The fix is findFirst + create/update instead of upsert.
+  //
+  // PERF: instead of one findFirst per template (N roundtrips), do ONE
+  // findMany for all default templates, then decide create/update locally.
+  // Reduces 2N roundtrips to N+1.
   let seeded = 0;
+  const existing = await prisma.whatsappTemplate.findMany({
+    where: { tenantId: null, name: { in: WA_TEMPLATES.map(t => t.name) } },
+    select: { id: true, name: true },
+  });
+  const existingByName = new Map(existing.map(e => [e.name, e.id]));
   for (const tmpl of WA_TEMPLATES) {
     try {
-      const existing = await prisma.whatsappTemplate.findFirst({
-        where: { name: tmpl.name, tenantId: null },
-      });
-      if (existing) {
+      const existingId = existingByName.get(tmpl.name);
+      if (existingId) {
         await prisma.whatsappTemplate.update({
-          where: { id: existing.id },
+          where: { id: existingId },
           data: { status: 'APPROVED' },
         });
       } else {
