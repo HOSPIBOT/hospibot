@@ -18,11 +18,22 @@
  */
 
 export type DiagSubtype =
-  | 'pathology-lab' | 'sample-collection-center' | 'home-sample-collection'
-  | 'radiology-center' | 'ultrasound-center' | 'pet-scan-center'
-  | 'cardiac-diagnostics' | 'molecular-lab' | 'health-checkup'
-  | 'corporate-screening' | 'genetic-lab' | 'reference-lab'
-  | 'tele-radiology';
+  // Group A — Collection & Logistics
+  | 'sample-collection-center' | 'pickup-point' | 'home-sample-collection'
+  // Group B — Pathology & Lab Testing
+  | 'pathology-lab' | 'histopathology-lab' | 'molecular-lab' | 'micro-lab' | 'genetic-lab' | 'blood-bank'
+  // Group C — Imaging & Scans
+  | 'radiology-center' | 'ultrasound-center' | 'pet-scan-center' | 'nuclear-medicine-center'
+  | 'mammography-center' | 'dexa-center' | 'dental-radiology-center' | 'ophthalmic-center'
+  // Group D — Physiological Testing
+  | 'cardiac-diagnostics' | 'pft-center' | 'neurophysiology-center' | 'allergy-center'
+  | 'sleep-lab' | 'audiology-center' | 'urodynamics-center' | 'endoscopy-center'
+  // Group E — Health Packages
+  | 'health-checkup' | 'corporate-screening'
+  // Group F — Specialty & Advanced
+  | 'ivf-embryology' | 'stem-cell-registry' | 'forensic-toxicology' | 'cancer-screening'
+  // Group G — Hubs & Digital
+  | 'reference-lab' | 'tele-radiology' | 'dtc-genomics';
 
 export interface SubtypeTierData {
   scaleLabel: string;
@@ -2350,6 +2361,1428 @@ const SUBTYPE_DATA: Record<DiagSubtype, SubtypeTierData> = {
           'SLA-backed 99.9% uptime',
           'Quarterly business review',
         ],
+        notIncluded: [],
+      },
+    },
+  },
+
+/* ================================================================
+   * PICKUP POINT (PUP)
+   *   Counter inside pharmacy/clinic — minimal handover flow.
+   * ================================================================ */
+  'pickup-point': {
+    scaleLabel: 'Daily Handovers', scaleUnit: 'handovers/day',
+    tiers: {
+      small: {
+        scale: [
+          {label:'Daily Handovers', value:'1 – 15'},
+          {label:'Staff',           value:'1'},
+          {label:'Parent Lab',      value:'1'},
+          {label:'WA Credits',      value:'200 / month'},
+        ],
+        features: [
+          'Patient registration with phone-number lookup',
+          'Sample handover checklist (tube type, volume, label)',
+          'Barcode label printing for parent lab compatibility',
+          'Handover manifest generation (PDF)',
+          'WhatsApp receipt to patient',
+          'Basic billing (pass-through from parent lab)',
+          'Daily handover summary',
+        ],
+        notIncluded: [
+          'Temperature monitoring',
+          'Multi-lab routing',
+          'Runner tracking',
+          'Doctor referral CRM',
+          'Insurance / TPA billing',
+        ],
+      },
+      medium: {
+        scale: [
+          {label:'Daily Handovers', value:'15 – 50'},
+          {label:'Staff',           value:'1 – 3'},
+          {label:'Parent Labs',     value:'1 – 2'},
+          {label:'WA Credits',      value:'500 / month'},
+        ],
+        features: [
+          'Everything in Small',
+          'Temperature log for sample storage (manual entry)',
+          'Multi-lab routing (route by test type)',
+          'Runner pickup scheduling',
+          'Referring doctor notification on collection',
+          'Patient report delivery via WhatsApp link',
+          'Monthly MIS for counter owner',
+          'Chat + email support',
+        ],
+        notIncluded: [
+          'Cold chain IoT monitoring',
+          'Staff HRMS',
+          'Multi-branch management',
+          'Franchise operations',
+        ],
+      },
+      large: {
+        scale: [
+          {label:'Daily Handovers', value:'50 – 200'},
+          {label:'Staff',           value:'3 – 10'},
+          {label:'Parent Labs',     value:'2 – 5'},
+          {label:'WA Credits',      value:'1,500 / month'},
+        ],
+        features: [
+          'Everything in Medium',
+          'Cold chain temperature log with excursion alerts',
+          'Multi-branch PUP management console',
+          'Staff attendance tracking',
+          'NABL-compliant sample handling audit trail',
+          'Lab-wise TAT & SLA tracking',
+          'Zone-wise performance analytics',
+          'Priority support',
+        ],
+        notIncluded: [
+          'Franchise PUP network',
+          'White-label patient app',
+          'API integrations',
+        ],
+      },
+      enterprise: {
+        scale: [
+          {label:'Daily Handovers', value:'200+'},
+          {label:'Staff',           value:'10+'},
+          {label:'Parent Labs',     value:'5+'},
+          {label:'WA Credits',      value:'Unlimited'},
+        ],
+        features: [
+          'Everything in Large',
+          'Franchise PUP onboarding & agreement workflow',
+          'Revenue sharing engine',
+          'White-label patient-facing experience',
+          'Aggregator inbound API',
+          'Dedicated account manager',
+          'Custom SLA & compliance reports',
+        ],
+        notIncluded: [],
+      },
+    },
+  },
+
+  /* ================================================================
+   * HISTOPATHOLOGY & CYTOPATHOLOGY LAB
+   *   Tissue biopsies, IHC, FNAC, Pap smears, frozen sections.
+   * ================================================================ */
+  'histopathology-lab': {
+    scaleLabel: 'Daily Specimens', scaleUnit: 'specimens/day',
+    tiers: {
+      small: {
+        scale: [
+          {label:'Daily Specimens', value:'1 – 20'},
+          {label:'Staff',           value:'1 – 5'},
+          {label:'Pathologists',    value:'1'},
+          {label:'Monthly Cases',   value:'Up to 600'},
+          {label:'WA Credits',      value:'500 / month'},
+        ],
+        features: [
+          'Specimen registration with clinical history capture',
+          'Gross examination template & dictation',
+          'Cassette & slide tracking with barcode',
+          'H&E stain workflow with block tracking',
+          'Microscopy result entry with free-text or template',
+          'Pathologist single-step digital sign-off',
+          'NABL-format PDF report with lab letterhead',
+          'WhatsApp report delivery to clinician & patient',
+          'GST-compliant invoice with HSN codes',
+          'Daily specimen & revenue dashboard',
+          'Email support',
+        ],
+        notIncluded: [
+          'IHC (immunohistochemistry) panel workflow',
+          'Frozen section intra-operative module',
+          'Digital slide scanning integration',
+          'Synoptic cancer reporting (CAP templates)',
+          'Multi-site operations',
+          'NABL ISO 15189 documentation suite',
+        ],
+      },
+      medium: {
+        scale: [
+          {label:'Daily Specimens', value:'20 – 80'},
+          {label:'Staff',           value:'5 – 15'},
+          {label:'Pathologists',    value:'1 – 3'},
+          {label:'Monthly Cases',   value:'Up to 2,400'},
+          {label:'WA Credits',      value:'1,500 / month'},
+        ],
+        features: [
+          'Everything in Small',
+          'IHC panel ordering & result capture',
+          'Special stains workflow (PAS, GMS, AFB, reticulin)',
+          'Frozen section module with intra-op timer & OT notification',
+          'Synoptic cancer reporting with CAP-style templates',
+          'FNAC / cytology grading (Bethesda, WHO)',
+          'Pap smear screening with TBS classification',
+          'Clinician referral CRM & commission tracking',
+          'TPA / insurance pre-authorization',
+          'TAT analytics per specimen type',
+          'Critical diagnosis auto-alert to surgeon',
+          'Chat + email support',
+        ],
+        notIncluded: [
+          'Digital pathology / whole-slide imaging',
+          'Molecular IHC scoring (Ki-67 AI, ER/PR quantification)',
+          'Multi-branch operations',
+          'NABL compliance documentation',
+          'Staff HRMS & payroll',
+        ],
+      },
+      large: {
+        scale: [
+          {label:'Daily Specimens', value:'80 – 300'},
+          {label:'Staff',           value:'15 – 50'},
+          {label:'Pathologists',    value:'3 – 10'},
+          {label:'Monthly Cases',   value:'Up to 9,000'},
+          {label:'WA Credits',      value:'4,000 / month'},
+        ],
+        features: [
+          'Everything in Medium',
+          'Digital slide scanning integration (Leica, Hamamatsu, 3DHISTECH)',
+          'AI-assisted Ki-67, ER/PR, HER2 scoring',
+          'Telepathology for second-opinion workflow',
+          'Multi-branch lab management console',
+          'NABL ISO 15189:2022 documentation suite',
+          'Reagent & consumable inventory with min-max reorder',
+          'Equipment calibration & PM schedule (microtome, processor)',
+          'Staff HRMS — attendance, payroll, CME tracking',
+          'Cancer registry data export (ICMR / NCDIR format)',
+          'Priority support with 4h SLA',
+        ],
+        notIncluded: [
+          'AI-based tumour classification (CNN models)',
+          'Research biobank specimen tracking',
+          'Franchise lab operations',
+          'ABDM / FHIR integration',
+        ],
+      },
+      enterprise: {
+        scale: [
+          {label:'Daily Specimens', value:'300+'},
+          {label:'Staff',           value:'50+'},
+          {label:'Pathologists',    value:'10+'},
+          {label:'Monthly Cases',   value:'Unlimited'},
+          {label:'WA Credits',      value:'Unlimited'},
+        ],
+        features: [
+          'Everything in Large',
+          'AI tumour classification & grading assistance',
+          'Research biobank specimen tracking (SPREC coded)',
+          'Franchise / partner lab onboarding',
+          'Hub-spoke slide routing between sites',
+          'ABDM HIP integration (FHIR R4)',
+          'Hospital HIS / EMR integration (HL7)',
+          'Dedicated account manager',
+          'Quarterly business review',
+          'Custom integrations on request',
+        ],
+        notIncluded: [],
+      },
+    },
+  },
+
+  /* ================================================================
+   * MICROBIOLOGICAL LABORATORY
+   *   Culture, sensitivity, AMR reporting.
+   * ================================================================ */
+  'micro-lab': {
+    scaleLabel: 'Daily Cultures', scaleUnit: 'cultures/day',
+    tiers: {
+      small: {
+        scale: [
+          {label:'Daily Cultures', value:'1 – 30'},
+          {label:'Staff',          value:'1 – 5'},
+          {label:'Incubators',     value:'1 – 3'},
+          {label:'Monthly Tests',  value:'Up to 900'},
+          {label:'WA Credits',     value:'500 / month'},
+        ],
+        features: [
+          'Specimen registration with source & clinical indication',
+          'Culture plate tracking (blood, urine, wound, sputum)',
+          'Organism identification with manual entry',
+          'Antibiotic sensitivity reporting (disk diffusion)',
+          'MIC (minimum inhibitory concentration) entry',
+          'Pathologist digital sign-off',
+          'NABL-format PDF report with organism & sensitivity panel',
+          'WhatsApp report delivery',
+          'GST-compliant billing',
+          'BSL-2 biosafety checklist (daily)',
+          'Email support',
+        ],
+        notIncluded: [
+          'VITEK / Phoenix automated ID & AST import',
+          'Antibiogram generation',
+          'MDRO / AMR surveillance',
+          'CLSI breakpoint auto-update',
+          'Blood culture system integration',
+          'Multi-site operations',
+        ],
+      },
+      medium: {
+        scale: [
+          {label:'Daily Cultures', value:'30 – 150'},
+          {label:'Staff',          value:'5 – 15'},
+          {label:'Incubators',     value:'3 – 10'},
+          {label:'Monthly Tests',  value:'Up to 4,500'},
+          {label:'WA Credits',     value:'1,500 / month'},
+        ],
+        features: [
+          'Everything in Small',
+          'VITEK / Phoenix automated ID & AST result import',
+          'Blood culture system integration (BacT/ALERT, BACTEC)',
+          'CLSI / EUCAST breakpoint tables with auto-interpretation',
+          'Antibiogram generation (hospital-wide / ICU-specific)',
+          'MDRO flagging (MRSA, VRE, ESBL, CRE)',
+          'Infection control alerts to hospital IC nurse',
+          'AFB smear & TB culture tracking (RNTCP-Nikshay ready)',
+          'Fungal culture & sensitivity module',
+          'Clinician CRM with referral tracking',
+          'TPA / insurance billing',
+          'TAT analytics by culture type',
+          'Chat + email support',
+        ],
+        notIncluded: [
+          'AMR stewardship dashboard',
+          'Molecular resistance gene detection (mecA, KPC, NDM)',
+          'NABL ISO 15189 documentation',
+          'Multi-branch operations',
+          'HRMS & payroll',
+        ],
+      },
+      large: {
+        scale: [
+          {label:'Daily Cultures', value:'150 – 500'},
+          {label:'Staff',          value:'15 – 40'},
+          {label:'Incubators',     value:'10+'},
+          {label:'Monthly Tests',  value:'Up to 15,000'},
+          {label:'WA Credits',     value:'4,000 / month'},
+        ],
+        features: [
+          'Everything in Medium',
+          'AMR stewardship dashboard with DOT / DDD metrics',
+          'Molecular resistance gene detection integration',
+          'NABL ISO 15189:2022 documentation suite',
+          'BSL-2 / BSL-3 biosafety compliance register',
+          'Multi-branch lab management console',
+          'Reagent & media inventory with expiry tracking',
+          'Equipment calibration schedule (autoclave, BSC)',
+          'Staff HRMS — attendance, payroll, competency',
+          'ICMR AMR surveillance data export',
+          'Government disease reporting (IDSP, IHIP)',
+          'Priority support with 4h SLA',
+        ],
+        notIncluded: [
+          'Whole-genome sequencing workflow',
+          'Outbreak cluster analysis (phylogenetics)',
+          'Franchise lab operations',
+          'ABDM / FHIR integration',
+        ],
+      },
+      enterprise: {
+        scale: [
+          {label:'Daily Cultures', value:'500+'},
+          {label:'Staff',          value:'40+'},
+          {label:'Incubators',     value:'20+'},
+          {label:'Monthly Tests',  value:'Unlimited'},
+          {label:'WA Credits',     value:'Unlimited'},
+        ],
+        features: [
+          'Everything in Large',
+          'WGS (whole-genome sequencing) pipeline integration',
+          'Outbreak cluster analysis & phylogenetic tree',
+          'WHO GLASS AMR data submission',
+          'Franchise / partner lab onboarding',
+          'Hospital HIS / EMR integration (HL7)',
+          'ABDM HIP integration (FHIR R4)',
+          'Dedicated account manager',
+          'Quarterly business review',
+          'Custom integrations on request',
+        ],
+        notIncluded: [],
+      },
+    },
+  },
+
+  /* ================================================================
+   * BLOOD BANK & TRANSFUSION CENTER
+   *   Collection, component separation, crossmatch, dispatch.
+   * ================================================================ */
+  'blood-bank': {
+    scaleLabel: 'Daily Units', scaleUnit: 'units/day',
+    tiers: {
+      small: {
+        scale: [
+          {label:'Daily Units',     value:'1 – 20'},
+          {label:'Staff',           value:'2 – 8'},
+          {label:'Storage Capacity',value:'Up to 500 units'},
+          {label:'Monthly Donations',value:'Up to 600'},
+          {label:'WA Credits',      value:'500 / month'},
+        ],
+        features: [
+          'Donor registration with eligibility screening (NACO criteria)',
+          'Pre-donation questionnaire & deferral tracking',
+          'Donation recording (whole blood, date, volume, bag ID)',
+          'ABO / Rh typing with forward & reverse grouping',
+          'Component separation tracking (PRBC, FFP, platelets, cryo)',
+          'Inventory management with bag-level barcode',
+          'Crossmatch request processing',
+          'Issue-on-crossmatch with compatibility record',
+          'DGHS Form 12 monthly reporting',
+          'WhatsApp donation certificate to donor',
+          'GST-compliant billing (processing fee)',
+          'Email support',
+        ],
+        notIncluded: [
+          'Antibody screening & identification',
+          'Donor recall campaigns (WhatsApp / SMS)',
+          'Component therapy advisory',
+          'Platelet apheresis tracking',
+          'Multi-site blood bank operations',
+          'Hemovigilance adverse-event reporting',
+        ],
+      },
+      medium: {
+        scale: [
+          {label:'Daily Units',     value:'20 – 80'},
+          {label:'Staff',           value:'8 – 20'},
+          {label:'Storage Capacity',value:'Up to 2,000 units'},
+          {label:'Monthly Donations',value:'Up to 2,400'},
+          {label:'WA Credits',      value:'2,000 / month'},
+        ],
+        features: [
+          'Everything in Small',
+          'Antibody screening panel (3-cell, 11-cell)',
+          'Antibody identification with panel interpretation',
+          'Coombs test (DAT / IAT) result tracking',
+          'Platelet apheresis procedure log',
+          'Donor recall campaigns via WhatsApp (blood group shortages)',
+          'Replacement donor tracking per patient',
+          'Component therapy advisory (RBC, FFP, cryo, platelet dose)',
+          'Transfusion reaction reporting & follow-up',
+          'Hospital blood requisition interface',
+          'NACO HIV / HBV / HCV / syphilis / malaria TTI tracking',
+          'TPA / insurance billing for processing fees',
+          'Chat + email support',
+        ],
+        notIncluded: [
+          'Extended antigen typing (Kell, Duffy, Kidd)',
+          'NAT (nucleic acid testing) integration',
+          'Multi-site blood bank management',
+          'Hemovigilance module (SHOT criteria)',
+          'NABL / NABH blood bank accreditation',
+          'HRMS & payroll',
+        ],
+      },
+      large: {
+        scale: [
+          {label:'Daily Units',     value:'80 – 300'},
+          {label:'Staff',           value:'20 – 60'},
+          {label:'Storage Capacity',value:'Up to 8,000 units'},
+          {label:'Monthly Donations',value:'Up to 9,000'},
+          {label:'WA Credits',      value:'5,000 / month'},
+        ],
+        features: [
+          'Everything in Medium',
+          'Extended antigen phenotyping (Kell, Duffy, Kidd, MNS)',
+          'NAT (nucleic acid testing) result import',
+          'Multi-site blood bank management console',
+          'Inter-site unit transfer with cold-chain log',
+          'Hemovigilance module (SHOT classification)',
+          'Massive transfusion protocol (MTP) activation',
+          'NABL / NABH blood bank accreditation documentation',
+          'Blood drive / camp management',
+          'Equipment calibration (centrifuge, serology analyser)',
+          'Staff HRMS — attendance, payroll, CME',
+          'Advanced DGHS reporting (quarterly, annual)',
+          'Priority support with 4h SLA',
+        ],
+        notIncluded: [
+          'Rare blood group registry',
+          'Stem cell / cord blood banking',
+          'Government blood bank network integration',
+          'ABDM / FHIR integration',
+        ],
+      },
+      enterprise: {
+        scale: [
+          {label:'Daily Units',     value:'300+'},
+          {label:'Staff',           value:'60+'},
+          {label:'Storage Capacity',value:'8,000+'},
+          {label:'Monthly Donations',value:'Unlimited'},
+          {label:'WA Credits',      value:'Unlimited'},
+        ],
+        features: [
+          'Everything in Large',
+          'Rare blood group registry & national search',
+          'Cord blood / stem cell banking module',
+          'Government / Red Cross blood bank network API',
+          'eBloodBanking national repository sync',
+          'ABDM HIP integration (FHIR R4)',
+          'Hospital HIS transfusion order interface',
+          'Dedicated account manager',
+          'Quarterly business review',
+          'Custom integrations on request',
+        ],
+        notIncluded: [],
+      },
+    },
+  },
+
+  /* ================================================================
+   * NUCLEAR MEDICINE CENTER
+   *   SPECT, gamma camera, thyroid uptake, radioisotope therapy.
+   * ================================================================ */
+  'nuclear-medicine-center': {
+    scaleLabel: 'Daily Scans', scaleUnit: 'scans/day',
+    tiers: {
+      small: {
+        scale: [
+          {label:'Daily Scans',  value:'1 – 10'},
+          {label:'Staff',        value:'2 – 6'},
+          {label:'Gamma Cameras',value:'1'},
+          {label:'Monthly Scans',value:'Up to 300'},
+          {label:'WA Credits',   value:'500 / month'},
+        ],
+        features: [
+          'Patient registration with nuclear medicine requisition',
+          'Radiopharmaceutical (radiotracer) administration log',
+          'Dose calibrator reading & residual activity recording',
+          'SPECT / planar scan order & protocol selection',
+          'Nuclear medicine report entry with templates',
+          'Nuclear physician digital sign-off',
+          'NABL-format PDF report with scan images',
+          'WhatsApp report delivery',
+          'AERB radiation dose register (patient & staff)',
+          'AERB personnel TLD badge reading log',
+          'GST-compliant billing',
+          'Email support',
+        ],
+        notIncluded: [
+          'Radiotracer inventory management (half-life decay calc)',
+          'SPECT-CT fusion report templates',
+          'Thyroid uptake & scan module',
+          'BARC radioisotope order management',
+          'Multi-site operations',
+          'RSO compliance dashboard',
+        ],
+      },
+      medium: {
+        scale: [
+          {label:'Daily Scans',  value:'10 – 30'},
+          {label:'Staff',        value:'6 – 15'},
+          {label:'Gamma Cameras',value:'1 – 2'},
+          {label:'Monthly Scans',value:'Up to 900'},
+          {label:'WA Credits',   value:'1,500 / month'},
+        ],
+        features: [
+          'Everything in Small',
+          'Radiotracer inventory with half-life decay calculation',
+          'Elution log for Tc-99m generator',
+          'SPECT-CT / SPECT-MRI fusion report templates',
+          'Thyroid uptake & scan reporting module',
+          'Renal DTPA / DMSA scan protocol templates',
+          'Bone scan reporting with ROI templates',
+          'BARC radioisotope order tracking',
+          'RSO (Radiation Safety Officer) compliance dashboard',
+          'Referring doctor CRM & notifications',
+          'TPA / insurance billing',
+          'Chat + email support',
+        ],
+        notIncluded: [
+          'Theranostics (Lu-177, I-131 therapy) module',
+          'Radioactive waste disposal log',
+          'Multi-branch operations',
+          'NABL accreditation documentation',
+          'HRMS & payroll',
+        ],
+      },
+      large: {
+        scale: [
+          {label:'Daily Scans',  value:'30 – 80'},
+          {label:'Staff',        value:'15 – 40'},
+          {label:'Gamma Cameras',value:'2 – 5'},
+          {label:'Monthly Scans',value:'Up to 2,400'},
+          {label:'WA Credits',   value:'4,000 / month'},
+        ],
+        features: [
+          'Everything in Medium',
+          'Theranostics module (Lu-177 PSMA, I-131 therapy)',
+          'Therapy dose planning & post-therapy dosimetry',
+          'Radioactive waste disposal log & decay-in-storage',
+          'Isolation room occupancy tracking (I-131 patients)',
+          'Multi-branch management console',
+          'NABL ISO 15189 documentation suite',
+          'Equipment QC (uniformity, linearity, resolution)',
+          'Staff HRMS — attendance, payroll, dose limits',
+          'AERB annual compliance report generation',
+          'BARC annual radioisotope usage report',
+          'Priority support with 4h SLA',
+        ],
+        notIncluded: [
+          'Research protocol management',
+          'Clinical trial dosimetry module',
+          'ABDM / FHIR integration',
+        ],
+      },
+      enterprise: {
+        scale: [
+          {label:'Daily Scans',  value:'80+'},
+          {label:'Staff',        value:'40+'},
+          {label:'Gamma Cameras',value:'5+'},
+          {label:'Monthly Scans',value:'Unlimited'},
+          {label:'WA Credits',   value:'Unlimited'},
+        ],
+        features: [
+          'Everything in Large',
+          'Clinical trial dosimetry & research protocol management',
+          'PET radiopharmacy production log (cyclotron)',
+          'ABDM HIP integration (FHIR R4)',
+          'Hospital RIS / HIS integration',
+          'Dedicated account manager',
+          'Quarterly business review',
+          'Custom integrations on request',
+        ],
+        notIncluded: [],
+      },
+    },
+  },
+
+  /* ================================================================
+   * MAMMOGRAPHY CENTER
+   *   Screening & diagnostic mammography with BI-RADS, AERB, PC-PNDT.
+   * ================================================================ */
+  'mammography-center': {
+    scaleLabel: 'Daily Mammograms', scaleUnit: 'mammograms/day',
+    tiers: {
+      small: {
+        scale: [
+          {label:'Daily Mammograms', value:'5 – 20'},
+          {label:'Staff',            value:'2 – 5'},
+          {label:'Units',            value:'1'},
+          {label:'Monthly Exams',    value:'Up to 600'},
+          {label:'WA Credits',       value:'500 / month'},
+        ],
+        features: [
+          'Patient registration with breast history questionnaire',
+          'Mammogram order (screening / diagnostic)',
+          'BI-RADS category (0–6) structured reporting',
+          'Female radiographer certification tracking',
+          'AERB radiation dose register (per exposure)',
+          'Operator daily phantom QC log with pass/fail',
+          'PC-PNDT Form F for applicable patients',
+          'Radiologist digital sign-off',
+          'NABL-format report with mammogram images',
+          'WhatsApp report delivery',
+          'GST-compliant billing',
+          'Email support',
+        ],
+        notIncluded: [
+          'Tomosynthesis (3D mammography) reporting',
+          'AI-based breast density assessment',
+          'Screening recall campaign management',
+          'Multi-site operations',
+          'NABL accreditation documentation',
+        ],
+      },
+      medium: {
+        scale: [
+          {label:'Daily Mammograms', value:'20 – 50'},
+          {label:'Staff',            value:'5 – 12'},
+          {label:'Units',            value:'1 – 2'},
+          {label:'Monthly Exams',    value:'Up to 1,500'},
+          {label:'WA Credits',       value:'1,500 / month'},
+        ],
+        features: [
+          'Everything in Small',
+          'Digital breast tomosynthesis (DBT) reporting',
+          'Contrast-enhanced mammography (CEM) templates',
+          'BI-RADS audit — recall, cancer detection rate, PPV',
+          'Annual screening recall via WhatsApp (age-appropriate)',
+          'Referring doctor CRM with commission',
+          'Corporate breast screening camp management',
+          'TPA / insurance billing',
+          'TAT analytics per exam type',
+          'Chat + email support',
+        ],
+        notIncluded: [
+          'AI breast density (ACR a/b/c/d) auto-classification',
+          'Multi-branch operations',
+          'NABL ISO 15189 documentation',
+          'HRMS & payroll',
+        ],
+      },
+      large: {
+        scale: [
+          {label:'Daily Mammograms', value:'50 – 150'},
+          {label:'Staff',            value:'12 – 30'},
+          {label:'Units',            value:'2 – 5'},
+          {label:'Monthly Exams',    value:'Up to 4,500'},
+          {label:'WA Credits',       value:'4,000 / month'},
+        ],
+        features: [
+          'Everything in Medium',
+          'AI-assisted breast density classification (ACR categories)',
+          'AI suspicious-lesion detection with confidence overlay',
+          'Multi-branch management console',
+          'NABL ISO 15189:2022 documentation suite',
+          'Equipment QC schedule (compression, AEC, artifact check)',
+          'Staff HRMS — attendance, payroll, certification tracking',
+          'Population-level screening analytics (by age, density)',
+          'National cancer screening program (NCD) data export',
+          'Priority support with 4h SLA',
+        ],
+        notIncluded: [
+          'Research cohort tracking',
+          'Genetic risk integration (BRCA1/2)',
+          'ABDM / FHIR integration',
+        ],
+      },
+      enterprise: {
+        scale: [
+          {label:'Daily Mammograms', value:'150+'},
+          {label:'Staff',            value:'30+'},
+          {label:'Units',            value:'5+'},
+          {label:'Monthly Exams',    value:'Unlimited'},
+          {label:'WA Credits',       value:'Unlimited'},
+        ],
+        features: [
+          'Everything in Large',
+          'Research cohort tracking with follow-up alerts',
+          'BRCA1/2 genetic risk integration',
+          'Tele-mammography reporting for remote centers',
+          'ABDM HIP integration (FHIR R4)',
+          'Hospital RIS / HIS integration',
+          'Dedicated account manager',
+          'Quarterly business review',
+        ],
+        notIncluded: [],
+      },
+    },
+  },
+
+  /* ================================================================
+   * DEXA / BONE DENSITY CENTER
+   *   Bone mineral density, body composition, FRAX assessment.
+   * ================================================================ */
+  'dexa-center': {
+    scaleLabel: 'Daily Scans', scaleUnit: 'scans/day',
+    tiers: {
+      small: {
+        scale: [
+          {label:'Daily Scans', value:'3 – 15'},
+          {label:'Staff',       value:'1 – 3'},
+          {label:'DEXA Units',  value:'1'},
+          {label:'WA Credits',  value:'300 / month'},
+        ],
+        features: [
+          'Patient registration with osteoporosis risk factors',
+          'DEXA scan order (spine, hip, forearm, total body)',
+          'T-score / Z-score reporting',
+          'WHO FRAX fracture risk calculation',
+          'Body composition analysis (lean mass, fat mass, %)',
+          'Physician digital sign-off',
+          'PDF report with scan images',
+          'WhatsApp report delivery',
+          'GST-compliant billing',
+          'Email support',
+        ],
+        notIncluded: [
+          'Serial BMD comparison with LSC (least significant change)',
+          'Trabecular bone score (TBS)',
+          'Vertebral fracture assessment (VFA)',
+          'Referring doctor CRM',
+          'Multi-site operations',
+        ],
+      },
+      medium: {
+        scale: [
+          {label:'Daily Scans', value:'15 – 40'},
+          {label:'Staff',       value:'3 – 8'},
+          {label:'DEXA Units',  value:'1 – 2'},
+          {label:'WA Credits',  value:'1,000 / month'},
+        ],
+        features: [
+          'Everything in Small',
+          'Serial BMD comparison with % change & LSC trending',
+          'Trabecular bone score (TBS) integration',
+          'Vertebral fracture assessment (VFA) from lateral scan',
+          'Treatment monitoring templates (bisphosphonate, denosumab)',
+          'Referring doctor CRM & notifications',
+          'Corporate wellness screening integration',
+          'TPA / insurance billing',
+          'Chat + email support',
+        ],
+        notIncluded: [
+          'Multi-branch operations',
+          'Paediatric growth Z-score charts',
+          'NABL documentation',
+          'HRMS & payroll',
+        ],
+      },
+      large: {
+        scale: [
+          {label:'Daily Scans', value:'40 – 100'},
+          {label:'Staff',       value:'8 – 20'},
+          {label:'DEXA Units',  value:'2 – 4'},
+          {label:'WA Credits',  value:'3,000 / month'},
+        ],
+        features: [
+          'Everything in Medium',
+          'Paediatric bone density with age-matched Z-scores',
+          'Multi-branch management console',
+          'NABL ISO 15189 documentation suite',
+          'Equipment QC (phantom scan, cross-calibration)',
+          'Staff HRMS — attendance, payroll',
+          'Population-level osteoporosis analytics',
+          'Priority support',
+        ],
+        notIncluded: [
+          'Research DXA protocols',
+          'ABDM / FHIR integration',
+        ],
+      },
+      enterprise: {
+        scale: [
+          {label:'Daily Scans', value:'100+'},
+          {label:'Staff',       value:'20+'},
+          {label:'DEXA Units',  value:'4+'},
+          {label:'WA Credits',  value:'Unlimited'},
+        ],
+        features: [
+          'Everything in Large',
+          'Research protocol support',
+          'ABDM HIP integration (FHIR R4)',
+          'Hospital RIS integration',
+          'Dedicated account manager',
+          'Custom integrations',
+        ],
+        notIncluded: [],
+      },
+    },
+  },
+
+  /* ================================================================
+   * DENTAL RADIOLOGY CENTER
+   *   OPG panoramic, CBCT 3D, intraoral imaging.
+   * ================================================================ */
+  'dental-radiology-center': {
+    scaleLabel: 'Daily Scans', scaleUnit: 'scans/day',
+    tiers: {
+      small: {
+        scale: [
+          {label:'Daily Scans', value:'5 – 30'},
+          {label:'Staff',       value:'1 – 4'},
+          {label:'Units',       value:'1 – 2'},
+          {label:'WA Credits',  value:'500 / month'},
+        ],
+        features: [
+          'Patient registration with dental chart',
+          'OPG (panoramic) scan ordering & reporting',
+          'Cephalometric analysis template',
+          'Intraoral periapical (IOPA) tracking',
+          'AERB radiation dose register',
+          'Radiologist / dentist digital sign-off',
+          'PDF report with dental images',
+          'WhatsApp report delivery to referring dentist',
+          'GST-compliant billing',
+          'Email support',
+        ],
+        notIncluded: [
+          'CBCT 3D imaging workflow',
+          'Implant planning integration',
+          'Orthodontic cephalometric tracing (AI)',
+          'Referring dentist CRM',
+          'Multi-site operations',
+        ],
+      },
+      medium: {
+        scale: [
+          {label:'Daily Scans', value:'30 – 80'},
+          {label:'Staff',       value:'4 – 10'},
+          {label:'Units',       value:'2 – 4'},
+          {label:'WA Credits',  value:'1,500 / month'},
+        ],
+        features: [
+          'Everything in Small',
+          'CBCT (cone-beam CT) 3D imaging & MPR views',
+          'Implant planning module with cross-sections',
+          'TMJ analysis templates',
+          'AI-assisted cephalometric tracing',
+          'Referring dentist CRM with commission',
+          'TPA billing for dental insurance',
+          'Chat + email support',
+        ],
+        notIncluded: [
+          'DICOM 3D rendering & STL export',
+          'Multi-branch operations',
+          'NABL documentation',
+          'HRMS & payroll',
+        ],
+      },
+      large: {
+        scale: [
+          {label:'Daily Scans', value:'80 – 250'},
+          {label:'Staff',       value:'10 – 25'},
+          {label:'Units',       value:'4 – 8'},
+          {label:'WA Credits',  value:'3,000 / month'},
+        ],
+        features: [
+          'Everything in Medium',
+          'DICOM 3D rendering with STL export for printing',
+          'Multi-branch management console',
+          'NABL documentation suite',
+          'Equipment QC schedule',
+          'Staff HRMS — attendance, payroll',
+          'Priority support',
+        ],
+        notIncluded: ['Research protocols', 'ABDM / FHIR integration'],
+      },
+      enterprise: {
+        scale: [
+          {label:'Daily Scans', value:'250+'},
+          {label:'Staff',       value:'25+'},
+          {label:'Units',       value:'8+'},
+          {label:'WA Credits',  value:'Unlimited'},
+        ],
+        features: [
+          'Everything in Large',
+          'Research protocol support',
+          'ABDM HIP integration (FHIR R4)',
+          'Dental college / hospital HIS integration',
+          'Dedicated account manager',
+          'Custom integrations',
+        ],
+        notIncluded: [],
+      },
+    },
+  },
+
+  /* ================================================================
+   * OPHTHALMIC DIAGNOSTIC IMAGING CENTER
+   *   OCT, perimetry, fundus photography, ERG, IOLMaster.
+   * ================================================================ */
+  'ophthalmic-center': {
+    scaleLabel: 'Daily Patients', scaleUnit: 'patients/day',
+    tiers: {
+      small: {
+        scale: [
+          {label:'Daily Patients', value:'5 – 25'},
+          {label:'Staff',          value:'2 – 5'},
+          {label:'Devices',        value:'1 – 3'},
+          {label:'WA Credits',     value:'500 / month'},
+        ],
+        features: [
+          'Patient registration with ophthalmic history',
+          'OCT scan ordering (macula, RNFL, anterior segment)',
+          'Perimetry / visual field test ordering (Humphrey / Octopus)',
+          'Fundus photography with colour & red-free modes',
+          'IOLMaster / biometry for cataract pre-op',
+          'Ophthalmologist digital sign-off',
+          'PDF report with retinal images',
+          'WhatsApp report delivery',
+          'GST-compliant billing',
+          'Email support',
+        ],
+        notIncluded: [
+          'FFA (fundus fluorescein angiography) module',
+          'ICG angiography reporting',
+          'Glaucoma progression analysis (GPA)',
+          'DR (diabetic retinopathy) AI screening',
+          'Multi-site operations',
+        ],
+      },
+      medium: {
+        scale: [
+          {label:'Daily Patients', value:'25 – 60'},
+          {label:'Staff',          value:'5 – 12'},
+          {label:'Devices',        value:'3 – 6'},
+          {label:'WA Credits',     value:'1,500 / month'},
+        ],
+        features: [
+          'Everything in Small',
+          'FFA reporting with phase-wise annotation',
+          'ICG angiography module',
+          'Glaucoma progression analysis (GPA / trend-based)',
+          'OCT-A (angiography) reporting',
+          'ERG / VEP electrophysiology result capture',
+          'Referring ophthalmologist CRM',
+          'TPA / insurance billing',
+          'Chat + email support',
+        ],
+        notIncluded: [
+          'AI DR screening (ETDRS / ICDR grading)',
+          'AI glaucoma risk scoring',
+          'Multi-branch operations',
+          'NABL documentation',
+          'HRMS & payroll',
+        ],
+      },
+      large: {
+        scale: [
+          {label:'Daily Patients', value:'60 – 200'},
+          {label:'Staff',          value:'12 – 30'},
+          {label:'Devices',        value:'6 – 15'},
+          {label:'WA Credits',     value:'4,000 / month'},
+        ],
+        features: [
+          'Everything in Medium',
+          'AI-assisted DR screening (ETDRS / ICDR grading)',
+          'AI glaucoma risk scoring from RNFL / GCC analysis',
+          'Multi-branch management console',
+          'NABL ISO 15189 documentation suite',
+          'Equipment calibration schedule',
+          'Staff HRMS — attendance, payroll',
+          'Population-level DR / glaucoma screening analytics',
+          'Priority support with 4h SLA',
+        ],
+        notIncluded: ['Research imaging protocols', 'ABDM / FHIR integration'],
+      },
+      enterprise: {
+        scale: [
+          {label:'Daily Patients', value:'200+'},
+          {label:'Staff',          value:'30+'},
+          {label:'Devices',        value:'15+'},
+          {label:'WA Credits',     value:'Unlimited'},
+        ],
+        features: [
+          'Everything in Large',
+          'Research imaging protocol management',
+          'ABDM HIP integration (FHIR R4)',
+          'Eye hospital HIS / EMR integration',
+          'Tele-ophthalmology reporting for rural camps',
+          'Dedicated account manager',
+          'Custom integrations',
+        ],
+        notIncluded: [],
+      },
+    },
+  },
+
+  /* ================================================================
+   * PFT (PULMONARY FUNCTION TESTING) CENTER
+   *   Spirometry, DLCO, FeNO, ABG, body plethysmography.
+   * ================================================================ */
+  'pft-center': {
+    scaleLabel: 'Daily Tests', scaleUnit: 'tests/day',
+    tiers: {
+      small: {
+        scale: [
+          {label:'Daily Tests', value:'3 – 15'},
+          {label:'Staff',       value:'1 – 3'},
+          {label:'PFT Units',   value:'1'},
+          {label:'WA Credits',  value:'300 / month'},
+        ],
+        features: [
+          'Patient registration with respiratory history',
+          'Spirometry test with FEV1, FVC, FEV1/FVC, PEF',
+          'Pre- and post-bronchodilator comparison',
+          'ATS/ERS acceptability & repeatability criteria',
+          'GOLD classification for COPD staging',
+          'Predicted values (GLI-2012 / Knudson)',
+          'Pulmonologist digital sign-off',
+          'PDF report with flow-volume loops',
+          'WhatsApp report delivery',
+          'GST-compliant billing',
+          'Email support',
+        ],
+        notIncluded: [
+          'DLCO (diffusion capacity) testing',
+          'FeNO (fractional exhaled nitric oxide)',
+          'Bronchial provocation testing (methacholine)',
+          'Body plethysmography (lung volumes)',
+          'Referring doctor CRM',
+          'Multi-site operations',
+        ],
+      },
+      medium: {
+        scale: [
+          {label:'Daily Tests', value:'15 – 40'},
+          {label:'Staff',       value:'3 – 8'},
+          {label:'PFT Units',   value:'1 – 2'},
+          {label:'WA Credits',  value:'1,000 / month'},
+        ],
+        features: [
+          'Everything in Small',
+          'DLCO testing & interpretation',
+          'FeNO measurement for asthma monitoring',
+          'Bronchial provocation testing (methacholine / exercise)',
+          'Lung volume measurement (plethysmography or N2 washout)',
+          'ABG result import & interpretation template',
+          'Serial PFT trending (year-over-year decline)',
+          'Referring doctor CRM & notifications',
+          'Occupational health PFT screening',
+          'TPA / insurance billing',
+          'Chat + email support',
+        ],
+        notIncluded: [
+          'Cardiopulmonary exercise testing (CPET)',
+          'Multi-branch operations',
+          'NABL documentation',
+          'HRMS & payroll',
+        ],
+      },
+      large: {
+        scale: [
+          {label:'Daily Tests', value:'40 – 100'},
+          {label:'Staff',       value:'8 – 20'},
+          {label:'PFT Units',   value:'2 – 4'},
+          {label:'WA Credits',  value:'3,000 / month'},
+        ],
+        features: [
+          'Everything in Medium',
+          'CPET (cardiopulmonary exercise testing) module',
+          'Multi-branch management console',
+          'NABL ISO 15189 documentation suite',
+          'Equipment calibration (syringe, gas analyser)',
+          'Staff HRMS — attendance, payroll',
+          'Corporate occupational PFT camp management',
+          'Priority support',
+        ],
+        notIncluded: ['Research protocols', 'ABDM / FHIR integration'],
+      },
+      enterprise: {
+        scale: [
+          {label:'Daily Tests', value:'100+'},
+          {label:'Staff',       value:'20+'},
+          {label:'PFT Units',   value:'4+'},
+          {label:'WA Credits',  value:'Unlimited'},
+        ],
+        features: [
+          'Everything in Large',
+          'Research protocol support (clinical trials)',
+          'ABDM HIP integration (FHIR R4)',
+          'Hospital HIS integration',
+          'Dedicated account manager',
+          'Custom integrations',
+        ],
+        notIncluded: [],
+      },
+    },
+  },
+
+  /* ================================================================
+   * NEUROPHYSIOLOGY (EEG/EMG) CENTER
+   * ================================================================ */
+  'neurophysiology-center': {
+    scaleLabel: 'Daily Studies', scaleUnit: 'studies/day',
+    tiers: {
+      small: {
+        scale: [{label:'Daily Studies',value:'1 – 10'},{label:'Staff',value:'1 – 4'},{label:'EEG/EMG Units',value:'1 – 2'},{label:'WA Credits',value:'300 / month'}],
+        features: ['Patient registration with neurological history','EEG recording order with montage selection','EMG / NCS (nerve conduction study) reporting','Evoked potentials (VEP, BAEP, SSEP) capture','Neurologist digital sign-off','PDF report with waveform snapshots','WhatsApp report delivery','GST-compliant billing','Email support'],
+        notIncluded: ['Video-EEG monitoring','Intra-operative neuro-monitoring (IONM)','Multi-site operations','NABL documentation','HRMS'],
+      },
+      medium: {
+        scale: [{label:'Daily Studies',value:'10 – 30'},{label:'Staff',value:'4 – 10'},{label:'EEG/EMG Units',value:'2 – 4'},{label:'WA Credits',value:'1,000 / month'}],
+        features: ['Everything in Small','Video-EEG monitoring with seizure annotation','Quantitative EEG (qEEG) mapping','Repetitive nerve stimulation (RNS) for myasthenia','Blink reflex & H-reflex studies','Referring doctor CRM','TPA / insurance billing','Chat + email support'],
+        notIncluded: ['IONM (intra-operative monitoring)','Multi-branch operations','NABL documentation','HRMS & payroll'],
+      },
+      large: {
+        scale: [{label:'Daily Studies',value:'30 – 80'},{label:'Staff',value:'10 – 25'},{label:'EEG/EMG Units',value:'4 – 8'},{label:'WA Credits',value:'3,000 / month'}],
+        features: ['Everything in Medium','Intra-operative neuro-monitoring (IONM) module','Long-term monitoring (LTM) bed tracking','Multi-branch management console','NABL ISO 15189 documentation','Equipment calibration schedule','Staff HRMS — attendance, payroll','Priority support'],
+        notIncluded: ['Research EEG protocols','ABDM / FHIR integration'],
+      },
+      enterprise: {
+        scale: [{label:'Daily Studies',value:'80+'},{label:'Staff',value:'25+'},{label:'EEG/EMG Units',value:'8+'},{label:'WA Credits',value:'Unlimited'}],
+        features: ['Everything in Large','Research EEG / EMG protocol management','ABDM HIP integration (FHIR R4)','Hospital HIS integration','Dedicated account manager','Custom integrations'],
+        notIncluded: [],
+      },
+    },
+  },
+
+  /* ================================================================
+   * ALLERGY TESTING CENTER
+   * ================================================================ */
+  'allergy-center': {
+    scaleLabel: 'Daily Patients', scaleUnit: 'patients/day',
+    tiers: {
+      small: {
+        scale: [{label:'Daily Patients',value:'3 – 15'},{label:'Staff',value:'1 – 4'},{label:'WA Credits',value:'300 / month'}],
+        features: ['Patient registration with allergy history','Skin prick test (SPT) panel ordering','Patch test (contact dermatitis) tracking','Specific IgE panel request & result entry','Allergen panel management (respiratory, food, drug, insect)','Allergist digital sign-off','PDF report with allergen grid','WhatsApp report delivery','GST-compliant billing','Email support'],
+        notIncluded: ['Bronchial / nasal provocation testing','Allergen immunotherapy dose scheduling','Drug desensitization protocols','Referring doctor CRM','Multi-site operations'],
+      },
+      medium: {
+        scale: [{label:'Daily Patients',value:'15 – 40'},{label:'Staff',value:'4 – 10'},{label:'WA Credits',value:'1,000 / month'}],
+        features: ['Everything in Small','Component-resolved diagnostics (CRD) panels','Bronchial / nasal provocation test tracking','Allergen immunotherapy dose schedule & adherence','Drug desensitization protocol management','Oral food challenge (OFC) tracking','Referring doctor CRM','TPA / insurance billing','Chat + email support'],
+        notIncluded: ['Multi-branch operations','NABL documentation','HRMS & payroll'],
+      },
+      large: {
+        scale: [{label:'Daily Patients',value:'40 – 100'},{label:'Staff',value:'10 – 20'},{label:'WA Credits',value:'3,000 / month'}],
+        features: ['Everything in Medium','Multi-branch management console','NABL ISO 15189 documentation','Equipment calibration & extract lot tracking','Staff HRMS — attendance, payroll','Population-level sensitization analytics','Priority support'],
+        notIncluded: ['Research allergen trial protocols','ABDM / FHIR integration'],
+      },
+      enterprise: {
+        scale: [{label:'Daily Patients',value:'100+'},{label:'Staff',value:'20+'},{label:'WA Credits',value:'Unlimited'}],
+        features: ['Everything in Large','Research allergen trial protocol management','ABDM HIP integration (FHIR R4)','Hospital HIS integration','Dedicated account manager','Custom integrations'],
+        notIncluded: [],
+      },
+    },
+  },
+
+  /* ================================================================
+   * SLEEP LAB / POLYSOMNOGRAPHY
+   * ================================================================ */
+  'sleep-lab': {
+    scaleLabel: 'Daily Studies', scaleUnit: 'studies/day',
+    tiers: {
+      small: {
+        scale: [{label:'Beds / Channels',value:'1 – 4'},{label:'Staff',value:'1 – 4'},{label:'Monthly Studies',value:'Up to 120'},{label:'WA Credits',value:'300 / month'}],
+        features: ['Patient registration with sleep questionnaire (ESS, STOP-BANG)','Level 1 PSG (polysomnography) order & scheduling','Sleep technologist checklist (electrode placement, bio-cal)','AASM scoring summary entry (AHI, sleep stages, arousals)','Sleep physician digital sign-off','PDF report with hypnogram','WhatsApp report delivery','CPAP titration study tracking','GST-compliant billing','Email support'],
+        notIncluded: ['MSLT / MWT (multiple sleep latency / wakefulness)','Home sleep test (HST) device management','Automated AASM scoring AI','CPAP compliance monitoring','Referring doctor CRM','Multi-site operations'],
+      },
+      medium: {
+        scale: [{label:'Beds / Channels',value:'4 – 10'},{label:'Staff',value:'4 – 10'},{label:'Monthly Studies',value:'Up to 300'},{label:'WA Credits',value:'1,000 / month'}],
+        features: ['Everything in Small','MSLT / MWT studies for narcolepsy & hypersomnolence','Home sleep test (HST) device inventory & dispatch','Split-night study protocol','PAP (CPAP / BiPAP / ASV) compliance data import','Actigraphy data review','Referring doctor CRM','TPA / insurance billing','Chat + email support'],
+        notIncluded: ['AI-assisted AASM scoring','Multi-branch operations','NABL documentation','HRMS & payroll'],
+      },
+      large: {
+        scale: [{label:'Beds / Channels',value:'10 – 30'},{label:'Staff',value:'10 – 25'},{label:'Monthly Studies',value:'Up to 900'},{label:'WA Credits',value:'3,000 / month'}],
+        features: ['Everything in Medium','AI-assisted AASM event scoring','Multi-branch management console','NABL ISO 15189 documentation','Equipment calibration schedule','Staff HRMS — attendance, payroll','Corporate sleep screening programs','Priority support'],
+        notIncluded: ['Research sleep protocols','ABDM / FHIR integration'],
+      },
+      enterprise: {
+        scale: [{label:'Beds / Channels',value:'30+'},{label:'Staff',value:'25+'},{label:'Monthly Studies',value:'Unlimited'},{label:'WA Credits',value:'Unlimited'}],
+        features: ['Everything in Large','Research sleep protocol management','ABDM HIP integration (FHIR R4)','Hospital HIS integration','Dedicated account manager','Custom integrations'],
+        notIncluded: [],
+      },
+    },
+  },
+
+  /* ================================================================
+   * AUDIOLOGY & ENT DIAGNOSTIC CENTER
+   * ================================================================ */
+  'audiology-center': {
+    scaleLabel: 'Daily Patients', scaleUnit: 'patients/day',
+    tiers: {
+      small: {
+        scale: [{label:'Daily Patients',value:'5 – 20'},{label:'Staff',value:'1 – 4'},{label:'Booths / Units',value:'1 – 2'},{label:'WA Credits',value:'300 / month'}],
+        features: ['Patient registration with ENT / hearing history','Pure-tone audiometry (PTA) with audiogram generation','Speech audiometry (SRT, SDS)','Tympanometry & acoustic reflex','OAE (otoacoustic emissions) — TEOAE / DPOAE','Audiologist digital sign-off','PDF report with audiogram','WhatsApp report delivery','GST-compliant billing','Email support'],
+        notIncluded: ['BERA (brainstem evoked response audiometry)','VNG / ENG (videonystagmography)','Newborn hearing screening program','Hearing aid fitment & verification','Referring doctor CRM','Multi-site operations'],
+      },
+      medium: {
+        scale: [{label:'Daily Patients',value:'20 – 50'},{label:'Staff',value:'4 – 10'},{label:'Booths / Units',value:'2 – 4'},{label:'WA Credits',value:'1,000 / month'}],
+        features: ['Everything in Small','BERA / ABR with threshold & neuro-diagnostic','ASSR (auditory steady-state response)','VNG / ENG for vertigo & balance assessment','VEMP (vestibular evoked myogenic potential)','Newborn hearing screening register','Hearing aid fitment & real-ear measurement','Cochlear implant candidacy assessment','Referring doctor CRM','TPA / insurance billing','Chat + email support'],
+        notIncluded: ['Multi-branch operations','NABL documentation','HRMS & payroll','Industrial audiometry screening programs'],
+      },
+      large: {
+        scale: [{label:'Daily Patients',value:'50 – 150'},{label:'Staff',value:'10 – 25'},{label:'Booths / Units',value:'4 – 8'},{label:'WA Credits',value:'3,000 / month'}],
+        features: ['Everything in Medium','Multi-branch management console','Industrial noise-exposure audiometry screening','NABL ISO 15189 documentation','Booth calibration & equipment QC schedule','Staff HRMS — attendance, payroll','Population hearing-loss analytics','Priority support'],
+        notIncluded: ['Research audiology protocols','ABDM / FHIR integration'],
+      },
+      enterprise: {
+        scale: [{label:'Daily Patients',value:'150+'},{label:'Staff',value:'25+'},{label:'Booths / Units',value:'8+'},{label:'WA Credits',value:'Unlimited'}],
+        features: ['Everything in Large','Research audiology protocol management','Tele-audiology for rural camps','ABDM HIP integration (FHIR R4)','Dedicated account manager','Custom integrations'],
+        notIncluded: [],
+      },
+    },
+  },
+
+  /* ================================================================
+   * URODYNAMICS DIAGNOSTIC CENTER
+   * ================================================================ */
+  'urodynamics-center': {
+    scaleLabel: 'Daily Studies', scaleUnit: 'studies/day',
+    tiers: {
+      small: {
+        scale: [{label:'Daily Studies',value:'1 – 8'},{label:'Staff',value:'1 – 3'},{label:'Urodynamic Units',value:'1'},{label:'WA Credits',value:'200 / month'}],
+        features: ['Patient registration with urogynecology history','Uroflowmetry with flow rate & voided volume','Post-void residual (PVR) recording','Cystometrogram (CMG) filling phase reporting','Pressure-flow study (PFS) analysis','Urologist digital sign-off','PDF report with pressure-flow traces','WhatsApp report delivery','GST-compliant billing','Email support'],
+        notIncluded: ['Video-urodynamics','Ambulatory urodynamics','EMG sphincter study','Referring doctor CRM','Multi-site operations'],
+      },
+      medium: {
+        scale: [{label:'Daily Studies',value:'8 – 20'},{label:'Staff',value:'3 – 8'},{label:'Urodynamic Units',value:'1 – 2'},{label:'WA Credits',value:'500 / month'}],
+        features: ['Everything in Small','Video-urodynamics with fluoroscopy correlation','EMG sphincter activity during filling & voiding','Ambulatory urodynamics tracking','Leak point pressure (LPP) measurement','Referring doctor CRM','TPA / insurance billing','Chat + email support'],
+        notIncluded: ['Multi-branch operations','NABL documentation','HRMS & payroll'],
+      },
+      large: {
+        scale: [{label:'Daily Studies',value:'20 – 50'},{label:'Staff',value:'8 – 15'},{label:'Urodynamic Units',value:'2 – 3'},{label:'WA Credits',value:'2,000 / month'}],
+        features: ['Everything in Medium','Multi-branch management console','NABL ISO 15189 documentation','Equipment calibration schedule','Staff HRMS — attendance, payroll','Priority support'],
+        notIncluded: ['Research urodynamic protocols','ABDM / FHIR integration'],
+      },
+      enterprise: {
+        scale: [{label:'Daily Studies',value:'50+'},{label:'Staff',value:'15+'},{label:'Urodynamic Units',value:'3+'},{label:'WA Credits',value:'Unlimited'}],
+        features: ['Everything in Large','Research urodynamic protocol management','ABDM HIP integration (FHIR R4)','Hospital HIS integration','Dedicated account manager','Custom integrations'],
+        notIncluded: [],
+      },
+    },
+  },
+
+  /* ================================================================
+   * ENDOSCOPY DIAGNOSTIC CENTER
+   *   Upper GI, colonoscopy, bronchoscopy with video capture & sedation.
+   * ================================================================ */
+  'endoscopy-center': {
+    scaleLabel: 'Daily Procedures', scaleUnit: 'procedures/day',
+    tiers: {
+      small: {
+        scale: [{label:'Daily Procedures',value:'3 – 12'},{label:'Staff',value:'2 – 6'},{label:'Scopes',value:'2 – 4'},{label:'WA Credits',value:'500 / month'}],
+        features: ['Patient registration with procedure consent','Upper GI endoscopy (EGD) reporting with templates','Colonoscopy reporting with polyp mapping','Bronchoscopy report templates','Video capture with still-image annotation','Pre-procedure sedation checklist (ASA class)','Conscious sedation monitoring log','Recovery scoring (Aldrete / PADSS)','Gastroenterologist digital sign-off','PDF report with endoscopic images','WhatsApp report delivery','GST-compliant billing','Email support'],
+        notIncluded: ['ERCP reporting module','EUS (endoscopic ultrasound)','Capsule endoscopy tracking','Scope reprocessing audit trail','Referring doctor CRM','Multi-site operations'],
+      },
+      medium: {
+        scale: [{label:'Daily Procedures',value:'12 – 30'},{label:'Staff',value:'6 – 15'},{label:'Scopes',value:'4 – 8'},{label:'WA Credits',value:'1,500 / month'}],
+        features: ['Everything in Small','ERCP report templates with cannulation & stone extraction','EUS (endoscopic ultrasound) reporting','Capsule endoscopy event tracking','Quality indicators (CIR, ADR, withdrawal time)','Scope reprocessing audit trail (washer-disinfector log)','Helicobacter pylori RUT (rapid urease test) logging','Biopsy tracking with histopathology correlation','Referring doctor CRM & commission','TPA / insurance billing','Chat + email support'],
+        notIncluded: ['AI-assisted polyp detection','Multi-branch operations','NABL documentation','HRMS & payroll'],
+      },
+      large: {
+        scale: [{label:'Daily Procedures',value:'30 – 80'},{label:'Staff',value:'15 – 35'},{label:'Scopes',value:'8 – 20'},{label:'WA Credits',value:'4,000 / month'}],
+        features: ['Everything in Medium','AI-assisted polyp detection overlay','Multi-branch management console','NABL ISO 15189 documentation','Scope inventory with serial tracking & repair log','Anaesthesia integration for deep sedation / GA','Staff HRMS — attendance, payroll','Procedure volume & complication analytics','Priority support with 4h SLA'],
+        notIncluded: ['Research endoscopy protocols','ABDM / FHIR integration'],
+      },
+      enterprise: {
+        scale: [{label:'Daily Procedures',value:'80+'},{label:'Staff',value:'35+'},{label:'Scopes',value:'20+'},{label:'WA Credits',value:'Unlimited'}],
+        features: ['Everything in Large','Research endoscopy protocol management','AI-powered quality scoring & benchmarking','ABDM HIP integration (FHIR R4)','Hospital HIS integration','Dedicated account manager','Custom integrations'],
+        notIncluded: [],
+      },
+    },
+  },
+
+  /* ================================================================
+   * IVF / EMBRYOLOGY & ANDROLOGY LAB
+   *   Cycles, ICSI, cryo, CASA — ART Act 2021 compliant.
+   * ================================================================ */
+  'ivf-embryology': {
+    scaleLabel: 'Monthly Cycles', scaleUnit: 'cycles/month',
+    tiers: {
+      small: {
+        scale: [{label:'Monthly Cycles',value:'2 – 15'},{label:'Staff',value:'3 – 8'},{label:'Embryologists',value:'1 – 2'},{label:'Cryo Tanks',value:'1 – 2'},{label:'WA Credits',value:'500 / month'}],
+        features: ['Couple registration with infertility work-up','IVF cycle creation with stimulation protocol','Follicular monitoring diary (USG + E2/LH)','OPU (oocyte pickup) recording with oocyte grading','ICSI / IVF insemination log','Embryo development grading (Day 1–5, Gardner / Istanbul)','Embryo transfer (ET) recording','Luteal phase support schedule','Pregnancy outcome tracking (beta-hCG, clinical pregnancy)','Semen analysis with WHO criteria','Cryopreservation log (embryo / oocyte / sperm) with straw ID','ART Act 2021 — National Registry data fields','NABL-format cycle summary report','WhatsApp updates to couple','GST-compliant billing','Email support'],
+        notIncluded: ['CASA (computer-assisted semen analysis) integration','Time-lapse incubator integration','PGT (pre-implantation genetic testing) workflow','Donor gamete management','Surrogacy case management','Multi-site operations'],
+      },
+      medium: {
+        scale: [{label:'Monthly Cycles',value:'15 – 50'},{label:'Staff',value:'8 – 20'},{label:'Embryologists',value:'2 – 5'},{label:'Cryo Tanks',value:'2 – 5'},{label:'WA Credits',value:'2,000 / month'}],
+        features: ['Everything in Small','CASA integration (motility, morphology, concentration)','Time-lapse incubator data import','PGT-A / PGT-M / PGT-SR workflow tracking','Donor gamete management (egg / sperm bank)','Witness system for specimen identification','Thaw survival & re-vitrification tracking','FET (frozen embryo transfer) cycle protocol','IUI cycle management','Andrology lab module (DNA fragmentation, ROS, MACS)','Referring doctor CRM & commission','TPA / insurance billing','Outcome analytics (clinical pregnancy rate, live birth rate)','Chat + email support'],
+        notIncluded: ['Surrogacy case management (ART Act compliant)','Multi-branch operations','NABL documentation suite','HRMS & payroll','AI embryo grading'],
+      },
+      large: {
+        scale: [{label:'Monthly Cycles',value:'50 – 150'},{label:'Staff',value:'20 – 50'},{label:'Embryologists',value:'5 – 12'},{label:'Cryo Tanks',value:'5 – 15'},{label:'WA Credits',value:'5,000 / month'}],
+        features: ['Everything in Medium','Surrogacy case management (ART Act 2021 compliant)','AI-assisted embryo grading (morphokinetics)','Multi-branch management console','NABL / NABH accreditation documentation','Cryo audit — annual straw reconciliation','Equipment calibration (incubator, centrifuge, laser)','Staff HRMS — attendance, payroll, certification','ICMR ART registry quarterly data submission','Outcome benchmarking (SART / ESHRE standards)','Priority support with 4h SLA'],
+        notIncluded: ['Fertility tourism / international patient module','Stem cell integration','ABDM / FHIR integration'],
+      },
+      enterprise: {
+        scale: [{label:'Monthly Cycles',value:'150+'},{label:'Staff',value:'50+'},{label:'Embryologists',value:'12+'},{label:'Cryo Tanks',value:'15+'},{label:'WA Credits',value:'Unlimited'}],
+        features: ['Everything in Large','Fertility tourism & international patient module','Stem cell research integration','ABDM HIP integration (FHIR R4)','Hospital HIS integration','Franchise / partner clinic onboarding','Dedicated account manager','Quarterly business review','Custom integrations'],
+        notIncluded: [],
+      },
+    },
+  },
+
+  /* ================================================================
+   * STEM CELL & HLA / BONE MARROW REGISTRY
+   * ================================================================ */
+  'stem-cell-registry': {
+    scaleLabel: 'Daily Specimens', scaleUnit: 'specimens/day',
+    tiers: {
+      small: {
+        scale: [{label:'Daily Specimens',value:'1 – 10'},{label:'Staff',value:'2 – 6'},{label:'WA Credits',value:'300 / month'}],
+        features: ['Donor registration with HLA consent','HLA typing order (Class I: A, B, C; Class II: DRB1, DQB1)','Result entry from reference lab','Donor registry with search by HLA type','Cord blood unit registration & storage log','WMDA (World Marrow Donor Association) data fields','Physician sign-off','PDF report','WhatsApp donor notifications','GST-compliant billing','Email support'],
+        notIncluded: ['High-resolution HLA typing workflow','Match probability scoring','Stem cell processing & QC','Multi-site operations','NABL documentation'],
+      },
+      medium: {
+        scale: [{label:'Daily Specimens',value:'10 – 30'},{label:'Staff',value:'6 – 15'},{label:'WA Credits',value:'1,000 / month'}],
+        features: ['Everything in Small','High-resolution (allele-level) HLA typing','Match probability & permissive mismatch scoring','Stem cell collection (PBSC / BM) procedure tracking','CD34+ cell count & viability recording','Cryopreservation log with bag / straw tracking','Donor health screening follow-up','Referring doctor CRM','TPA / insurance billing','Chat + email support'],
+        notIncluded: ['Cell processing (T-cell depletion, CD34 selection)','Multi-site operations','NABL documentation','HRMS & payroll'],
+      },
+      large: {
+        scale: [{label:'Daily Specimens',value:'30 – 100'},{label:'Staff',value:'15 – 35'},{label:'WA Credits',value:'3,000 / month'}],
+        features: ['Everything in Medium','Cell processing module (T-cell depletion, CD34+ selection)','Multi-site management console','NABL ISO 15189 documentation','Cryo storage audit & annual inventory reconciliation','Equipment calibration (flow cytometer, freezer, separator)','Staff HRMS — attendance, payroll','WMDA search request & donor workup tracking','Priority support'],
+        notIncluded: ['CAR-T cell therapy tracking','International donor registry API','ABDM / FHIR integration'],
+      },
+      enterprise: {
+        scale: [{label:'Daily Specimens',value:'100+'},{label:'Staff',value:'35+'},{label:'WA Credits',value:'Unlimited'}],
+        features: ['Everything in Large','CAR-T cell manufacturing & infusion tracking','International donor registry API integration (WMDA SEARCH)','ABDM HIP integration (FHIR R4)','Hospital HIS integration','Dedicated account manager','Custom integrations'],
+        notIncluded: [],
+      },
+    },
+  },
+
+  /* ================================================================
+   * FORENSIC / DRUG TESTING / TOXICOLOGY LAB
+   *   GC-MS/LC-MS, chain-of-custody, CDSCO reporting.
+   * ================================================================ */
+  'forensic-toxicology': {
+    scaleLabel: 'Daily Samples', scaleUnit: 'samples/day',
+    tiers: {
+      small: {
+        scale: [{label:'Daily Samples',value:'5 – 30'},{label:'Staff',value:'2 – 6'},{label:'Instruments',value:'1 – 2'},{label:'WA Credits',value:'500 / month'}],
+        features: ['Specimen registration with chain-of-custody (CoC) log','Tamper-evident seal verification & photo capture','Specimen splitting (A & B samples) tracking','Drug-of-abuse screening panel (immunoassay)','Confirmation testing order (GC-MS / LC-MS)','MRO (Medical Review Officer) review workflow','CoC audit trail — every custody transfer logged','PDF report with specimen integrity attestation','GST-compliant billing','Email support'],
+        notIncluded: ['Workplace drug testing program management','Quantitative LC-MS/MS method tracking','CDSCO controlled substance reporting','Hair / nail drug testing','Multi-site operations'],
+      },
+      medium: {
+        scale: [{label:'Daily Samples',value:'30 – 100'},{label:'Staff',value:'6 – 15'},{label:'Instruments',value:'2 – 5'},{label:'WA Credits',value:'1,500 / month'}],
+        features: ['Everything in Small','Workplace drug testing program management (employer portal)','Quantitative LC-MS/MS method & analyte tracking','Hair / nail drug testing workflow','CDSCO controlled substance register','Doping control (WADA code) sample management','Court-admissible report generation with digital signature','Employer CRM with contract management','TPA billing for occupational screening','Chat + email support'],
+        notIncluded: ['Multi-branch operations','NABL documentation','HRMS & payroll','Custom analyte method validation'],
+      },
+      large: {
+        scale: [{label:'Daily Samples',value:'100 – 300'},{label:'Staff',value:'15 – 40'},{label:'Instruments',value:'5 – 10'},{label:'WA Credits',value:'4,000 / month'}],
+        features: ['Everything in Medium','Custom analyte method validation & uncertainty documentation','Multi-branch management console','NABL ISO 17025 / 15189 documentation','Instrument calibration & maintenance schedule','Staff HRMS — attendance, payroll, competency','Government contract compliance reporting','Priority support with 4h SLA'],
+        notIncluded: ['Reference material & standard preparation tracking','Research / clinical trial toxicology','ABDM / FHIR integration'],
+      },
+      enterprise: {
+        scale: [{label:'Daily Samples',value:'300+'},{label:'Staff',value:'40+'},{label:'Instruments',value:'10+'},{label:'WA Credits',value:'Unlimited'}],
+        features: ['Everything in Large','Reference material & standard preparation tracking','Clinical trial toxicology module','ABDM HIP integration (FHIR R4)','Government forensic lab network integration','Dedicated account manager','Custom integrations'],
+        notIncluded: [],
+      },
+    },
+  },
+
+  /* ================================================================
+   * CANCER SCREENING / EARLY DETECTION CENTER
+   *   AI-scored tumor markers + imaging + clinician review.
+   * ================================================================ */
+  'cancer-screening': {
+    scaleLabel: 'Daily Screenings', scaleUnit: 'screenings/day',
+    tiers: {
+      small: {
+        scale: [{label:'Daily Screenings',value:'5 – 25'},{label:'Staff',value:'2 – 6'},{label:'WA Credits',value:'500 / month'}],
+        features: ['Patient registration with cancer risk questionnaire','Pre-defined screening packages (breast, cervical, colorectal, prostate, lung)','Tumor marker panel ordering (PSA, CA-125, CEA, AFP, CA-19-9)','Result entry with reference ranges & trend from prior visits','Risk score computation (age, family history, markers)','Clinician review & recommendation','PDF screening report with risk summary','WhatsApp report delivery & recall reminders','GST-compliant billing','Email support'],
+        notIncluded: ['AI-assisted cancer risk scoring','Multi-cancer early detection (MCED) test integration','Screening program cohort management','Imaging correlation (mammography, LDCT, colonoscopy)','Referring doctor CRM','Multi-site operations'],
+      },
+      medium: {
+        scale: [{label:'Daily Screenings',value:'25 – 80'},{label:'Staff',value:'6 – 15'},{label:'WA Credits',value:'2,000 / month'}],
+        features: ['Everything in Small','AI-assisted multi-marker cancer risk scoring','Imaging correlation (auto-link mammography, LDCT results)','Annual screening recall campaigns via WhatsApp','Genetic risk integration (BRCA, Lynch, Li-Fraumeni markers)','Screening program cohort management & follow-up','Corporate cancer screening camps','Referring doctor CRM & commission','TPA / insurance billing','Chat + email support'],
+        notIncluded: ['MCED (multi-cancer early detection) integration','National Cancer Screening Programme (NCSP) reporting','Multi-branch operations','NABL documentation','HRMS & payroll'],
+      },
+      large: {
+        scale: [{label:'Daily Screenings',value:'80 – 250'},{label:'Staff',value:'15 – 35'},{label:'WA Credits',value:'5,000 / month'}],
+        features: ['Everything in Medium','MCED test result integration','National Cancer Screening Programme (NCSP) data export','Multi-branch management console','NABL ISO 15189 documentation','Staff HRMS — attendance, payroll','Population-level cancer incidence analytics','Priority support with 4h SLA'],
+        notIncluded: ['Research screening trial management','Cancer registry integration (ICMR NCDIR)','ABDM / FHIR integration'],
+      },
+      enterprise: {
+        scale: [{label:'Daily Screenings',value:'250+'},{label:'Staff',value:'35+'},{label:'WA Credits',value:'Unlimited'}],
+        features: ['Everything in Large','Research screening trial management','Cancer registry data export (ICMR NCDIR format)','ABDM HIP integration (FHIR R4)','Hospital HIS / tumour board integration','Dedicated account manager','Custom integrations'],
+        notIncluded: [],
+      },
+    },
+  },
+
+  /* ================================================================
+   * PREVENTIVE GENOMICS / DTC TESTING PLATFORM
+   *   Direct-to-consumer saliva-kit genetic wellness.
+   * ================================================================ */
+  'dtc-genomics': {
+    scaleLabel: 'Monthly Kits', scaleUnit: 'kits/month',
+    tiers: {
+      small: {
+        scale: [{label:'Monthly Kits',value:'50 – 500'},{label:'Staff',value:'2 – 6'},{label:'WA Credits',value:'1,000 / month'}],
+        features: ['Customer registration with consent & terms acceptance','Kit order management (barcode, shipping, return tracking)','Sample receipt & DNA extraction log','Genotyping / sequencing order to partner lab','Variant result import & interpretation pipeline','Consumer report generation (ancestry, traits, wellness)','Pharmacogenomics (PGx) report section','Consumer portal — view reports, download PDF','WhatsApp kit status notifications','Genetic counseling appointment scheduling','GST-compliant billing','Email support'],
+        notIncluded: ['Custom white-label consumer portal','Health risk polygenic scoring','Carrier screening module','API for third-party wellness apps','Multi-site operations'],
+      },
+      medium: {
+        scale: [{label:'Monthly Kits',value:'500 – 2,000'},{label:'Staff',value:'6 – 15'},{label:'WA Credits',value:'3,000 / month'}],
+        features: ['Everything in Small','Health risk polygenic risk scores (PRS)','Carrier screening module (200+ conditions)','Nutrigenomics & fitness report sections','White-label consumer portal customization','Kit logistics integration (courier API)','Genetic counselor CRM & session notes','B2B corporate wellness genomics','TPA / insurance billing for health tests','Chat + email support'],
+        notIncluded: ['Whole-genome sequencing (WGS) offering','API marketplace for wellness apps','Multi-site operations','NABL documentation','HRMS & payroll'],
+      },
+      large: {
+        scale: [{label:'Monthly Kits',value:'2,000 – 10,000'},{label:'Staff',value:'15 – 40'},{label:'WA Credits',value:'8,000 / month'}],
+        features: ['Everything in Medium','Whole-genome sequencing (WGS) offering','API marketplace for third-party wellness apps','Multi-site management console','NABL ISO 15189 documentation','Biobank consent & sample archival tracking','Staff HRMS — attendance, payroll','Customer cohort analytics & engagement','Priority support with 4h SLA'],
+        notIncluded: ['Research genomics platform','Pharma partnership data API','ABDM / FHIR integration'],
+      },
+      enterprise: {
+        scale: [{label:'Monthly Kits',value:'10,000+'},{label:'Staff',value:'40+'},{label:'WA Credits',value:'Unlimited'}],
+        features: ['Everything in Large','Research genomics platform & data warehouse','Pharma partnership de-identified data API','ABDM HIP integration (FHIR R4)','Dedicated account manager','Quarterly business review','Custom integrations'],
         notIncluded: [],
       },
     },
