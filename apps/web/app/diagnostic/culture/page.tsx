@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
 import {
   PageHeader, Modal, Field, DataTable, StatusPill,
   useList, savePost, savePatch, fmtDateTime, TEAL,
@@ -34,6 +35,13 @@ const MEDIA_TYPES = [
 ];
 
 export default function CultureDashboardPage() {
+  const gate = useFeatureGate('culture');
+  if (!gate.allowed) return <FeatureLockedBlock gate={gate} />;
+
+  return <CultureContent />;
+}
+
+function CultureContent() {
   const { rows, loading, reload } = useList('/culture/trackings');
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);

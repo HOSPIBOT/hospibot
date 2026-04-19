@@ -13,6 +13,7 @@
  */
 
 import { useState } from 'react';
+import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
 import {
   PageHeader, Modal, Field, DataTable, StatusPill,
   useList, savePost, fmtDate, fmtDateTime, today, errMsg, TEAL,
@@ -34,6 +35,13 @@ const CONTAINER_OPTIONS = [
 ];
 
 export default function DispatchManifestPage() {
+  const gate = useFeatureGate('dispatch');
+  if (!gate.allowed) return <FeatureLockedBlock gate={gate} />;
+
+  return <DispatchContent />;
+}
+
+function DispatchContent() {
   const { rows, loading, reload } = useList('/dispatch/manifests');
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);

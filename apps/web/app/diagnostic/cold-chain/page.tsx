@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
 import {
   PageHeader, Modal, Field, DataTable, StatusPill,
   useList, savePost, fmtDate, today, TEAL,
@@ -16,6 +17,13 @@ const CONTAINER_OPTIONS = [
 ];
 
 export default function ColdChainLogPage() {
+  const gate = useFeatureGate('cold-chain');
+  if (!gate.allowed) return <FeatureLockedBlock gate={gate} />;
+
+  return <ColdChainContent />;
+}
+
+function ColdChainContent() {
   const { rows, loading, reload } = useList('/cold-chain/logs');
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);

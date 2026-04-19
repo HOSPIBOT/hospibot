@@ -170,12 +170,12 @@ export const DIAGNOSTIC_FEATURES: Record<string, FeatureGate> = {
   'abha-abdm':          { minTier: 'enterprise' },
   'gov-reporting':      {
     minTier: 'enterprise',
-    allowedSubtypes: ['pathology-lab','reference-lab','molecular-lab'],
+    allowedSubtypes: ['pathology-lab','reference-lab','molecular-lab','micro-lab','forensic-toxicology'],
   },
   'dedicated-manager':  { minTier: 'enterprise' },
   'theranostics':       {
     minTier: 'enterprise',
-    allowedSubtypes: ['pet-scan-center'],
+    allowedSubtypes: ['pet-scan-center','nuclear-medicine-center'],
   },
   'ep-study':           {
     minTier: 'enterprise',
@@ -183,12 +183,135 @@ export const DIAGNOSTIC_FEATURES: Record<string, FeatureGate> = {
   },
   'biobank':            {
     minTier: 'enterprise',
-    allowedSubtypes: ['genetic-lab','molecular-lab'],
+    allowedSubtypes: ['genetic-lab','molecular-lab','histopathology-lab'],
   },
   'research-module':    { minTier: 'enterprise' },
   'hospital-hl7':       {
     minTier: 'enterprise',
-    allowedSubtypes: ['radiology-center','tele-radiology','cardiac-diagnostics','reference-lab'],
+    allowedSubtypes: ['radiology-center','tele-radiology','cardiac-diagnostics','reference-lab','nuclear-medicine-center'],
+  },
+
+  // ─── Subtype-specific feature pages (Sprint 4+) ───────────────────────
+  // Each maps to a real /diagnostic/<slug>/page.tsx and is gated by tier
+  'dispatch': {
+    minTier: 'small',
+    allowedSubtypes: ['sample-collection-center','home-sample-collection','pickup-point','reference-lab'],
+  },
+  'cold-chain': {
+    minTier: 'medium',
+    allowedSubtypes: ['sample-collection-center','home-sample-collection','pickup-point','reference-lab'],
+  },
+  'culture': {
+    minTier: 'small',
+    allowedSubtypes: ['micro-lab','molecular-lab'],
+  },
+  'donors': {
+    minTier: 'small',
+    allowedSubtypes: ['blood-bank','stem-cell-registry'],
+  },
+  'crossmatch': {
+    minTier: 'small',
+    allowedSubtypes: ['blood-bank'],
+  },
+  'antibiogram': {
+    minTier: 'medium',
+    allowedSubtypes: ['micro-lab'],
+  },
+  'slide-scanning': {
+    minTier: 'medium',
+    allowedSubtypes: ['histopathology-lab'],
+  },
+  'ihc': {
+    minTier: 'medium',
+    allowedSubtypes: ['histopathology-lab'],
+  },
+  'frozen-section': {
+    minTier: 'medium',
+    allowedSubtypes: ['histopathology-lab'],
+  },
+  'bi-rads': {
+    minTier: 'small',
+    allowedSubtypes: ['mammography-center'],
+  },
+  'frax': {
+    minTier: 'small',
+    allowedSubtypes: ['dexa-center'],
+  },
+  'spirometry': {
+    minTier: 'small',
+    allowedSubtypes: ['pft-center'],
+  },
+  'waveforms': {
+    minTier: 'small',
+    allowedSubtypes: ['neurophysiology-center'],
+  },
+  'psg': {
+    minTier: 'small',
+    allowedSubtypes: ['sleep-lab'],
+  },
+  'cpap-titration': {
+    minTier: 'medium',
+    allowedSubtypes: ['sleep-lab'],
+  },
+  'audiometry': {
+    minTier: 'small',
+    allowedSubtypes: ['audiology-center'],
+  },
+  'bera': {
+    minTier: 'medium',
+    allowedSubtypes: ['audiology-center'],
+  },
+  'cycles': {
+    minTier: 'small',
+    allowedSubtypes: ['ivf-embryology'],
+  },
+  'cryopreservation': {
+    minTier: 'small',
+    allowedSubtypes: ['ivf-embryology'],
+  },
+  'casa': {
+    minTier: 'medium',
+    allowedSubtypes: ['ivf-embryology'],
+  },
+  'art-act': {
+    minTier: 'small',
+    allowedSubtypes: ['ivf-embryology'],
+  },
+  'chain-of-custody': {
+    minTier: 'small',
+    allowedSubtypes: ['forensic-toxicology'],
+  },
+  'gc-ms': {
+    minTier: 'medium',
+    allowedSubtypes: ['forensic-toxicology'],
+  },
+  'hla-typing': {
+    minTier: 'small',
+    allowedSubtypes: ['stem-cell-registry'],
+  },
+  'video-capture': {
+    minTier: 'small',
+    allowedSubtypes: ['endoscopy-center'],
+  },
+  'sedation-log': {
+    minTier: 'small',
+    allowedSubtypes: ['endoscopy-center'],
+  },
+  'tumor-markers': {
+    minTier: 'small',
+    allowedSubtypes: ['cancer-screening'],
+  },
+  'ai-scoring': {
+    minTier: 'medium',
+    allowedSubtypes: ['cancer-screening'],
+  },
+  'kits': {
+    minTier: 'small',
+    allowedSubtypes: ['dtc-genomics'],
+  },
+  'dtc-portal': {
+    minTier: 'medium',
+    allowedSubtypes: ['dtc-genomics'],
   },
 };
 
