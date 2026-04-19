@@ -57,6 +57,11 @@ import { WaveformsModule } from './modules/waveforms/waveforms.module';
 import { PsgModule } from './modules/psg/psg.module';
 import { BeraModule } from './modules/bera/bera.module';
 import { SlideScanningModule } from './modules/slide-scanning/slide-scanning.module';
+import { IhcModule } from './modules/ihc/ihc.module';
+import { FrozenSectionModule } from './modules/frozen-section/frozen-section.module';
+import { CpapTitrationModule } from './modules/cpap-titration/cpap-titration.module';
+import { CasaModule } from './modules/casa/casa.module';
+import { AiScoringModule } from './modules/ai-scoring/ai-scoring.module';
 
 @Module({
   imports: [
@@ -128,6 +133,11 @@ import { SlideScanningModule } from './modules/slide-scanning/slide-scanning.mod
     PsgModule,
     BeraModule,
     SlideScanningModule,
+    IhcModule,
+    FrozenSectionModule,
+    CpapTitrationModule,
+    CasaModule,
+    AiScoringModule,
   ],
   controllers: [HealthController],
   providers: [StartupService, DbBootstrapService],

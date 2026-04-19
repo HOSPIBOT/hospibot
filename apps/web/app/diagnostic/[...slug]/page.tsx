@@ -188,16 +188,8 @@ const FEATURE_MAP: Record<string, { label: string; blurb: string; category: stri
 
   // ── Histopathology ────────────────────────────────────────────────────
   // NOTE: 'slide-scanning' graduated to a real page at app/diagnostic/slide-scanning/page.tsx
-  'ihc': {
-    label: 'IHC Workflow',
-    blurb: 'Immunohistochemistry request tracking — antibody panels, turnaround monitoring, reagent usage.',
-    category: 'Histopathology',
-  },
-  'frozen-section': {
-    label: 'Frozen Section',
-    blurb: 'Intra-operative frozen-section reporting with rapid turnaround targets and OT communication.',
-    category: 'Histopathology',
-  },
+  // NOTE: 'ihc' graduated to a real page at app/diagnostic/ihc/page.tsx
+  // NOTE: 'frozen-section' graduated to a real page at app/diagnostic/frozen-section/page.tsx
 
   // ── Microbiology ──────────────────────────────────────────────────────
   // NOTE: 'culture' graduated to a real page at app/diagnostic/culture/page.tsx
@@ -263,11 +255,7 @@ const FEATURE_MAP: Record<string, { label: string; blurb: string; category: stri
     category: 'Allergy',
   },
   // NOTE: 'psg' graduated to a real page at app/diagnostic/psg/page.tsx
-  'cpap-titration': {
-    label: 'CPAP Titration',
-    blurb: 'CPAP pressure titration studies with leak tracking, AHI monitoring, therapy optimization.',
-    category: 'Sleep',
-  },
+  // NOTE: 'cpap-titration' graduated to a real page at app/diagnostic/cpap-titration/page.tsx
   // NOTE: 'audiometry' graduated to a real page at app/diagnostic/audiometry/page.tsx
   // NOTE: 'bera' graduated to a real page at app/diagnostic/bera/page.tsx
   'urodynamics': {
@@ -281,11 +269,7 @@ const FEATURE_MAP: Record<string, { label: string; blurb: string; category: stri
   // ── IVF / Embryology ──────────────────────────────────────────────────
   // NOTE: 'cycles' graduated to a real page at app/diagnostic/cycles/page.tsx
   // NOTE: 'cryopreservation' graduated to a real page at app/diagnostic/cryopreservation/page.tsx
-  'casa': {
-    label: 'CASA (Andrology)',
-    blurb: 'Computer-assisted semen analysis — motility, morphology, concentration per WHO guidelines.',
-    category: 'IVF',
-  },
+  // NOTE: 'casa' graduated to a real page at app/diagnostic/casa/page.tsx
   // NOTE: 'art-act' graduated to a real page at app/diagnostic/art-act/page.tsx
 
   // ── Stem cell registry ────────────────────────────────────────────────
@@ -307,11 +291,7 @@ const FEATURE_MAP: Record<string, { label: string; blurb: string; category: stri
 
   // ── Cancer screening ──────────────────────────────────────────────────
   // NOTE: 'tumor-markers' graduated to a real page at app/diagnostic/tumor-markers/page.tsx
-  'ai-scoring': {
-    label: 'AI Risk Scoring',
-    blurb: 'ML-based cancer risk stratification combining markers, imaging, family history, lifestyle.',
-    category: 'Cancer Screening',
-  },
+  // NOTE: 'ai-scoring' graduated to a real page at app/diagnostic/ai-scoring/page.tsx
 
   // ── DTC Genomics ──────────────────────────────────────────────────────
   'kits': {

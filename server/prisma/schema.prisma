@@ -2201,6 +2201,245 @@ model SlideScanning {
 }
 
 // ==============================================
+// IHC WORKFLOW (Histopathology)
+// Per CAP IHC Guidelines
+// ==============================================
+
+model IhcWorkflow {
+  id                String    @id @default(uuid())
+  tenantId          String    @map("tenant_id")
+  caseNumber        String    @map("case_number")
+  patientId         String?   @map("patient_id")
+  patientName       String?   @map("patient_name")
+  specimenType      String?   @map("specimen_type")
+  specimenSite      String?   @map("specimen_site")
+  blockId           String?   @map("block_id")
+  requestDate       DateTime  @map("request_date")
+  requestedBy       String?   @map("requested_by")
+  indication        String?
+  antibodyPanel     String    @map("antibody_panel")
+  antibodies        Json?
+  cloneInfo         Json?     @map("clone_info")
+  dilutions         Json?
+  controlType       String?   @map("control_type")
+  controlResult     String?   @map("control_result")
+  stainingDate      DateTime? @map("staining_date")
+  stainingMethod    String?   @default("automated") @map("staining_method")
+  platformUsed      String?   @map("platform_used")
+  results           Json?
+  scoringMethod     String?   @map("scoring_method")
+  scores            Json?
+  herScore          String?   @map("her_score")
+  ki67Percentage    Float?    @map("ki67_percentage")
+  erStatus          String?   @map("er_status")
+  prStatus          String?   @map("pr_status")
+  interpretation    String?
+  pathologistName   String?   @map("pathologist_name")
+  technicianName    String?   @map("technician_name")
+  tatHours          Float?    @map("tat_hours")
+  notes             String?
+  status            String    @default("requested")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdBy         String?   @map("created_by")
+
+  @@index([tenantId])
+  @@index([tenantId, caseNumber])
+  @@map("ihc_workflows")
+}
+
+// ==============================================
+// FROZEN SECTION (Histopathology — Intraop)
+// Per CAP Frozen Section Guidelines
+// ==============================================
+
+model FrozenSection {
+  id                  String    @id @default(uuid())
+  tenantId            String    @map("tenant_id")
+  caseNumber          String    @map("case_number")
+  patientId           String?   @map("patient_id")
+  patientName         String?   @map("patient_name")
+  surgeonName         String    @map("surgeon_name")
+  operatingRoom       String?   @map("operating_room")
+  specimenType        String?   @map("specimen_type")
+  specimenSite        String?   @map("specimen_site")
+  clinicalQuestion    String?   @map("clinical_question")
+  receivedAt          DateTime  @map("received_at")
+  grossDescription    String?   @map("gross_description")
+  sectionsCount       Int?      @map("sections_count")
+  frozenDiagnosis     String?   @map("frozen_diagnosis")
+  communicatedTo      String?   @map("communicated_to")
+  communicatedAt      DateTime? @map("communicated_at")
+  communicationMethod String?   @default("phone") @map("communication_method")
+  reportedAt          DateTime? @map("reported_at")
+  tatMinutes          Int?      @map("tat_minutes")
+  permanentDiagnosis  String?   @map("permanent_diagnosis")
+  concordant          Boolean?
+  discordanceReason   String?   @map("discordance_reason")
+  pathologistName     String?   @map("pathologist_name")
+  technicianName      String?   @map("technician_name")
+  notes               String?
+  status              String    @default("received")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  createdBy           String?   @map("created_by")
+
+  @@index([tenantId])
+  @@index([tenantId, caseNumber])
+  @@map("frozen_sections")
+}
+
+// ==============================================
+// CPAP TITRATION (Sleep Lab)
+// Per AASM CPAP Titration Protocol
+// ==============================================
+
+model CpapTitration {
+  id                String    @id @default(uuid())
+  tenantId          String    @map("tenant_id")
+  patientId         String?   @map("patient_id")
+  patientName       String    @map("patient_name")
+  diagnosticAhi     Float?    @map("diagnostic_ahi")
+  studyDate         DateTime  @map("study_date")
+  studyType         String    @default("full-night") @map("study_type")
+  deviceType        String    @default("CPAP") @map("device_type")
+  deviceModel       String?   @map("device_model")
+  maskType          String?   @map("mask_type")
+  maskSize          String?   @map("mask_size")
+  startPressure     Float?    @map("start_pressure")
+  optimalPressure   Float?    @map("optimal_pressure")
+  maxPressure       Float?    @map("max_pressure")
+  epapPressure      Float?    @map("epap_pressure")
+  ipapPressure      Float?    @map("ipap_pressure")
+  residualAhi       Float?    @map("residual_ahi")
+  supineResidualAhi Float?    @map("supine_residual_ahi")
+  avgLeak           Float?    @map("avg_leak")
+  maxLeak           Float?    @map("max_leak")
+  totalUsageHours   Float?    @map("total_usage_hours")
+  lowestSpo2        Float?    @map("lowest_spo2")
+  meanSpo2          Float?    @map("mean_spo2")
+  supplementalO2    Boolean   @default(false) @map("supplemental_o2")
+  o2FlowRate        String?   @map("o2_flow_rate")
+  sleepQualityOnPap String?   @map("sleep_quality_on_pap")
+  patientTolerance  String?   @map("patient_tolerance")
+  recommendation    String?
+  prescribedPressure String?  @map("prescribed_pressure")
+  prescribedDevice  String?   @map("prescribed_device")
+  sleepPhysician    String?   @map("sleep_physician")
+  technicianName    String?   @map("technician_name")
+  notes             String?
+  status            String    @default("draft")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdBy         String?   @map("created_by")
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@map("cpap_titrations")
+}
+
+// ==============================================
+// CASA ANALYSIS (IVF — Andrology)
+// Per WHO Laboratory Manual 6th Ed
+// ==============================================
+
+model CasaAnalysis {
+  id                  String    @id @default(uuid())
+  tenantId            String    @map("tenant_id")
+  patientId           String?   @map("patient_id")
+  patientName         String    @map("patient_name")
+  partnerName         String?   @map("partner_name")
+  testDate            DateTime  @map("test_date")
+  abstinenceDays      Int?      @map("abstinence_days")
+  collectionMethod    String?   @map("collection_method")
+  collectionTime      String?   @map("collection_time")
+  analysisTime        String?   @map("analysis_time")
+  liquefactionTime    Int?      @map("liquefaction_time")
+  volume              Float?
+  ph                  Float?
+  appearance          String?
+  viscosity           String?
+  concentration       Float?
+  totalCount          Float?    @map("total_count")
+  totalMotility       Float?    @map("total_motility")
+  progressiveMotility Float?    @map("progressive_motility")
+  nonProgressiveMotility Float? @map("non_progressive_motility")
+  immotile            Float?
+  rapidProgressive    Float?    @map("rapid_progressive")
+  slowProgressive     Float?    @map("slow_progressive")
+  vcl                 Float?
+  vsl                 Float?
+  vap                 Float?
+  normalMorphology    Float?    @map("normal_morphology")
+  headDefects         Float?    @map("head_defects")
+  midpieceDefects     Float?    @map("midpiece_defects")
+  tailDefects         Float?    @map("tail_defects")
+  tzi                 Float?
+  vitality            Float?
+  roundCells          Float?    @map("round_cells")
+  wbc                 Float?
+  agglutination       String?
+  whoAssessment       String?   @map("who_assessment")
+  casaInstrument      String?   @map("casa_instrument")
+  andrologist         String?
+  reviewedBy          String?   @map("reviewed_by")
+  notes               String?
+  status              String    @default("draft")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  createdBy           String?   @map("created_by")
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@map("casa_analyses")
+}
+
+// ==============================================
+// AI RISK SCORE (Cancer Screening)
+// ML-Based Risk Stratification
+// ==============================================
+
+model AiRiskScore {
+  id                  String    @id @default(uuid())
+  tenantId            String    @map("tenant_id")
+  patientId           String?   @map("patient_id")
+  patientName         String    @map("patient_name")
+  patientAge          Int?      @map("patient_age")
+  patientGender       String?   @map("patient_gender")
+  assessmentDate      DateTime  @map("assessment_date")
+  cancerType          String    @map("cancer_type")
+  screeningTool       String?   @map("screening_tool")
+  riskScore           Float?    @map("risk_score")
+  riskLevel           String?   @map("risk_level")
+  inputMarkers        Json?     @map("input_markers")
+  inputImaging        Json?     @map("input_imaging")
+  inputFamilyHistory  Json?     @map("input_family_history")
+  inputLifestyle      Json?     @map("input_lifestyle")
+  inputGenomics       Json?     @map("input_genomics")
+  modelVersion        String?   @map("model_version")
+  modelName           String?   @map("model_name")
+  confidenceInterval  String?   @map("confidence_interval")
+  recommendation      String?
+  followUpInterval    String?   @map("follow_up_interval")
+  referralNeeded      Boolean   @default(false) @map("referral_needed")
+  referralTo          String?   @map("referral_to")
+  clinicianReview     String?   @map("clinician_review")
+  clinicianOverride   Boolean   @default(false) @map("clinician_override")
+  overrideReason      String?   @map("override_reason")
+  disclaimer          String?
+  notes               String?
+  status              String    @default("generated")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  createdBy           String?   @map("created_by")
+
+  @@index([tenantId])
+  @@index([tenantId, riskLevel])
+  @@index([tenantId, cancerType])
+  @@map("ai_risk_scores")
+}
+
+// ==============================================
 // AUDIT LOG
 // ==============================================
 
