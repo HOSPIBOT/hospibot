@@ -1120,6 +1120,61 @@ model CultureTracking {
 }
 
 // ==============================================
+// BLOOD DONOR REGISTRY — NACO / D&C Act compliant
+// Fields per: NACO Standards for Blood Banks & BTS,
+// Drugs & Cosmetics Rules 1945 Schedule F Part XII-B,
+// Supreme Court PIL Common Cause vs UoI (1996)
+// ==============================================
+
+model BloodDonor {
+  id                    String    @id @default(uuid())
+  tenantId              String    @map("tenant_id")
+  // ── Identity (NACO donor record) ──
+  fullName              String    @map("full_name")
+  dateOfBirth           DateTime? @map("date_of_birth")
+  age                   Int                                 // 18–65 per NACO
+  gender                String                              // MALE | FEMALE
+  phone                 String
+  address               String?
+  idProofType           String?   @map("id_proof_type")     // AADHAAR | VOTER_ID | PAN | DRIVING_LICENSE | PASSPORT
+  idProofNumber         String?   @map("id_proof_number")
+  // ── Blood group (ABO + Rh, mandatory) ──
+  bloodGroup            String    @map("blood_group")       // A | B | AB | O
+  rhFactor              String    @map("rh_factor")         // POSITIVE | NEGATIVE
+  // ── Medical screening (NACO eligibility criteria) ──
+  weightKg              Float     @map("weight_kg")         // ≥45 kg
+  hemoglobinGdl         Float     @map("hemoglobin_gdl")    // ≥12.5 g/dL
+  bpSystolic            Int       @map("bp_systolic")       // 100–180 mmHg
+  bpDiastolic           Int       @map("bp_diastolic")      // 50–100 mmHg
+  pulseRate             Int       @map("pulse_rate")        // 60–100 bpm, regular
+  // ── Donor classification (D&C Rules — mandatory on label) ──
+  donorType             String    @map("donor_type")        // VOLUNTARY | REPLACEMENT (paid BANNED per SC 1996)
+  // ── Eligibility (computed server-side per NACO criteria) ──
+  isEligible            Boolean   @map("is_eligible")
+  ineligibilityReason   String?   @map("ineligibility_reason")
+  // ── Deferral (NACO deferral criteria) ──
+  isDeferredNow         Boolean   @default(false)  @map("is_deferred_now")
+  deferralReason        String?   @map("deferral_reason")   // malaria_3mo | jaundice_1yr | tattoo_6mo | surgery_12mo | pregnancy_6mo | rabies_vaccine_1yr | other
+  deferredUntil         DateTime? @map("deferred_until")
+  // ── Donation tracking ──
+  totalDonations        Int       @default(0) @map("total_donations")
+  lastDonationDate      DateTime? @map("last_donation_date")
+  // ── Medical officer fitness certification ──
+  certifiedByName       String?   @map("certified_by_name")
+  certifiedByRegNo      String?   @map("certified_by_reg_no")
+  // ── Metadata ──
+  registeredByUserId    String    @map("registered_by_user_id")
+  notes                 String?
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt      @map("updated_at")
+
+  @@index([tenantId, bloodGroup, rhFactor])
+  @@index([tenantId, phone])
+  @@index([tenantId, isDeferredNow])
+  @@map("blood_donors")
+}
+
+// ==============================================
 // AUDIT LOG
 // ==============================================
 

@@ -212,11 +212,7 @@ const FEATURE_MAP: Record<string, { label: string; blurb: string; category: stri
   },
 
   // ── Blood bank ────────────────────────────────────────────────────────
-  'donors': {
-    label: 'Donor Registry',
-    blurb: 'Blood / bone marrow donor registry with eligibility screening, deferral tracking, recall campaigns.',
-    category: 'Blood Bank',
-  },
+  // NOTE: 'donors' graduated to a real page at app/diagnostic/donors/page.tsx
   'crossmatch': {
     label: 'Crossmatch',
     blurb: 'Crossmatching workflow with ABO / Rh typing, antibody screening, compatibility records.',
