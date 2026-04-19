@@ -1,5 +1,5 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '../../database/prisma.service';
 
 // ART Act 2021 — maximum embryos to transfer (ICMR/ISAR guidelines)
 const MAX_EMBRYO_TRANSFER: Record<string, number> = {

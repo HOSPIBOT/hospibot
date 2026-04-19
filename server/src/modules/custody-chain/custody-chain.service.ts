@@ -1,5 +1,5 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '../../database/prisma.service';
 
 // NDPS Act mandatory witness requirement for narcotic seizures
 const NDPS_CASE_TYPES = ['ndps'];
