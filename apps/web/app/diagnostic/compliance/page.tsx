@@ -17,7 +17,7 @@ import {
   FileText, Radiation, Baby, Microscope, Trash2, FlaskConical,
   ShieldCheck, ShieldAlert, Clock, Loader2, ArrowRight,
 } from 'lucide-react';
-import { TEAL, fmtDateTime, StatusPill } from './_components';
+import { TEAL, fmtDateTime } from './_components';
 
 type ComplianceStatus = {
   bmw: { latestLogDate: string | null; isCurrent: boolean; maxAgeHours: number };

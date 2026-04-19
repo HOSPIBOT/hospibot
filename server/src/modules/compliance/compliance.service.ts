@@ -98,14 +98,18 @@ export class ComplianceService {
    * hasn't been logged — a direct BMW Rules 2016 violation.
    */
   async assertBmwLogCurrent(tenantId: string, branchId: string | null): Promise<void> {
+    // Freshness is checked against `createdAt` (when the operator FILED the
+    // log), not `logDate` (which day the log semantically represents). Using
+    // logDate would incorrectly mark a log filed at 11pm as stale hours later
+    // once midnight rolls past.
     const threshold = new Date(Date.now() - BMW_LOG_MAX_AGE_HOURS * 3600_000);
     const log = await this.prisma.bmwWasteLog.findFirst({
       where: {
         tenantId,
         ...(branchId ? { branchId } : {}),
-        logDate: { gte: threshold },
+        createdAt: { gte: threshold },
       },
-      orderBy: { logDate: 'desc' },
+      orderBy: { createdAt: 'desc' },
     });
     if (!log) {
       throw new ForbiddenException(
@@ -124,9 +128,9 @@ export class ComplianceService {
       where: {
         tenantId,
         ...(branchId ? { branchId } : {}),
-        checklistDate: { gte: threshold },
+        createdAt: { gte: threshold },
       },
-      orderBy: { checklistDate: 'desc' },
+      orderBy: { createdAt: 'desc' },
     });
     if (!mostRecent) {
       throw new ForbiddenException(
@@ -201,17 +205,20 @@ export class ComplianceService {
     });
     if (!doseEntry) return; // Not a mammo order after all; defer to AERB guard.
 
+    // Staleness is measured against createdAt (when the QC entry was filed),
+    // not dailyQcDate (which is a date-only field vulnerable to midnight
+    // rollover artifacts). See comment on assertBmwLogCurrent.
     const qcThreshold = new Date(Date.now() - MAMMO_QC_MAX_AGE_HOURS * 3600_000);
     const now = new Date();
     const opLog = await this.prisma.mammographyOperatorLog.findFirst({
       where: {
         tenantId,
         operatorUserId: doseEntry.operatorUserId,
-        dailyQcDate: { gte: qcThreshold },
+        createdAt: { gte: qcThreshold },
         dailyQcPassed: true,
         certificationExpiresAt: { gt: new Date(now.getTime() - AERB_CERT_GRACE_DAYS * 86400_000) },
       },
-      orderBy: { dailyQcDate: 'desc' },
+      orderBy: { createdAt: 'desc' },
     });
     if (!opLog) {
       throw new ForbiddenException(
@@ -503,25 +510,30 @@ export class ComplianceService {
     const [latestBmw, latestBiosafety, pendingFormF, flaggedScreenings] = await Promise.all([
       this.prisma.bmwWasteLog.findFirst({
         where: { tenantId, ...(branchId ? { branchId } : {}) },
-        orderBy: { logDate: 'desc' },
+        orderBy: { createdAt: 'desc' },
       }),
       this.prisma.biosafetyChecklist.findFirst({
         where: { tenantId, ...(branchId ? { branchId } : {}) },
-        orderBy: { checklistDate: 'desc' },
+        orderBy: { createdAt: 'desc' },
       }),
       this.prisma.pcpndtFormF.count({ where: { tenantId, submittedToAuthority: false } }),
       this.prisma.pregnancyScreening.count({ where: { tenantId, flaggedForReview: true } }),
     ]);
 
+    // isCurrent uses createdAt (when the log was filed in the system), while
+    // latestLogDate / latestChecklistDate expose the semantic date the log
+    // represents — useful for display but NOT authoritative for the hard-block.
     return {
       bmw: {
         latestLogDate: latestBmw?.logDate ?? null,
-        isCurrent: !!latestBmw && latestBmw.logDate >= bmwThreshold,
+        latestFiledAt: latestBmw?.createdAt ?? null,
+        isCurrent: !!latestBmw && latestBmw.createdAt >= bmwThreshold,
         maxAgeHours: BMW_LOG_MAX_AGE_HOURS,
       },
       biosafety: {
         latestChecklistDate: latestBiosafety?.checklistDate ?? null,
-        isCurrent: !!latestBiosafety && latestBiosafety.checklistDate >= biosafetyThreshold,
+        latestFiledAt: latestBiosafety?.createdAt ?? null,
+        isCurrent: !!latestBiosafety && latestBiosafety.createdAt >= biosafetyThreshold,
         isPassing: !!latestBiosafety?.passed,
         maxAgeDays: BIOSAFETY_MAX_AGE_DAYS,
       },

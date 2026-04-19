@@ -63,15 +63,15 @@ export default function PregnancyPage() {
   };
 
   const toggleFlag = async (id: string, currentlyFlagged: boolean) => {
+    // Use setSaving as the togglingId setter — savePatch's finally{} will
+    // always call it with false, so the button un-disables even if the
+    // request throws (e.g. 403 or network error).
     setTogglingId(id);
     await savePatch({
       path: `/compliance/pregnancy-screenings/${id}`,
       body: { flaggedForReview: !currentlyFlagged },
-      setSaving: () => {},
-      onDone: () => {
-        setTogglingId(null);
-        reload();
-      },
+      setSaving: (active: boolean) => { if (!active) setTogglingId(null); },
+      onDone: () => reload(),
       successMsg: currentlyFlagged ? 'Flag cleared' : 'Flagged for review',
     });
   };
