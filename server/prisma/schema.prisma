@@ -2589,6 +2589,281 @@ model ObGrowthScan {
 }
 
 // ==============================================
+// RADIOTRACER LOG (Nuclear Medicine)
+// Per AERB Safety Code SC-2 Rev.2, e-LORA
+// ==============================================
+
+model RadiotracerLog {
+  id                    String    @id @default(uuid())
+  tenantId              String    @map("tenant_id")
+  patientId             String?   @map("patient_id")
+  patientName           String    @map("patient_name")
+  patientAge            Int?      @map("patient_age")
+  patientWeight         Float?    @map("patient_weight")
+  tracerName            String    @map("tracer_name")
+  radioisotope          String?
+  halfLifeMinutes       Float?    @map("half_life_minutes")
+  routeOfAdmin          String?   @map("route_of_admin")
+  batchNumber           String    @map("batch_number")
+  supplierName          String?   @map("supplier_name")
+  receivedDate          DateTime? @map("received_date")
+  receivedActivityMbq   Float?    @map("received_activity_mbq")
+  expiryDate            DateTime? @map("expiry_date")
+  calibrationActivityMbq Float?   @map("calibration_activity_mbq")
+  calibrationTime       DateTime? @map("calibration_time")
+  administrationDate    DateTime  @map("administration_date")
+  administrationTime    DateTime? @map("administration_time")
+  administeredDoseMbq   Float?    @map("administered_dose_mbq")
+  decayedActivityMbq    Float?    @map("decayed_activity_mbq")
+  residualInSyringeMbq  Float?    @map("residual_in_syringe_mbq")
+  doseCalibrator        String?   @map("dose_calibrator")
+  doseCalibSerialNo     String?   @map("dose_calib_serial_no")
+  eloraLicenseNo        String?   @map("elora_license_no")
+  rsoVerified           Boolean   @default(false) @map("rso_verified")
+  rsoName               String?   @map("rso_name")
+  wasteDisposalMethod   String?   @map("waste_disposal_method")
+  wasteActivityMbq      Float?    @map("waste_activity_mbq")
+  indication            String?
+  scanType              String?   @map("scan_type")
+  adverseReaction       String?   @map("adverse_reaction")
+  nuclearPhysician      String?   @map("nuclear_physician")
+  technicianName        String?   @map("technician_name")
+  pregnancyScreened     Boolean   @default(false) @map("pregnancy_screened")
+  breastfeedingStatus   String?   @map("breastfeeding_status")
+  notes                 String?
+  status                String    @default("administered")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+  createdBy             String?   @map("created_by")
+  @@index([tenantId])
+  @@index([tenantId, tracerName])
+  @@map("radiotracer_logs")
+}
+
+// ==============================================
+// RSO DASHBOARD (Radiation Safety)
+// Per AERB AE(RP) Rules 2004, ALARA
+// ==============================================
+
+model RsoDashboard {
+  id                      String    @id @default(uuid())
+  tenantId                String    @map("tenant_id")
+  recordType              String    @map("record_type")
+  staffName               String?   @map("staff_name")
+  staffId                 String?   @map("staff_id")
+  designation             String?
+  department              String?
+  classifiedWorker        Boolean   @default(false) @map("classified_worker")
+  badgeId                 String?   @map("badge_id")
+  badgeType               String?   @default("TLD") @map("badge_type")
+  monitoringPeriod        String?   @map("monitoring_period")
+  periodStart             DateTime? @map("period_start")
+  periodEnd               DateTime? @map("period_end")
+  doseMsv                 Float?    @map("dose_msv")
+  doseHp10                Float?    @map("dose_hp10")
+  doseHp007               Float?    @map("dose_hp007")
+  cumulativeAnnualDoseMsv Float?    @map("cumulative_annual_dose_msv")
+  fiveYearAvgMsv          Float?    @map("five_year_avg_msv")
+  investigationRequired   Boolean   @default(false) @map("investigation_required")
+  aerbAlert               String?   @map("aerb_alert")
+  areaName                String?   @map("area_name")
+  areaType                String?   @map("area_type")
+  ambientDoseRate         Float?    @map("ambient_dose_rate")
+  ambientDoseUnit         String?   @default("uSv/hr") @map("ambient_dose_unit")
+  incidentDescription     String?   @map("incident_description")
+  incidentDate            DateTime? @map("incident_date")
+  correctiveAction        String?   @map("corrective_action")
+  reportedToAerb          Boolean   @default(false) @map("reported_to_aerb")
+  rsoName                 String?   @map("rso_name")
+  rsoLevel                String?   @map("rso_level")
+  rsoCertExpiry           DateTime? @map("rso_cert_expiry")
+  surveyMeterUsed         String?   @map("survey_meter_used")
+  calibrationDate         DateTime? @map("calibration_date")
+  notes                   String?
+  status                  String    @default("active")
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @updatedAt @map("updated_at")
+  createdBy               String?   @map("created_by")
+  @@index([tenantId])
+  @@index([tenantId, recordType])
+  @@map("rso_dashboards")
+}
+
+// ==============================================
+// TMT STRESS TEST (Cardiac Diagnostics)
+// Per ACC/AHA Guidelines, Bruce Protocol
+// ==============================================
+
+model TmtStress {
+  id                        String    @id @default(uuid())
+  tenantId                  String    @map("tenant_id")
+  patientId                 String?   @map("patient_id")
+  patientName               String    @map("patient_name")
+  patientAge                Int?      @map("patient_age")
+  patientGender             String?   @map("patient_gender")
+  patientWeight             Float?    @map("patient_weight")
+  testDate                  DateTime  @map("test_date")
+  protocol                  String    @default("standard-bruce")
+  indication                String?
+  medications               String?
+  restingHr                 Int?      @map("resting_hr")
+  restingSbp                Int?      @map("resting_sbp")
+  restingDbp                Int?      @map("resting_dbp")
+  restingEcg                String?   @map("resting_ecg")
+  maxStageCompleted         Int?      @map("max_stage_completed")
+  exerciseDurationMin       Float?    @map("exercise_duration_min")
+  metsAchieved              Float?    @map("mets_achieved")
+  maxHeartRate              Int?      @map("max_heart_rate")
+  targetHeartRate           Int?      @map("target_heart_rate")
+  targetAchieved            Boolean?  @map("target_achieved")
+  peakSbp                   Int?      @map("peak_sbp")
+  peakDbp                   Int?      @map("peak_dbp")
+  reasonStopped             String?   @map("reason_stopped")
+  stSegmentChanges          String?   @map("st_segment_changes")
+  stDepressionMm            Float?    @map("st_depression_mm")
+  stDepressionLeads         String?   @map("st_depression_leads")
+  stOnsetStage              Int?      @map("st_onset_stage")
+  stRecoveryMin             Float?    @map("st_recovery_min")
+  arrhythmias               String?
+  chestPain                 Boolean   @default(false) @map("chest_pain")
+  chestPainOnset            String?   @map("chest_pain_onset")
+  dyspnea                   Boolean   @default(false)
+  dizziness                 Boolean   @default(false)
+  recoveryHr5min            Int?      @map("recovery_hr_5min")
+  recoveryBp5min            String?   @map("recovery_bp_5min")
+  recoveryEcgNormal         String?   @map("recovery_ecg_normal")
+  overallResult             String?   @map("overall_result")
+  dukeScore                 Float?    @map("duke_score")
+  interpretation            String?
+  recommendation            String?
+  cardiologist              String?
+  technicianName            String?   @map("technician_name")
+  emergencyEquipmentChecked Boolean   @default(false) @map("emergency_equipment_checked")
+  defibrillatorAvailable    Boolean   @default(false) @map("defibrillator_available")
+  notes                     String?
+  status                    String    @default("draft")
+  createdAt                 DateTime  @default(now()) @map("created_at")
+  updatedAt                 DateTime  @updatedAt @map("updated_at")
+  createdBy                 String?   @map("created_by")
+  @@index([tenantId])
+  @@index([tenantId, overallResult])
+  @@map("tmt_stress_tests")
+}
+
+// ==============================================
+// HOLTER ALLOCATION (Cardiac Diagnostics)
+// Per ISHNE-HRS 2017 Consensus, ACC/AHA
+// ==============================================
+
+model HolterAllocation {
+  id                    String    @id @default(uuid())
+  tenantId              String    @map("tenant_id")
+  patientId             String?   @map("patient_id")
+  patientName           String    @map("patient_name")
+  patientAge            Int?      @map("patient_age")
+  indication            String?
+  referringDoctor       String?   @map("referring_doctor")
+  deviceSerialNo        String    @map("device_serial_no")
+  deviceModel           String?   @map("device_model")
+  leadConfiguration     String?   @default("3-channel") @map("lead_configuration")
+  duration              String    @default("24h")
+  issuedAt              DateTime  @map("issued_at")
+  expectedReturn        DateTime? @map("expected_return")
+  returnedAt            DateTime? @map("returned_at")
+  deviceStatus          String    @default("issued") @map("device_status")
+  deviceCondition       String?   @map("device_condition")
+  recordingQuality      String?   @map("recording_quality")
+  totalRecordedHours    Float?    @map("total_recorded_hours")
+  analyzablePercentage  Float?    @map("analyzable_percentage")
+  totalHeartbeats       Int?      @map("total_heartbeats")
+  avgHeartRate          Int?      @map("avg_heart_rate")
+  minHeartRate          Int?      @map("min_heart_rate")
+  maxHeartRate          Int?      @map("max_heart_rate")
+  pvcCount              Int?      @map("pvc_count")
+  pacCount              Int?      @map("pac_count")
+  ventTachyEpisodes     Int?      @map("vent_tachy_episodes")
+  svtEpisodes           Int?      @map("svt_episodes")
+  afEpisodes            Int?      @map("af_episodes")
+  afBurdenPct           Float?    @map("af_burden_pct")
+  pausesGt2s            Int?      @map("pauses_gt_2s")
+  longestPauseSec       Float?    @map("longest_pause_sec")
+  stChanges             String?   @map("st_changes")
+  symptomDiary          Json?     @map("symptom_diary")
+  symptomCorrelation    String?   @map("symptom_correlation")
+  sdnn                  Float?
+  rmssd                 Float?
+  interpretation        String?
+  recommendation        String?
+  cardiologist          String?
+  technicianName        String?   @map("technician_name")
+  notes                 String?
+  status                String    @default("issued")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+  createdBy             String?   @map("created_by")
+  @@index([tenantId])
+  @@index([tenantId, deviceStatus])
+  @@map("holter_allocations")
+}
+
+// ==============================================
+// ABPM REPORT (Cardiac Diagnostics)
+// Per ESH 2024, ACC/AHA 2017, India ABPM Study
+// ==============================================
+
+model AbpmReport {
+  id                    String    @id @default(uuid())
+  tenantId              String    @map("tenant_id")
+  patientId             String?   @map("patient_id")
+  patientName           String    @map("patient_name")
+  patientAge            Int?      @map("patient_age")
+  patientGender         String?   @map("patient_gender")
+  studyDate             DateTime  @map("study_date")
+  duration              String    @default("24h")
+  deviceModel           String?   @map("device_model")
+  deviceSerialNo        String?   @map("device_serial_no")
+  totalReadings         Int?      @map("total_readings")
+  validReadings         Int?      @map("valid_readings")
+  officeSbp             Float?    @map("office_sbp")
+  officeDbp             Float?    @map("office_dbp")
+  avg24hSbp             Float?    @map("avg_24h_sbp")
+  avg24hDbp             Float?    @map("avg_24h_dbp")
+  avg24hHr              Float?    @map("avg_24h_hr")
+  daytimeAvgSbp         Float?    @map("daytime_avg_sbp")
+  daytimeAvgDbp         Float?    @map("daytime_avg_dbp")
+  daytimeAvgHr          Float?    @map("daytime_avg_hr")
+  nighttimeAvgSbp       Float?    @map("nighttime_avg_sbp")
+  nighttimeAvgDbp       Float?    @map("nighttime_avg_dbp")
+  nighttimeAvgHr        Float?    @map("nighttime_avg_hr")
+  dippingPct            Float?    @map("dipping_pct")
+  dippingStatus         String?   @map("dipping_status")
+  daytimeSbpLoad        Float?    @map("daytime_sbp_load")
+  daytimeDbpLoad        Float?    @map("daytime_dbp_load")
+  nighttimeSbpLoad      Float?    @map("nighttime_sbp_load")
+  nighttimeDbpLoad      Float?    @map("nighttime_dbp_load")
+  morningSurgeSbp       Float?    @map("morning_surge_sbp")
+  maxSbp                Float?    @map("max_sbp")
+  maxDbp                Float?    @map("max_dbp")
+  minSbp                Float?    @map("min_sbp")
+  minDbp                Float?    @map("min_dbp")
+  bpPhenotype           String?   @map("bp_phenotype")
+  nocturnalHypertension Boolean?  @map("nocturnal_hypertension")
+  interpretation        String?
+  recommendation        String?
+  referringDoctor       String?   @map("referring_doctor")
+  reportedBy            String?   @map("reported_by")
+  notes                 String?
+  status                String    @default("draft")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+  createdBy             String?   @map("created_by")
+  @@index([tenantId])
+  @@index([tenantId, dippingStatus])
+  @@index([tenantId, bpPhenotype])
+  @@map("abpm_reports")
+}
+
+// ==============================================
 // AUDIT LOG
 // ==============================================
 
