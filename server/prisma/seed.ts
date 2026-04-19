@@ -890,6 +890,54 @@ const DEFAULT_TIER_CONFIGS = [
     waMessagesPerMonth: 999999, smsPerMonth: 999999, storageGB: 9999,
     sortOrder: 4,
   },
+  // ── Diagnostic family overrides ──────────────────────────────────────────
+  // These take precedence over 'default' for all 34 diagnostic subtypes.
+  // Resolution: subtype:<slug> → family:diagnostic → default.
+  // Pricing identical to default for MVP; display metadata differs.
+  {
+    scope: 'family:diagnostic', tierKey: 'small',
+    displayName: 'Starter',
+    tagline: 'Solo practitioner or single-room setup — core workflow, WhatsApp delivery, GST billing',
+    priceMonthly: 99900, priceAnnual: 999000,
+    color: '#0369A1',
+    dailyVolumeMin: 1, dailyVolumeMax: 50,
+    branchesAllowed: 1, staffAllowed: 5,
+    waMessagesPerMonth: 2000, smsPerMonth: 500, storageGB: 10,
+    sortOrder: 1,
+  },
+  {
+    scope: 'family:diagnostic', tierKey: 'medium',
+    displayName: 'Growth',
+    tagline: 'Growing center — doctor CRM, insurance billing, clinical decision support, home collection',
+    priceMonthly: 299900, priceAnnual: 2999000,
+    color: '#0D7C66', badge: 'Most Popular',
+    dailyVolumeMin: 50, dailyVolumeMax: 300,
+    branchesAllowed: 3, staffAllowed: 20,
+    waMessagesPerMonth: 10000, smsPerMonth: 2000, storageGB: 50,
+    sortOrder: 2,
+  },
+  {
+    scope: 'family:diagnostic', tierKey: 'large',
+    displayName: 'Professional',
+    tagline: 'Multi-site operations — NABL accreditation, QC, HRMS, advanced analytics, priority support',
+    priceMonthly: 799900, priceAnnual: 7999000,
+    color: '#7C3AED',
+    dailyVolumeMin: 300, dailyVolumeMax: 1000,
+    branchesAllowed: 10, staffAllowed: 75,
+    waMessagesPerMonth: 50000, smsPerMonth: 10000, storageGB: 500,
+    sortOrder: 3,
+  },
+  {
+    scope: 'family:diagnostic', tierKey: 'enterprise',
+    displayName: 'Enterprise',
+    tagline: 'Network operations — franchise management, government reporting, ABDM, API marketplace, dedicated AM',
+    priceMonthly: null, priceAnnual: null,
+    color: '#1E293B', badge: 'Contact Sales',
+    dailyVolumeMin: 1000, dailyVolumeMax: null,
+    branchesAllowed: 9999, staffAllowed: 9999,
+    waMessagesPerMonth: 999999, smsPerMonth: 999999, storageGB: 9999,
+    sortOrder: 4,
+  },
 ];
 
 async function seedTierConfigs() {
