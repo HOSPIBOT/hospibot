@@ -1067,6 +1067,59 @@ model DispatchManifest {
 }
 
 // ==============================================
+// COLD CHAIN LOG — temperature monitoring
+// ==============================================
+
+model ColdChainLog {
+  id                  String    @id @default(uuid())
+  tenantId            String    @map("tenant_id")
+  branchId            String?   @map("branch_id")
+  logDate             DateTime  @map("log_date")
+  timeChecked         String    @map("time_checked")       // "08:30", "14:00"
+  containerType       String    @map("container_type")     // ice_pack | dry_ice | reefer_box | freezer_minus20 | refrigerator_2_8
+  temperatureReading  Float     @map("temperature_reading") // °C
+  minAcceptableTemp   Float     @map("min_acceptable_temp")
+  maxAcceptableTemp   Float     @map("max_acceptable_temp")
+  isWithinRange       Boolean   @map("is_within_range")
+  correctionTaken     String?   @map("correction_taken")   // what was done if out of range
+  checkedByUserId     String    @map("checked_by_user_id")
+  notes               String?
+  createdAt           DateTime  @default(now()) @map("created_at")
+
+  @@index([tenantId, logDate])
+  @@map("cold_chain_logs")
+}
+
+// ==============================================
+// CULTURE TRACKING — microbiology active cultures
+// ==============================================
+
+model CultureTracking {
+  id                  String    @id @default(uuid())
+  tenantId            String    @map("tenant_id")
+  labOrderId          String?   @map("lab_order_id")
+  patientId           String?   @map("patient_id")
+  specimenType        String    @map("specimen_type")       // blood | urine | wound | sputum | stool | csf | other
+  specimenSource      String?   @map("specimen_source")     // e.g. "left arm blood culture"
+  cultureMedia        String    @map("culture_media")       // blood_agar | mac_conkey | chocolate | sabouraud | bactec | other
+  inoculatedAt        DateTime  @map("inoculated_at")
+  readAt              DateTime? @map("read_at")
+  growthStatus        String    @default("INCUBATING")      // INCUBATING | NO_GROWTH | GROWTH_DETECTED | IDENTIFIED | FINAL
+  organismIdentified  String?   @map("organism_identified") // e.g. "E. coli", "MRSA", "Candida albicans"
+  colonyCount         String?   @map("colony_count")        // e.g. ">10^5 CFU/ml"
+  incubationHours     Int?      @map("incubation_hours")
+  isFlaggedMdro       Boolean   @default(false) @map("is_flagged_mdro") // MRSA, VRE, ESBL, CRE
+  technicianUserId    String    @map("technician_user_id")
+  notes               String?
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt      @map("updated_at")
+
+  @@index([tenantId, growthStatus])
+  @@index([tenantId, inoculatedAt])
+  @@map("culture_trackings")
+}
+
+// ==============================================
 // AUDIT LOG
 // ==============================================
 

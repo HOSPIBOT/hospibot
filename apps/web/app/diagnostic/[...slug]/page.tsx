@@ -29,11 +29,7 @@ import { ArrowLeft, Sparkles, Clock } from 'lucide-react';
 const FEATURE_MAP: Record<string, { label: string; blurb: string; category: string }> = {
   // ── Sample logistics ──────────────────────────────────────────────────
   // NOTE: 'dispatch' graduated to a real page at app/diagnostic/dispatch/page.tsx
-  'cold-chain': {
-    label: 'Cold Chain Log',
-    blurb: 'Temperature-log compliance for sample transport — critical for biochemistry, molecular tests.',
-    category: 'Sample Logistics',
-  },
+  // NOTE: 'cold-chain' graduated to a real page at app/diagnostic/cold-chain/page.tsx
   'agents': {
     label: 'Field Agents',
     blurb: 'Manage field agent roster, schedules, and performance for home-sample-collection services.',
@@ -208,11 +204,7 @@ const FEATURE_MAP: Record<string, { label: string; blurb: string; category: stri
   },
 
   // ── Microbiology ──────────────────────────────────────────────────────
-  'culture': {
-    label: 'Culture Dashboard',
-    blurb: 'Active culture tracking — plate growth, organism ID, antibiotic sensitivity results.',
-    category: 'Microbiology',
-  },
+  // NOTE: 'culture' graduated to a real page at app/diagnostic/culture/page.tsx
   'antibiogram': {
     label: 'Antibiogram / AMR',
     blurb: 'Antibiogram generation with antimicrobial resistance trends for infection control.',
