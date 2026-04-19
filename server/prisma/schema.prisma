@@ -2440,6 +2440,155 @@ model AiRiskScore {
 }
 
 // ==============================================
+// FIELD AGENTS (Collection Center)
+// ==============================================
+
+model FieldAgent {
+  id              String    @id @default(uuid())
+  tenantId        String    @map("tenant_id")
+  title           String
+  agentName       String    @map("agent_name")
+  agentPhone      String?   @map("agent_phone")
+  agentEmail      String?   @map("agent_email")
+  zone            String?
+  assignedArea    String?   @map("assigned_area")
+  collectionCount Int?      @map("collection_count")
+  activeRoute     String?   @map("active_route")
+  vehicleId       String?   @map("vehicle_id")
+  gpsEnabled      Boolean   @default(false) @map("gps_enabled")
+  lastLocation    String?   @map("last_location")
+  lastCheckin     DateTime? @map("last_checkin")
+  notes           String?
+  status          String    @default("active")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  createdBy       String?   @map("created_by")
+  @@index([tenantId])
+  @@map("field_agents")
+}
+
+// ==============================================
+// ROUTE PLANNING (Collection Logistics)
+// ==============================================
+
+model RoutePlan {
+  id              String    @id @default(uuid())
+  tenantId        String    @map("tenant_id")
+  title           String
+  routeDate       DateTime  @map("route_date")
+  agentId         String?   @map("agent_id")
+  agentName       String?   @map("agent_name")
+  stops           Json?
+  stopCount       Int?      @map("stop_count")
+  estimatedKm     Float?    @map("estimated_km")
+  estimatedTime   Int?      @map("estimated_time")
+  actualStartTime String?   @map("actual_start_time")
+  actualEndTime   String?   @map("actual_end_time")
+  samplesCollected Int?     @map("samples_collected")
+  notes           String?
+  status          String    @default("planned")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  createdBy       String?   @map("created_by")
+  @@index([tenantId])
+  @@map("route_plans")
+}
+
+// ==============================================
+// DICOM STUDY (Radiology)
+// ==============================================
+
+model DicomStudy {
+  id              String    @id @default(uuid())
+  tenantId        String    @map("tenant_id")
+  title           String
+  patientId       String?   @map("patient_id")
+  patientName     String?   @map("patient_name")
+  accessionNumber String?   @map("accession_number")
+  studyInstanceUid String?  @map("study_instance_uid")
+  modality        String?
+  studyDate       DateTime? @map("study_date")
+  studyDescription String?  @map("study_description")
+  seriesCount     Int?      @map("series_count")
+  imageCount      Int?      @map("image_count")
+  bodyPart        String?   @map("body_part")
+  referringPhysician String? @map("referring_physician")
+  pacsLocation    String?   @map("pacs_location")
+  reportStatus    String?   @map("report_status")
+  notes           String?
+  status          String    @default("received")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  createdBy       String?   @map("created_by")
+  @@index([tenantId])
+  @@index([tenantId, modality])
+  @@map("dicom_studies")
+}
+
+// ==============================================
+// RADIOLOGIST ASSIGNMENT
+// ==============================================
+
+model RadiologistAssignment {
+  id                String    @id @default(uuid())
+  tenantId          String    @map("tenant_id")
+  title             String
+  radiologistName   String    @map("radiologist_name")
+  radiologistId     String?   @map("radiologist_id")
+  specialization    String?
+  studyId           String?   @map("study_id")
+  modality          String?
+  assignedAt        DateTime? @map("assigned_at")
+  startedAt         DateTime? @map("started_at")
+  completedAt       DateTime? @map("completed_at")
+  tatMinutes        Int?      @map("tat_minutes")
+  priority          String?   @default("routine")
+  workloadCount     Int?      @map("workload_count")
+  notes             String?
+  status            String    @default("assigned")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdBy         String?   @map("created_by")
+  @@index([tenantId])
+  @@map("radiologist_assignments")
+}
+
+// ==============================================
+// OB GROWTH SCAN (Ultrasound)
+// ==============================================
+
+model ObGrowthScan {
+  id                String    @id @default(uuid())
+  tenantId          String    @map("tenant_id")
+  title             String
+  patientId         String?   @map("patient_id")
+  patientName       String?   @map("patient_name")
+  gestationalAge    String?   @map("gestational_age")
+  scanDate          DateTime? @map("scan_date")
+  scanType          String?   @map("scan_type")
+  bpd               Float?
+  hc                Float?
+  ac                Float?
+  fl                Float?
+  efw               Float?
+  percentile        String?
+  afi               Float?
+  placentaPosition  String?   @map("placenta_position")
+  presentation      String?
+  fetalHeartRate     Int?     @map("fetal_heart_rate")
+  anomalies         String?
+  sonologistName    String?   @map("sonologist_name")
+  impression        String?
+  notes             String?
+  status            String    @default("draft")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdBy         String?   @map("created_by")
+  @@index([tenantId])
+  @@map("ob_growth_scans")
+}
+
+// ==============================================
 // AUDIT LOG
 // ==============================================
 

@@ -62,6 +62,11 @@ import { FrozenSectionModule } from './modules/frozen-section/frozen-section.mod
 import { CpapTitrationModule } from './modules/cpap-titration/cpap-titration.module';
 import { CasaModule } from './modules/casa/casa.module';
 import { AiScoringModule } from './modules/ai-scoring/ai-scoring.module';
+import { FieldAgentsModule } from './modules/field-agents/field-agents.module';
+import { RoutePlanningModule } from './modules/route-planning/route-planning.module';
+import { DicomViewerModule } from './modules/dicom-viewer/dicom-viewer.module';
+import { RadiologistPanelModule } from './modules/radiologist-panel/radiologist-panel.module';
+import { ObGrowthScanModule } from './modules/ob-growth-scan/ob-growth-scan.module';
 
 @Module({
   imports: [
@@ -138,6 +143,11 @@ import { AiScoringModule } from './modules/ai-scoring/ai-scoring.module';
     CpapTitrationModule,
     CasaModule,
     AiScoringModule,
+    FieldAgentsModule,
+    RoutePlanningModule,
+    DicomViewerModule,
+    RadiologistPanelModule,
+    ObGrowthScanModule,
   ],
   controllers: [HealthController],
   providers: [StartupService, DbBootstrapService],

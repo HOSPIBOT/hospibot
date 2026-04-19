@@ -30,33 +30,13 @@ const FEATURE_MAP: Record<string, { label: string; blurb: string; category: stri
   // ── Sample logistics ──────────────────────────────────────────────────
   // NOTE: 'dispatch' graduated to a real page at app/diagnostic/dispatch/page.tsx
   // NOTE: 'cold-chain' graduated to a real page at app/diagnostic/cold-chain/page.tsx
-  'agents': {
-    label: 'Field Agents',
-    blurb: 'Manage field agent roster, schedules, and performance for home-sample-collection services.',
-    category: 'Sample Logistics',
-  },
-  'routes': {
-    label: 'Route Planning',
-    blurb: 'Optimise daily home-collection routes — cluster bookings by pincode, minimise agent travel time.',
-    category: 'Sample Logistics',
-  },
+  // NOTE: 'agents' graduated to a real page at app/diagnostic/field-agents/page.tsx
+  // NOTE: 'routes' graduated to a real page at app/diagnostic/route-planning/page.tsx
 
   // ── Radiology / imaging ───────────────────────────────────────────────
-  'dicom': {
-    label: 'DICOM Viewer',
-    blurb: 'Web-based DICOM viewer with OHIF for radiologist review of scan images inside the portal.',
-    category: 'Radiology',
-  },
-  'radiologists': {
-    label: 'Radiologist Panel',
-    blurb: 'Manage your radiologist panel — schedule assignments, reading counts, tele-radiology handoff.',
-    category: 'Radiology',
-  },
-  'ob-module': {
-    label: 'OB / Growth Scan',
-    blurb: 'Obstetric scan template with growth charts, EDD calculator, fetal biometry tracking.',
-    category: 'Radiology',
-  },
+  // NOTE: 'dicom' graduated to a real page at app/diagnostic/dicom-viewer/page.tsx
+  // NOTE: 'radiologists' graduated to a real page at app/diagnostic/radiologist-panel/page.tsx
+  // NOTE: 'ob-module' graduated to a real page at app/diagnostic/ob-growth-scan/page.tsx
   'sonologists': {
     label: 'Sonologist Panel',
     blurb: 'Manage USG sonologist panel — scheduling, load balancing, per-sonologist reporting metrics.',
