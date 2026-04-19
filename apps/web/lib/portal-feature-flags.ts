@@ -248,7 +248,7 @@ export interface SubtypeNavConfig {
   extraItems?: Array<{ href: string; label: string; iconKey: string }>;
 }
 
-export const DIAG_SUBTYPE_NAV: Record<DiagSubtype, SubtypeNavConfig> = {
+export const DIAG_SUBTYPE_NAV: Record<string, SubtypeNavConfig> = {
   'pathology-lab': {
     // Standard lab flow — keep everything
     hideItems: ['dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling'],
@@ -364,6 +364,203 @@ export const DIAG_SUBTYPE_NAV: Record<DiagSubtype, SubtypeNavConfig> = {
       { href: 'sla-monitor',    label: 'SLA Monitor',         iconKey: 'Clock' },
     ],
   },
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // Group A — Collection & Logistics (pickup-point; other 2 covered above)
+  // ═════════════════════════════════════════════════════════════════════════
+  'pickup-point': {
+    // Counter inside a pharmacy/clinic — minimalist handover flow, no processing.
+    labelOverrides: { 'lab-orders': 'Sample Handover', 'collection': 'Handover Log' },
+    hideItems: ['qc','results','catalog','dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling','inventory','equipment','automation','rate-cards','packages'],
+  },
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // Group B — Pathology & Lab Testing (histopathology, micro, blood-bank)
+  // ═════════════════════════════════════════════════════════════════════════
+  'histopathology-lab': {
+    labelOverrides: { 'lab-orders': 'Tissue Specimens', 'results': 'Histology Reports', 'catalog': 'Panel Catalog' },
+    hideItems: ['dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling'],
+    extraItems: [
+      { href: 'slide-scanning', label: 'Slide Scanning',   iconKey: 'Layers2' },
+      { href: 'ihc',            label: 'IHC Workflow',     iconKey: 'FlaskConical' },
+      { href: 'frozen-section', label: 'Frozen Section',   iconKey: 'Activity' },
+    ],
+  },
+  'micro-lab': {
+    labelOverrides: { 'lab-orders': 'Culture Orders', 'results': 'C&S Reports', 'catalog': 'Organism Panel' },
+    hideItems: ['dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling'],
+    extraItems: [
+      { href: 'culture',    label: 'Culture Dashboard',  iconKey: 'FlaskConical' },
+      { href: 'antibiogram',label: 'Antibiogram / AMR',  iconKey: 'Shield' },
+      { href: 'biosafety',  label: 'Biosafety Log',      iconKey: 'ShieldCheck' },
+    ],
+  },
+  'blood-bank': {
+    labelOverrides: { 'lab-orders': 'Blood Orders', 'inventory': 'Blood Inventory', 'patients': 'Recipients' },
+    hideItems: ['qc','catalog','dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling'],
+    extraItems: [
+      { href: 'donors',          label: 'Donor Registry',   iconKey: 'Heart' },
+      { href: 'crossmatch',      label: 'Crossmatch',       iconKey: 'FlaskConical' },
+      { href: 'dghs-reporting',  label: 'DGHS Reporting',   iconKey: 'FileText' },
+    ],
+  },
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // Group C — Imaging & Scans (nuclear, mammo, dexa, dental, ophthalmic)
+  // ═════════════════════════════════════════════════════════════════════════
+  'nuclear-medicine-center': {
+    labelOverrides: { 'lab-orders': 'Scan Orders', 'results': 'Nuclear Reports' },
+    hideItems: ['collection','qc','catalog','tmt-holter','cath-lab','genetic-counseling','pndt-register'],
+    extraItems: [
+      { href: 'radiotracer',  label: 'Radiotracer Log',   iconKey: 'FlaskConical' },
+      { href: 'aerb-log',     label: 'AERB Log',          iconKey: 'AlertTriangle' },
+      { href: 'barc',         label: 'BARC Reporting',    iconKey: 'Shield' },
+    ],
+  },
+  'mammography-center': {
+    labelOverrides: { 'lab-orders': 'Mammogram Orders', 'results': 'BI-RADS Reports' },
+    hideItems: ['collection','qc','inventory','catalog','radiotracer','tmt-holter','cath-lab','genetic-counseling'],
+    extraItems: [
+      { href: 'bi-rads',           label: 'BI-RADS Reports',  iconKey: 'ClipboardList' },
+      { href: 'compliance/mammo',  label: 'Operator QC',      iconKey: 'ShieldCheck' },
+      { href: 'aerb-log',          label: 'AERB Log',         iconKey: 'AlertTriangle' },
+      { href: 'pndt-register',     label: 'PC-PNDT Register', iconKey: 'Shield' },
+    ],
+  },
+  'dexa-center': {
+    labelOverrides: { 'lab-orders': 'DEXA Orders', 'results': 'Bone Density Reports' },
+    hideItems: ['collection','qc','inventory','catalog','radiotracer','tmt-holter','cath-lab','genetic-counseling','pndt-register'],
+    extraItems: [
+      { href: 'frax', label: 'FRAX Assessment', iconKey: 'Activity' },
+    ],
+  },
+  'dental-radiology-center': {
+    labelOverrides: { 'lab-orders': 'Dental Scan Orders', 'results': 'Dental Reports' },
+    hideItems: ['collection','qc','inventory','catalog','radiotracer','tmt-holter','cath-lab','genetic-counseling','pndt-register'],
+    extraItems: [
+      { href: 'opg-cbct',  label: 'OPG / CBCT',  iconKey: 'Activity' },
+      { href: 'aerb-log',  label: 'AERB Log',    iconKey: 'AlertTriangle' },
+    ],
+  },
+  'ophthalmic-center': {
+    labelOverrides: { 'lab-orders': 'Eye Scan Orders', 'results': 'Eye Reports' },
+    hideItems: ['collection','qc','inventory','catalog','radiotracer','tmt-holter','cath-lab','genetic-counseling','pndt-register'],
+    extraItems: [
+      { href: 'oct',          label: 'OCT Scans',           iconKey: 'Activity' },
+      { href: 'perimetry',    label: 'Perimetry',           iconKey: 'Activity' },
+      { href: 'fundus-photo', label: 'Fundus Photography',  iconKey: 'Activity' },
+    ],
+  },
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // Group D — Physiological Testing (PFT, neuro, allergy, sleep, audio, uro, endo)
+  // ═════════════════════════════════════════════════════════════════════════
+  'pft-center': {
+    labelOverrides: { 'lab-orders': 'PFT Bookings', 'results': 'PFT Reports' },
+    hideItems: ['collection','qc','inventory','catalog','dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling'],
+    extraItems: [
+      { href: 'spirometry', label: 'Spirometry', iconKey: 'Activity' },
+    ],
+  },
+  'neurophysiology-center': {
+    labelOverrides: { 'lab-orders': 'EEG/EMG Studies', 'results': 'Neurophysiology Reports' },
+    hideItems: ['collection','qc','inventory','catalog','dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling'],
+    extraItems: [
+      { href: 'waveforms', label: 'Waveform Viewer', iconKey: 'Activity' },
+    ],
+  },
+  'allergy-center': {
+    labelOverrides: { 'lab-orders': 'Allergy Tests', 'results': 'Allergy Reports' },
+    hideItems: ['collection','qc','inventory','catalog','dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling'],
+    extraItems: [
+      { href: 'allergen-panels', label: 'Allergen Panels',  iconKey: 'FlaskConical' },
+      { href: 'immunotherapy',   label: 'Immunotherapy',    iconKey: 'Activity' },
+    ],
+  },
+  'sleep-lab': {
+    labelOverrides: { 'lab-orders': 'Sleep Studies', 'results': 'PSG Reports' },
+    hideItems: ['collection','qc','inventory','catalog','dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling'],
+    extraItems: [
+      { href: 'psg',            label: 'Polysomnography',  iconKey: 'Activity' },
+      { href: 'cpap-titration', label: 'CPAP Titration',   iconKey: 'Activity' },
+    ],
+  },
+  'audiology-center': {
+    labelOverrides: { 'lab-orders': 'Hearing Tests', 'results': 'Audiology Reports' },
+    hideItems: ['collection','qc','inventory','catalog','dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling'],
+    extraItems: [
+      { href: 'audiometry', label: 'Audiometry',       iconKey: 'Activity' },
+      { href: 'bera',       label: 'BERA / OAE',       iconKey: 'Activity' },
+    ],
+  },
+  'urodynamics-center': {
+    labelOverrides: { 'lab-orders': 'Urodynamic Bookings', 'results': 'Urodynamic Reports' },
+    hideItems: ['collection','qc','inventory','catalog','dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling'],
+    extraItems: [
+      { href: 'urodynamics', label: 'Urodynamic Studies', iconKey: 'Activity' },
+    ],
+  },
+  'endoscopy-center': {
+    labelOverrides: { 'lab-orders': 'Endoscopy Bookings', 'results': 'Endoscopy Reports' },
+    hideItems: ['collection','qc','inventory','catalog','dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling'],
+    extraItems: [
+      { href: 'video-capture', label: 'Video Capture',  iconKey: 'Video' },
+      { href: 'sedation-log',  label: 'Sedation Log',   iconKey: 'Clock' },
+    ],
+  },
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // Group F — Specialty & Advanced (IVF, stem cell, forensic, cancer screening)
+  // ═════════════════════════════════════════════════════════════════════════
+  'ivf-embryology': {
+    labelOverrides: { 'lab-orders': 'IVF Cycles', 'patients': 'Couples', 'results': 'Cycle Reports' },
+    hideItems: ['collection','qc','dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab'],
+    extraItems: [
+      { href: 'cycles',           label: 'Cycle Tracking',     iconKey: 'Calendar' },
+      { href: 'cryopreservation', label: 'Cryopreservation',   iconKey: 'Shield' },
+      { href: 'casa',             label: 'CASA (Andrology)',   iconKey: 'Activity' },
+      { href: 'art-act',          label: 'ART Act Register',   iconKey: 'FileText' },
+    ],
+  },
+  'stem-cell-registry': {
+    labelOverrides: { 'lab-orders': 'Registry Orders', 'patients': 'Donors & Patients' },
+    hideItems: ['collection','qc','dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab'],
+    extraItems: [
+      { href: 'hla-typing', label: 'HLA Typing',   iconKey: 'FlaskConical' },
+      { href: 'donors',     label: 'Donor Registry', iconKey: 'Users' },
+      { href: 'wmda-sync',  label: 'WMDA Sync',    iconKey: 'Globe' },
+    ],
+  },
+  'forensic-toxicology': {
+    labelOverrides: { 'lab-orders': 'Forensic Samples', 'patients': 'Subjects', 'results': 'Forensic Reports' },
+    hideItems: ['collection','dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling'],
+    extraItems: [
+      { href: 'chain-of-custody', label: 'Chain of Custody', iconKey: 'Lock' },
+      { href: 'gc-ms',            label: 'GC-MS / LC-MS',    iconKey: 'FlaskConical' },
+      { href: 'cdsco-reports',    label: 'CDSCO Reports',    iconKey: 'FileText' },
+    ],
+  },
+  'cancer-screening': {
+    labelOverrides: { 'lab-orders': 'Screening Orders', 'packages': 'Screening Packages' },
+    hideItems: ['qc','dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab'],
+    extraItems: [
+      { href: 'tumor-markers', label: 'Tumor Markers', iconKey: 'Activity' },
+      { href: 'ai-scoring',    label: 'AI Risk Scoring', iconKey: 'TrendingUp' },
+    ],
+  },
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // Group G — Hubs & Digital (DTC genomics; reference-lab + tele-rad above)
+  // ═════════════════════════════════════════════════════════════════════════
+  'dtc-genomics': {
+    labelOverrides: { 'lab-orders': 'Kit Orders', 'patients': 'Customers', 'results': 'DNA Reports' },
+    hideItems: ['qc','dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','collection','inventory'],
+    extraItems: [
+      { href: 'kits',       label: 'Kit Logistics',       iconKey: 'Truck' },
+      { href: 'dtc-portal', label: 'DTC Consumer Portal', iconKey: 'Globe' },
+      { href: 'counseling', label: 'Genetic Counseling',  iconKey: 'Users' },
+    ],
+  },
 };
 
 /**
@@ -371,5 +568,5 @@ export const DIAG_SUBTYPE_NAV: Record<DiagSubtype, SubtypeNavConfig> = {
  */
 export function getSubtypeNavConfig(subtype?: string): SubtypeNavConfig {
   if (!subtype) return {};
-  return DIAG_SUBTYPE_NAV[subtype as DiagSubtype] ?? {};
+  return DIAG_SUBTYPE_NAV[subtype] ?? {};
 }

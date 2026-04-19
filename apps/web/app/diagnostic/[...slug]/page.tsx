@@ -193,6 +193,229 @@ const FEATURE_MAP: Record<string, { label: string; blurb: string; category: stri
     blurb: 'Franchise lab onboarding, branding consistency, revenue sharing, performance benchmarking.',
     category: 'Network',
   },
+
+  // ── Histopathology ────────────────────────────────────────────────────
+  'slide-scanning': {
+    label: 'Slide Scanning',
+    blurb: 'Whole-slide image scanning with digital pathology viewer for remote consultation.',
+    category: 'Histopathology',
+  },
+  'ihc': {
+    label: 'IHC Workflow',
+    blurb: 'Immunohistochemistry request tracking — antibody panels, turnaround monitoring, reagent usage.',
+    category: 'Histopathology',
+  },
+  'frozen-section': {
+    label: 'Frozen Section',
+    blurb: 'Intra-operative frozen-section reporting with rapid turnaround targets and OT communication.',
+    category: 'Histopathology',
+  },
+
+  // ── Microbiology ──────────────────────────────────────────────────────
+  'culture': {
+    label: 'Culture Dashboard',
+    blurb: 'Active culture tracking — plate growth, organism ID, antibiotic sensitivity results.',
+    category: 'Microbiology',
+  },
+  'antibiogram': {
+    label: 'Antibiogram / AMR',
+    blurb: 'Antibiogram generation with antimicrobial resistance trends for infection control.',
+    category: 'Microbiology',
+  },
+
+  // ── Blood bank ────────────────────────────────────────────────────────
+  'donors': {
+    label: 'Donor Registry',
+    blurb: 'Blood / bone marrow donor registry with eligibility screening, deferral tracking, recall campaigns.',
+    category: 'Blood Bank',
+  },
+  'crossmatch': {
+    label: 'Crossmatch',
+    blurb: 'Crossmatching workflow with ABO / Rh typing, antibody screening, compatibility records.',
+    category: 'Blood Bank',
+  },
+  'dghs-reporting': {
+    label: 'DGHS Reporting',
+    blurb: 'Mandatory Director General of Health Services reporting for blood bank operations.',
+    category: 'Blood Bank',
+  },
+
+  // ── Nuclear medicine ──────────────────────────────────────────────────
+  'barc': {
+    label: 'BARC Reporting',
+    blurb: 'Bhabha Atomic Research Centre compliance reporting — radioisotope inventory, waste disposal.',
+    category: 'Nuclear Medicine',
+  },
+
+  // ── Mammography ───────────────────────────────────────────────────────
+  'bi-rads': {
+    label: 'BI-RADS Reports',
+    blurb: 'Breast Imaging Reporting and Data System structured reporting (categories 0–6).',
+    category: 'Mammography',
+  },
+
+  // ── DEXA ──────────────────────────────────────────────────────────────
+  'frax': {
+    label: 'FRAX Assessment',
+    blurb: 'WHO fracture-risk algorithm — 10-year probability of hip and major osteoporotic fracture.',
+    category: 'DEXA',
+  },
+
+  // ── Dental radiology ──────────────────────────────────────────────────
+  'opg-cbct': {
+    label: 'OPG / CBCT',
+    blurb: 'Panoramic and cone-beam CT imaging workflow with dentist-ready report templates.',
+    category: 'Dental',
+  },
+
+  // ── Ophthalmic imaging ────────────────────────────────────────────────
+  'oct': {
+    label: 'OCT Scans',
+    blurb: 'Optical coherence tomography — retinal layer analysis for macula, glaucoma, anterior segment.',
+    category: 'Ophthalmic',
+  },
+  'perimetry': {
+    label: 'Perimetry',
+    blurb: 'Visual field testing — Humphrey / Octopus integration, glaucoma progression tracking.',
+    category: 'Ophthalmic',
+  },
+  'fundus-photo': {
+    label: 'Fundus Photography',
+    blurb: 'Retinal imaging with colour, red-free, FFA, ICG modes. DR / AMD screening support.',
+    category: 'Ophthalmic',
+  },
+
+  // ── Physiological testing ─────────────────────────────────────────────
+  'spirometry': {
+    label: 'Spirometry',
+    blurb: 'Spirometry with FEV1, FVC, FEV1/FVC ratio, bronchodilator reversibility, GOLD staging.',
+    category: 'Pulmonary',
+  },
+  'waveforms': {
+    label: 'Waveform Viewer',
+    blurb: 'EEG / EMG / NCS waveform display with annotation, montage switching, frequency analysis.',
+    category: 'Neurophysiology',
+  },
+  'allergen-panels': {
+    label: 'Allergen Panels',
+    blurb: 'Pre-built allergen panels (respiratory, food, drug) with result interpretation and patient summaries.',
+    category: 'Allergy',
+  },
+  'immunotherapy': {
+    label: 'Immunotherapy',
+    blurb: 'Allergen-specific immunotherapy planning — dose escalation schedules, adherence tracking.',
+    category: 'Allergy',
+  },
+  'psg': {
+    label: 'Polysomnography',
+    blurb: 'Overnight sleep study workflow — EEG / EOG / EMG / airflow / SpO2 capture and AASM scoring.',
+    category: 'Sleep',
+  },
+  'cpap-titration': {
+    label: 'CPAP Titration',
+    blurb: 'CPAP pressure titration studies with leak tracking, AHI monitoring, therapy optimization.',
+    category: 'Sleep',
+  },
+  'audiometry': {
+    label: 'Audiometry',
+    blurb: 'Pure-tone and speech audiometry with audiogram generation, hearing aid fitting support.',
+    category: 'Audiology',
+  },
+  'bera': {
+    label: 'BERA / OAE',
+    blurb: 'Brainstem evoked response audiometry and otoacoustic emissions — newborn hearing screening.',
+    category: 'Audiology',
+  },
+  'urodynamics': {
+    label: 'Urodynamic Studies',
+    blurb: 'Cystometrogram, pressure-flow studies, uroflowmetry, EMG with urogynecology report templates.',
+    category: 'Urology',
+  },
+  'video-capture': {
+    label: 'Video Capture',
+    blurb: 'Endoscopy video capture with still-image annotation and DICOM-compatible archival.',
+    category: 'Endoscopy',
+  },
+  'sedation-log': {
+    label: 'Sedation Log',
+    blurb: 'Pre / intra / post-procedure sedation monitoring — vitals, ASA class, recovery scoring.',
+    category: 'Endoscopy',
+  },
+
+  // ── IVF / Embryology ──────────────────────────────────────────────────
+  'cycles': {
+    label: 'Cycle Tracking',
+    blurb: 'IVF cycle management — stimulation, egg retrieval, fertilization, embryo transfer, outcomes.',
+    category: 'IVF',
+  },
+  'cryopreservation': {
+    label: 'Cryopreservation',
+    blurb: 'Embryo, oocyte, sperm cryobank — straw tracking, vitrification logs, thaw survival rates.',
+    category: 'IVF',
+  },
+  'casa': {
+    label: 'CASA (Andrology)',
+    blurb: 'Computer-assisted semen analysis — motility, morphology, concentration per WHO guidelines.',
+    category: 'IVF',
+  },
+  'art-act': {
+    label: 'ART Act Register',
+    blurb: 'Assisted Reproductive Technology Act 2021 mandatory national registry submissions.',
+    category: 'IVF',
+  },
+
+  // ── Stem cell registry ────────────────────────────────────────────────
+  'hla-typing': {
+    label: 'HLA Typing',
+    blurb: 'Human Leukocyte Antigen typing — high-resolution class I / II for transplant matching.',
+    category: 'Stem Cell',
+  },
+  'wmda-sync': {
+    label: 'WMDA Sync',
+    blurb: 'World Marrow Donor Association registry synchronisation — search requests, match reports.',
+    category: 'Stem Cell',
+  },
+
+  // ── Forensic / toxicology ─────────────────────────────────────────────
+  'chain-of-custody': {
+    label: 'Chain of Custody',
+    blurb: 'Forensic sample chain-of-custody — seal verification, transfer logs, evidentiary-grade audit trail.',
+    category: 'Forensic',
+  },
+  'gc-ms': {
+    label: 'GC-MS / LC-MS',
+    blurb: 'Gas / liquid chromatography-mass spectrometry workflow for drug-of-abuse and toxicology panels.',
+    category: 'Forensic',
+  },
+  'cdsco-reports': {
+    label: 'CDSCO Reports',
+    blurb: 'Central Drugs Standard Control Organisation mandatory reporting for controlled substances.',
+    category: 'Forensic',
+  },
+
+  // ── Cancer screening ──────────────────────────────────────────────────
+  'tumor-markers': {
+    label: 'Tumor Markers',
+    blurb: 'Tumor marker panels (PSA, CA-125, CEA, AFP, CA-19-9) with trend charts and alert thresholds.',
+    category: 'Cancer Screening',
+  },
+  'ai-scoring': {
+    label: 'AI Risk Scoring',
+    blurb: 'ML-based cancer risk stratification combining markers, imaging, family history, lifestyle.',
+    category: 'Cancer Screening',
+  },
+
+  // ── DTC Genomics ──────────────────────────────────────────────────────
+  'kits': {
+    label: 'Kit Logistics',
+    blurb: 'Saliva-kit ordering, shipping, tracking, return logistics for direct-to-consumer genomics.',
+    category: 'DTC Genomics',
+  },
+  'dtc-portal': {
+    label: 'DTC Consumer Portal',
+    blurb: 'Customer-facing portal for DTC genomic results — ancestry, traits, pharmacogenomics, health risks.',
+    category: 'DTC Genomics',
+  },
 };
 
 export default function SubtypePlaceholderPage() {
