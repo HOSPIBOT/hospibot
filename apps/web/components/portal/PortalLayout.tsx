@@ -13,7 +13,7 @@ import {
   Stethoscope, BarChart3, Zap, Settings, LogOut, Bell, Search,
   FlaskConical, Package, ShoppingCart, Home, Truck, Heart,
   Briefcase, ClipboardList, FileText, Pill, Dumbbell,
-  ChevronRight, Building2, TrendingUp, Shield, Globe, Star, Lock,
+  ChevronRight, Building2, TrendingUp, Shield, ShieldCheck, Globe, Star, Lock,
   AlertTriangle, UserCheck, Layers2, BedDouble, Send, Scissors, Clock, Video, IndianRupee, Activity,
 } from 'lucide-react';
 
@@ -95,6 +95,7 @@ const NAV_BY_PORTAL: Record<string, NavItem[]> = {
     // ── Packages ──
     { href: 'packages',         label: 'Health Packages',    icon: Package,         always: true },
     // ── Compliance ──
+    { href: 'compliance',        label: 'Compliance Center',  icon: ShieldCheck,     always: true },
     { href: 'equipment',        label: 'Equipment Log',      icon: Shield,          always: true },
     // ── Settings ──
     { href: 'settings',         label: 'Settings',           icon: Settings,        always: true },
