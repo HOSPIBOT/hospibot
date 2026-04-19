@@ -205,11 +205,7 @@ const FEATURE_MAP: Record<string, { label: string; blurb: string; category: stri
 
   // ── Microbiology ──────────────────────────────────────────────────────
   // NOTE: 'culture' graduated to a real page at app/diagnostic/culture/page.tsx
-  'antibiogram': {
-    label: 'Antibiogram / AMR',
-    blurb: 'Antibiogram generation with antimicrobial resistance trends for infection control.',
-    category: 'Microbiology',
-  },
+  // NOTE: 'antibiogram' graduated to a real page at app/diagnostic/antibiogram/page.tsx
 
   // ── Blood bank ────────────────────────────────────────────────────────
   // NOTE: 'donors' graduated to a real page at app/diagnostic/donors/page.tsx
@@ -323,11 +319,7 @@ const FEATURE_MAP: Record<string, { label: string; blurb: string; category: stri
   },
 
   // ── IVF / Embryology ──────────────────────────────────────────────────
-  'cycles': {
-    label: 'Cycle Tracking',
-    blurb: 'IVF cycle management — stimulation, egg retrieval, fertilization, embryo transfer, outcomes.',
-    category: 'IVF',
-  },
+  // NOTE: 'cycles' graduated to a real page at app/diagnostic/cycles/page.tsx
   'cryopreservation': {
     label: 'Cryopreservation',
     blurb: 'Embryo, oocyte, sperm cryobank — straw tracking, vitrification logs, thaw survival rates.',
@@ -357,11 +349,7 @@ const FEATURE_MAP: Record<string, { label: string; blurb: string; category: stri
   },
 
   // ── Forensic / toxicology ─────────────────────────────────────────────
-  'chain-of-custody': {
-    label: 'Chain of Custody',
-    blurb: 'Forensic sample chain-of-custody — seal verification, transfer logs, evidentiary-grade audit trail.',
-    category: 'Forensic',
-  },
+  // NOTE: 'chain-of-custody' graduated to a real page at app/diagnostic/chain-of-custody/page.tsx
   'gc-ms': {
     label: 'GC-MS / LC-MS',
     blurb: 'Gas / liquid chromatography-mass spectrometry workflow for drug-of-abuse and toxicology panels.',
