@@ -28,11 +28,7 @@ import { ArrowLeft, Sparkles, Clock } from 'lucide-react';
 // app/diagnostic/<slug>/page.tsx folder.
 const FEATURE_MAP: Record<string, { label: string; blurb: string; category: string }> = {
   // ── Sample logistics ──────────────────────────────────────────────────
-  'dispatch': {
-    label: 'Dispatch Manifest',
-    blurb: 'Print and track sample dispatch manifests from collection centers to the main lab.',
-    category: 'Sample Logistics',
-  },
+  // NOTE: 'dispatch' graduated to a real page at app/diagnostic/dispatch/page.tsx
   'cold-chain': {
     label: 'Cold Chain Log',
     blurb: 'Temperature-log compliance for sample transport — critical for biochemistry, molecular tests.',

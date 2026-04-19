@@ -1039,6 +1039,34 @@ model BiosafetyChecklist {
 }
 
 // ==============================================
+// DISPATCH MANIFEST — sample shipment tracking
+// ==============================================
+
+model DispatchManifest {
+  id                  String    @id @default(uuid())
+  tenantId            String    @map("tenant_id")
+  branchId            String?   @map("branch_id")
+  manifestNumber      String    @map("manifest_number")
+  dispatchDate        DateTime  @map("dispatch_date")
+  destinationLabName  String    @map("destination_lab_name")
+  transporterName     String?   @map("transporter_name")
+  sampleCount         Int       @map("sample_count")
+  temperatureAtDispatch Float?  @map("temperature_at_dispatch")
+  containerType       String?   @map("container_type")   // ice_pack | dry_ice | reefer_box | ambient
+  status              String    @default("PACKING")       // PACKING | DISPATCHED | IN_TRANSIT | RECEIVED | REJECTED
+  receivedAt          DateTime? @map("received_at")
+  receivedByName      String?   @map("received_by_name")
+  dispatchedByUserId  String    @map("dispatched_by_user_id")
+  notes               String?
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt      @map("updated_at")
+
+  @@unique([tenantId, manifestNumber])
+  @@index([tenantId, dispatchDate])
+  @@map("dispatch_manifests")
+}
+
+// ==============================================
 // AUDIT LOG
 // ==============================================
 
