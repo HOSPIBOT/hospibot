@@ -14,6 +14,7 @@ import {
   PageHeader, Modal, Field, Check, DataTable, StatusPill,
   inputCls, useList, fmtDate, today, savePost,
 } from '../_components';
+import { RegulatoryGuidance } from '@/lib/regulatory-guidance';
 import toast from 'react-hot-toast';
 
 const ITEMS: { key: string; label: string }[] = [
@@ -151,6 +152,28 @@ export default function BiosafetyPage() {
           </Field>
         </div>
       </Modal>
+
+      <RegulatoryGuidance
+        title="BSL-2 Biosafety Checklist — Regulatory Compliance"
+        summary="Biosafety compliance is governed by ICMR/DBT guidelines and WHO Laboratory Biosafety Manual."
+        regulations={[
+          {
+            body: 'ICMR/DBT',
+            citation: 'ICMR & DBT — Guidelines for Establishing Biosafety Levels',
+            requirement: 'Labs handling pathogenic organisms (TB, HIV, Hepatitis, drug-resistant bacteria) must maintain BSL-2 containment. This requires: Class II Biosafety Cabinet (certified annually), autoclave with spore test validation, PPE (gloves, gowns, eye protection), and documented training.',
+          },
+          {
+            body: 'WHO',
+            citation: 'WHO Laboratory Biosafety Manual, 4th Edition (2020)',
+            requirement: 'BSL-2 labs must conduct regular biosafety audits covering: BSC certification, spill response preparedness, emergency eyewash functionality, waste autoclave validation (monthly spore test), and staff competency assessment.',
+          },
+          {
+            body: 'CPCB',
+            citation: 'BMW Rules 2016 — Lab Waste Treatment',
+            requirement: 'All infectious laboratory waste must be pre-treated (autoclaved) at the point of generation before handover to CBWTF. Autoclave validation records (spore test results) must be maintained as evidence of effective decontamination.',
+          },
+        ]}
+      />
     </div>
   );
 }

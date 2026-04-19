@@ -12,6 +12,7 @@ import { useState } from 'react';
 import {
   PageHeader, Modal, Field, DataTable, inputCls, useList, fmtDate, savePost,
 } from '../_components';
+import { RegulatoryGuidance } from '@/lib/regulatory-guidance';
 import toast from 'react-hot-toast';
 
 const EXAM_TYPES = ['XRAY', 'CT', 'MAMMO', 'FLUORO', 'NUCLEAR_MEDICINE'] as const;
@@ -132,6 +133,28 @@ export default function AerbPage() {
           </Field>
         </div>
       </Modal>
+
+      <RegulatoryGuidance
+        title="AERB Radiation Dose Register — Regulatory Compliance"
+        summary="Radiation dose logging is mandated by the Atomic Energy (Radiation Protection) Rules, 2004."
+        regulations={[
+          {
+            body: 'AERB',
+            citation: 'Atomic Energy (Radiation Protection) Rules, 2004 — Rule 3, 15, 24',
+            requirement: 'Every employer using radiation sources must ensure dose limits are not exceeded. Patient dose must be recorded for each examination. Occupational dose (TLD badge readings) must be monitored and recorded for all radiation workers.',
+          },
+          {
+            body: 'AERB',
+            citation: 'AERB Safety Directive No. AERB/RF-MED/SD-1 (Rev. 2)',
+            requirement: 'Diagnostic radiology facilities must maintain a dose register with patient name, examination type, dose parameters (kVp, mAs, CTDIvol or DAP), and operator details. Records must be available for AERB inspection.',
+          },
+          {
+            body: 'AERB',
+            citation: 'AERB — Personnel Monitoring Service (TLD)',
+            requirement: 'All radiation workers must wear TLD badges. Badge readings are monitored by AERB-approved dosimetry services (BARC). Operators exceeding annual dose limits (20 mSv/year averaged over 5 years) must be removed from radiation work.',
+          },
+        ]}
+      />
     </div>
   );
 }

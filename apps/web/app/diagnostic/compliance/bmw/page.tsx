@@ -13,6 +13,7 @@ import { useState } from 'react';
 import {
   PageHeader, Modal, Field, DataTable, inputCls, useList, fmtDate, today, savePost,
 } from '../_components';
+import { RegulatoryGuidance } from '@/lib/regulatory-guidance';
 import toast from 'react-hot-toast';
 
 export default function BmwPage() {
@@ -141,6 +142,28 @@ export default function BmwPage() {
           </Field>
         </div>
       </Modal>
+
+      <RegulatoryGuidance
+        title="Biomedical Waste Daily Log — Regulatory Compliance"
+        summary="BMW segregation and logging is mandated by the Biomedical Waste Management Rules, 2016 (CPCB/MoEFCC)."
+        regulations={[
+          {
+            body: 'CPCB',
+            citation: 'Biomedical Waste Management Rules, 2016 (as amended 2018) — Schedule I',
+            requirement: 'All healthcare facilities must segregate BMW into 4 color-coded categories: Yellow (infectious/pathological), Red (contaminated recyclable), White (sharps), Blue (glassware). Daily log of quantities by category is mandatory.',
+          },
+          {
+            body: 'CPCB',
+            citation: 'BMW Rules 2016 — Rule 4: Duties of Occupier',
+            requirement: 'The occupier (lab operator) must ensure pre-treatment of lab waste, use of authorized waste transporters with valid agreements, and maintenance of records as per Form II. Records must be maintained for 5 years and available for inspection.',
+          },
+          {
+            body: 'SPCB',
+            citation: 'State Pollution Control Board — Authorized Transporter',
+            requirement: 'BMW must be handed to a Common Bio-Medical Waste Treatment Facility (CBWTF) operator authorized by the State Pollution Control Board. Transporter receipt number and disposer name must be recorded for each handover.',
+          },
+        ]}
+      />
     </div>
   );
 }

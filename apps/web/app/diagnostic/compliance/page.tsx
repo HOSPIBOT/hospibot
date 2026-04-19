@@ -18,6 +18,7 @@ import {
   ShieldCheck, ShieldAlert, Clock, Loader2, ArrowRight,
 } from 'lucide-react';
 import { TEAL, fmtDateTime } from './_components';
+import { RegulatoryGuidance } from '@/lib/regulatory-guidance';
 
 type ComplianceStatus = {
   bmw: { latestLogDate: string | null; isCurrent: boolean; maxAgeHours: number };
@@ -212,6 +213,38 @@ export default function ComplianceCenterPage() {
           </div>
         </div>
       </div>
+
+      <RegulatoryGuidance
+        title="Compliance Center — Governing Laws & Regulatory Bodies"
+        summary="This Compliance Center enforces Indian healthcare regulations as hard-blocks on report release. Non-compliance can result in license suspension, fines, or imprisonment."
+        regulations={[
+          {
+            body: 'PC-PNDT Act',
+            citation: 'Pre-Conception & Pre-Natal Diagnostic Techniques Act, 1994',
+            requirement: 'Mandatory Form F for every prenatal scan. Sex determination prohibited. Violation: imprisonment up to 3 years + fine up to ₹10,000. Registration suspension for repeat offenders.',
+          },
+          {
+            body: 'AERB',
+            citation: 'Atomic Energy (Radiation Protection) Rules, 2004',
+            requirement: 'Patient and operator radiation dose must be logged for every ionising procedure. TLD badges mandatory for all radiation workers. Annual dose limit: 20 mSv averaged over 5 years.',
+          },
+          {
+            body: 'CPCB',
+            citation: 'Bio-Medical Waste Management Rules, 2016 (MoEFCC)',
+            requirement: 'Daily BMW segregation log by color code (yellow/red/white/blue) mandatory. Authorised transporter receipt required. Records retained 5 years. Non-compliance: fine up to ₹5 lakh under Environment Protection Act.',
+          },
+          {
+            body: 'ICMR/DBT',
+            citation: 'ICMR & DBT Biosafety Guidelines for BSL-2 Laboratories',
+            requirement: 'Labs handling Category B pathogens must pass weekly BSL-2 biosafety checklist. BSC-II annual certification, autoclave spore test, PPE inventory, spill kit availability, eyewash station, and training log all mandatory.',
+          },
+          {
+            body: 'D&C Act',
+            citation: 'Drugs & Cosmetics Act, 1940 — Section 18(c)',
+            requirement: 'All diagnostic facilities handling blood or biological specimens must be licensed. Schedule F Part XII-B compliance is mandatory. License can be suspended for non-compliance with prescribed standards.',
+          },
+        ]}
+      />
     </div>
   );
 }

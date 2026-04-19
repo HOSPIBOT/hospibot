@@ -16,6 +16,7 @@ import {
   PageHeader, Modal, Field, Check, DataTable, StatusPill,
   inputCls, useList, fmtDate, savePost, errMsg,
 } from '../_components';
+import { RegulatoryGuidance } from '@/lib/regulatory-guidance';
 
 export default function FormFPage() {
   const { rows, loading, reload } = useList('/compliance/pcpndt/form-f');
@@ -200,6 +201,28 @@ export default function FormFPage() {
           </div>
         </div>
       </Modal>
+
+      <RegulatoryGuidance
+        title="PC-PNDT Form F — Regulatory Compliance"
+        summary="Form F is mandatory under the Pre-Conception and Pre-Natal Diagnostic Techniques (PC-PNDT) Act, 1994."
+        regulations={[
+          {
+            body: 'PC-PNDT Act',
+            citation: 'Pre-Conception & Pre-Natal Diagnostic Techniques Act, 1994 — Section 4',
+            requirement: 'Every genetic counseling centre, genetic laboratory, or genetic clinic must maintain a complete record of every prenatal diagnostic test/procedure in the prescribed form (Form F). Failure is punishable with imprisonment up to 3 years and fine up to ₹10,000.',
+          },
+          {
+            body: 'PC-PNDT Rules',
+            citation: 'PC-PNDT Rules, 1996 — Rule 9, Form F',
+            requirement: 'Form F must record: referring doctor name + registration number, indication for test, gestational age, scan type, date of procedure, result of test, and informed consent. Form must be submitted to the Appropriate Authority quarterly.',
+          },
+          {
+            body: 'MoHFW',
+            citation: 'Ministry of Health & Family Welfare — Appropriate Authority Reporting',
+            requirement: 'Blood banks or diagnostic centres conducting prenatal scans must submit Form F records to the District Appropriate Authority. Non-submission can lead to suspension of registration under Section 23 of the Act.',
+          },
+        ]}
+      />
     </div>
   );
 }

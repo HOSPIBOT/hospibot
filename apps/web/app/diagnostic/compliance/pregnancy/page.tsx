@@ -14,6 +14,7 @@ import {
   PageHeader, Modal, Field, Check, DataTable, StatusPill,
   inputCls, useList, fmtDate, savePost, savePatch,
 } from '../_components';
+import { RegulatoryGuidance } from '@/lib/regulatory-guidance';
 import toast from 'react-hot-toast';
 
 export default function PregnancyPage() {
@@ -160,6 +161,28 @@ export default function PregnancyPage() {
           </Field>
         </div>
       </Modal>
+
+      <RegulatoryGuidance
+        title="Pregnancy Screening Pre-Radiation — Regulatory Compliance"
+        summary="Pregnancy screening before ionising radiation is mandated by AERB safety directives and the 10-day rule."
+        regulations={[
+          {
+            body: 'AERB',
+            citation: 'AERB Safety Code AERB/RF-MED/SC-3 — Diagnostic Radiology',
+            requirement: 'For women of reproductive age (12–55 years), pregnancy status must be ascertained before any ionising radiation procedure. The 10-day rule (or 28-day rule) must be followed. Written declaration from the patient is mandatory.',
+          },
+          {
+            body: 'AERB',
+            citation: 'AERB — Informed Consent Requirements',
+            requirement: 'Patients must provide informed consent acknowledging radiation risks. For pregnant or potentially pregnant patients, the referring physician must be notified and the risk-benefit must be documented before proceeding.',
+          },
+          {
+            body: 'PC-PNDT Act',
+            citation: 'PC-PNDT Act, 1994 — Sex Determination Prohibition',
+            requirement: 'No person shall conduct or cause to be conducted any prenatal diagnostic technique for the purpose of determining the sex of a foetus. Declaration of non-sex-determination must be signed by both the patient and the medical practitioner.',
+          },
+        ]}
+      />
     </div>
   );
 }

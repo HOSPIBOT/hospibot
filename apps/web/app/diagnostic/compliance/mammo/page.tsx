@@ -13,6 +13,7 @@ import {
   PageHeader, Modal, Field, Check, DataTable, StatusPill,
   inputCls, useList, fmtDate, today, savePost,
 } from '../_components';
+import { RegulatoryGuidance } from '@/lib/regulatory-guidance';
 import toast from 'react-hot-toast';
 
 export default function MammoPage() {
@@ -142,6 +143,28 @@ export default function MammoPage() {
           </Field>
         </div>
       </Modal>
+
+      <RegulatoryGuidance
+        title="Mammography Operator QC — Regulatory Compliance"
+        summary="Mammography requires AERB certification, female radiographer mandate, and daily phantom QC."
+        regulations={[
+          {
+            body: 'AERB',
+            citation: 'AERB Safety Directive — Mammography Quality Assurance',
+            requirement: 'Mammography units must undergo daily phantom QC. The operator must hold a valid AERB-approved certification for mammography. Daily phantom image scores must be recorded and pass/fail determined before patient scanning.',
+          },
+          {
+            body: 'AERB',
+            citation: 'AERB Certification — Operator Competency',
+            requirement: 'Mammography operators must hold a current certification issued by an AERB-recognized training programme. Certification must be renewed before expiry. Expired certification means the operator cannot perform mammography.',
+          },
+          {
+            body: 'NMC',
+            citation: 'National Medical Commission — Female Radiographer Mandate',
+            requirement: 'Mammography examinations should preferably be performed by trained female radiographers/technologists to ensure patient comfort and compliance. This is a regulatory best practice adopted by NABH/NABL-accredited centres.',
+          },
+        ]}
+      />
     </div>
   );
 }
