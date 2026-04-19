@@ -72,6 +72,11 @@ import { RsoDashboardModule } from './modules/rso-dashboard/rso-dashboard.module
 import { TmtStressModule } from './modules/tmt-stress/tmt-stress.module';
 import { HolterAllocationModule } from './modules/holter-allocation/holter-allocation.module';
 import { AbpmReportsModule } from './modules/abpm-reports/abpm-reports.module';
+import { SonologistPanelModule } from './modules/sonologist-panel/sonologist-panel.module';
+import { ClientCentersModule } from './modules/client-centers/client-centers.module';
+import { SlaMonitorModule } from './modules/sla-monitor/sla-monitor.module';
+import { ReadingWorklistModule } from './modules/reading-worklist/reading-worklist.module';
+import { CathLabScheduleModule } from './modules/cath-lab-schedule/cath-lab-schedule.module';
 
 @Module({
   imports: [
@@ -158,6 +163,11 @@ import { AbpmReportsModule } from './modules/abpm-reports/abpm-reports.module';
     TmtStressModule,
     HolterAllocationModule,
     AbpmReportsModule,
+    SonologistPanelModule,
+    ClientCentersModule,
+    SlaMonitorModule,
+    ReadingWorklistModule,
+    CathLabScheduleModule,
   ],
   controllers: [HealthController],
   providers: [StartupService, DbBootstrapService],

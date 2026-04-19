@@ -2864,6 +2864,227 @@ model AbpmReport {
 }
 
 // ==============================================
+// SONOLOGIST PANEL (Ultrasound Centers)
+// Per PC-PNDT Act 1994/2003, 2-place rule
+// ==============================================
+
+model SonologistPanel {
+  id                  String    @id @default(uuid())
+  tenantId            String    @map("tenant_id")
+  sonologistName      String    @map("sonologist_name")
+  qualification       String
+  specialization      String?
+  mciRegistration     String    @map("mci_registration")
+  pcpndtRegistration  String?   @map("pcpndt_registration")
+  pcpndtRegExpiry     DateTime? @map("pcpndt_reg_expiry")
+  placesRegistered    Int       @default(1) @map("places_registered")
+  place1Name          String?   @map("place1_name")
+  place1District      String?   @map("place1_district")
+  place2Name          String?   @map("place2_name")
+  place2District      String?   @map("place2_district")
+  machinesRegistered  String?   @map("machines_registered")
+  locumDoctor         Boolean   @default(false) @map("locum_doctor")
+  locumApprovalDate   DateTime? @map("locum_approval_date")
+  weeklySchedule      Json?     @map("weekly_schedule")
+  dailyScanLimit      Int?      @map("daily_scan_limit")
+  currentDayScans     Int       @default(0) @map("current_day_scans")
+  formFCompliance     Boolean   @default(true) @map("form_f_compliance")
+  quarterlyReportsDue String?   @map("quarterly_reports_due")
+  phone               String?
+  email               String?
+  notes               String?
+  status              String    @default("active")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  createdBy           String?   @map("created_by")
+  @@index([tenantId])
+  @@map("sonologist_panels")
+}
+
+// ==============================================
+// CLIENT CENTER (Tele-radiology)
+// ==============================================
+
+model ClientCenter {
+  id                  String    @id @default(uuid())
+  tenantId            String    @map("tenant_id")
+  centerName          String    @map("center_name")
+  centerType          String?   @map("center_type")
+  contactPerson       String?   @map("contact_person")
+  phone               String?
+  email               String?
+  address             String?
+  city                String?
+  state               String?
+  contractStart       DateTime? @map("contract_start")
+  contractEnd         DateTime? @map("contract_end")
+  contractValue       Float?    @map("contract_value")
+  billingModel        String    @default("per-study") @map("billing_model")
+  modalitiesSupported String?   @map("modalities_supported")
+  xrayRate            Float?    @map("xray_rate")
+  ctRate              Float?    @map("ct_rate")
+  mriRate             Float?    @map("mri_rate")
+  usgRate             Float?    @map("usg_rate")
+  mammoRate           Float?    @map("mammo_rate")
+  statSlaMinutes      Int       @default(30) @map("stat_sla_minutes")
+  routineSlaMinutes   Int       @default(480) @map("routine_sla_minutes")
+  prioritySlaMinutes  Int       @default(180) @map("priority_sla_minutes")
+  monthlyVolumeTarget Int?      @map("monthly_volume_target")
+  pacsIntegrated      Boolean   @default(false) @map("pacs_integrated")
+  dicomNodeAet        String?   @map("dicom_node_aet")
+  vpnConfigured       Boolean   @default(false) @map("vpn_configured")
+  notes               String?
+  status              String    @default("active")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  createdBy           String?   @map("created_by")
+  @@index([tenantId])
+  @@map("client_centers")
+}
+
+// ==============================================
+// SLA ALERT (Tele-radiology TAT Tracking)
+// Industry: STAT 30min, Priority 3hr, Routine 8hr
+// ==============================================
+
+model SlaAlert {
+  id                String    @id @default(uuid())
+  tenantId          String    @map("tenant_id")
+  clientId          String?   @map("client_id")
+  clientName        String?   @map("client_name")
+  studyAccession    String    @map("study_accession")
+  patientName       String?   @map("patient_name")
+  modality          String?
+  bodyPart          String?   @map("body_part")
+  priority          String    @default("routine")
+  targetMinutes     Int       @map("target_minutes")
+  receivedAt        DateTime  @map("received_at")
+  assignedAt        DateTime? @map("assigned_at")
+  reportedAt        DateTime? @map("reported_at")
+  actualMinutes     Int?      @map("actual_minutes")
+  breached          Boolean   @default(false)
+  breachReason      String?   @map("breach_reason")
+  escalatedTo       String?   @map("escalated_to")
+  radiologistName   String?   @map("radiologist_name")
+  notes             String?
+  status            String    @default("tracking")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdBy         String?   @map("created_by")
+  @@index([tenantId])
+  @@index([tenantId, breached])
+  @@map("sla_alerts")
+}
+
+// ==============================================
+// READING WORKLIST (Tele-radiology Queue)
+// ==============================================
+
+model ReadingWorklist {
+  id                  String    @id @default(uuid())
+  tenantId            String    @map("tenant_id")
+  clientCenterId      String?   @map("client_center_id")
+  clientName          String?   @map("client_name")
+  accessionNumber     String    @map("accession_number")
+  patientName         String?   @map("patient_name")
+  patientAge          Int?      @map("patient_age")
+  patientGender       String?   @map("patient_gender")
+  modality            String?
+  bodyPart            String?   @map("body_part")
+  studyDescription    String?   @map("study_description")
+  seriesCount         Int?      @map("series_count")
+  imageCount          Int?      @map("image_count")
+  priority            String    @default("routine")
+  priorityOrder       Int       @default(4) @map("priority_order")
+  clinicalHistory     String?   @map("clinical_history")
+  referringDoctor     String?   @map("referring_doctor")
+  receivedAt          DateTime  @map("received_at")
+  assignedTo          String?   @map("assigned_to")
+  assignedAt          DateTime? @map("assigned_at")
+  reportStartedAt     DateTime? @map("report_started_at")
+  reportCompletedAt   DateTime? @map("report_completed_at")
+  reportDeliveredAt   DateTime? @map("report_delivered_at")
+  slaDeadline         DateTime? @map("sla_deadline")
+  criticalFinding     Boolean   @default(false) @map("critical_finding")
+  criticalFindingComm String?   @map("critical_finding_comm")
+  reportText          String?   @map("report_text")
+  addendum            String?
+  notes               String?
+  status              String    @default("pending")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  createdBy           String?   @map("created_by")
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([tenantId, priority])
+  @@map("reading_worklists")
+}
+
+// ==============================================
+// CATH LAB SCHEDULE (Cardiac Diagnostics)
+// Per SCAI/CSI Guidelines, D2B Tracking
+// ==============================================
+
+model CathLabSchedule {
+  id                  String    @id @default(uuid())
+  tenantId            String    @map("tenant_id")
+  patientId           String?   @map("patient_id")
+  patientName         String    @map("patient_name")
+  patientAge          Int?      @map("patient_age")
+  patientGender       String?   @map("patient_gender")
+  procedureType       String    @map("procedure_type")
+  indication          String?
+  diagnosis           String?
+  scheduledDate       DateTime  @map("scheduled_date")
+  scheduledSlot       String?   @map("scheduled_slot")
+  labRoom             String?   @map("lab_room")
+  cardiologist        String?
+  assistantDoctor     String?   @map("assistant_doctor")
+  scrubNurse          String?   @map("scrub_nurse")
+  technicianName      String?   @map("technician_name")
+  anesthesiologist    String?
+  consentSigned       Boolean   @default(false) @map("consent_signed")
+  labWorkDone         Boolean   @default(false) @map("lab_work_done")
+  creatinine          Float?
+  inr                 Float?
+  hb                  Float?
+  bloodGroupConfirmed Boolean   @default(false) @map("blood_group_confirmed")
+  npoStatus           String?   @map("npo_status")
+  allergies           String?
+  accessSite          String    @default("radial") @map("access_site")
+  sheathSize          String?   @map("sheath_size")
+  stentUsed           String?   @map("stent_used")
+  stentSize           String?   @map("stent_size")
+  stentBrand          String?   @map("stent_brand")
+  stentLotNumber      String?   @map("stent_lot_number")
+  balloonUsed         String?   @map("balloon_used")
+  balloonSize         String?   @map("balloon_size")
+  guidewireUsed       String?   @map("guidewire_used")
+  catheterUsed        String?   @map("catheter_used")
+  contrastUsed        String?   @map("contrast_used")
+  contrastVolumeMl    Float?    @map("contrast_volume_ml")
+  fluoroTimeMin       Float?    @map("fluoro_time_min")
+  radiationDoseMgy    Float?    @map("radiation_dose_mgy")
+  doorTime            DateTime? @map("door_time")
+  balloonTime         DateTime? @map("balloon_time")
+  doorToBalloonMin    Int?      @map("door_to_balloon_min")
+  procedureStart      DateTime? @map("procedure_start")
+  procedureEnd        DateTime? @map("procedure_end")
+  outcome             String?
+  complications       String?
+  postProcedurePlan   String?   @map("post_procedure_plan")
+  dischargeDate       DateTime? @map("discharge_date")
+  notes               String?
+  status              String    @default("scheduled")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  createdBy           String?   @map("created_by")
+  @@index([tenantId])
+  @@index([tenantId, procedureType])
+  @@map("cath_lab_schedules")
+}
+
+// ==============================================
 // AUDIT LOG
 // ==============================================
 
