@@ -67,43 +67,11 @@ import { RoutePlanningModule } from './modules/route-planning/route-planning.mod
 import { DicomViewerModule } from './modules/dicom-viewer/dicom-viewer.module';
 import { RadiologistPanelModule } from './modules/radiologist-panel/radiologist-panel.module';
 import { ObGrowthScanModule } from './modules/ob-growth-scan/ob-growth-scan.module';
-import { SonologistPanelModule } from './modules/sonologist-panel/sonologist-panel.module';
 import { RadiotracerLogModule } from './modules/radiotracer-log/radiotracer-log.module';
 import { RsoDashboardModule } from './modules/rso-dashboard/rso-dashboard.module';
-import { ReadingWorklistModule } from './modules/reading-worklist/reading-worklist.module';
-import { ClientCentersModule } from './modules/client-centers/client-centers.module';
-import { SlaMonitorModule } from './modules/sla-monitor/sla-monitor.module';
 import { TmtStressModule } from './modules/tmt-stress/tmt-stress.module';
 import { HolterAllocationModule } from './modules/holter-allocation/holter-allocation.module';
 import { AbpmReportsModule } from './modules/abpm-reports/abpm-reports.module';
-import { CathLabScheduleModule } from './modules/cath-lab-schedule/cath-lab-schedule.module';
-import { BatchProcessingModule } from './modules/batch-processing/batch-processing.module';
-import { IcmrNacoModule } from './modules/icmr-naco/icmr-naco.module';
-import { GeneticCounselingModule } from './modules/genetic-counseling/genetic-counseling.module';
-import { PedigreeBuilderModule } from './modules/pedigree-builder/pedigree-builder.module';
-import { VariantDatabaseModule } from './modules/variant-database/variant-database.module';
-import { NgsWorkflowModule } from './modules/ngs-workflow/ngs-workflow.module';
-import { HraModule } from './modules/hra/hra.module';
-import { ConsultScheduleModule } from './modules/consult-schedule/consult-schedule.module';
-import { HealthCampsModule } from './modules/health-camps/health-camps.module';
-import { EmployerPortalModule } from './modules/employer-portal/employer-portal.module';
-import { PopulationHealthModule } from './modules/population-health/population-health.module';
-import { PartnerLabsModule } from './modules/partner-labs/partner-labs.module';
-import { HubSpokeModule } from './modules/hub-spoke/hub-spoke.module';
-import { FranchiseLabsModule } from './modules/franchise-labs/franchise-labs.module';
-import { DghsReportingModule } from './modules/dghs-reporting/dghs-reporting.module';
-import { BarcReportingModule } from './modules/barc-reporting/barc-reporting.module';
-import { OpgCbctModule } from './modules/opg-cbct/opg-cbct.module';
-import { OctScansModule } from './modules/oct-scans/oct-scans.module';
-import { PerimetryModule } from './modules/perimetry/perimetry.module';
-import { FundusPhotoModule } from './modules/fundus-photo/fundus-photo.module';
-import { AllergenPanelsModule } from './modules/allergen-panels/allergen-panels.module';
-import { ImmunotherapyModule } from './modules/immunotherapy/immunotherapy.module';
-import { UrodynamicsModule } from './modules/urodynamics/urodynamics.module';
-import { WmdaSyncModule } from './modules/wmda-sync/wmda-sync.module';
-import { CdscoReportsModule } from './modules/cdsco-reports/cdsco-reports.module';
-import { KitLogisticsModule } from './modules/kit-logistics/kit-logistics.module';
-import { DtcConsumerModule } from './modules/dtc-consumer/dtc-consumer.module';
 
 @Module({
   imports: [
@@ -185,43 +153,11 @@ import { DtcConsumerModule } from './modules/dtc-consumer/dtc-consumer.module';
     DicomViewerModule,
     RadiologistPanelModule,
     ObGrowthScanModule,
-    SonologistPanelModule,
     RadiotracerLogModule,
     RsoDashboardModule,
-    ReadingWorklistModule,
-    ClientCentersModule,
-    SlaMonitorModule,
     TmtStressModule,
     HolterAllocationModule,
     AbpmReportsModule,
-    CathLabScheduleModule,
-    BatchProcessingModule,
-    IcmrNacoModule,
-    GeneticCounselingModule,
-    PedigreeBuilderModule,
-    VariantDatabaseModule,
-    NgsWorkflowModule,
-    HraModule,
-    ConsultScheduleModule,
-    HealthCampsModule,
-    EmployerPortalModule,
-    PopulationHealthModule,
-    PartnerLabsModule,
-    HubSpokeModule,
-    FranchiseLabsModule,
-    DghsReportingModule,
-    BarcReportingModule,
-    OpgCbctModule,
-    OctScansModule,
-    PerimetryModule,
-    FundusPhotoModule,
-    AllergenPanelsModule,
-    ImmunotherapyModule,
-    UrodynamicsModule,
-    WmdaSyncModule,
-    CdscoReportsModule,
-    KitLogisticsModule,
-    DtcConsumerModule,
   ],
   controllers: [HealthController],
   providers: [StartupService, DbBootstrapService],
