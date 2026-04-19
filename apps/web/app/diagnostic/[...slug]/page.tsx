@@ -224,11 +224,7 @@ const FEATURE_MAP: Record<string, { label: string; blurb: string; category: stri
   },
 
   // ── Mammography ───────────────────────────────────────────────────────
-  'bi-rads': {
-    label: 'BI-RADS Reports',
-    blurb: 'Breast Imaging Reporting and Data System structured reporting (categories 0–6).',
-    category: 'Mammography',
-  },
+  // NOTE: 'bi-rads' graduated to a real page at app/diagnostic/bi-rads/page.tsx
 
   // ── DEXA ──────────────────────────────────────────────────────────────
   'frax': {
@@ -262,11 +258,7 @@ const FEATURE_MAP: Record<string, { label: string; blurb: string; category: stri
   },
 
   // ── Physiological testing ─────────────────────────────────────────────
-  'spirometry': {
-    label: 'Spirometry',
-    blurb: 'Spirometry with FEV1, FVC, FEV1/FVC ratio, bronchodilator reversibility, GOLD staging.',
-    category: 'Pulmonary',
-  },
+  // NOTE: 'spirometry' graduated to a real page at app/diagnostic/spirometry/page.tsx
   'waveforms': {
     label: 'Waveform Viewer',
     blurb: 'EEG / EMG / NCS waveform display with annotation, montage switching, frequency analysis.',
@@ -292,11 +284,7 @@ const FEATURE_MAP: Record<string, { label: string; blurb: string; category: stri
     blurb: 'CPAP pressure titration studies with leak tracking, AHI monitoring, therapy optimization.',
     category: 'Sleep',
   },
-  'audiometry': {
-    label: 'Audiometry',
-    blurb: 'Pure-tone and speech audiometry with audiogram generation, hearing aid fitting support.',
-    category: 'Audiology',
-  },
+  // NOTE: 'audiometry' graduated to a real page at app/diagnostic/audiometry/page.tsx
   'bera': {
     label: 'BERA / OAE',
     blurb: 'Brainstem evoked response audiometry and otoacoustic emissions — newborn hearing screening.',
@@ -330,18 +318,10 @@ const FEATURE_MAP: Record<string, { label: string; blurb: string; category: stri
     blurb: 'Computer-assisted semen analysis — motility, morphology, concentration per WHO guidelines.',
     category: 'IVF',
   },
-  'art-act': {
-    label: 'ART Act Register',
-    blurb: 'Assisted Reproductive Technology Act 2021 mandatory national registry submissions.',
-    category: 'IVF',
-  },
+  // NOTE: 'art-act' graduated to a real page at app/diagnostic/art-act/page.tsx
 
   // ── Stem cell registry ────────────────────────────────────────────────
-  'hla-typing': {
-    label: 'HLA Typing',
-    blurb: 'Human Leukocyte Antigen typing — high-resolution class I / II for transplant matching.',
-    category: 'Stem Cell',
-  },
+  // NOTE: 'hla-typing' graduated to a real page at app/diagnostic/hla-typing/page.tsx
   'wmda-sync': {
     label: 'WMDA Sync',
     blurb: 'World Marrow Donor Association registry synchronisation — search requests, match reports.',

@@ -42,6 +42,11 @@ import { DiagnosticModule } from './modules/diagnostic/diagnostic.module';
 import { AntibiogramModule } from './modules/antibiogram/antibiogram.module';
 import { CustodyChainModule } from './modules/custody-chain/custody-chain.module';
 import { IvfCycleModule } from './modules/ivf-cycle/ivf-cycle.module';
+import { ArtActModule } from './modules/art-act/art-act.module';
+import { SpirometryModule } from './modules/spirometry/spirometry.module';
+import { AudiometryModule } from './modules/audiometry/audiometry.module';
+import { BiRadsModule } from './modules/bi-rads/bi-rads.module';
+import { HlaTypingModule } from './modules/hla-typing/hla-typing.module';
 
 @Module({
   imports: [
@@ -98,6 +103,11 @@ import { IvfCycleModule } from './modules/ivf-cycle/ivf-cycle.module';
     AntibiogramModule,
     CustodyChainModule,
     IvfCycleModule,
+    ArtActModule,
+    SpirometryModule,
+    AudiometryModule,
+    BiRadsModule,
+    HlaTypingModule,
   ],
   controllers: [HealthController],
   providers: [StartupService, DbBootstrapService],

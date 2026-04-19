@@ -1468,6 +1468,252 @@ model IvfCycle {
 }
 
 // ==============================================
+// ART ACT COMPLIANCE (IVF Embryology)
+// Per ART (Regulation) Act 2021, ART Rules 2022
+// ==============================================
+
+model ArtActRecord {
+  id                  String    @id @default(uuid())
+  tenantId            String    @map("tenant_id")
+  recordType          String    @map("record_type")    // registration | staff-qualification | consent-form | inspection | report | grievance | renewal
+  title               String
+  referenceNumber     String?   @map("reference_number")
+  description         String?
+  formType            String?   @map("form_type")      // form-3 | form-4 | form-5 | form-d | form-11 | form-15 | form-16
+  staffName           String?   @map("staff_name")
+  staffQualification  String?   @map("staff_qualification")
+  staffRole           String?   @map("staff_role")     // gynecologist | andrologist | embryologist | counsellor
+  registrationNumber  String?   @map("registration_number")
+  validFrom           DateTime? @map("valid_from")
+  validUntil          DateTime? @map("valid_until")
+  renewalDueDate      DateTime? @map("renewal_due_date")
+  submittedTo         String?   @map("submitted_to")
+  submittedDate       DateTime? @map("submitted_date")
+  approvedDate        DateTime? @map("approved_date")
+  inspectionDate      DateTime? @map("inspection_date")
+  inspectionResult    String?   @map("inspection_result")
+  complianceNotes     String?   @map("compliance_notes")
+  status              String    @default("pending")     // pending | submitted | approved | rejected | expired | active
+  notes               String?
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  createdBy           String?   @map("created_by")
+
+  @@index([tenantId])
+  @@index([tenantId, recordType])
+  @@index([tenantId, status])
+  @@map("art_act_records")
+}
+
+// ==============================================
+// SPIROMETRY (PFT Center)
+// Per ATS/ERS Guidelines, GOLD 2024
+// ==============================================
+
+model SpirometryTest {
+  id                  String    @id @default(uuid())
+  tenantId            String    @map("tenant_id")
+  patientId           String?   @map("patient_id")
+  patientName         String    @map("patient_name")
+  patientUhid         String?   @map("patient_uhid")
+  patientAge          Int?      @map("patient_age")
+  patientGender       String?   @map("patient_gender")
+  patientHeight       Float?    @map("patient_height")
+  patientWeight       Float?    @map("patient_weight")
+  testDate            DateTime  @map("test_date")
+  indication          String?
+  preBronchodilator   Boolean   @default(true) @map("pre_bronchodilator")
+  postBronchodilator  Boolean   @default(false) @map("post_bronchodilator")
+  bronchodilatorUsed  String?   @map("bronchodilator_used")
+  fvc                 Float?
+  fvcPredicted        Float?    @map("fvc_predicted")
+  fvcPctPredicted     Float?    @map("fvc_pct_predicted")
+  fev1                Float?
+  fev1Predicted       Float?    @map("fev1_predicted")
+  fev1PctPredicted    Float?    @map("fev1_pct_predicted")
+  fev1Fvc             Float?    @map("fev1_fvc")
+  fev1FvcPredicted    Float?    @map("fev1_fvc_predicted")
+  pef                 Float?
+  pefPredicted        Float?    @map("pef_predicted")
+  fef2575             Float?    @map("fef_25_75")
+  fef2575Predicted    Float?    @map("fef_25_75_predicted")
+  qualityGrade        String?   @map("quality_grade")
+  interpretation      String?
+  pattern             String?    // normal | obstructive | restrictive | mixed | non-specific
+  goldStage           String?   @map("gold_stage")
+  bdResponse          String?   @map("bd_response")    // significant | not-significant
+  technicianName      String?   @map("technician_name")
+  reviewedBy          String?   @map("reviewed_by")
+  equipmentId         String?   @map("equipment_id")
+  notes               String?
+  status              String    @default("draft")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  createdBy           String?   @map("created_by")
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@map("spirometry_tests")
+}
+
+// ==============================================
+// AUDIOMETRY (Audiology Center)
+// Per NIOSH/OSHA Standards, WHO Hearing Grading
+// ==============================================
+
+model AudiometryTest {
+  id                  String    @id @default(uuid())
+  tenantId            String    @map("tenant_id")
+  patientId           String?   @map("patient_id")
+  patientName         String    @map("patient_name")
+  patientUhid         String?   @map("patient_uhid")
+  patientAge          Int?      @map("patient_age")
+  patientGender       String?   @map("patient_gender")
+  testDate            DateTime  @map("test_date")
+  testType            String    @default("pure-tone") @map("test_type")
+  indication          String?
+  rightThresholds     Json?     @map("right_thresholds")
+  leftThresholds      Json?     @map("left_thresholds")
+  rightPta            Float?    @map("right_pta")
+  leftPta             Float?    @map("left_pta")
+  rightGrade          String?   @map("right_grade")
+  leftGrade           String?   @map("left_grade")
+  rightBoneConduction Json?     @map("right_bone_conduction")
+  leftBoneConduction  Json?     @map("left_bone_conduction")
+  speechReceptionRight Float?   @map("speech_reception_right")
+  speechReceptionLeft  Float?   @map("speech_reception_left")
+  speechDiscrimRight  Float?    @map("speech_discrim_right")
+  speechDiscrimLeft   Float?    @map("speech_discrim_left")
+  tympanometryRight   String?   @map("tympanometry_right")
+  tympanometryLeft    String?   @map("tympanometry_left")
+  interpretation      String?
+  recommendation      String?
+  audiologistName     String?   @map("audiologist_name")
+  reviewedBy          String?   @map("reviewed_by")
+  equipmentId         String?   @map("equipment_id")
+  calibrationDate     DateTime? @map("calibration_date")
+  notes               String?
+  status              String    @default("draft")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  createdBy           String?   @map("created_by")
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@map("audiometry_tests")
+}
+
+// ==============================================
+// BI-RADS (Mammography Center)
+// Per ACR BI-RADS Atlas, AERB Mammography QA
+// ==============================================
+
+model BiRadsReport {
+  id                  String    @id @default(uuid())
+  tenantId            String    @map("tenant_id")
+  patientId           String?   @map("patient_id")
+  patientName         String    @map("patient_name")
+  patientUhid         String?   @map("patient_uhid")
+  patientAge          Int?      @map("patient_age")
+  studyDate           DateTime  @map("study_date")
+  studyType           String    @default("screening") @map("study_type")
+  modality            String    @default("2D-mammography")
+  laterality          String    @default("bilateral")
+  breastDensity       String?   @map("breast_density")
+  findings            String?
+  massShape           String?   @map("mass_shape")
+  massMargins         String?   @map("mass_margins")
+  massDensity         String?   @map("mass_density")
+  calcifications      String?
+  calcMorphology      String?   @map("calc_morphology")
+  calcDistribution    String?   @map("calc_distribution")
+  archDistortion      Boolean   @default(false) @map("arch_distortion")
+  asymmetry           String?
+  skinChanges         Boolean   @default(false) @map("skin_changes")
+  axillaryNodes       String?   @map("axillary_nodes")
+  biradsCategory      String?   @map("birads_category")
+  biradsLabel         String?   @map("birads_label")
+  recommendedAction   String?   @map("recommended_action")
+  followUpDate        DateTime? @map("follow_up_date")
+  biopsyRecommended   Boolean   @default(false) @map("biopsy_recommended")
+  comparisonStudy     String?   @map("comparison_study")
+  impression          String?
+  radiologistName     String?   @map("radiologist_name")
+  radiographerName    String?   @map("radiographer_name")
+  radiographerGender  String?   @map("radiographer_gender")
+  equipmentId         String?   @map("equipment_id")
+  aerbDoseRecorded    Boolean   @default(false) @map("aerb_dose_recorded")
+  mgd                 Float?    // mean glandular dose in mGy
+  notes               String?
+  status              String    @default("draft")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  createdBy           String?   @map("created_by")
+
+  @@index([tenantId])
+  @@index([tenantId, biradsCategory])
+  @@index([tenantId, status])
+  @@map("bi_rads_reports")
+}
+
+// ==============================================
+// HLA TYPING (Stem Cell Registry)
+// Per NOTTO, NMDP/WMDA Standards
+// ==============================================
+
+model HlaTyping {
+  id                  String    @id @default(uuid())
+  tenantId            String    @map("tenant_id")
+  patientId           String?   @map("patient_id")
+  patientName         String    @map("patient_name")
+  patientUhid         String?   @map("patient_uhid")
+  sampleType          String    @map("sample_type")    // donor | recipient
+  donorRegistryId     String?   @map("donor_registry_id")
+  testDate            DateTime  @map("test_date")
+  method              String    @default("pcr-ssp")    // pcr-ssp | pcr-sso | ngs | sbt
+  indication          String?
+  hlaA1               String?   @map("hla_a1")
+  hlaA2               String?   @map("hla_a2")
+  hlaB1               String?   @map("hla_b1")
+  hlaB2               String?   @map("hla_b2")
+  hlaC1               String?   @map("hla_c1")
+  hlaC2               String?   @map("hla_c2")
+  hlaDr1              String?   @map("hla_dr1")
+  hlaDr2              String?   @map("hla_dr2")
+  hlaDq1              String?   @map("hla_dq1")
+  hlaDq2              String?   @map("hla_dq2")
+  hlaDp1              String?   @map("hla_dp1")
+  hlaDp2              String?   @map("hla_dp2")
+  recipientHlaA1      String?   @map("recipient_hla_a1")
+  recipientHlaA2      String?   @map("recipient_hla_a2")
+  recipientHlaB1      String?   @map("recipient_hla_b1")
+  recipientHlaB2      String?   @map("recipient_hla_b2")
+  recipientHlaDr1     String?   @map("recipient_hla_dr1")
+  recipientHlaDr2     String?   @map("recipient_hla_dr2")
+  matchScore          Int?      @map("match_score")    // 0-6 out of 6
+  crossmatchResult    String?   @map("crossmatch_result")
+  antibodyScreen      String?   @map("antibody_screen")
+  pra                 Float?    // panel reactive antibody %
+  consentObtained     Boolean   @default(false) @map("consent_obtained")
+  nottoRegistered     Boolean   @default(false) @map("notto_registered")
+  nottoId             String?   @map("notto_id")
+  wmdaId              String?   @map("wmda_id")
+  interpretation      String?
+  reportedBy          String?   @map("reported_by")
+  verifiedBy          String?   @map("verified_by")
+  notes               String?
+  status              String    @default("draft")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  createdBy           String?   @map("created_by")
+
+  @@index([tenantId])
+  @@index([tenantId, sampleType])
+  @@index([tenantId, status])
+  @@map("hla_typings")
+}
+
+// ==============================================
 // AUDIT LOG
 // ==============================================
 
