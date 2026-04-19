@@ -13,6 +13,7 @@
 
 import { useState, useMemo } from 'react';
 import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
+import { RegulatoryGuidance } from '@/lib/regulatory-guidance';
 import {
   PageHeader, Modal, Field, DataTable, StatusPill,
   useList, savePost, fmtDate, TEAL,
@@ -156,6 +157,41 @@ function DonorContent() {
         rows={tableRows}
         loading={loading}
         empty="No donors registered yet."
+      />
+
+      <RegulatoryGuidance
+        title="Blood Donor Registration — Regulatory Compliance"
+        summary="Donor registration is governed by the Drugs & Cosmetics Act 1940, NACO Standards, and Supreme Court directives."
+        regulations={[
+          {
+            body: 'NACO',
+            citation: 'NACO Standards for Blood Banks & BTS — Section B: Donor Selection',
+            requirement: 'Donors must be 18–65 years, weight ≥45 kg, Hb ≥12.5 g/dL, pulse 60–100 bpm (regular), BP systolic 100–180 / diastolic 50–100 mmHg. Minimum 3 months between whole blood donations. Medical officer must certify fitness.',
+            url: 'https://naco.gov.in/blood-transfusion-services-publications',
+          },
+          {
+            body: 'DCGI',
+            citation: 'Drugs & Cosmetics Rules 1945, Schedule F Part XII-B',
+            requirement: 'Blood banks must maintain donor registers with name, age, sex, address, blood group, Rh type, donation date, bag ID, and TTI results. All records retained for minimum 5 years. Donor classification (Voluntary/Replacement) is mandatory on every label.',
+            url: 'https://cdsco.gov.in',
+          },
+          {
+            body: 'Supreme Court',
+            citation: 'Common Cause vs Union of India (1996) — PIL on Blood Safety',
+            requirement: 'Collection of blood from professional/paid donors is BANNED. Only voluntary and replacement donors are permitted. Blood banks found accepting paid donors face license cancellation under D&C Act Section 27(b).',
+          },
+          {
+            body: 'NACO',
+            citation: 'NACO Deferral Criteria — Donor Safety Guidelines',
+            requirement: 'Deferral periods: malaria (3 months), jaundice/hepatitis (1 year), tattoo/piercing (6 months), major surgery (12 months), pregnancy (6 months post-delivery), rabies vaccine (1 year). Temporary deferrals must be recorded with reason and until-date.',
+          },
+          {
+            body: 'DGHS',
+            citation: 'DGHS/e-RaktKosh — National Blood Bank Platform',
+            requirement: 'All licensed blood banks are encouraged to register on e-RaktKosh (eraktkosh.in) for centralized donor management, real-time stock reporting, and digital donation certificates.',
+            url: 'https://www.eraktkosh.in',
+          },
+        ]}
       />
 
       <Modal open={open} onClose={() => setOpen(false)} title="Register Blood Donor"

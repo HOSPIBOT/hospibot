@@ -14,6 +14,7 @@
 
 import { useState } from 'react';
 import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
+import { RegulatoryGuidance } from '@/lib/regulatory-guidance';
 import {
   PageHeader, Modal, Field, DataTable, StatusPill,
   useList, savePost, fmtDate, fmtDateTime, today, errMsg, TEAL,
@@ -160,6 +161,30 @@ function DispatchContent() {
         rows={tableRows}
         loading={loading}
         empty="No dispatch manifests yet — create your first shipment."
+      />
+
+      <RegulatoryGuidance
+        title="Sample Dispatch — Regulatory Compliance"
+        summary="Sample transport is governed by NABL ISO 15189:2022 and Bio-Medical Waste Management Rules 2016."
+        regulations={[
+          {
+            body: 'NABL',
+            citation: 'ISO 15189:2022, Clause 7.2 — Pre-examination processes',
+            requirement: 'The laboratory shall have documented procedures for sample collection, handling, transport, and receipt. Each sample must be traceable with a unique identifier. Transport conditions (temperature, time) must be recorded and monitored.',
+            url: 'https://nabl-india.org',
+          },
+          {
+            body: 'NABL',
+            citation: 'NABL 112A — Specific Criteria for Medical Laboratories',
+            requirement: 'Sample Collection Facilities (SCFs) must maintain dispatch manifests with sample count, container type, temperature at dispatch, transporter details, and timestamp. Manifests must be retained for 5 years.',
+          },
+          {
+            body: 'CPCB',
+            citation: 'Bio-Medical Waste Management Rules, 2016 (as amended 2018)',
+            requirement: 'Biological samples in transit must be packaged per triple-packaging guidelines. Yellow/red category waste generated during transport must be logged separately. Authorized transporter receipt is mandatory.',
+            url: 'https://cpcb.nic.in',
+          },
+        ]}
       />
 
       <Modal open={open} onClose={() => setOpen(false)} title="Create Dispatch Manifest" wide

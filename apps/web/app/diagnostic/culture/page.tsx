@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
+import { RegulatoryGuidance } from '@/lib/regulatory-guidance';
 import {
   PageHeader, Modal, Field, DataTable, StatusPill,
   useList, savePost, savePatch, fmtDateTime, TEAL,
@@ -165,6 +166,35 @@ function CultureContent() {
         rows={tableRows}
         loading={loading}
         empty="No active cultures — inoculate your first specimen."
+      />
+
+      <RegulatoryGuidance
+        title="Microbiology Culture Tracking — Regulatory Compliance"
+        summary="Culture processing is governed by NABL ISO 15189:2022, ICMR AMR guidelines, and IDSP notifiable disease requirements."
+        regulations={[
+          {
+            body: 'NABL',
+            citation: 'NABL 112A — Microbiology discipline requirements',
+            requirement: 'Culture plates must be read at defined intervals. Organism identification and AST must follow CLSI/EUCAST guidelines. All results must be validated by a qualified microbiologist before release. Records retained for 5 years.',
+            url: 'https://nabl-india.org',
+          },
+          {
+            body: 'ICMR',
+            citation: 'ICMR Guidelines on Antimicrobial Resistance Surveillance',
+            requirement: 'Labs must report MDRO isolates (MRSA, VRE, ESBL, CRE, Acinetobacter) to the ICMR AMR surveillance network. Data includes organism, specimen source, susceptibility pattern, and patient demographics.',
+            url: 'https://main.icmr.nic.in',
+          },
+          {
+            body: 'IDSP',
+            citation: 'Integrated Disease Surveillance Programme (IDSP/IHIP)',
+            requirement: 'Notifiable diseases identified via culture (cholera, typhoid, meningococcus, diphtheria, etc.) must be reported to the District Surveillance Unit within 24 hours of confirmation per the Epidemic Diseases Act, 1897.',
+          },
+          {
+            body: 'ICMR/DBT',
+            citation: 'ICMR/DBT Biosafety Guidelines — BSL-2 Requirements',
+            requirement: 'Microbiology labs handling pathogenic cultures must maintain BSL-2 biosafety measures: Class II BSC, autoclave validation, PPE, spill kits, and staff training documentation. Daily biosafety checklist mandatory.',
+          },
+        ]}
       />
 
       <Modal open={open} onClose={() => setOpen(false)} title="Inoculate New Culture"

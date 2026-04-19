@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
+import { RegulatoryGuidance } from '@/lib/regulatory-guidance';
 import {
   PageHeader, Modal, Field, DataTable, StatusPill,
   useList, savePost, fmtDate, today, TEAL,
@@ -123,6 +124,34 @@ function ColdChainContent() {
         rows={tableRows}
         loading={loading}
         empty="No temperature readings yet — log your first reading."
+      />
+
+      <RegulatoryGuidance
+        title="Cold Chain Monitoring — Regulatory Compliance"
+        summary="Temperature monitoring is mandated by NABL ISO 15189:2022 and Indian Pharmacopoeia for specimen integrity."
+        regulations={[
+          {
+            body: 'NABL',
+            citation: 'ISO 15189:2022, Clause 6.3 — Facilities & environmental conditions',
+            requirement: 'The laboratory shall monitor, control, and record environmental conditions that may influence sample quality. Temperature-sensitive equipment must have continuous monitoring with alarm systems. Temperature excursions must be documented with corrective actions.',
+            url: 'https://nabl-india.org',
+          },
+          {
+            body: 'NABL',
+            citation: 'NABL 112A — Equipment calibration (Cl. 6.5)',
+            requirement: 'Temperature monitoring devices (thermometers, data loggers) must be calibrated against NABL-accredited or NPL-traceable standards. Calibration records retained for the accreditation cycle.',
+          },
+          {
+            body: 'DGHS',
+            citation: 'D&C Rules 1945, Schedule F Part XII-B — Blood storage',
+            requirement: 'Whole blood and PRBC must be stored continuously at 2–6°C. Platelets at 20–24°C with agitation. FFP and cryoprecipitate at ≤−30°C. Refrigerators must have digital thermometers, recording thermographs, alarm devices, and continuous power supply.',
+          },
+          {
+            body: 'WHO',
+            citation: 'WHO Guidelines on Transport of Infectious Substances (2021)',
+            requirement: 'Category B diagnostic specimens must maintain required temperature range during transport. Ice packs (2–8°C) for routine biochemistry; dry ice (−70°C) for molecular specimens. Temperature at dispatch and receipt must be recorded.',
+          },
+        ]}
       />
 
       <Modal open={open} onClose={() => setOpen(false)} title="Log Temperature Reading"
