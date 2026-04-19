@@ -5,6 +5,7 @@ import { api } from '@/lib/api';
 import { formatINR } from '@/lib/utils';
 import { useAuthStore } from '@/lib/store';
 import { isFeatureEnabled } from '@/lib/portal-feature-flags';
+import { getSubtypeFeatures } from '@/lib/diagnostic-subtype-features';
 import Link from 'next/link';
 import {
   FlaskConical, Clock, CheckCircle2, AlertTriangle, TrendingUp, Home,
@@ -20,82 +21,22 @@ const TEAL = '#0D7C66';
 
 /**
  * Contextual banner shown on dashboard.
- * Recommends the next tier-up based on the subtype's most-valued feature.
+ * Dynamically derives the upgrade message from SUBTYPE_DATA — so all 34
+ * subtypes get a relevant banner, not just the original 13 hardcoded ones.
  */
 function SubtypeTierBanner({ subtype, tier }: { subtype: string; tier: string }) {
-  // Next-tier upgrade value prop per subtype
-  const upgradeHints: Record<string, { small?: string; medium?: string; large?: string }> = {
-    'pathology-lab': {
-      small:  'Unlock Home Collection, Doctor CRM, and Critical Value Alerts with Medium plan.',
-      medium: 'Add HL7/ASTM analyser integration, Westgard QC, and NABL documentation with Large plan.',
-      large:  'Enable franchise management, ABHA integration, and ICMR reporting with Enterprise.',
-    },
-    'sample-collection-center': {
-      small:  'Unlock cold chain monitoring, online booking, and runner tracking with Medium plan.',
-      medium: 'Add multi-branch operations, NABL 111 audit, and staff HRMS with Large plan.',
-      large:  'Scale to franchise PSC network and aggregator integrations with Enterprise.',
-    },
-    'home-sample-collection': {
-      small:  'Unlock live GPS tracking, phlebotomist mobile app, and call-masking with Medium plan.',
-      medium: 'Add AI route optimization, fleet management, and IoT cold-chain with Large plan.',
-      large:  'Launch white-label patient app and franchise agent network with Enterprise.',
-    },
-    'radiology-center': {
-      small:  'Unlock DICOM viewer, multi-modality scheduling, and PNDT Form F with Medium plan.',
-      medium: 'Add full DICOM PACS, tele-radiology routing, and AI reading with Large plan.',
-      large:  'Scale to federated PACS, advanced AI (mammography/bone-age), and hospital HL7 with Enterprise.',
-    },
-    'ultrasound-center': {
-      small:  'Unlock full PC-PNDT digital compliance, OB biometry, and 4D Doppler with Medium plan.',
-      medium: 'Add multi-machine optimization, NABL for USG, and CA audit readiness with Large plan.',
-      large:  'Enable AI fetal anomaly screening and franchise USG network with Enterprise.',
-    },
-    'pet-scan-center': {
-      small:  'Unlock DICOM viewer, multi-tracer inventory, and AERB records with Medium plan.',
-      medium: 'Add full PET-CT PACS, AI SUV quantification, and multi-machine ops with Large plan.',
-      large:  'Launch theranostics (Lu-177 PSMA) and multi-center network with Enterprise.',
-    },
-    'cardiac-diagnostics': {
-      small:  'Unlock TMT Bruce protocol, Holter analysis, and ABPM with Medium plan.',
-      medium: 'Add Cath lab scheduling, EP study templates, and cardiac rehab with Large plan.',
-      large:  'Enable AI ECG, cardiac registries, and hospital FHIR with Enterprise.',
-    },
-    'molecular-lab': {
-      small:  'Unlock ICMR reporting, multiplex panels, and reflex testing with Medium plan.',
-      medium: 'Add RT-PCR auto-import, NACO/Nikshay reporting, and NABL molecular with Large plan.',
-      large:  'Enable NGS (WES/WGS), bioinformatics pipeline, and franchise with Enterprise.',
-    },
-    'health-checkup': {
-      small:  'Unlock custom package builder, HRA scoring, and Y-o-Y trends with Medium plan.',
-      medium: 'Add population health analytics and multi-branch management with Large plan.',
-      large:  'Enable white-label corporate portal and AI risk stratification with Enterprise.',
-    },
-    'corporate-screening': {
-      small:  'Unlock employer HR portal, TPA billing, and multi-corporate contracts with Medium plan.',
-      medium: 'Add population health analytics and HRMS API integrations with Large plan.',
-      large:  'Scale to white-label employer app and Ayushman integration with Enterprise.',
-    },
-    'genetic-lab': {
-      small:  'Unlock NGS panels, ACMG variant classification, and family pedigree with Medium plan.',
-      medium: 'Add WES/WGS, bioinformatics, and pharmacogenomics with Large plan.',
-      large:  'Enable research biobank and rare disease registry with Enterprise.',
-    },
-    'reference-lab': {
-      small:  'Unlock NABL ISO 15189, QC Westgard, and HL7/ASTM with Medium plan.',
-      medium: 'Add franchise lab management, revenue sharing, and EQA/PT with Large plan.',
-      large:  'Enable ABHA HIP, government reporting, and API marketplace with Enterprise.',
-    },
-    'tele-radiology': {
-      small:  'Unlock DICOM cloud archive, sub-specialty routing, and 24/7 management with Medium plan.',
-      medium: 'Add AI preliminary reads, PACS-HIS integration, and multi-country ops with Large plan.',
-      large:  'Enable franchise teleradiology network and white-label client portals with Enterprise.',
-    },
-  };
+  const data = getSubtypeFeatures(subtype);
+  const tierData = data.tiers[tier as keyof typeof data.tiers];
+  if (!tierData || tierData.notIncluded.length === 0) return null;
 
-  const hint = (upgradeHints as any)[subtype]?.[tier];
-  if (!hint) return null;
-
+  // Take the first 3 "not included" items from the current tier and format
+  const top = tierData.notIncluded.slice(0, 3);
   const nextTier = tier === 'small' ? 'Medium' : tier === 'medium' ? 'Large' : 'Enterprise';
+  const hint = top.length === 1
+    ? `Unlock ${top[0]} with the ${nextTier} plan.`
+    : top.length === 2
+      ? `Unlock ${top[0]} and ${top[1]} with the ${nextTier} plan.`
+      : `Unlock ${top[0]}, ${top[1]}, and ${top[2]} with the ${nextTier} plan.`;
 
   return (
     <div className="flex items-center justify-between bg-gradient-to-r from-indigo-50 to-sky-50 border border-indigo-200 rounded-2xl px-5 py-3.5">
@@ -313,12 +254,51 @@ export default function DiagnosticDashboard() {
       {/* KPI row — cards adapt to subtype */}
       {(() => {
         const cards = [];
-        // "Today's Orders" label changes per subtype
-        const orderLabel = subtype === 'radiology-center' || subtype === 'ultrasound-center' || subtype === 'pet-scan-center' ? "Today's Scans"
-                         : subtype === 'home-sample-collection' ? "Today's Bookings"
-                         : subtype === 'tele-radiology' ? "Today's Reports"
-                         : subtype === 'corporate-screening' ? "Today's Employees"
-                         : "Today's Orders";
+        // "Today's Orders" label changes per subtype — full 34-subtype coverage
+        const ORDER_LABELS: Record<string, string> = {
+          // Collection
+          'sample-collection-center': "Today's Samples",
+          'pickup-point': "Today's Handovers",
+          'home-sample-collection': "Today's Bookings",
+          // Pathology
+          'pathology-lab': "Today's Samples",
+          'histopathology-lab': "Today's Specimens",
+          'molecular-lab': "Today's Samples",
+          'micro-lab': "Today's Cultures",
+          'genetic-lab': "Today's Tests",
+          'blood-bank': "Today's Units",
+          // Imaging
+          'radiology-center': "Today's Scans",
+          'ultrasound-center': "Today's Scans",
+          'pet-scan-center': "Today's Scans",
+          'nuclear-medicine-center': "Today's Scans",
+          'mammography-center': "Today's Mammograms",
+          'dexa-center': "Today's Scans",
+          'dental-radiology-center': "Today's Scans",
+          'ophthalmic-center': "Today's Patients",
+          // Physiological
+          'cardiac-diagnostics': "Today's Tests",
+          'pft-center': "Today's Tests",
+          'neurophysiology-center': "Today's Studies",
+          'allergy-center': "Today's Patients",
+          'sleep-lab': "Tonight's Studies",
+          'audiology-center': "Today's Tests",
+          'urodynamics-center': "Today's Studies",
+          'endoscopy-center': "Today's Procedures",
+          // Health packages
+          'health-checkup': "Today's Checkups",
+          'corporate-screening': "Today's Employees",
+          // Specialty
+          'ivf-embryology': "Active Cycles",
+          'stem-cell-registry': "Today's Specimens",
+          'forensic-toxicology': "Today's Samples",
+          'cancer-screening': "Today's Screenings",
+          // Hubs & digital
+          'reference-lab': "Today's Orders",
+          'tele-radiology': "Today's Reports",
+          'dtc-genomics': "Pending Kits",
+        };
+        const orderLabel = ORDER_LABELS[subtype ?? ''] ?? "Today's Orders";
         cards.push(<StatCard key="orders" label={orderLabel} value={s.todayOrders ?? 0} icon={FlaskConical} color={NAVY} href="/diagnostic/lab-orders" />);
         cards.push(<StatCard key="revenue" label="Today's Revenue" value={formatINR(s.todayRevenue ?? 0)} icon={IndianRupee} color={TEAL} />);
 
