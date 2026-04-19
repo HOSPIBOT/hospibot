@@ -52,6 +52,11 @@ import { SedationLogModule } from './modules/sedation-log/sedation-log.module';
 import { VideoCaptureModule } from './modules/video-capture/video-capture.module';
 import { TumorMarkersModule } from './modules/tumor-markers/tumor-markers.module';
 import { GcMsModule } from './modules/gc-ms/gc-ms.module';
+import { FraxModule } from './modules/frax/frax.module';
+import { WaveformsModule } from './modules/waveforms/waveforms.module';
+import { PsgModule } from './modules/psg/psg.module';
+import { BeraModule } from './modules/bera/bera.module';
+import { SlideScanningModule } from './modules/slide-scanning/slide-scanning.module';
 
 @Module({
   imports: [
@@ -118,6 +123,11 @@ import { GcMsModule } from './modules/gc-ms/gc-ms.module';
     VideoCaptureModule,
     TumorMarkersModule,
     GcMsModule,
+    FraxModule,
+    WaveformsModule,
+    PsgModule,
+    BeraModule,
+    SlideScanningModule,
   ],
   controllers: [HealthController],
   providers: [StartupService, DbBootstrapService],

@@ -1948,6 +1948,259 @@ model GcMsAnalysis {
 }
 
 // ==============================================
+// FRAX ASSESSMENT (DEXA Center)
+// Per WHO FRAX Tool, ISCD Guidelines
+// ==============================================
+
+model FraxAssessment {
+  id                    String    @id @default(uuid())
+  tenantId              String    @map("tenant_id")
+  patientId             String?   @map("patient_id")
+  patientName           String    @map("patient_name")
+  patientAge            Int?      @map("patient_age")
+  patientGender         String?   @map("patient_gender")
+  patientHeight         Float?    @map("patient_height")
+  patientWeight         Float?    @map("patient_weight")
+  scanDate              DateTime  @map("scan_date")
+  scanSite              String?   @map("scan_site")
+  bmdSpine              Float?    @map("bmd_spine")
+  tScoreSpine           Float?    @map("t_score_spine")
+  zScoreSpine           Float?    @map("z_score_spine")
+  bmdHip                Float?    @map("bmd_hip")
+  tScoreHip             Float?    @map("t_score_hip")
+  zScoreHip             Float?    @map("z_score_hip")
+  bmdFemoralNeck        Float?    @map("bmd_femoral_neck")
+  tScoreFemoralNeck     Float?    @map("t_score_femoral_neck")
+  whoClassification     String?   @map("who_classification")
+  previousFracture      Boolean   @default(false) @map("previous_fracture")
+  parentHipFracture     Boolean   @default(false) @map("parent_hip_fracture")
+  currentSmoking        Boolean   @default(false) @map("current_smoking")
+  glucocorticoids       Boolean   @default(false)
+  rheumatoidArthritis   Boolean   @default(false) @map("rheumatoid_arthritis")
+  secondaryOsteoporosis Boolean   @default(false) @map("secondary_osteoporosis")
+  alcoholUnits          Float?    @map("alcohol_units")
+  fraxMajor             Float?    @map("frax_major")
+  fraxHip               Float?    @map("frax_hip")
+  treatmentThreshold    Boolean   @default(false) @map("treatment_threshold")
+  totalBodyFat          Float?    @map("total_body_fat")
+  leanMass              Float?    @map("lean_mass")
+  fatPercentage         Float?    @map("fat_percentage")
+  interpretation        String?
+  recommendation        String?
+  technicianName        String?   @map("technician_name")
+  reviewedBy            String?   @map("reviewed_by")
+  equipmentId           String?   @map("equipment_id")
+  pregnancyScreened     Boolean   @default(false) @map("pregnancy_screened")
+  notes                 String?
+  status                String    @default("draft")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+  createdBy             String?   @map("created_by")
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@map("frax_assessments")
+}
+
+// ==============================================
+// WAVEFORM STUDY (Neurophysiology EEG/EMG)
+// Per ACNS/AANEM Standards
+// ==============================================
+
+model WaveformStudy {
+  id                    String    @id @default(uuid())
+  tenantId              String    @map("tenant_id")
+  patientId             String?   @map("patient_id")
+  patientName           String    @map("patient_name")
+  patientAge            Int?      @map("patient_age")
+  patientGender         String?   @map("patient_gender")
+  studyDate             DateTime  @map("study_date")
+  studyType             String    @map("study_type")
+  indication            String?
+  medicationList        String?   @map("medication_list")
+  sleepDeprived         Boolean   @default(false) @map("sleep_deprived")
+  montage               String?
+  channelCount          Int?      @map("channel_count")
+  recordingDuration     Int?      @map("recording_duration")
+  activationProcedures  String?   @map("activation_procedures")
+  backgroundActivity    String?   @map("background_activity")
+  abnormalFindings      String?   @map("abnormal_findings")
+  epileptiformActivity  String?   @map("epileptiform_activity")
+  nervesStudied         String?   @map("nerves_studied")
+  conductionVelocities  Json?     @map("conduction_velocities")
+  amplitudes            Json?
+  latencies             Json?
+  fWaves                Json?     @map("f_waves")
+  needleEmgFindings     String?   @map("needle_emg_findings")
+  interpretation        String?
+  clinicalCorrelation   String?   @map("clinical_correlation")
+  neurophysiologist     String?
+  technicianName        String?   @map("technician_name")
+  equipmentId           String?   @map("equipment_id")
+  fileReference         String?   @map("file_reference")
+  notes                 String?
+  status                String    @default("draft")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+  createdBy             String?   @map("created_by")
+
+  @@index([tenantId])
+  @@index([tenantId, studyType])
+  @@map("waveform_studies")
+}
+
+// ==============================================
+// PSG STUDY (Sleep Lab)
+// Per AASM Scoring Manual v3
+// ==============================================
+
+model PsgStudy {
+  id                String    @id @default(uuid())
+  tenantId          String    @map("tenant_id")
+  patientId         String?   @map("patient_id")
+  patientName       String    @map("patient_name")
+  patientAge        Int?      @map("patient_age")
+  patientBmi        Float?    @map("patient_bmi")
+  epworthScore      Int?      @map("epworth_score")
+  studyDate         DateTime  @map("study_date")
+  studyType         String    @default("full-psg") @map("study_type")
+  lightsOff         String?   @map("lights_off")
+  lightsOn          String?   @map("lights_on")
+  totalRecordTime   Float?    @map("total_record_time")
+  totalSleepTime    Float?    @map("total_sleep_time")
+  sleepEfficiency   Float?    @map("sleep_efficiency")
+  sleepLatency      Float?    @map("sleep_latency")
+  remLatency        Float?    @map("rem_latency")
+  stageN1Pct        Float?    @map("stage_n1_pct")
+  stageN2Pct        Float?    @map("stage_n2_pct")
+  stageN3Pct        Float?    @map("stage_n3_pct")
+  stageRemPct       Float?    @map("stage_rem_pct")
+  ahi               Float?
+  obstructiveApneas Int?      @map("obstructive_apneas")
+  centralApneas     Int?      @map("central_apneas")
+  mixedApneas       Int?      @map("mixed_apneas")
+  hypopneas         Int?
+  osaSeverity       String?   @map("osa_severity")
+  supineAhi         Float?    @map("supine_ahi")
+  remAhi            Float?    @map("rem_ahi")
+  lowestSpo2        Float?    @map("lowest_spo2")
+  meanSpo2          Float?    @map("mean_spo2")
+  odi               Float?
+  t90               Float?
+  plmIndex          Float?    @map("plm_index")
+  arousalIndex      Float?    @map("arousal_index")
+  snoring           Boolean   @default(false)
+  bruxism           Boolean   @default(false)
+  interpretation    String?
+  recommendation    String?
+  sleepPhysician    String?   @map("sleep_physician")
+  technicianName    String?   @map("technician_name")
+  notes             String?
+  status            String    @default("draft")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdBy         String?   @map("created_by")
+
+  @@index([tenantId])
+  @@index([tenantId, osaSeverity])
+  @@map("psg_studies")
+}
+
+// ==============================================
+// BERA TEST (Audiology — Newborn Hearing)
+// Per JCIH/NHSP Guidelines
+// ==============================================
+
+model BeraTest {
+  id                String    @id @default(uuid())
+  tenantId          String    @map("tenant_id")
+  patientId         String?   @map("patient_id")
+  patientName       String    @map("patient_name")
+  patientAge        String?   @map("patient_age")
+  isNewborn         Boolean   @default(false) @map("is_newborn")
+  gestationalAge    Int?      @map("gestational_age")
+  birthWeight       Float?    @map("birth_weight")
+  testDate          DateTime  @map("test_date")
+  testType          String    @default("abr") @map("test_type")
+  indication        String?
+  riskFactors       String?   @map("risk_factors")
+  stimulusType      String?   @map("stimulus_type")
+  stimulusRate      String?   @map("stimulus_rate")
+  stimulusPolarity  String?   @map("stimulus_polarity")
+  rightThreshold    Float?    @map("right_threshold")
+  leftThreshold     Float?    @map("left_threshold")
+  rightWaveV        Float?    @map("right_wave_v")
+  leftWaveV         Float?    @map("left_wave_v")
+  rightWaveI        Float?    @map("right_wave_i")
+  leftWaveI         Float?    @map("left_wave_i")
+  rightIPL          Float?    @map("right_ipl")
+  leftIPL           Float?    @map("left_ipl")
+  rightResult       String?   @map("right_result")
+  leftResult        String?   @map("left_result")
+  oaeRightResult    String?   @map("oae_right_result")
+  oaeLeftResult     String?   @map("oae_left_result")
+  screeningResult   String?   @map("screening_result")
+  referForDiagnostic Boolean  @default(false) @map("refer_for_diagnostic")
+  interpretation    String?
+  audiologistName   String?   @map("audiologist_name")
+  reviewedBy        String?   @map("reviewed_by")
+  equipmentId       String?   @map("equipment_id")
+  notes             String?
+  status            String    @default("draft")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdBy         String?   @map("created_by")
+
+  @@index([tenantId])
+  @@index([tenantId, screeningResult])
+  @@map("bera_tests")
+}
+
+// ==============================================
+// SLIDE SCANNING (Histopathology — Digital Path)
+// Per CAP Digital Pathology Guidelines
+// ==============================================
+
+model SlideScanning {
+  id                    String    @id @default(uuid())
+  tenantId              String    @map("tenant_id")
+  caseNumber            String    @map("case_number")
+  slideId               String    @map("slide_id")
+  patientId             String?   @map("patient_id")
+  patientName           String?   @map("patient_name")
+  specimenType          String?   @map("specimen_type")
+  specimenSite          String?   @map("specimen_site")
+  stainType             String    @default("H&E") @map("stain_type")
+  scanDate              DateTime  @map("scan_date")
+  scannerId             String?   @map("scanner_id")
+  scannerModel          String?   @map("scanner_model")
+  magnification         String?   @default("40x")
+  fileFormat            String?   @map("file_format")
+  fileSize              String?   @map("file_size")
+  imageUrl              String?   @map("image_url")
+  thumbnailUrl          String?   @map("thumbnail_url")
+  focusQuality          String?   @map("focus_quality")
+  tissueCoverage        Float?    @map("tissue_coverage")
+  annotations           Json?
+  aiAnalysis            Json?     @map("ai_analysis")
+  pathologistName       String?   @map("pathologist_name")
+  teleconsultRequested  Boolean   @default(false) @map("teleconsult_requested")
+  teleconsultTo         String?   @map("teleconsult_to")
+  teleconsultResponse   String?   @map("teleconsult_response")
+  diagnosis             String?
+  icdCode               String?   @map("icd_code")
+  notes                 String?
+  status                String    @default("scanned")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+  createdBy             String?   @map("created_by")
+
+  @@index([tenantId])
+  @@index([tenantId, caseNumber])
+  @@map("slide_scannings")
+}
+
+// ==============================================
 // AUDIT LOG
 // ==============================================
 

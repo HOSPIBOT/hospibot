@@ -187,11 +187,7 @@ const FEATURE_MAP: Record<string, { label: string; blurb: string; category: stri
   },
 
   // ── Histopathology ────────────────────────────────────────────────────
-  'slide-scanning': {
-    label: 'Slide Scanning',
-    blurb: 'Whole-slide image scanning with digital pathology viewer for remote consultation.',
-    category: 'Histopathology',
-  },
+  // NOTE: 'slide-scanning' graduated to a real page at app/diagnostic/slide-scanning/page.tsx
   'ihc': {
     label: 'IHC Workflow',
     blurb: 'Immunohistochemistry request tracking — antibody panels, turnaround monitoring, reagent usage.',
@@ -227,11 +223,7 @@ const FEATURE_MAP: Record<string, { label: string; blurb: string; category: stri
   // NOTE: 'bi-rads' graduated to a real page at app/diagnostic/bi-rads/page.tsx
 
   // ── DEXA ──────────────────────────────────────────────────────────────
-  'frax': {
-    label: 'FRAX Assessment',
-    blurb: 'WHO fracture-risk algorithm — 10-year probability of hip and major osteoporotic fracture.',
-    category: 'DEXA',
-  },
+  // NOTE: 'frax' graduated to a real page at app/diagnostic/frax/page.tsx
 
   // ── Dental radiology ──────────────────────────────────────────────────
   'opg-cbct': {
@@ -259,11 +251,7 @@ const FEATURE_MAP: Record<string, { label: string; blurb: string; category: stri
 
   // ── Physiological testing ─────────────────────────────────────────────
   // NOTE: 'spirometry' graduated to a real page at app/diagnostic/spirometry/page.tsx
-  'waveforms': {
-    label: 'Waveform Viewer',
-    blurb: 'EEG / EMG / NCS waveform display with annotation, montage switching, frequency analysis.',
-    category: 'Neurophysiology',
-  },
+  // NOTE: 'waveforms' graduated to a real page at app/diagnostic/waveforms/page.tsx
   'allergen-panels': {
     label: 'Allergen Panels',
     blurb: 'Pre-built allergen panels (respiratory, food, drug) with result interpretation and patient summaries.',
@@ -274,22 +262,14 @@ const FEATURE_MAP: Record<string, { label: string; blurb: string; category: stri
     blurb: 'Allergen-specific immunotherapy planning — dose escalation schedules, adherence tracking.',
     category: 'Allergy',
   },
-  'psg': {
-    label: 'Polysomnography',
-    blurb: 'Overnight sleep study workflow — EEG / EOG / EMG / airflow / SpO2 capture and AASM scoring.',
-    category: 'Sleep',
-  },
+  // NOTE: 'psg' graduated to a real page at app/diagnostic/psg/page.tsx
   'cpap-titration': {
     label: 'CPAP Titration',
     blurb: 'CPAP pressure titration studies with leak tracking, AHI monitoring, therapy optimization.',
     category: 'Sleep',
   },
   // NOTE: 'audiometry' graduated to a real page at app/diagnostic/audiometry/page.tsx
-  'bera': {
-    label: 'BERA / OAE',
-    blurb: 'Brainstem evoked response audiometry and otoacoustic emissions — newborn hearing screening.',
-    category: 'Audiology',
-  },
+  // NOTE: 'bera' graduated to a real page at app/diagnostic/bera/page.tsx
   'urodynamics': {
     label: 'Urodynamic Studies',
     blurb: 'Cystometrogram, pressure-flow studies, uroflowmetry, EMG with urogynecology report templates.',
