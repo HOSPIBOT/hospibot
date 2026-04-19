@@ -39,6 +39,9 @@ import { BedModule } from './modules/bed/bed.module';
 import { FhirModule } from './modules/fhir/fhir.module';
 import { SubscriptionModule } from './modules/subscription/subscription.module';
 import { DiagnosticModule } from './modules/diagnostic/diagnostic.module';
+import { AntibiogramModule } from './modules/antibiogram/antibiogram.module';
+import { CustodyChainModule } from './modules/custody-chain/custody-chain.module';
+import { IvfCycleModule } from './modules/ivf-cycle/ivf-cycle.module';
 
 @Module({
   imports: [
@@ -92,6 +95,9 @@ import { DiagnosticModule } from './modules/diagnostic/diagnostic.module';
     BedModule,
     FhirModule,
     SubscriptionModule,
+    AntibiogramModule,
+    CustodyChainModule,
+    IvfCycleModule,
   ],
   controllers: [HealthController],
   providers: [StartupService, DbBootstrapService],

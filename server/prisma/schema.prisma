@@ -1221,6 +1221,253 @@ model CrossmatchRecord {
 }
 
 // ==============================================
+// ANTIBIOGRAM (AST Results)
+// Per CLSI M100, ICMR AMRSN, NABL ISO 15189
+// ==============================================
+
+model Antibiogram {
+  id              String   @id @default(uuid())
+  tenantId        String   @map("tenant_id")
+  cultureId       String?  @map("culture_id")
+  labOrderId      String?  @map("lab_order_id")
+  sampleId        String?  @map("sample_id")
+  patientId       String?  @map("patient_id")
+  patientName     String?  @map("patient_name")
+  patientUhid     String?  @map("patient_uhid")
+  specimenType    String   @map("specimen_type")
+  specimenDate    DateTime @map("specimen_date")
+  organism        String
+  organismCode    String?  @map("organism_code")
+  isolateNumber   Int      @default(1) @map("isolate_number")
+  method          String   @default("disk-diffusion")
+  breakpointStd   String   @default("CLSI") @map("breakpoint_std")
+  breakpointYear  String?  @map("breakpoint_year")
+  status          String   @default("draft")
+  verifiedBy      String?  @map("verified_by")
+  verifiedAt      DateTime? @map("verified_at")
+  reportedBy      String?  @map("reported_by")
+  reportedAt      DateTime? @map("reported_at")
+  notes           String?
+  mrsaDetected    Boolean  @default(false) @map("mrsa_detected")
+  esblDetected    Boolean  @default(false) @map("esbl_detected")
+  crbDetected     Boolean  @default(false) @map("crb_detected")
+  vrDetected      Boolean  @default(false) @map("vr_detected")
+  whonetExported  Boolean  @default(false) @map("whonet_exported")
+  icmrReported    Boolean  @default(false) @map("icmr_reported")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  createdBy       String?  @map("created_by")
+
+  results         AntibiogramResult[]
+
+  @@index([tenantId])
+  @@index([tenantId, organism])
+  @@index([tenantId, specimenDate])
+  @@index([tenantId, status])
+  @@map("antibiograms")
+}
+
+model AntibiogramResult {
+  id              String   @id @default(uuid())
+  antibiogramId   String   @map("antibiogram_id")
+  antibiotic      String
+  antibioticCode  String?  @map("antibiotic_code")
+  drugClass       String?  @map("drug_class")
+  testMethod      String?  @map("test_method")
+  zoneDiameter    Float?   @map("zone_diameter")
+  micValue        Float?   @map("mic_value")
+  micSign         String?  @map("mic_sign")
+  interpretation  String
+  breakpointS     String?  @map("breakpoint_s")
+  breakpointR     String?  @map("breakpoint_r")
+  isAlert         Boolean  @default(false) @map("is_alert")
+  alertReason     String?  @map("alert_reason")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  antibiogram     Antibiogram @relation(fields: [antibiogramId], references: [id], onDelete: Cascade)
+
+  @@index([antibiogramId])
+  @@index([antibiogramId, antibiotic])
+  @@map("antibiogram_results")
+}
+
+// ==============================================
+// CHAIN OF CUSTODY (Forensic Toxicology)
+// Per NDPS Act 1985, NCB Standing Orders, ISO 17025
+// ==============================================
+
+model CustodyChain {
+  id                String   @id @default(uuid())
+  tenantId          String   @map("tenant_id")
+  caseNumber        String   @map("case_number")
+  externalCaseRef   String?  @map("external_case_ref")
+  caseType          String   @map("case_type")
+  priority          String   @default("routine")
+  specimenType      String   @map("specimen_type")
+  specimenDesc      String?  @map("specimen_desc")
+  containerType     String?  @map("container_type")
+  sealNumberA       String?  @map("seal_number_a")
+  sealNumberB       String?  @map("seal_number_b")
+  quantity          String?
+  specimenCount     Int      @default(1) @map("specimen_count")
+  collectedBy       String   @map("collected_by")
+  collectorRole     String?  @map("collector_role")
+  collectorId       String?  @map("collector_id")
+  collectionDate    DateTime @map("collection_date")
+  collectionTime    String?  @map("collection_time")
+  collectionLocation String? @map("collection_location")
+  subjectName       String?  @map("subject_name")
+  subjectId         String?  @map("subject_id")
+  subjectGender     String?  @map("subject_gender")
+  subjectDob        String?  @map("subject_dob")
+  witnessName       String?  @map("witness_name")
+  witnessId         String?  @map("witness_id")
+  witnessSignature  Boolean  @default(false) @map("witness_signature")
+  receivedAt        DateTime? @map("received_at")
+  receivedBy        String?  @map("received_by")
+  sealIntactOnReceipt Boolean? @map("seal_intact_on_receipt")
+  storageCondition  String?  @map("storage_condition")
+  storageLocation   String?  @map("storage_location")
+  analysisMethod    String?  @map("analysis_method")
+  analysisByName    String?  @map("analysis_by_name")
+  analysisById      String?  @map("analysis_by_id")
+  analysisDate      DateTime? @map("analysis_date")
+  instrumentId      String?  @map("instrument_id")
+  resultSummary     String?  @map("result_summary")
+  reportNumber      String?  @map("report_number")
+  reportDate        DateTime? @map("report_date")
+  disposalMethod    String?  @map("disposal_method")
+  disposalDate      DateTime? @map("disposal_date")
+  disposalWitness   String?  @map("disposal_witness")
+  disposalAuth      String?  @map("disposal_auth")
+  status            String   @default("collected")
+  integrityBreach   Boolean  @default(false) @map("integrity_breach")
+  breachNotes       String?  @map("breach_notes")
+  notes             String?
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  createdBy         String?  @map("created_by")
+
+  handovers         CustodyHandover[]
+
+  @@index([tenantId])
+  @@index([tenantId, caseNumber])
+  @@index([tenantId, status])
+  @@index([tenantId, caseType])
+  @@map("custody_chains")
+}
+
+model CustodyHandover {
+  id              String   @id @default(uuid())
+  chainId         String   @map("chain_id")
+  stepNumber      Int      @map("step_number")
+  fromName        String   @map("from_name")
+  fromRole        String?  @map("from_role")
+  fromId          String?  @map("from_id")
+  toName          String   @map("to_name")
+  toRole          String?  @map("to_role")
+  toId            String?  @map("to_id")
+  handoverDate    DateTime @map("handover_date")
+  handoverTime    String?  @map("handover_time")
+  location        String?
+  sealIntact      Boolean  @default(true) @map("seal_intact")
+  conditionNotes  String?  @map("condition_notes")
+  transportMode   String?  @map("transport_mode")
+  tempRecorded    String?  @map("temp_recorded")
+  fromConfirmed   Boolean  @default(false) @map("from_confirmed")
+  toConfirmed     Boolean  @default(false) @map("to_confirmed")
+  createdAt       DateTime @default(now()) @map("created_at")
+  createdBy       String?  @map("created_by")
+
+  chain           CustodyChain @relation(fields: [chainId], references: [id], onDelete: Cascade)
+
+  @@index([chainId])
+  @@index([chainId, stepNumber])
+  @@map("custody_handovers")
+}
+
+// ==============================================
+// IVF CYCLES (Embryology)
+// Per ART (Regulation) Act 2021, ICMR ART Guidelines
+// ==============================================
+
+model IvfCycle {
+  id                String   @id @default(uuid())
+  tenantId          String   @map("tenant_id")
+  cycleNumber       String   @map("cycle_number")
+  patientId         String?  @map("patient_id")
+  patientName       String   @map("patient_name")
+  patientAge        Int?     @map("patient_age")
+  partnerName       String?  @map("partner_name")
+  partnerAge        Int?     @map("partner_age")
+  cycleType         String   @map("cycle_type")
+  stimProtocol      String?  @map("stim_protocol")
+  indication        String?
+  consentFormD      Boolean  @default(false) @map("consent_form_d")
+  consentDate       DateTime? @map("consent_date")
+  consentCryoDisposal String? @map("consent_cryo_disposal")
+  stimStartDate     DateTime? @map("stim_start_date")
+  stimDrugs         Json?    @map("stim_drugs")
+  stimDays          Int?     @map("stim_days")
+  monitoringLogs    Json?    @map("monitoring_logs")
+  triggerDate       DateTime? @map("trigger_date")
+  triggerDrug       String?  @map("trigger_drug")
+  triggerDose       String?  @map("trigger_dose")
+  opuDate           DateTime? @map("opu_date")
+  opuEmbryologist   String?  @map("opu_embryologist")
+  oocytesTotal      Int?     @map("oocytes_total")
+  oocytesMature     Int?     @map("oocytes_mature")
+  oocytesImmature   Int?     @map("oocytes_immature")
+  oocytesDegen      Int?     @map("oocytes_degen")
+  spermSource       String?  @map("sperm_source")
+  spermCountMil     Float?   @map("sperm_count_mil")
+  spermMotility     Float?   @map("sperm_motility")
+  spermMorphology   Float?   @map("sperm_morphology")
+  inseminationMethod String? @map("insemination_method")
+  inseminationDate  DateTime? @map("insemination_date")
+  fertCheckDate     DateTime? @map("fert_check_date")
+  fertNormal2pn     Int?     @map("fert_normal_2pn")
+  fertAbnormal      Int?     @map("fert_abnormal")
+  fertUnfert        Int?     @map("fert_unfert")
+  fertRate          Float?   @map("fert_rate")
+  embryoGrades      Json?    @map("embryo_grades")
+  transferDate      DateTime? @map("transfer_date")
+  transferDay       Int?     @map("transfer_day")
+  embryosTransferred Int?    @map("embryos_transferred")
+  transferGrades    String?  @map("transfer_grades")
+  transferDifficulty String? @map("transfer_difficulty")
+  transferEmbryologist String? @map("transfer_embryologist")
+  transferPhysician String? @map("transfer_physician")
+  embryosFrozen     Int?     @map("embryos_frozen")
+  freezeMethod      String?  @map("freeze_method")
+  cryoStorageId     String?  @map("cryo_storage_id")
+  bhcgDate          DateTime? @map("bhcg_date")
+  bhcgValue         Float?   @map("bhcg_value")
+  bhcgPositive      Boolean? @map("bhcg_positive")
+  clinicalPregnancy Boolean? @map("clinical_pregnancy")
+  fetalHeartbeat    Boolean? @map("fetal_heartbeat")
+  gestationCount    Int?     @map("gestation_count")
+  outcome           String?
+  liveBirthDate     DateTime? @map("live_birth_date")
+  birthWeight       Float?   @map("birth_weight")
+  ohssGrade         String?  @map("ohss_grade")
+  complications     String?
+  status            String   @default("initiated")
+  cancelReason      String?  @map("cancel_reason")
+  artRegistryId     String?  @map("art_registry_id")
+  notes             String?
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  createdBy         String?  @map("created_by")
+
+  @@index([tenantId])
+  @@index([tenantId, cycleNumber])
+  @@index([tenantId, status])
+  @@index([tenantId, patientName])
+  @@map("ivf_cycles")
+}
+
+// ==============================================
 // AUDIT LOG
 // ==============================================
 
