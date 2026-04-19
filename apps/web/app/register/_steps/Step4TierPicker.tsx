@@ -1,9 +1,11 @@
 'use client';
 
-import { Check, Sparkle } from 'lucide-react';
+import { useState } from 'react';
+import { Check, Sparkle, ChevronDown, ChevronUp, X as XIcon } from 'lucide-react';
 import { Heading, LoadingSkeleton } from './Step2GroupPicker';
 import { TOKENS } from '../_lib/wizard-types';
 import { useResolvedTiers, TierFromApi } from '../_hooks/useResolvedTiers';
+import { getSubtypeFeatures, type SubtypeTier } from '@/lib/diagnostic-subtype-features';
 
 interface Props {
   familySlug: string;
@@ -32,11 +34,17 @@ export default function Step4TierPicker({
 }: Props) {
   const { tiers, loading } = useResolvedTiers({ familySlug, subtypeSlug });
 
+  // Look up subtype-specific feature data (feature descriptions, scale metrics)
+  // This complements the pricing/limits from DB with domain-specific content.
+  const subtypeData = subtypeSlug ? getSubtypeFeatures(subtypeSlug) : null;
+
   return (
     <div>
       <Heading
         title="What size is your operation?"
-        subtitle="Pick the tier that matches your current volume. You can upgrade anytime — Super Admin usually approves upgrades within 24 hours."
+        subtitle={subtypeData
+          ? `Pick the tier that matches your current ${subtypeData.scaleUnit}. You can upgrade anytime.`
+          : 'Pick the tier that matches your current volume. You can upgrade anytime.'}
       />
 
       {/* Billing cycle toggle */}
@@ -75,6 +83,7 @@ export default function Step4TierPicker({
             <TierCard
               key={tier.tierKey}
               tier={tier}
+              tierFeatures={subtypeData?.tiers[tier.tierKey] ?? null}
               selected={value === tier.tierKey}
               billingCycle={billingCycle}
               onClick={() => onChange(tier.tierKey)}
@@ -134,21 +143,21 @@ function CycleButton({
 }
 
 function TierCard({
-  tier, selected, billingCycle, onClick,
+  tier, tierFeatures, selected, billingCycle, onClick,
 }: {
   tier: TierFromApi;
+  tierFeatures: SubtypeTier | null;
   selected: boolean;
   billingCycle: 'monthly' | 'annual';
   onClick: () => void;
 }) {
+  const [expanded, setExpanded] = useState(false);
   const isPopular = tier.badge === 'Most Popular';
   const hasPrice = tier.priceMonthly != null;
 
-  // Choose price + label based on billing cycle
   const displayPrice = (() => {
     if (!hasPrice) return 'Custom';
     if (billingCycle === 'annual') {
-      // Show monthly equivalent of annual price
       const annualRupees = (tier.priceAnnual ?? tier.priceMonthly! * 10) / 100;
       return `₹${Math.round(annualRupees / 12).toLocaleString('en-IN')}`;
     }
@@ -159,12 +168,30 @@ function TierCard({
     ? tier.badge === 'Contact Sales' ? '· contact us' : ''
     : billingCycle === 'annual' ? '/mo · billed yearly' : '/month';
 
-  // Volume hint
-  const volumeHint = (() => {
-    if (tier.dailyVolumeMax == null && tier.dailyVolumeMin == null) return null;
-    if (tier.dailyVolumeMax == null) return `${tier.dailyVolumeMin}+`;
-    return `${tier.dailyVolumeMin ?? 0}–${tier.dailyVolumeMax}`;
-  })();
+  // Use subtype-specific scale if available, fallback to generic DB fields
+  const scaleItems: { label: string; value: string }[] = tierFeatures?.scale ?? [
+    ...(tier.dailyVolumeMax != null || tier.dailyVolumeMin != null
+      ? [{ label: 'Daily volume', value: tier.dailyVolumeMax == null ? `${tier.dailyVolumeMin}+` : `${tier.dailyVolumeMin ?? 0}–${tier.dailyVolumeMax}` }]
+      : []),
+    { label: 'Branches', value: fmt(tier.branchesAllowed) },
+    { label: 'Staff users', value: fmt(tier.staffAllowed) },
+    { label: 'WA msgs/mo', value: fmt(tier.waMessagesPerMonth) },
+  ];
+
+  // Subtype-specific features or generic fallback
+  const featureList = tierFeatures?.features ?? [
+    `Up to ${fmt(tier.staffAllowed)} staff`,
+    `${fmt(tier.waMessagesPerMonth)} WhatsApp msgs/month`,
+    `${fmt(tier.smsPerMonth)} SMS/month`,
+    `${tier.storageGB} GB secure storage`,
+  ];
+
+  const notIncluded = tierFeatures?.notIncluded ?? [];
+
+  // Show first 6 features collapsed, rest on expand
+  const COLLAPSED_COUNT = 6;
+  const visibleFeatures = expanded ? featureList : featureList.slice(0, COLLAPSED_COUNT);
+  const hasMore = featureList.length > COLLAPSED_COUNT;
 
   return (
     <button
@@ -227,27 +254,21 @@ function TierCard({
         )}
       </div>
 
+      {/* ── Scale metrics (subtype-specific when available) ── */}
       <div style={{
         display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8,
         padding: 12, borderRadius: 10,
         background: selected ? '#fff' : TOKENS.surface,
         marginBottom: 16, fontSize: 12,
       }}>
-        {volumeHint && <ScaleCell label="Daily volume" value={volumeHint} />}
-        <ScaleCell label="Branches"       value={fmt(tier.branchesAllowed)} />
-        <ScaleCell label="Staff users"    value={fmt(tier.staffAllowed)} />
-        <ScaleCell label="WA msgs/mo"     value={fmt(tier.waMessagesPerMonth)} />
+        {scaleItems.map((s, i) => (
+          <ScaleCell key={i} label={s.label} value={s.value} />
+        ))}
       </div>
 
-      {/* Static top-4 bullets derived from included features of this tier.
-          Kept intentionally short — full feature comparison lives in FAQ/docs. */}
+      {/* ── Feature list (subtype-specific when available) ── */}
       <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
-        {[
-          `Up to ${fmt(tier.staffAllowed)} staff`,
-          `${fmt(tier.waMessagesPerMonth)} WhatsApp msgs/month`,
-          `${fmt(tier.smsPerMonth)} SMS/month`,
-          `${tier.storageGB} GB secure storage`,
-        ].map((f, i) => (
+        {visibleFeatures.map((f, i) => (
           <li key={i} style={{
             display: 'flex', alignItems: 'flex-start', gap: 8,
             fontSize: 13, color: TOKENS.text, marginBottom: 6, lineHeight: 1.4,
@@ -257,6 +278,50 @@ function TierCard({
           </li>
         ))}
       </ul>
+
+      {/* Show more / less toggle */}
+      {hasMore && (
+        <div
+          onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}
+          style={{
+            marginTop: 6, fontSize: 12, color: TOKENS.primary,
+            cursor: 'pointer', fontWeight: 600,
+            display: 'flex', alignItems: 'center', gap: 4,
+          }}
+        >
+          {expanded ? (
+            <><ChevronUp size={14} /> Show less</>
+          ) : (
+            <><ChevronDown size={14} /> +{featureList.length - COLLAPSED_COUNT} more features</>
+          )}
+        </div>
+      )}
+
+      {/* ── Not included (upgrade path) ── */}
+      {notIncluded.length > 0 && (
+        <div style={{
+          marginTop: 14, paddingTop: 12,
+          borderTop: `1px solid ${selected ? TOKENS.border : TOKENS.surface}`,
+        }}>
+          <div style={{
+            fontSize: 11, fontWeight: 600, color: TOKENS.textMuted,
+            textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6,
+          }}>
+            Upgrade for
+          </div>
+          <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+            {notIncluded.slice(0, 3).map((f, i) => (
+              <li key={i} style={{
+                display: 'flex', alignItems: 'flex-start', gap: 8,
+                fontSize: 12, color: TOKENS.textMuted, marginBottom: 4, lineHeight: 1.3,
+              }}>
+                <XIcon size={12} color={TOKENS.textMuted} style={{ marginTop: 2, flexShrink: 0, opacity: 0.5 }} />
+                <span>{f}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </button>
   );
 }
