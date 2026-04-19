@@ -1175,6 +1175,52 @@ model BloodDonor {
 }
 
 // ==============================================
+// CROSSMATCH REGISTER — D&C Rules Schedule F Part XII-B
+// NACO Standards: ABO compatibility + antiglobulin test
+// ==============================================
+
+model CrossmatchRecord {
+  id                    String    @id @default(uuid())
+  tenantId              String    @map("tenant_id")
+  // ── Issue register fields (D&C Rules mandatory) ──
+  serialNumber          String    @map("serial_number")     // auto-generated sequential
+  requestDate           DateTime  @map("request_date")
+  issuedAt              DateTime? @map("issued_at")
+  // ── Donor unit details ──
+  bagSerialNumber       String    @map("bag_serial_number")
+  donorBloodGroup       String    @map("donor_blood_group") // A | B | AB | O
+  donorRhFactor         String    @map("donor_rh_factor")   // POSITIVE | NEGATIVE
+  quantityMl            Int       @map("quantity_ml")
+  componentType         String    @map("component_type")    // WHOLE_BLOOD | PRBC | FFP | PLATELETS | CRYO
+  // ── Recipient details (D&C Rules mandatory) ──
+  recipientName         String    @map("recipient_name")
+  recipientBloodGroup   String    @map("recipient_blood_group")
+  recipientRhFactor     String    @map("recipient_rh_factor")
+  recipientHospital     String?   @map("recipient_hospital")
+  recipientWard         String?   @map("recipient_ward")
+  indicationForTransfusion String @map("indication_for_transfusion") // surgical | medical | obstetric | emergency | exchange_transfusion
+  // ── Crossmatch test results (NACO: ABO + antiglobulin) ──
+  immediateSpinResult   String    @map("immediate_spin_result")     // COMPATIBLE | INCOMPATIBLE
+  iatCoombsResult       String?   @map("iat_coombs_result")         // COMPATIBLE | INCOMPATIBLE | NOT_DONE
+  antibodyScreenResult  String?   @map("antibody_screen_result")    // NEGATIVE | POSITIVE
+  antibodyIdentified    String?   @map("antibody_identified")       // e.g. "Anti-Kell", "Anti-Duffy-a"
+  // ── Final compatibility ──
+  finalResult           String    @map("final_result")              // COMPATIBLE | INCOMPATIBLE | LEAST_INCOMPATIBLE
+  // ── Personnel ──
+  testedByUserId        String    @map("tested_by_user_id")
+  issuedByName          String?   @map("issued_by_name")
+  medicalOfficerName    String?   @map("medical_officer_name")
+  notes                 String?
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt      @map("updated_at")
+
+  @@unique([tenantId, serialNumber])
+  @@index([tenantId, requestDate])
+  @@index([tenantId, recipientName])
+  @@map("crossmatch_records")
+}
+
+// ==============================================
 // AUDIT LOG
 // ==============================================
 

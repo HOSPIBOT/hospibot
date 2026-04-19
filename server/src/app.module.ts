@@ -32,6 +32,7 @@ import { DispatchModule } from './modules/dispatch/dispatch.module';
 import { ColdChainModule } from './modules/cold-chain/cold-chain.module';
 import { CultureModule } from './modules/culture/culture.module';
 import { DonorModule } from './modules/donor/donor.module';
+import { CrossmatchModule } from './modules/crossmatch/crossmatch.module';
 import { PrescriptionModule } from './modules/prescription/prescription.module';
 import { VisitModule } from './modules/visit/visit.module';
 import { BedModule } from './modules/bed/bed.module';
@@ -85,6 +86,7 @@ import { DiagnosticModule } from './modules/diagnostic/diagnostic.module';
     ColdChainModule,
     CultureModule,
     DonorModule,
+    CrossmatchModule,
     PrescriptionModule,
     VisitModule,
     BedModule,

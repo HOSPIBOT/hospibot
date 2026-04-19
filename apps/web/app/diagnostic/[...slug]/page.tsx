@@ -213,11 +213,7 @@ const FEATURE_MAP: Record<string, { label: string; blurb: string; category: stri
 
   // ── Blood bank ────────────────────────────────────────────────────────
   // NOTE: 'donors' graduated to a real page at app/diagnostic/donors/page.tsx
-  'crossmatch': {
-    label: 'Crossmatch',
-    blurb: 'Crossmatching workflow with ABO / Rh typing, antibody screening, compatibility records.',
-    category: 'Blood Bank',
-  },
+  // NOTE: 'crossmatch' graduated to a real page at app/diagnostic/crossmatch/page.tsx
   'dghs-reporting': {
     label: 'DGHS Reporting',
     blurb: 'Mandatory Director General of Health Services reporting for blood bank operations.',
