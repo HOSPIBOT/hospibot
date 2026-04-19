@@ -1714,6 +1714,240 @@ model HlaTyping {
 }
 
 // ==============================================
+// CRYOPRESERVATION (IVF Embryology)
+// Per ART Act 2021 Forms 15/16, ICMR Guidelines
+// ==============================================
+
+model CryoStorage {
+  id                String    @id @default(uuid())
+  tenantId          String    @map("tenant_id")
+  patientId         String?   @map("patient_id")
+  patientName       String    @map("patient_name")
+  partnerName       String?   @map("partner_name")
+  specimenType      String    @map("specimen_type")    // embryo | oocyte | sperm | ovarian-tissue
+  strawId           String    @map("straw_id")
+  strawCount        Int       @default(1) @map("straw_count")
+  freezeMethod      String    @default("vitrification") @map("freeze_method")
+  freezeDate        DateTime  @map("freeze_date")
+  embryoStage       String?   @map("embryo_stage")
+  embryoGrade       String?   @map("embryo_grade")
+  embryoDay         Int?      @map("embryo_day")
+  oocyteMaturity    String?   @map("oocyte_maturity")
+  spermSource       String?   @map("sperm_source")
+  tankId            String?   @map("tank_id")
+  canisterId        String?   @map("canister_id")
+  caneId            String?   @map("cane_id")
+  gobletId          String?   @map("goblet_id")
+  position          String?
+  ln2Level          String?   @map("ln2_level")
+  consentCryoStorage Boolean  @default(false) @map("consent_cryo_storage")
+  consentDisposal   String?   @map("consent_disposal")
+  storageStartDate  DateTime? @map("storage_start_date")
+  storageFeeStatus  String?   @map("storage_fee_status")
+  renewalDueDate    DateTime? @map("renewal_due_date")
+  thawDate          DateTime? @map("thaw_date")
+  thawSurvival      String?   @map("thaw_survival")
+  thawBy            String?   @map("thaw_by")
+  notes             String?
+  status            String    @default("stored")       // stored | thawed | discarded | transferred | expired
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdBy         String?   @map("created_by")
+
+  @@index([tenantId])
+  @@index([tenantId, specimenType])
+  @@index([tenantId, status])
+  @@map("cryo_storage")
+}
+
+// ==============================================
+// SEDATION LOG (Endoscopy Center)
+// Per ASA Sedation Guidelines, NABL
+// ==============================================
+
+model SedationLog {
+  id                  String    @id @default(uuid())
+  tenantId            String    @map("tenant_id")
+  patientId           String?   @map("patient_id")
+  patientName         String    @map("patient_name")
+  patientAge          Int?      @map("patient_age")
+  patientWeight       Float?    @map("patient_weight")
+  procedureDate       DateTime  @map("procedure_date")
+  procedureType       String?   @map("procedure_type")
+  asaClass            String?   @map("asa_class")
+  allergies           String?
+  comorbidities       String?
+  fastingHours        Float?    @map("fasting_hours")
+  fastingConfirmed    Boolean   @default(false) @map("fasting_confirmed")
+  sedationConsent     Boolean   @default(false) @map("sedation_consent")
+  sedationType        String    @default("moderate") @map("sedation_type")
+  drugs               Json?
+  preVitals           Json?     @map("pre_vitals")
+  intraVitals         Json?     @map("intra_vitals")
+  postVitals          Json?     @map("post_vitals")
+  oxygenDelivery      String?   @map("oxygen_delivery")
+  oxygenFlow          String?   @map("oxygen_flow")
+  sedationStartTime   String?   @map("sedation_start_time")
+  sedationEndTime     String?   @map("sedation_end_time")
+  recoveryStartTime   String?   @map("recovery_start_time")
+  dischargeTime       String?   @map("discharge_time")
+  aldretScore         Int?      @map("aldret_score")
+  complications       String?
+  adverseEvents       String?   @map("adverse_events")
+  endoscopist         String?
+  sedationist         String?
+  nurseName           String?   @map("nurse_name")
+  dischargeInstructions Boolean @default(false) @map("discharge_instructions")
+  escortPresent       Boolean   @default(false) @map("escort_present")
+  notes               String?
+  status              String    @default("in-progress")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  createdBy           String?   @map("created_by")
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@map("sedation_logs")
+}
+
+// ==============================================
+// VIDEO CAPTURE (Endoscopy Center)
+// Per ASGE Quality Indicators
+// ==============================================
+
+model VideoCapture {
+  id                String    @id @default(uuid())
+  tenantId          String    @map("tenant_id")
+  patientId         String?   @map("patient_id")
+  patientName       String    @map("patient_name")
+  patientUhid       String?   @map("patient_uhid")
+  recordingId       String    @map("recording_id")
+  procedureDate     DateTime  @map("procedure_date")
+  procedureType     String    @map("procedure_type")
+  scopeType         String?   @map("scope_type")
+  scopeId           String?   @map("scope_id")
+  endoscopist       String?
+  recordingStart    String?   @map("recording_start")
+  recordingEnd      String?   @map("recording_end")
+  durationMinutes   Int?      @map("duration_minutes")
+  imageCount        Int?      @map("image_count")
+  videoFileRef      String?   @map("video_file_ref")
+  landmarks         Json?
+  findings          String?
+  biopsySites       Json?     @map("biopsy_sites")
+  biopsyCount       Int?      @map("biopsy_count")
+  completionStatus  String?   @map("completion_status")
+  cecalIntubation   Boolean   @default(false) @map("cecal_intubation")
+  withdrawalTime    String?   @map("withdrawal_time")
+  bostonPrepScore   Int?      @map("boston_prep_score")
+  polypsFound       Int?      @map("polyps_found")
+  polypectomyDone   Boolean   @default(false) @map("polypectomy_done")
+  notes             String?
+  status            String    @default("recorded")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdBy         String?   @map("created_by")
+
+  @@index([tenantId])
+  @@index([tenantId, procedureType])
+  @@map("video_captures")
+}
+
+// ==============================================
+// TUMOR MARKERS (Cancer Screening)
+// Per NCCN, ASCO Tumor Marker Guidelines
+// ==============================================
+
+model TumorMarker {
+  id                String    @id @default(uuid())
+  tenantId          String    @map("tenant_id")
+  patientId         String?   @map("patient_id")
+  patientName       String    @map("patient_name")
+  patientUhid       String?   @map("patient_uhid")
+  patientAge        Int?      @map("patient_age")
+  patientGender     String?   @map("patient_gender")
+  testDate          DateTime  @map("test_date")
+  markerName        String    @map("marker_name")
+  markerCode        String?   @map("marker_code")
+  cancerType        String?   @map("cancer_type")
+  value             Float?
+  unit              String?
+  referenceMin      Float?    @map("reference_min")
+  referenceMax      Float?    @map("reference_max")
+  isElevated        Boolean   @default(false) @map("is_elevated")
+  previousValue     Float?    @map("previous_value")
+  previousDate      DateTime? @map("previous_date")
+  trend             String?
+  method            String?
+  specimenType      String?   @map("specimen_type")
+  clinicalHistory   String?   @map("clinical_history")
+  interpretation    String?
+  recommendation    String?
+  orderedBy         String?   @map("ordered_by")
+  reportedBy        String?   @map("reported_by")
+  notes             String?
+  status            String    @default("draft")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdBy         String?   @map("created_by")
+
+  @@index([tenantId])
+  @@index([tenantId, markerName])
+  @@index([tenantId, isElevated])
+  @@map("tumor_markers")
+}
+
+// ==============================================
+// GC-MS ANALYSIS (Forensic Toxicology)
+// Per NDPS Act, ISO 17025, WADA Technical Documents
+// ==============================================
+
+model GcMsAnalysis {
+  id                  String    @id @default(uuid())
+  tenantId            String    @map("tenant_id")
+  caseNumber          String    @map("case_number")
+  custodyChainId      String?   @map("custody_chain_id")
+  subjectName         String?   @map("subject_name")
+  subjectId           String?   @map("subject_id")
+  testType            String    @map("test_type")      // drugs-of-abuse | toxicology-screen | doping | workplace | clinical
+  specimenType        String?   @map("specimen_type")
+  specimenId          String?   @map("specimen_id")
+  screeningResult     String?   @map("screening_result")
+  screeningMethod     String?   @map("screening_method")
+  screeningDate       DateTime? @map("screening_date")
+  confirmRequired     Boolean   @default(false) @map("confirm_required")
+  instrumentMethod    String    @map("instrument_method")  // GC-MS | LC-MS/MS | GC-FID | HPLC
+  instrumentId        String?   @map("instrument_id")
+  columnType          String?   @map("column_type")
+  analysisDate        DateTime  @map("analysis_date")
+  analystName         String?   @map("analyst_name")
+  analystId           String?   @map("analyst_id")
+  results             Json?
+  cutoffValues        Json?     @map("cutoff_values")
+  overallResult       String?   @map("overall_result")
+  quantitativeResults Json?     @map("quantitative_results")
+  retentionTimes      Json?     @map("retention_times")
+  ionRatios           Json?     @map("ion_ratios")
+  qcPassed            Boolean   @default(false) @map("qc_passed")
+  internalStandard    String?   @map("internal_standard")
+  batchId             String?   @map("batch_id")
+  reviewedBy          String?   @map("reviewed_by")
+  reviewedDate        DateTime? @map("reviewed_date")
+  reportNumber        String?   @map("report_number")
+  ndpsRelevant        Boolean   @default(false) @map("ndps_relevant")
+  notes               String?
+  status              String    @default("in-progress")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  createdBy           String?   @map("created_by")
+
+  @@index([tenantId])
+  @@index([tenantId, caseNumber])
+  @@index([tenantId, testType])
+  @@map("gc_ms_analyses")
+}
+
+// ==============================================
 // AUDIT LOG
 // ==============================================
 

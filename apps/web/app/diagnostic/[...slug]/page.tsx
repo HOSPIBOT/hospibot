@@ -295,24 +295,12 @@ const FEATURE_MAP: Record<string, { label: string; blurb: string; category: stri
     blurb: 'Cystometrogram, pressure-flow studies, uroflowmetry, EMG with urogynecology report templates.',
     category: 'Urology',
   },
-  'video-capture': {
-    label: 'Video Capture',
-    blurb: 'Endoscopy video capture with still-image annotation and DICOM-compatible archival.',
-    category: 'Endoscopy',
-  },
-  'sedation-log': {
-    label: 'Sedation Log',
-    blurb: 'Pre / intra / post-procedure sedation monitoring — vitals, ASA class, recovery scoring.',
-    category: 'Endoscopy',
-  },
+  // NOTE: 'video-capture' graduated to a real page at app/diagnostic/video-capture/page.tsx
+  // NOTE: 'sedation-log' graduated to a real page at app/diagnostic/sedation-log/page.tsx
 
   // ── IVF / Embryology ──────────────────────────────────────────────────
   // NOTE: 'cycles' graduated to a real page at app/diagnostic/cycles/page.tsx
-  'cryopreservation': {
-    label: 'Cryopreservation',
-    blurb: 'Embryo, oocyte, sperm cryobank — straw tracking, vitrification logs, thaw survival rates.',
-    category: 'IVF',
-  },
+  // NOTE: 'cryopreservation' graduated to a real page at app/diagnostic/cryopreservation/page.tsx
   'casa': {
     label: 'CASA (Andrology)',
     blurb: 'Computer-assisted semen analysis — motility, morphology, concentration per WHO guidelines.',
@@ -330,11 +318,7 @@ const FEATURE_MAP: Record<string, { label: string; blurb: string; category: stri
 
   // ── Forensic / toxicology ─────────────────────────────────────────────
   // NOTE: 'chain-of-custody' graduated to a real page at app/diagnostic/chain-of-custody/page.tsx
-  'gc-ms': {
-    label: 'GC-MS / LC-MS',
-    blurb: 'Gas / liquid chromatography-mass spectrometry workflow for drug-of-abuse and toxicology panels.',
-    category: 'Forensic',
-  },
+  // NOTE: 'gc-ms' graduated to a real page at app/diagnostic/gc-ms/page.tsx
   'cdsco-reports': {
     label: 'CDSCO Reports',
     blurb: 'Central Drugs Standard Control Organisation mandatory reporting for controlled substances.',
@@ -342,11 +326,7 @@ const FEATURE_MAP: Record<string, { label: string; blurb: string; category: stri
   },
 
   // ── Cancer screening ──────────────────────────────────────────────────
-  'tumor-markers': {
-    label: 'Tumor Markers',
-    blurb: 'Tumor marker panels (PSA, CA-125, CEA, AFP, CA-19-9) with trend charts and alert thresholds.',
-    category: 'Cancer Screening',
-  },
+  // NOTE: 'tumor-markers' graduated to a real page at app/diagnostic/tumor-markers/page.tsx
   'ai-scoring': {
     label: 'AI Risk Scoring',
     blurb: 'ML-based cancer risk stratification combining markers, imaging, family history, lifestyle.',

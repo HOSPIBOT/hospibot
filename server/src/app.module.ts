@@ -47,6 +47,11 @@ import { SpirometryModule } from './modules/spirometry/spirometry.module';
 import { AudiometryModule } from './modules/audiometry/audiometry.module';
 import { BiRadsModule } from './modules/bi-rads/bi-rads.module';
 import { HlaTypingModule } from './modules/hla-typing/hla-typing.module';
+import { CryopreservationModule } from './modules/cryopreservation/cryopreservation.module';
+import { SedationLogModule } from './modules/sedation-log/sedation-log.module';
+import { VideoCaptureModule } from './modules/video-capture/video-capture.module';
+import { TumorMarkersModule } from './modules/tumor-markers/tumor-markers.module';
+import { GcMsModule } from './modules/gc-ms/gc-ms.module';
 
 @Module({
   imports: [
@@ -108,6 +113,11 @@ import { HlaTypingModule } from './modules/hla-typing/hla-typing.module';
     AudiometryModule,
     BiRadsModule,
     HlaTypingModule,
+    CryopreservationModule,
+    SedationLogModule,
+    VideoCaptureModule,
+    TumorMarkersModule,
+    GcMsModule,
   ],
   controllers: [HealthController],
   providers: [StartupService, DbBootstrapService],
