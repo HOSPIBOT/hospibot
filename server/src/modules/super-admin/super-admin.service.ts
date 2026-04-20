@@ -494,8 +494,8 @@ export class SuperAdminService {
     return { success: true, request: requests[idx] };
   }
 
-}
-  // ── Gateway Charges & Subscription Tracking ──────────────────────────────
+
+// ── Gateway Charges & Subscription Tracking ──────────────────────────────
 
   async getGatewayChargesConfig() {
     const tenant = await this.prisma.tenant.findFirst({ where: { slug: 'platform-config' } }).catch(() => null);
@@ -618,3 +618,4 @@ export class SuperAdminService {
     }
     return { disabled, checkedAt: new Date().toISOString() };
   }
+}
