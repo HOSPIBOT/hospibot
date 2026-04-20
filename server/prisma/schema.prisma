@@ -2444,25 +2444,35 @@ model AiRiskScore {
 // ==============================================
 
 model FieldAgent {
-  id              String    @id @default(uuid())
-  tenantId        String    @map("tenant_id")
-  title           String
-  agentName       String    @map("agent_name")
-  agentPhone      String?   @map("agent_phone")
-  agentEmail      String?   @map("agent_email")
-  zone            String?
-  assignedArea    String?   @map("assigned_area")
-  collectionCount Int?      @map("collection_count")
-  activeRoute     String?   @map("active_route")
-  vehicleId       String?   @map("vehicle_id")
-  gpsEnabled      Boolean   @default(false) @map("gps_enabled")
-  lastLocation    String?   @map("last_location")
-  lastCheckin     DateTime? @map("last_checkin")
-  notes           String?
-  status          String    @default("active")
-  createdAt       DateTime  @default(now()) @map("created_at")
-  updatedAt       DateTime  @updatedAt @map("updated_at")
-  createdBy       String?   @map("created_by")
+  id                String    @id @default(uuid())
+  tenantId          String    @map("tenant_id")
+  agentName         String    @map("agent_name")
+  agentPhone        String    @map("agent_phone")
+  agentEmail        String?   @map("agent_email")
+  agentId           String?   @map("agent_id")
+  dmltCertNo        String?   @map("dmlt_cert_no")
+  dmltExpiry        DateTime? @map("dmlt_expiry")
+  designation       String?
+  zone              String?
+  city              String?
+  pincodesServed    String?   @map("pincodes_served")
+  vehicleType       String?   @map("vehicle_type")
+  vehicleNumber     String?   @map("vehicle_number")
+  coldBoxAssigned   Boolean   @default(false) @map("cold_box_assigned")
+  dailyCapacity     Int?      @map("daily_capacity")
+  currentLat        Float?    @map("current_lat")
+  currentLng        Float?    @map("current_lng")
+  lastLocationTime  DateTime? @map("last_location_time")
+  samplesCollectedToday Int   @default(0) @map("samples_collected_today")
+  activeRouteId     String?   @map("active_route_id")
+  shiftStart        String?   @map("shift_start")
+  shiftEnd          String?   @map("shift_end")
+  rating            Float?
+  notes             String?
+  status            String    @default("active")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdBy         String?   @map("created_by")
   @@index([tenantId])
   @@map("field_agents")
 }
@@ -2472,24 +2482,33 @@ model FieldAgent {
 // ==============================================
 
 model RoutePlan {
-  id              String    @id @default(uuid())
-  tenantId        String    @map("tenant_id")
-  title           String
-  routeDate       DateTime  @map("route_date")
-  agentId         String?   @map("agent_id")
-  agentName       String?   @map("agent_name")
-  stops           Json?
-  stopCount       Int?      @map("stop_count")
-  estimatedKm     Float?    @map("estimated_km")
-  estimatedTime   Int?      @map("estimated_time")
-  actualStartTime String?   @map("actual_start_time")
-  actualEndTime   String?   @map("actual_end_time")
-  samplesCollected Int?     @map("samples_collected")
-  notes           String?
-  status          String    @default("planned")
-  createdAt       DateTime  @default(now()) @map("created_at")
-  updatedAt       DateTime  @updatedAt @map("updated_at")
-  createdBy       String?   @map("created_by")
+  id                String    @id @default(uuid())
+  tenantId          String    @map("tenant_id")
+  routeName         String    @map("route_name")
+  routeDate         DateTime  @map("route_date")
+  agentId           String?   @map("agent_id")
+  agentName         String?   @map("agent_name")
+  zone              String?
+  startLocation     String?   @map("start_location")
+  totalStops        Int?      @map("total_stops")
+  completedStops    Int       @default(0) @map("completed_stops")
+  totalSamples      Int?      @map("total_samples")
+  collectedSamples  Int       @default(0) @map("collected_samples")
+  stops             Json?
+  estimatedKm       Float?    @map("estimated_km")
+  actualKm          Float?    @map("actual_km")
+  estimatedTimeMin  Int?      @map("estimated_time_min")
+  actualTimeMin     Int?      @map("actual_time_min")
+  departureTime     DateTime? @map("departure_time")
+  completionTime    DateTime? @map("completion_time")
+  coldChainMaintained Boolean @default(true) @map("cold_chain_maintained")
+  handoverTime      DateTime? @map("handover_time")
+  handoverTo        String?   @map("handover_to")
+  notes             String?
+  status            String    @default("planned")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdBy         String?   @map("created_by")
   @@index([tenantId])
   @@map("route_plans")
 }
@@ -2499,29 +2518,35 @@ model RoutePlan {
 // ==============================================
 
 model DicomStudy {
-  id              String    @id @default(uuid())
-  tenantId        String    @map("tenant_id")
-  title           String
-  patientId       String?   @map("patient_id")
-  patientName     String?   @map("patient_name")
-  accessionNumber String?   @map("accession_number")
-  studyInstanceUid String?  @map("study_instance_uid")
-  modality        String?
-  studyDate       DateTime? @map("study_date")
-  studyDescription String?  @map("study_description")
-  seriesCount     Int?      @map("series_count")
-  imageCount      Int?      @map("image_count")
-  bodyPart        String?   @map("body_part")
-  referringPhysician String? @map("referring_physician")
-  pacsLocation    String?   @map("pacs_location")
-  reportStatus    String?   @map("report_status")
-  notes           String?
-  status          String    @default("received")
-  createdAt       DateTime  @default(now()) @map("created_at")
-  updatedAt       DateTime  @updatedAt @map("updated_at")
-  createdBy       String?   @map("created_by")
+  id                String    @id @default(uuid())
+  tenantId          String    @map("tenant_id")
+  patientId         String?   @map("patient_id")
+  patientName       String?   @map("patient_name")
+  accessionNumber   String?   @map("accession_number")
+  studyInstanceUid  String?   @map("study_instance_uid")
+  studyDate         DateTime? @map("study_date")
+  modality          String?
+  studyDescription  String?   @map("study_description")
+  bodyPart          String?   @map("body_part")
+  seriesCount       Int?      @map("series_count")
+  imageCount        Int?      @map("image_count")
+  storageSize       String?   @map("storage_size")
+  pacsServerId      String?   @map("pacs_server_id")
+  pacsServerName    String?   @map("pacs_server_name")
+  viewerUrl         String?   @map("viewer_url")
+  referringDoctor   String?   @map("referring_doctor")
+  performingDoctor  String?   @map("performing_doctor")
+  institutionName   String?   @map("institution_name")
+  reportStatus      String?   @map("report_status")
+  reportedBy        String?   @map("reported_by")
+  reportDate        DateTime? @map("report_date")
+  criticalFinding   Boolean   @default(false) @map("critical_finding")
+  notes             String?
+  status            String    @default("received")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdBy         String?   @map("created_by")
   @@index([tenantId])
-  @@index([tenantId, modality])
   @@map("dicom_studies")
 }
 
@@ -2530,25 +2555,35 @@ model DicomStudy {
 // ==============================================
 
 model RadiologistAssignment {
-  id                String    @id @default(uuid())
-  tenantId          String    @map("tenant_id")
-  title             String
-  radiologistName   String    @map("radiologist_name")
-  radiologistId     String?   @map("radiologist_id")
-  specialization    String?
-  studyId           String?   @map("study_id")
-  modality          String?
-  assignedAt        DateTime? @map("assigned_at")
-  startedAt         DateTime? @map("started_at")
-  completedAt       DateTime? @map("completed_at")
-  tatMinutes        Int?      @map("tat_minutes")
-  priority          String?   @default("routine")
-  workloadCount     Int?      @map("workload_count")
-  notes             String?
-  status            String    @default("assigned")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
-  createdBy         String?   @map("created_by")
+  id                  String    @id @default(uuid())
+  tenantId            String    @map("tenant_id")
+  radiologistName     String    @map("radiologist_name")
+  radiologistId       String?   @map("radiologist_id")
+  mciRegNo            String?   @map("mci_reg_no")
+  specialization      String?
+  modalitiesHandled   String?   @map("modalities_handled")
+  assignedStudyId     String?   @map("assigned_study_id")
+  accessionNumber     String?   @map("accession_number")
+  patientName         String?   @map("patient_name")
+  modality            String?
+  priority            String?
+  assignedDate        DateTime? @map("assigned_date")
+  readStartTime       DateTime? @map("read_start_time")
+  readEndTime         DateTime? @map("read_end_time")
+  tatMinutes          Int?      @map("tat_minutes")
+  reportStatus        String?   @map("report_status")
+  criticalFinding     Boolean   @default(false) @map("critical_finding")
+  addendum            String?
+  digitalSignature    Boolean   @default(false) @map("digital_signature")
+  workloadToday       Int       @default(0) @map("workload_today")
+  dailyCapacity       Int?      @map("daily_capacity")
+  remoteReading       Boolean   @default(false) @map("remote_reading")
+  statesRegistered    String?   @map("states_registered")
+  notes               String?
+  status              String    @default("available")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  createdBy           String?   @map("created_by")
   @@index([tenantId])
   @@map("radiologist_assignments")
 }
@@ -2560,27 +2595,39 @@ model RadiologistAssignment {
 model ObGrowthScan {
   id                String    @id @default(uuid())
   tenantId          String    @map("tenant_id")
-  title             String
   patientId         String?   @map("patient_id")
-  patientName       String?   @map("patient_name")
-  gestationalAge    String?   @map("gestational_age")
-  scanDate          DateTime? @map("scan_date")
+  patientName       String    @map("patient_name")
+  patientAge        Int?      @map("patient_age")
+  scanDate          DateTime  @map("scan_date")
+  gestationalWeeks  Int?      @map("gestational_weeks")
+  gestationalDays   Int?      @map("gestational_days")
+  lmpDate           DateTime? @map("lmp_date")
+  eddDate           DateTime? @map("edd_date")
   scanType          String?   @map("scan_type")
+  fetusCount        Int       @default(1) @map("fetus_count")
   bpd               Float?
   hc                Float?
   ac                Float?
   fl                Float?
   efw               Float?
-  percentile        String?
-  afi               Float?
+  efwPercentile     Float?    @map("efw_percentile")
+  afiCm             Float?    @map("afi_cm")
   placentaPosition  String?   @map("placenta_position")
+  placentaGrade     String?   @map("placenta_grade")
   presentation      String?
-  fetalHeartRate     Int?     @map("fetal_heart_rate")
-  anomalies         String?
-  sonologistName    String?   @map("sonologist_name")
-  impression        String?
+  fetalHeartRate    Int?      @map("fetal_heart_rate")
+  cervicalLength    Float?    @map("cervical_length")
+  umbilicalArteryPi Float?   @map("umbilical_artery_pi")
+  mcaPi             Float?    @map("mca_pi")
+  cprRatio          Float?    @map("cpr_ratio")
+  growthRestriction Boolean   @default(false) @map("growth_restriction")
+  anomalyDetected   Boolean   @default(false) @map("anomaly_detected")
+  anomalyDetails    String?   @map("anomaly_details")
+  referringDoctor   String?   @map("referring_doctor")
+  sonologist        String?
+  pndtFormFCompleted Boolean  @default(false) @map("pndt_form_f_completed")
   notes             String?
-  status            String    @default("draft")
+  status            String    @default("completed")
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime  @updatedAt @map("updated_at")
   createdBy         String?   @map("created_by")
