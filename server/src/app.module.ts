@@ -92,6 +92,11 @@ import { PartnerLabsModule } from './modules/partner-labs/partner-labs.module';
 import { HubSpokeModule } from './modules/hub-spoke/hub-spoke.module';
 import { FranchiseLabsModule } from './modules/franchise-labs/franchise-labs.module';
 import { DghsReportingModule } from './modules/dghs-reporting/dghs-reporting.module';
+import { BarcReportingModule } from './modules/barc-reporting/barc-reporting.module';
+import { OpgCbctModule } from './modules/opg-cbct/opg-cbct.module';
+import { OctScansModule } from './modules/oct-scans/oct-scans.module';
+import { PerimetryModule } from './modules/perimetry/perimetry.module';
+import { FundusPhotoModule } from './modules/fundus-photo/fundus-photo.module';
 
 @Module({
   imports: [
@@ -198,6 +203,11 @@ import { DghsReportingModule } from './modules/dghs-reporting/dghs-reporting.mod
     HubSpokeModule,
     FranchiseLabsModule,
     DghsReportingModule,
+    BarcReportingModule,
+    OpgCbctModule,
+    OctScansModule,
+    PerimetryModule,
+    FundusPhotoModule,
   ],
   controllers: [HealthController],
   providers: [StartupService, DbBootstrapService],
