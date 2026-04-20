@@ -495,3 +495,126 @@ export class SuperAdminService {
   }
 
 }
+  // ── Gateway Charges & Subscription Tracking ──────────────────────────────
+
+  async getGatewayChargesConfig() {
+    const tenant = await this.prisma.tenant.findFirst({ where: { slug: 'platform-config' } }).catch(() => null);
+    const settings: any = (tenant?.settings as any) || {};
+    return {
+      razorpayFeePercent: settings.razorpayFeePercent ?? 2.36,  // Razorpay charges 2% + GST on 2% = 2.36%
+      gstPercent: settings.gstPercent ?? 18,
+      gatewayFeeLabel: settings.gatewayFeeLabel || 'Payment Gateway Charges',
+      gstLabel: settings.gstLabel || 'GST @18%',
+      autoDisableAfterDays: settings.autoDisableAfterDays ?? 7,
+      reminderDays: settings.reminderDays ?? [15, 10, 5, 3, 1],
+      perChannelGatewayFees: settings.perChannelGatewayFees ?? {
+        subscription: { razorpayFeePercent: 2.36, label: 'Subscription Payment' },
+        whatsapp_topup: { razorpayFeePercent: 2.36, label: 'WhatsApp Recharge' },
+        sms_topup: { razorpayFeePercent: 2.36, label: 'SMS Recharge' },
+        storage_topup: { razorpayFeePercent: 2.36, label: 'Storage Recharge' },
+      },
+    };
+  }
+
+  async updateGatewayChargesConfig(dto: any, adminId: string) {
+    // Store in platform-config tenant settings (or create one)
+    let platform = await this.prisma.tenant.findFirst({ where: { slug: 'platform-config' } }).catch(() => null);
+    if (!platform) {
+      platform = await this.prisma.tenant.create({
+        data: { name: 'Platform Config', slug: 'platform-config', type: 'DIAGNOSTIC' as any,
+          email: 'admin@hospibot.in', phone: '0000000000', settings: {} as any },
+      });
+    }
+    const s: any = (platform.settings as any) || {};
+    if (dto.razorpayFeePercent !== undefined) s.razorpayFeePercent = Number(dto.razorpayFeePercent);
+    if (dto.gstPercent !== undefined) s.gstPercent = Number(dto.gstPercent);
+    if (dto.autoDisableAfterDays !== undefined) s.autoDisableAfterDays = Number(dto.autoDisableAfterDays);
+    if (dto.reminderDays !== undefined) s.reminderDays = dto.reminderDays;
+    if (dto.perChannelGatewayFees !== undefined) s.perChannelGatewayFees = dto.perChannelGatewayFees;
+    await this.prisma.tenant.update({ where: { id: platform.id }, data: { settings: s as any } });
+    return this.getGatewayChargesConfig();
+  }
+
+  /** Get subscription renewal tracker — who's due, overdue, expiring soon */
+  async getSubscriptionTracker() {
+    const now = new Date();
+    const tenants = await this.prisma.tenant.findMany({
+      select: { id: true, name: true, slug: true, plan: true, status: true, email: true, phone: true,
+        settings: true, createdAt: true, updatedAt: true },
+      orderBy: { updatedAt: 'desc' },
+    });
+
+    const config = await this.getGatewayChargesConfig();
+    const autoDisableDays = config.autoDisableAfterDays || 7;
+
+    const tracker = {
+      totalTenants: tenants.length,
+      active: 0, trial: 0, expired: 0, suspended: 0, cancelled: 0,
+      renewalIn15Days: [] as any[], renewalIn10Days: [] as any[], renewalIn5Days: [] as any[],
+      overdue: [] as any[], overdueAutoDisable: [] as any[],
+      lowFunds: [] as any[],
+    };
+
+    for (const t of tenants) {
+      const s: any = (t.settings as any) || {};
+      const periodEnd = s.currentPeriodEnd ? new Date(s.currentPeriodEnd) : null;
+      const status = String(t.status);
+
+      if (status === 'ACTIVE') tracker.active++;
+      else if (status === 'TRIAL') tracker.trial++;
+      else if (status === 'EXPIRED') tracker.expired++;
+      else if (status === 'SUSPENDED') tracker.suspended++;
+      else if (status === 'CANCELLED') tracker.cancelled++;
+
+      if (!periodEnd) continue;
+
+      const daysUntilRenewal = Math.ceil((periodEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      const tenantSummary = { id: t.id, name: t.name, slug: t.slug, plan: t.plan, status,
+        email: t.email, phone: t.phone, periodEnd: periodEnd.toISOString(),
+        daysUntilRenewal, razorpayStatus: s.razorpayStatus || null };
+
+      if (daysUntilRenewal < 0) {
+        // Overdue
+        const daysOverdue = Math.abs(daysUntilRenewal);
+        tracker.overdue.push({ ...tenantSummary, daysOverdue });
+        if (daysOverdue >= autoDisableDays) {
+          tracker.overdueAutoDisable.push({ ...tenantSummary, daysOverdue });
+        }
+      } else if (daysUntilRenewal <= 5) tracker.renewalIn5Days.push(tenantSummary);
+      else if (daysUntilRenewal <= 10) tracker.renewalIn10Days.push(tenantSummary);
+      else if (daysUntilRenewal <= 15) tracker.renewalIn15Days.push(tenantSummary);
+    }
+
+    // Check low wallet balance
+    const wallets = await this.prisma.tenantWallet.findMany({
+      where: { OR: [{ waCredits: { lt: 100 } }, { smsCredits: { lt: 50 } }] },
+    });
+    for (const w of wallets) {
+      const t = tenants.find(t => t.id === w.tenantId);
+      if (t) tracker.lowFunds.push({ id: t.id, name: t.name, waCredits: w.waCredits, smsCredits: w.smsCredits });
+    }
+
+    return tracker;
+  }
+
+  /** Auto-disable tenants overdue by more than X days */
+  async autoDisableOverdueTenants() {
+    const config = await this.getGatewayChargesConfig();
+    const cutoff = new Date(Date.now() - config.autoDisableAfterDays * 24 * 60 * 60 * 1000);
+    
+    const tenants = await this.prisma.tenant.findMany({
+      where: { status: { in: ['ACTIVE', 'TRIAL'] as any[] } },
+      select: { id: true, settings: true, status: true },
+    });
+
+    let disabled = 0;
+    for (const t of tenants) {
+      const s: any = (t.settings as any) || {};
+      const periodEnd = s.currentPeriodEnd ? new Date(s.currentPeriodEnd) : null;
+      if (periodEnd && periodEnd < cutoff) {
+        await this.prisma.tenant.update({ where: { id: t.id }, data: { status: 'SUSPENDED' } });
+        disabled++;
+      }
+    }
+    return { disabled, checkedAt: new Date().toISOString() };
+  }

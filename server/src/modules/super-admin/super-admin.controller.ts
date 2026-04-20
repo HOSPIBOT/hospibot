@@ -194,3 +194,23 @@ export class SuperAdminController {
     return this.superAdminService.updateUpgradeRequest(tenantId, requestId, dto, admin.id);
   }
 }
+
+  // ── Gateway Charges & Subscription Tracking ──────────────────────────────
+
+  @Get('gateway-charges')
+  @ApiOperation({ summary: 'Get payment gateway fee configuration' })
+  getGatewayCharges() { return this.superAdminService.getGatewayChargesConfig(); }
+
+  @Patch('gateway-charges')
+  @ApiOperation({ summary: 'Update gateway charges (Razorpay %, GST %, auto-disable days)' })
+  updateGatewayCharges(@Body() dto: any, @Req() req: any) {
+    return this.superAdminService.updateGatewayChargesConfig(dto, req.user?.id || 'admin');
+  }
+
+  @Get('subscription-tracker')
+  @ApiOperation({ summary: 'Get subscription renewal tracker — due, overdue, expiring' })
+  getSubscriptionTracker() { return this.superAdminService.getSubscriptionTracker(); }
+
+  @Post('auto-disable-overdue')
+  @ApiOperation({ summary: 'Auto-disable tenants overdue by more than configured days' })
+  autoDisable() { return this.superAdminService.autoDisableOverdueTenants(); }

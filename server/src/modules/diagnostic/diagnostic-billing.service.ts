@@ -130,9 +130,15 @@ export class DiagnosticBillingService {
       },
     });
 
+    // Calculate total with gateway charges (Razorpay fee passed to tenant)
+    const pricing = await this.calculateTotalWithGateway(pack.priceInclGst, `${pack.packType.toLowerCase()}_topup`);
+
     return {
       orderId: rzpOrderId,
-      amount: pack.priceInclGst,
+      amount: pricing.totalAmount,  // Tenant pays: pack price + Razorpay fee
+      baseAmount: pricing.baseAmount,
+      gatewayFee: pricing.gatewayFee,
+      breakdown: pricing.breakdown,
       currency: 'INR',
       keyId: this.config.get('RAZORPAY_KEY_ID', 'rzp_test_demo'),
       tenantName: tenant?.name,
@@ -303,6 +309,39 @@ export class DiagnosticBillingService {
   }
 
   // ── Private helpers ───────────────────────────────────────────────────────
+
+  
+  // ── Calculate total with gateway charges (Razorpay fee + GST) ────────────
+  private async calculateTotalWithGateway(basePricePaise: number, invoiceType: string = 'subscription') {
+    // Try to read gateway config from platform settings
+    let razorpayFeePct = 2.36; // default: 2% + 18% GST on 2% = 2.36%
+    let gstPct = 18;
+    try {
+      const platform = await this.prisma.tenant.findFirst({ where: { slug: 'platform-config' } });
+      const s: any = (platform?.settings as any) || {};
+      razorpayFeePct = s.razorpayFeePercent ?? 2.36;
+      gstPct = s.gstPercent ?? 18;
+      const perChannel = s.perChannelGatewayFees?.[invoiceType];
+      if (perChannel?.razorpayFeePercent) razorpayFeePct = perChannel.razorpayFeePercent;
+    } catch {}
+
+    const baseAmount = basePricePaise; // HospiBot's charge (already includes GST)
+    const gatewayFee = Math.round(baseAmount * razorpayFeePct / 100); // Razorpay fee in paise
+    const totalAmount = baseAmount + gatewayFee; // Total tenant pays
+
+    return {
+      baseAmount,       // What HospiBot gets
+      gatewayFee,       // What Razorpay takes (passed to tenant)
+      gatewayFeePct: razorpayFeePct,
+      totalAmount,      // What tenant pays (base + gateway)
+      breakdown: {
+        hospibotCharge: baseAmount,
+        paymentGatewayCharge: gatewayFee,
+        paymentGatewayLabel: `Payment Gateway @${razorpayFeePct}%`,
+        total: totalAmount,
+      },
+    };
+  }
 
   private async creditWallet(tenantId: string, pack: any, payment: any) {
     const wallet = await this.ensureWallet(tenantId);
