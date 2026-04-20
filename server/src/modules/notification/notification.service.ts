@@ -160,7 +160,9 @@ export class NotificationService {
             payload.mediaType || 'document', payload.caption,
           );
         }
-        return this.whatsappService.sendTextMessage(payload.tenantId, payload.phone, payload.message || '');
+        const waResult = await this.whatsappService.sendTextMessage(payload.tenantId, payload.phone, payload.message || '');
+        await this.deductWalletCredit(payload.tenantId, 'wa');
+        return waResult;
 
       case 'sms': {
         // MSG91 SMS (India) — configure MSG91_AUTH_KEY in environment
@@ -182,6 +184,7 @@ export class NotificationService {
         }).catch(() => null);
         const delivered = smsRes?.ok || false;
         this.logger.log(`SMS to ${mobile}: ${delivered ? 'sent' : 'failed'}`);
+        if (delivered) await this.deductWalletCredit(payload.tenantId, 'sms');
         return { success: delivered, channel: 'sms', delivered };
       }
 
@@ -229,4 +232,41 @@ export class NotificationService {
         return { success: false, message: 'Unknown channel' };
     }
   }
+
+  /**
+   * Deduct credits from tenant wallet after successful message send
+   */
+  private async deductWalletCredit(tenantId: string, type: 'wa' | 'sms', count: number = 1) {
+    try {
+      const wallet = await this.prisma.tenantWallet.findUnique({ where: { tenantId } });
+      if (!wallet) return;
+      
+      if (type === 'wa') {
+        const costPerMsg = 0.50; // ₹0.50 per WA message (configurable)
+        await this.prisma.tenantWallet.update({
+          where: { tenantId },
+          data: { waCredits: { decrement: costPerMsg * count } },
+        });
+        await this.prisma.walletTransaction.create({
+          data: { tenantId, walletId: wallet.id, walletType: 'WA', txType: 'DEBIT',
+            amount: Math.round(costPerMsg * count * 100), // paise
+            balanceAfter: Math.round((wallet.waCredits - costPerMsg * count) * 100),
+            description: `WhatsApp message x${count}`, reference: `wa-auto-${Date.now()}` },
+        });
+      } else {
+        await this.prisma.tenantWallet.update({
+          where: { tenantId },
+          data: { smsCredits: { decrement: count } },
+        });
+        await this.prisma.walletTransaction.create({
+          data: { tenantId, walletId: wallet.id, walletType: 'SMS', txType: 'DEBIT',
+            amount: count, balanceAfter: wallet.smsCredits - count,
+            description: `SMS message x${count}`, reference: `sms-auto-${Date.now()}` },
+        });
+      }
+    } catch (err) {
+      this.logger.warn(`Wallet deduction failed for ${tenantId}: ${err}`);
+    }
+  }
+
 }

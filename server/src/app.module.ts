@@ -103,7 +103,20 @@ import { UrodynamicsModule } from './modules/urodynamics/urodynamics.module';
 import { WmdaSyncModule } from './modules/wmda-sync/wmda-sync.module';
 import { CdscoReportsModule } from './modules/cdsco-reports/cdsco-reports.module';
 import { KitLogisticsModule } from './modules/kit-logistics/kit-logistics.module';
+import { DataMigrationModule } from './modules/data-migration/data-migration.module';
 import { DtcConsumerModule } from './modules/dtc-consumer/dtc-consumer.module';
+import { HistopathologyLabModule } from './modules/histopathology-lab/histopathology-lab.module';
+import { BloodBankModule } from './modules/blood-bank/blood-bank.module';
+import { NuclearMedicineModule } from './modules/nuclear-medicine/nuclear-medicine.module';
+import { DentalRadiologyModule } from './modules/dental-radiology/dental-radiology.module';
+import { OphthalmicDiagnosticsModule } from './modules/ophthalmic-diagnostics/ophthalmic-diagnostics.module';
+import { AudiologyCenterModule } from './modules/audiology-center/audiology-center.module';
+import { UrodynamicsCenterModule } from './modules/urodynamics-center/urodynamics-center.module';
+import { EndoscopyCenterModule } from './modules/endoscopy-center/endoscopy-center.module';
+import { IvfEmbryologyLabModule } from './modules/ivf-embryology-lab/ivf-embryology-lab.module';
+import { StemCellHlaLabModule } from './modules/stem-cell-hla-lab/stem-cell-hla-lab.module';
+import { ForensicToxicologyLabModule } from './modules/forensic-toxicology-lab/forensic-toxicology-lab.module';
+import { DtcGenomicsModule } from './modules/dtc-genomics/dtc-genomics.module';
 
 @Module({
   imports: [
@@ -222,6 +235,19 @@ import { DtcConsumerModule } from './modules/dtc-consumer/dtc-consumer.module';
     CdscoReportsModule,
     KitLogisticsModule,
     DtcConsumerModule,
+    DataMigrationModule,
+    HistopathologyLabModule,
+    BloodBankModule,
+    NuclearMedicineModule,
+    DentalRadiologyModule,
+    OphthalmicDiagnosticsModule,
+    AudiologyCenterModule,
+    UrodynamicsCenterModule,
+    EndoscopyCenterModule,
+    IvfEmbryologyLabModule,
+    StemCellHlaLabModule,
+    ForensicToxicologyLabModule,
+    DtcGenomicsModule,
   ],
   controllers: [HealthController],
   providers: [StartupService, DbBootstrapService],
