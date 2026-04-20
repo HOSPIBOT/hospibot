@@ -4844,6 +4844,29 @@ model AnalyzerResult {
   @@map("analyzer_results")
 }
 
+
+// ── Communication Provider Configuration (Super Admin controlled) ─────────
+model CommunicationConfig {
+  id              String    @id @default(uuid())
+  channel         String    @unique  // 'sms' | 'email' | 'whatsapp'
+  provider        String              // e.g. 'msg91', 'twilio', 'gupshup', 'smtp', 'sendgrid', 'ses', 'meta_cloud_api'
+  displayName     String    @map("display_name")  // e.g. 'MSG91', 'Twilio', 'Gmail SMTP'
+  isActive        Boolean   @default(true) @map("is_active")
+  credentials     Json      @default("{}")  // encrypted: { authKey, senderId, apiSecret, host, port, user, pass, etc }
+  settings        Json      @default("{}")  // { templateId, senderName, fromEmail, apiVersion, etc }
+  costPerUnit     Float     @default(0) @map("cost_per_unit")  // cost to HospiBot per unit (paise)
+  sellPricePerUnit Float    @default(0) @map("sell_price_per_unit")  // price charged to tenant per unit (paise)
+  unitLabel       String    @default("message") @map("unit_label")  // 'message', 'email', 'credit'
+  rateCardJson    Json?     @map("rate_card_json")  // tiered pricing: [{min:0,max:1000,price:50},{min:1001,max:5000,price:45}]
+  fallbackProvider String?  @map("fallback_provider")  // provider slug to fallback to if primary fails
+  maxRetries      Int       @default(2) @map("max_retries")
+  notes           String?
+  updatedBy       String?   @map("updated_by")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  @@map("communication_configs")
+}
+
 // ==============================================
 // AUDIT LOG
 // ==============================================
