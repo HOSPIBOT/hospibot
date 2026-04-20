@@ -3885,7 +3885,7 @@ model BarcReport {
 }
 
 model OpgCbctScan {
-  id TEXT @id @default(uuid())
+  id                        String    @id @default(uuid())
   tenantId String @map("tenant_id")
   patientId String? @map("patient_id")
   patientName String @map("patient_name")
@@ -3929,7 +3929,7 @@ model OpgCbctScan {
 }
 
 model OctScan {
-  id TEXT @id @default(uuid())
+  id                        String    @id @default(uuid())
   tenantId String @map("tenant_id")
   patientId String? @map("patient_id")
   patientName String @map("patient_name")
@@ -3977,7 +3977,7 @@ model OctScan {
 }
 
 model PerimetryTest {
-  id TEXT @id @default(uuid())
+  id                        String    @id @default(uuid())
   tenantId String @map("tenant_id")
   patientId String? @map("patient_id")
   patientName String @map("patient_name")
@@ -4017,7 +4017,7 @@ model PerimetryTest {
 }
 
 model FundusPhoto {
-  id TEXT @id @default(uuid())
+  id                        String    @id @default(uuid())
   tenantId String @map("tenant_id")
   patientId String? @map("patient_id")
   patientName String @map("patient_name")
@@ -4069,7 +4069,7 @@ model FundusPhoto {
 
 
 model AllergenPanel {
-  id TEXT @id @default(uuid())
+  id                        String    @id @default(uuid())
   tenantId String @map("tenant_id")
   patientId String? @map("patient_id")
   patientName String @map("patient_name")
@@ -4108,7 +4108,7 @@ model AllergenPanel {
 }
 
 model ImmunotherapyPlan {
-  id TEXT @id @default(uuid())
+  id                        String    @id @default(uuid())
   tenantId String @map("tenant_id")
   patientId String? @map("patient_id")
   patientName String @map("patient_name")
@@ -4145,7 +4145,7 @@ model ImmunotherapyPlan {
 }
 
 model UrodynamicStudy {
-  id TEXT @id @default(uuid())
+  id                        String    @id @default(uuid())
   tenantId String @map("tenant_id")
   patientId String? @map("patient_id")
   patientName String @map("patient_name")
@@ -4186,7 +4186,7 @@ model UrodynamicStudy {
 }
 
 model WmdaSearch {
-  id TEXT @id @default(uuid())
+  id                        String    @id @default(uuid())
   tenantId String @map("tenant_id")
   patientId String? @map("patient_id")
   patientName String @map("patient_name")
@@ -4227,7 +4227,7 @@ model WmdaSearch {
 }
 
 model CdscoReport {
-  id TEXT @id @default(uuid())
+  id                        String    @id @default(uuid())
   tenantId String @map("tenant_id")
   reportType String @map("report_type")
   reportTitle String? @map("report_title")
