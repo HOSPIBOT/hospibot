@@ -77,6 +77,11 @@ import { ClientCentersModule } from './modules/client-centers/client-centers.mod
 import { SlaMonitorModule } from './modules/sla-monitor/sla-monitor.module';
 import { ReadingWorklistModule } from './modules/reading-worklist/reading-worklist.module';
 import { CathLabScheduleModule } from './modules/cath-lab-schedule/cath-lab-schedule.module';
+import { BatchProcessingModule } from './modules/batch-processing/batch-processing.module';
+import { IcmrNacoModule } from './modules/icmr-naco/icmr-naco.module';
+import { GeneticCounselingModule } from './modules/genetic-counseling/genetic-counseling.module';
+import { PedigreeBuilderModule } from './modules/pedigree-builder/pedigree-builder.module';
+import { VariantDatabaseModule } from './modules/variant-database/variant-database.module';
 
 @Module({
   imports: [
@@ -168,6 +173,11 @@ import { CathLabScheduleModule } from './modules/cath-lab-schedule/cath-lab-sche
     SlaMonitorModule,
     ReadingWorklistModule,
     CathLabScheduleModule,
+    BatchProcessingModule,
+    IcmrNacoModule,
+    GeneticCounselingModule,
+    PedigreeBuilderModule,
+    VariantDatabaseModule,
   ],
   controllers: [HealthController],
   providers: [StartupService, DbBootstrapService],

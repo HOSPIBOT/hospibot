@@ -3085,6 +3085,248 @@ model CathLabSchedule {
 }
 
 // ==============================================
+// BATCH RUN (Molecular Lab — PCR/NGS)
+// Per NABL 112A / ISO 15189:2022
+// ==============================================
+
+model BatchRun {
+  id                  String    @id @default(uuid())
+  tenantId            String    @map("tenant_id")
+  batchId             String    @map("batch_id")
+  batchType           String    @map("batch_type")
+  testName            String?   @map("test_name")
+  targetGene          String?   @map("target_gene")
+  instrumentId        String?   @map("instrument_id")
+  instrumentName      String?   @map("instrument_name")
+  plateLayout         Json?     @map("plate_layout")
+  wellCount           Int?      @map("well_count")
+  sampleCount         Int?      @map("sample_count")
+  controlCount        Int?      @map("control_count")
+  qcLevel1Result      String?   @map("qc_level1_result")
+  qcLevel1Value       String?   @map("qc_level1_value")
+  qcLevel2Result      String?   @map("qc_level2_result")
+  qcLevel2Value       String?   @map("qc_level2_value")
+  qcPassed            Boolean?  @map("qc_passed")
+  positiveControlCt   Float?    @map("positive_control_ct")
+  negativeControlCt   String?   @map("negative_control_ct")
+  internalControlCt   Float?    @map("internal_control_ct")
+  runDate             DateTime  @map("run_date")
+  runStartTime        DateTime? @map("run_start_time")
+  runEndTime          DateTime? @map("run_end_time")
+  protocolName        String?   @map("protocol_name")
+  protocolVersion     String?   @map("protocol_version")
+  reagentLotNumber    String?   @map("reagent_lot_number")
+  reagentExpiry       DateTime? @map("reagent_expiry")
+  masterMixLot        String?   @map("master_mix_lot")
+  positiveCount       Int?      @map("positive_count")
+  negativeCount       Int?      @map("negative_count")
+  indeterminateCount  Int?      @map("indeterminate_count")
+  invalidCount        Int?      @map("invalid_count")
+  biosafetyLevel      String    @default("BSL-2") @map("biosafety_level")
+  decontaminationDone Boolean   @default(false) @map("decontamination_done")
+  performedBy         String?   @map("performed_by")
+  verifiedBy          String?   @map("verified_by")
+  notes               String?
+  status              String    @default("pending")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  createdBy           String?   @map("created_by")
+  @@index([tenantId])
+  @@index([tenantId, batchType])
+  @@map("batch_runs")
+}
+
+// ==============================================
+// ICMR/NACO REPORT (Govt Reporting)
+// Per NACO NACP, ICTC Guidelines
+// ==============================================
+
+model IcmrNacoReport {
+  id                    String    @id @default(uuid())
+  tenantId              String    @map("tenant_id")
+  reportType            String    @map("report_type")
+  reportTitle           String?   @map("report_title")
+  reportingPeriod       String    @map("reporting_period")
+  periodStart           DateTime? @map("period_start")
+  periodEnd             DateTime? @map("period_end")
+  facilityName          String?   @map("facility_name")
+  facilityCode          String?   @map("facility_code")
+  districtCode          String?   @map("district_code")
+  stateCode             String?   @map("state_code")
+  submittedTo           String?   @map("submitted_to")
+  sacsName              String?   @map("sacs_name")
+  totalTested           Int?      @map("total_tested")
+  totalPositive         Int?      @map("total_positive")
+  positivityRate        Float?    @map("positivity_rate")
+  malesTested           Int?      @map("males_tested")
+  femalesTested         Int?      @map("females_tested")
+  transgenderTested     Int?      @map("transgender_tested")
+  ancTested             Int?      @map("anc_tested")
+  ancPositive           Int?      @map("anc_positive")
+  tbPatientsTested      Int?      @map("tb_patients_tested")
+  tbPatientsPositive    Int?      @map("tb_patients_positive")
+  viralLoadSamplesSent  Int?      @map("viral_load_samples_sent")
+  viralLoadSuppressed   Int?      @map("viral_load_suppressed")
+  eqasPanelId           String?   @map("eqas_panel_id")
+  eqasResult            String?   @map("eqas_result")
+  eqasConcordance       Float?    @map("eqas_concordance")
+  notifiableDisease     String?   @map("notifiable_disease")
+  casesReported         Int?      @map("cases_reported")
+  amrData               Json?     @map("amr_data")
+  submittedDate         DateTime? @map("submitted_date")
+  acknowledgedDate      DateTime? @map("acknowledged_date")
+  acknowledgedBy        String?   @map("acknowledged_by")
+  notes                 String?
+  status                String    @default("draft")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+  createdBy             String?   @map("created_by")
+  @@index([tenantId])
+  @@index([tenantId, reportType])
+  @@map("icmr_naco_reports")
+}
+
+// ==============================================
+// GENETIC COUNSELING (ACMG/NSGC)
+// Doctor-ordered, pre/post-test sessions
+// ==============================================
+
+model GeneticCounseling {
+  id                        String    @id @default(uuid())
+  tenantId                  String    @map("tenant_id")
+  patientId                 String?   @map("patient_id")
+  patientName               String    @map("patient_name")
+  patientAge                Int?      @map("patient_age")
+  patientGender             String?   @map("patient_gender")
+  sessionType               String    @map("session_type")
+  sessionDate               DateTime  @map("session_date")
+  sessionDurationMin        Int?      @map("session_duration_min")
+  counselorName             String?   @map("counselor_name")
+  counselorCertification    String?   @map("counselor_certification")
+  counselorRegNo            String?   @map("counselor_reg_no")
+  orderingPhysician         String    @map("ordering_physician")
+  referralReason            String?   @map("referral_reason")
+  clinicalIndication        String?   @map("clinical_indication")
+  familyHistory             String?   @map("family_history")
+  testOrdered               String?   @map("test_ordered")
+  testCategory              String?   @map("test_category")
+  expectedTatDays           Int?      @map("expected_tat_days")
+  sampleCollected           Boolean   @default(false) @map("sample_collected")
+  sampleType                String?   @map("sample_type")
+  informedConsentSigned     Boolean   @default(false) @map("informed_consent_signed")
+  consentDate               DateTime? @map("consent_date")
+  incidentalFindingsConsent String?   @map("incidental_findings_consent")
+  riskExplained             Boolean   @default(false) @map("risk_explained")
+  limitationsExplained      Boolean   @default(false) @map("limitations_explained")
+  psychosocialAssessment    String?   @map("psychosocial_assessment")
+  resultDisclosed           Boolean   @default(false) @map("result_disclosed")
+  resultDisclosureDate      DateTime? @map("result_disclosure_date")
+  variantClassification     String?   @map("variant_classification")
+  vusFound                  Boolean   @default(false) @map("vus_found")
+  vusExplained              Boolean   @default(false) @map("vus_explained")
+  actionableFindings        String?   @map("actionable_findings")
+  recommendedFollowUp       String?   @map("recommended_follow_up")
+  familyCascadeTesting      String?   @map("family_cascade_testing")
+  sessionNotes              String?   @map("session_notes")
+  notes                     String?
+  status                    String    @default("scheduled")
+  createdAt                 DateTime  @default(now()) @map("created_at")
+  updatedAt                 DateTime  @updatedAt @map("updated_at")
+  createdBy                 String?   @map("created_by")
+  @@index([tenantId])
+  @@index([tenantId, sessionType])
+  @@map("genetic_counselings")
+}
+
+// ==============================================
+// PEDIGREE RECORD (NHGRI Notation)
+// Family tree, inheritance pattern
+// ==============================================
+
+model PedigreeRecord {
+  id                  String    @id @default(uuid())
+  tenantId            String    @map("tenant_id")
+  patientId           String?   @map("patient_id")
+  probandName         String    @map("proband_name")
+  probandAge          Int?      @map("proband_age")
+  probandGender       String?   @map("proband_gender")
+  condition           String?
+  geneOfInterest      String?   @map("gene_of_interest")
+  inheritancePattern  String?   @map("inheritance_pattern")
+  generations         Int?
+  totalMembers        Int?      @map("total_members")
+  affectedMembers     Int?      @map("affected_members")
+  carrierMembers      Int?      @map("carrier_members")
+  deceasedMembers     Int?      @map("deceased_members")
+  familyData          Json?     @map("family_data")
+  consanguinity       Boolean   @default(false)
+  ethnicBackground    String?   @map("ethnic_background")
+  referralReason      String?   @map("referral_reason")
+  counselorName       String?   @map("counselor_name")
+  geneticistName      String?   @map("geneticist_name")
+  riskAssessment      String?   @map("risk_assessment")
+  recommendedTesting  String?   @map("recommended_testing")
+  notes               String?
+  status              String    @default("draft")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  createdBy           String?   @map("created_by")
+  @@index([tenantId])
+  @@map("pedigree_records")
+}
+
+// ==============================================
+// VARIANT RECORD (ACMG/AMP 5-Tier)
+// Gene variant classification database
+// ==============================================
+
+model VariantRecord {
+  id                  String    @id @default(uuid())
+  tenantId            String    @map("tenant_id")
+  patientId           String?   @map("patient_id")
+  patientName         String?   @map("patient_name")
+  gene                String
+  transcript          String?
+  hgvsC               String?   @map("hgvs_c")
+  hgvsP               String?   @map("hgvs_p")
+  genomicPosition     String?   @map("genomic_position")
+  chromosome          String?
+  variantType         String?   @map("variant_type")
+  zygosity            String?
+  alleleFrequency     Float?    @map("allele_frequency")
+  acmgClass           String    @map("acmg_class")
+  criteriaApplied     String?   @map("criteria_applied")
+  evidenceStrength    String?   @map("evidence_strength")
+  clinvarId           String?   @map("clinvar_id")
+  clinvarSignificance String?   @map("clinvar_significance")
+  dbsnpId             String?   @map("dbsnp_id")
+  gnomadFreq          Float?    @map("gnomad_freq")
+  cosmicId            String?   @map("cosmic_id")
+  inSilicoPrediction  String?   @map("in_silico_prediction")
+  revelScore          Float?    @map("revel_score")
+  caddScore           Float?    @map("cadd_score")
+  conservationScore   Float?    @map("conservation_score")
+  disease             String?
+  inheritanceMode     String?   @map("inheritance_mode")
+  phenotype           String?
+  detectionMethod     String?   @map("detection_method")
+  sequencingPlatform  String?   @map("sequencing_platform")
+  coverage            Float?
+  classifiedBy        String?   @map("classified_by")
+  classificationDate  DateTime  @map("classification_date")
+  reviewedBy          String?   @map("reviewed_by")
+  notes               String?
+  status              String    @default("classified")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  createdBy           String?   @map("created_by")
+  @@index([tenantId])
+  @@index([tenantId, gene])
+  @@index([tenantId, acmgClass])
+  @@map("variant_records")
+}
+
+// ==============================================
 // AUDIT LOG
 // ==============================================
 
