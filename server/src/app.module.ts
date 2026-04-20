@@ -102,6 +102,8 @@ import { ImmunotherapyModule } from './modules/immunotherapy/immunotherapy.modul
 import { UrodynamicsModule } from './modules/urodynamics/urodynamics.module';
 import { WmdaSyncModule } from './modules/wmda-sync/wmda-sync.module';
 import { CdscoReportsModule } from './modules/cdsco-reports/cdsco-reports.module';
+import { KitLogisticsModule } from './modules/kit-logistics/kit-logistics.module';
+import { DtcConsumerModule } from './modules/dtc-consumer/dtc-consumer.module';
 
 @Module({
   imports: [
@@ -218,6 +220,8 @@ import { CdscoReportsModule } from './modules/cdsco-reports/cdsco-reports.module
     UrodynamicsModule,
     WmdaSyncModule,
     CdscoReportsModule,
+    KitLogisticsModule,
+    DtcConsumerModule,
   ],
   controllers: [HealthController],
   providers: [StartupService, DbBootstrapService],
