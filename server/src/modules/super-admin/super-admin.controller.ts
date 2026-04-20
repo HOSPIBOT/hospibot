@@ -193,7 +193,6 @@ export class SuperAdminController {
   ) {
     return this.superAdminService.updateUpgradeRequest(tenantId, requestId, dto, admin.id);
   }
-}
 
   // ── Gateway Charges & Subscription Tracking ──────────────────────────────
 
@@ -202,7 +201,7 @@ export class SuperAdminController {
   getGatewayCharges() { return this.superAdminService.getGatewayChargesConfig(); }
 
   @Patch('gateway-charges')
-  @ApiOperation({ summary: 'Update gateway charges (Razorpay %, GST %, auto-disable days)' })
+  @ApiOperation({ summary: 'Update gateway charges' })
   updateGatewayCharges(@Body() dto: any, @Req() req: any) {
     return this.superAdminService.updateGatewayChargesConfig(dto, req.user?.id || 'admin');
   }
