@@ -3576,6 +3576,257 @@ model EmployerPortal {
   @@map("employer_portals")
 }
 
+
+// ==============================================
+// POPULATION COHORT (Population Health Analytics)
+// ==============================================
+
+model PopulationCohort {
+  id                      String    @id @default(uuid())
+  tenantId                String    @map("tenant_id")
+  cohortName              String    @map("cohort_name")
+  cohortType              String    @default("custom") @map("cohort_type")
+  description             String?
+  ageMin                  Int?      @map("age_min")
+  ageMax                  Int?      @map("age_max")
+  gender                  String?
+  location                String?
+  pincode                 String?
+  diseaseFilter           String?   @map("disease_filter")
+  testFilter              String?   @map("test_filter")
+  employerFilter          String?   @map("employer_filter")
+  dateRangeStart          DateTime? @map("date_range_start")
+  dateRangeEnd            DateTime? @map("date_range_end")
+  totalPatients           Int?      @map("total_patients")
+  maleCount               Int?      @map("male_count")
+  femaleCount             Int?      @map("female_count")
+  avgAge                  Float?    @map("avg_age")
+  diabetesPrevalence      Float?    @map("diabetes_prevalence")
+  hypertensionPrevalence  Float?    @map("hypertension_prevalence")
+  dyslipidemiaPrevalence  Float?    @map("dyslipidemia_prevalence")
+  anemiaPrevalence        Float?    @map("anemia_prevalence")
+  thyroidPrevalence       Float?    @map("thyroid_prevalence")
+  highRiskCount           Int?      @map("high_risk_count")
+  mediumRiskCount         Int?      @map("medium_risk_count")
+  lowRiskCount            Int?      @map("low_risk_count")
+  trendData               Json?     @map("trend_data")
+  topAbnormalTests         Json?     @map("top_abnormal_tests")
+  seasonalPatterns        Json?     @map("seasonal_patterns")
+  notes                   String?
+  status                  String    @default("active")
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @updatedAt @map("updated_at")
+  createdBy               String?   @map("created_by")
+  @@index([tenantId])
+  @@map("population_cohorts")
+}
+
+// ==============================================
+// PARTNER LAB (Referral Lab Management)
+// ==============================================
+
+model PartnerLab {
+  id                    String    @id @default(uuid())
+  tenantId              String    @map("tenant_id")
+  labName               String    @map("lab_name")
+  partnerType           String    @default("referral") @map("partner_type")
+  labCode               String?   @map("lab_code")
+  contactPerson         String?   @map("contact_person")
+  phone                 String?
+  email                 String?
+  address               String?
+  city                  String?
+  state                 String?
+  nablAccredited        Boolean   @default(false) @map("nabl_accredited")
+  nablCertNo            String?   @map("nabl_cert_no")
+  nablExpiry            DateTime? @map("nabl_expiry")
+  capAccredited         Boolean   @default(false) @map("cap_accredited")
+  rateCardEffective     DateTime? @map("rate_card_effective")
+  rateCardExpiry        DateTime? @map("rate_card_expiry")
+  rateCard              Json?     @map("rate_card")
+  commissionPct         Float?    @map("commission_pct")
+  paymentTermsDays      Int?      @map("payment_terms_days")
+  testsOffered          Json?     @map("tests_offered")
+  specializations       Json?
+  modalitiesAvailable   Json?     @map("modalities_available")
+  routineTatHours       Float?    @map("routine_tat_hours")
+  statTatHours          Float?    @map("stat_tat_hours")
+  samplePickupAvailable Boolean   @default(false) @map("sample_pickup_available")
+  pickupSchedule        Json?     @map("pickup_schedule")
+  coldChainAvailable    Boolean   @default(false) @map("cold_chain_available")
+  courierPartner        String?   @map("courier_partner")
+  totalSamplesReferred  Int       @default(0) @map("total_samples_referred")
+  avgTatAchieved        Float?    @map("avg_tat_achieved")
+  tatBreachCount        Int       @default(0) @map("tat_breach_count")
+  qualityConcordance    Float?    @map("quality_concordance")
+  rejectionRate         Float?    @map("rejection_rate")
+  notes                 String?
+  status                String    @default("active")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+  createdBy             String?   @map("created_by")
+  @@index([tenantId])
+  @@map("partner_labs")
+}
+
+// ==============================================
+// HUB-SPOKE NODE (NABL Multi-Location)
+// ==============================================
+
+model HubSpokeNode {
+  id                    String    @id @default(uuid())
+  tenantId              String    @map("tenant_id")
+  nodeName              String    @map("node_name")
+  nodeCode              String?   @map("node_code")
+  nodeType              String    @map("node_type")
+  parentHubId           String?   @map("parent_hub_id")
+  address               String?
+  city                  String?
+  state                 String?
+  pincode               String?
+  latitude              Float?
+  longitude             Float?
+  contactPerson         String?   @map("contact_person")
+  phone                 String?
+  nablCovered           Boolean   @default(false) @map("nabl_covered")
+  nablAnnexureRef       String?   @map("nabl_annexure_ref")
+  dailyCapacity         Int?      @map("daily_capacity")
+  currentUtilization    Float?    @map("current_utilization")
+  testsAvailableLocally Json?     @map("tests_available_locally")
+  testsRoutedToHub      Json?     @map("tests_routed_to_hub")
+  routingRules          Json?     @map("routing_rules")
+  pickupSchedule        Json?     @map("pickup_schedule")
+  transitTimeHours      Float?    @map("transit_time_hours")
+  coldChainAvailable    Boolean   @default(false) @map("cold_chain_available")
+  runnerAssigned        String?   @map("runner_assigned")
+  operatingHours        String?   @map("operating_hours")
+  staffCount            Int?      @map("staff_count")
+  equipmentList         Json?     @map("equipment_list")
+  samplesProcessedMtd   Int       @default(0) @map("samples_processed_mtd")
+  samplesRoutedMtd      Int       @default(0) @map("samples_routed_mtd")
+  avgTatHours           Float?    @map("avg_tat_hours")
+  tatBreachPct          Float?    @map("tat_breach_pct")
+  revenuesMtd           Float?    @map("revenues_mtd")
+  notes                 String?
+  status                String    @default("active")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+  createdBy             String?   @map("created_by")
+  @@index([tenantId])
+  @@index([tenantId, nodeType])
+  @@map("hub_spoke_nodes")
+}
+
+// ==============================================
+// FRANCHISE LAB (DLPL/Metropolis Model)
+// ==============================================
+
+model FranchiseLab {
+  id                      String    @id @default(uuid())
+  tenantId                String    @map("tenant_id")
+  franchiseName           String    @map("franchise_name")
+  franchiseCode           String?   @map("franchise_code")
+  franchiseType           String    @map("franchise_type")
+  ownerName               String?   @map("owner_name")
+  ownerPhone              String?   @map("owner_phone")
+  ownerEmail              String?   @map("owner_email")
+  ownerAadhaar            String?   @map("owner_aadhaar")
+  ownerPan                String?   @map("owner_pan")
+  address                 String?
+  city                    String?
+  state                   String?
+  pincode                 String?
+  areaSqFt                Float?    @map("area_sq_ft")
+  floorLevel              String?   @map("floor_level")
+  agreementDate           DateTime? @map("agreement_date")
+  agreementExpiry         DateTime? @map("agreement_expiry")
+  agreementDurationYears  Int?      @map("agreement_duration_years")
+  securityDeposit         Float?    @map("security_deposit")
+  franchiseFee            Float?    @map("franchise_fee")
+  revSharePct             Float?    @map("rev_share_pct")
+  revShareModel           String?   @map("rev_share_model")
+  monthlyMinGuarantee     Float?    @map("monthly_min_guarantee")
+  onboardingStage         String    @default("application") @map("onboarding_stage")
+  siteApproved            Boolean   @default(false) @map("site_approved")
+  setupComplete           Boolean   @default(false) @map("setup_complete")
+  staffTrained            Boolean   @default(false) @map("staff_trained")
+  trialRunDone            Boolean   @default(false) @map("trial_run_done")
+  launchDate              DateTime? @map("launch_date")
+  brandComplianceScore    Float?    @map("brand_compliance_score")
+  lastAuditDate           DateTime? @map("last_audit_date")
+  lastAuditScore          Float?    @map("last_audit_score")
+  auditFindings           Json?     @map("audit_findings")
+  sopAdherence            String?   @map("sop_adherence")
+  monthlyRevenue          Float?    @map("monthly_revenue")
+  monthlySamples          Int?      @map("monthly_samples")
+  avgDailyFootfall        Int?      @map("avg_daily_footfall")
+  customerRating          Float?    @map("customer_rating")
+  notes                   String?
+  status                  String    @default("onboarding")
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @updatedAt @map("updated_at")
+  createdBy               String?   @map("created_by")
+  @@index([tenantId])
+  @@index([tenantId, franchiseType])
+  @@map("franchise_labs")
+}
+
+// ==============================================
+// DGHS REPORT (IDSP Forms S/P/L, IHIP)
+// ==============================================
+
+model DghsReport {
+  id                    String    @id @default(uuid())
+  tenantId              String    @map("tenant_id")
+  reportForm            String    @map("report_form")
+  diseaseCode           String?   @map("disease_code")
+  diseaseName           String    @map("disease_name")
+  reportingWeekStart    DateTime? @map("reporting_week_start")
+  reportingWeekEnd      DateTime? @map("reporting_week_end")
+  epiWeekNumber         Int?      @map("epi_week_number")
+  reportingYear         Int?      @map("reporting_year")
+  facilityName          String?   @map("facility_name")
+  facilityCode          String?   @map("facility_code")
+  districtName          String?   @map("district_name")
+  districtCode          String?   @map("district_code")
+  stateName             String?   @map("state_name")
+  stateCode             String?   @map("state_code")
+  casesReported         Int?      @map("cases_reported")
+  deathsReported        Int?      @map("deaths_reported")
+  malesCases            Int?      @map("males_cases")
+  femalesCases          Int?      @map("females_cases")
+  age0to5               Int?      @map("age_0_to_5")
+  age5to14              Int?      @map("age_5_to_14")
+  age15to44             Int?      @map("age_15_to_44")
+  age45plus             Int?      @map("age_45_plus")
+  labTestPerformed      String?   @map("lab_test_performed")
+  samplesCollected      Int?      @map("samples_collected")
+  samplesPositive       Int?      @map("samples_positive")
+  organism              String?
+  amrRelevant           Boolean   @default(false) @map("amr_relevant")
+  amrOrganism           String?   @map("amr_organism")
+  amrPattern            String?   @map("amr_pattern")
+  whonetExported        Boolean   @default(false) @map("whonet_exported")
+  submittedToIhip       Boolean   @default(false) @map("submitted_to_ihip")
+  ihipSubmissionDate    DateTime? @map("ihip_submission_date")
+  submittedToDsu        Boolean   @default(false) @map("submitted_to_dsu")
+  dsuOfficerName        String?   @map("dsu_officer_name")
+  alertGenerated        Boolean   @default(false) @map("alert_generated")
+  outbreakInvestigated  Boolean   @default(false) @map("outbreak_investigated")
+  bloodBankReporting    Boolean   @default(false) @map("blood_bank_reporting")
+  unitsCollected        Int?      @map("units_collected")
+  ttisDetected          Int?      @map("ttis_detected")
+  notes                 String?
+  status                String    @default("draft")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+  createdBy             String?   @map("created_by")
+  @@index([tenantId])
+  @@index([tenantId, reportForm])
+  @@index([tenantId, diseaseName])
+  @@map("dghs_reports")
+}
+
 // ==============================================
 // AUDIT LOG
 // ==============================================

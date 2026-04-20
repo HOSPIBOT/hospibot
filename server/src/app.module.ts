@@ -87,6 +87,11 @@ import { HraModule } from './modules/hra/hra.module';
 import { ConsultScheduleModule } from './modules/consult-schedule/consult-schedule.module';
 import { HealthCampsModule } from './modules/health-camps/health-camps.module';
 import { EmployerPortalModule } from './modules/employer-portal/employer-portal.module';
+import { PopulationHealthModule } from './modules/population-health/population-health.module';
+import { PartnerLabsModule } from './modules/partner-labs/partner-labs.module';
+import { HubSpokeModule } from './modules/hub-spoke/hub-spoke.module';
+import { FranchiseLabsModule } from './modules/franchise-labs/franchise-labs.module';
+import { DghsReportingModule } from './modules/dghs-reporting/dghs-reporting.module';
 
 @Module({
   imports: [
@@ -188,6 +193,11 @@ import { EmployerPortalModule } from './modules/employer-portal/employer-portal.
     ConsultScheduleModule,
     HealthCampsModule,
     EmployerPortalModule,
+    PopulationHealthModule,
+    PartnerLabsModule,
+    HubSpokeModule,
+    FranchiseLabsModule,
+    DghsReportingModule,
   ],
   controllers: [HealthController],
   providers: [StartupService, DbBootstrapService],
