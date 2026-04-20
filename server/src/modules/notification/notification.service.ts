@@ -251,7 +251,7 @@ export class NotificationService {
           data: { tenantId, walletId: wallet.id, walletType: 'WHATSAPP', txType: 'DEBIT_USAGE',
             amount: Math.round(costPerMsg * count * 100), // paise
             balanceAfter: Math.round((wallet.waCredits - costPerMsg * count) * 100),
-            description: `WhatsApp message x${count}`, reference: `wa-auto-${Date.now()}` },
+            description: `WhatsApp message x${count}`, referenceId: `wa-auto-${Date.now()}` },
         });
       } else {
         await this.prisma.tenantWallet.update({
@@ -261,7 +261,7 @@ export class NotificationService {
         await this.prisma.walletTransaction.create({
           data: { tenantId, walletId: wallet.id, walletType: 'SMS', txType: 'DEBIT_USAGE',
             amount: count, balanceAfter: wallet.smsCredits - count,
-            description: `SMS message x${count}`, reference: `sms-auto-${Date.now()}` },
+            description: `SMS message x${count}`, referenceId: `sms-auto-${Date.now()}` },
         });
       }
     } catch (err) {
