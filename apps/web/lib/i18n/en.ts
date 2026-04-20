@@ -1,0 +1,51 @@
+export default {
+  common: {
+    dashboard: 'Dashboard', patients: 'Patients', reports: 'Reports', billing: 'Billing',
+    settings: 'Settings', logout: 'Logout', search: 'Search', save: 'Save', cancel: 'Cancel',
+    delete: 'Delete', edit: 'Edit', add: 'Add New', loading: 'Loading...', noData: 'No data found',
+    actions: 'Actions', status: 'Status', date: 'Date', name: 'Name', phone: 'Phone',
+    email: 'Email', active: 'Active', inactive: 'Inactive', pending: 'Pending', completed: 'Completed',
+    total: 'Total', today: 'Today', thisWeek: 'This Week', thisMonth: 'This Month',
+    export: 'Export', print: 'Print', download: 'Download', upload: 'Upload',
+    yes: 'Yes', no: 'No', confirm: 'Confirm', back: 'Back', next: 'Next',
+    offline: 'You are offline. Changes will sync when connected.',
+  },
+  dashboard: {
+    title: 'Dashboard', welcome: 'Welcome back, {{name}}',
+    todayTests: "Today's Tests", pendingReports: 'Pending Reports',
+    revenue: 'Revenue', collections: 'Sample Collections',
+    recentPatients: 'Recent Patients', quickActions: 'Quick Actions',
+  },
+  patient: {
+    register: 'Register Patient', name: 'Patient Name', age: 'Age',
+    gender: 'Gender', male: 'Male', female: 'Female', other: 'Other',
+    phone: 'Mobile Number', address: 'Address', city: 'City',
+    dob: 'Date of Birth', bloodGroup: 'Blood Group',
+    history: 'Patient History', reports: 'Test Reports',
+  },
+  lab: {
+    registerSample: 'Register Sample', barcode: 'Barcode', accession: 'Accession Number',
+    sampleType: 'Sample Type', blood: 'Blood', urine: 'Urine', serum: 'Serum', swab: 'Swab',
+    testName: 'Test Name', result: 'Result', normalRange: 'Normal Range', unit: 'Unit',
+    critical: 'Critical Value', pending: 'Pending', completed: 'Completed', approved: 'Approved',
+    reportReady: 'Report Ready', sendWhatsApp: 'Send via WhatsApp',
+    collectSample: 'Collect Sample', processSample: 'Process Sample',
+    enterResults: 'Enter Results', approveReport: 'Approve Report',
+  },
+  billing: {
+    createInvoice: 'Create Invoice', invoiceNumber: 'Invoice No.',
+    amount: 'Amount', paid: 'Paid', due: 'Due', overdue: 'Overdue',
+    paymentMethod: 'Payment Method', cash: 'Cash', upi: 'UPI', card: 'Card',
+    gst: 'GST', discount: 'Discount', total: 'Total Amount',
+    paymentLink: 'Send Payment Link', receipt: 'Print Receipt',
+  },
+  whatsapp: {
+    sendReport: 'Send Report via WhatsApp', sendReminder: 'Send Reminder',
+    chatWith: 'Chat with {{name}}', template: 'Message Template',
+    broadcast: 'Broadcast Message', credits: 'WhatsApp Credits',
+  },
+  regulatory: {
+    title: 'Regulatory Guidance', body: 'Regulatory Body',
+    requirement: 'Compliance Requirement', citation: 'Citation',
+  },
+};

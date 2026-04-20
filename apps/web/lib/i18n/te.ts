@@ -1,0 +1,51 @@
+export default {
+  common: {
+    dashboard: 'డాష్‌బోర్డ్', patients: 'రోగులు', reports: 'రిపోర్టులు', billing: 'బిల్లింగ్',
+    settings: 'సెట్టింగ్‌లు', logout: 'లాగ్‌అవుట్', search: 'వెతకండి', save: 'సేవ్ చేయండి', cancel: 'రద్దు చేయండి',
+    delete: 'తొలగించు', edit: 'మార్చు', add: 'కొత్తది జోడించు', loading: 'లోడ్ అవుతోంది...', noData: 'డేటా కనుగొనబడలేదు',
+    actions: 'చర్యలు', status: 'స్థితి', date: 'తేదీ', name: 'పేరు', phone: 'ఫోన్',
+    email: 'ఈమెయిల్', active: 'యాక్టివ్', inactive: 'నిష్క్రియ', pending: 'పెండింగ్', completed: 'పూర్తయింది',
+    total: 'మొత్తం', today: 'ఈ రోజు', thisWeek: 'ఈ వారం', thisMonth: 'ఈ నెల',
+    export: 'ఎగుమతి', print: 'ప్రింట్', download: 'డౌన్‌లోడ్', upload: 'అప్‌లోడ్',
+    yes: 'అవును', no: 'లేదు', confirm: 'నిర్ధారించు', back: 'వెనుకకు', next: 'తదుపరి',
+    offline: 'మీరు ఆఫ్‌లైన్‌లో ఉన్నారు. కనెక్ట్ అయినప్పుడు మార్పులు సింక్ అవుతాయి.',
+  },
+  dashboard: {
+    title: 'డాష్‌బోర్డ్', welcome: 'స్వాగతం, {{name}}',
+    todayTests: 'నేటి పరీక్షలు', pendingReports: 'పెండింగ్ రిపోర్టులు',
+    revenue: 'ఆదాయం', collections: 'శాంపిల్ సేకరణ',
+    recentPatients: 'ఇటీవలి రోగులు', quickActions: 'త్వరిత చర్యలు',
+  },
+  patient: {
+    register: 'రోగి నమోదు', name: 'రోగి పేరు', age: 'వయసు',
+    gender: 'లింగం', male: 'పురుషుడు', female: 'స్త్రీ', other: 'ఇతర',
+    phone: 'మొబైల్ నంబర్', address: 'చిరునామా', city: 'నగరం',
+    dob: 'పుట్టిన తేదీ', bloodGroup: 'రక్త గ్రూప్',
+    history: 'రోగి చరిత్ర', reports: 'పరీక్ష రిపోర్టులు',
+  },
+  lab: {
+    registerSample: 'శాంపిల్ నమోదు', barcode: 'బార్‌కోడ్', accession: 'యాక్సెషన్ నంబర్',
+    sampleType: 'శాంపిల్ రకం', blood: 'రక్తం', urine: 'మూత్రం', serum: 'సీరం', swab: 'స్వాబ్',
+    testName: 'పరీక్ష పేరు', result: 'ఫలితం', normalRange: 'సాధారణ పరిధి', unit: 'యూనిట్',
+    critical: 'క్రిటికల్ విలువ', pending: 'పెండింగ్', completed: 'పూర్తయింది', approved: 'ఆమోదించబడింది',
+    reportReady: 'రిపోర్ట్ సిద్ధం', sendWhatsApp: 'వాట్సాప్ ద్వారా పంపండి',
+    collectSample: 'శాంపిల్ సేకరించు', processSample: 'శాంపిల్ ప్రాసెస్',
+    enterResults: 'ఫలితాలు నమోదు', approveReport: 'రిపోర్ట్ ఆమోదించు',
+  },
+  billing: {
+    createInvoice: 'బిల్లు సృష్టించు', invoiceNumber: 'బిల్లు నం.',
+    amount: 'మొత్తం', paid: 'చెల్లించబడింది', due: 'బాకీ', overdue: 'గడువు దాటింది',
+    paymentMethod: 'చెల్లింపు పద్ధతి', cash: 'నగదు', upi: 'యూపీఐ', card: 'కార్డ్',
+    gst: 'జీఎస్‌టీ', discount: 'డిస్కౌంట్', total: 'మొత్తం రాశి',
+    paymentLink: 'పేమెంట్ లింక్ పంపు', receipt: 'రసీదు ప్రింట్',
+  },
+  whatsapp: {
+    sendReport: 'వాట్సాప్ ద్వారా రిపోర్ట్ పంపు', sendReminder: 'రిమైండర్ పంపు',
+    chatWith: '{{name}}తో చాట్', template: 'సందేశ టెంప్లేట్',
+    broadcast: 'ప్రసార సందేశం', credits: 'వాట్సాప్ క్రెడిట్లు',
+  },
+  regulatory: {
+    title: 'నియంత్రణ మార్గదర్శకత్వం', body: 'నియంత్రణ సంస్థ',
+    requirement: 'సమ్మతి అవసరం', citation: 'ఉల్లేఖనం',
+  },
+};

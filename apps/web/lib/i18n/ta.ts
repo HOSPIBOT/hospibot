@@ -1,0 +1,51 @@
+export default {
+  common: {
+    dashboard: 'டாஷ்போர்டு', patients: 'நோயாளிகள்', reports: 'அறிக்கைகள்', billing: 'பில்லிங்',
+    settings: 'அமைப்புகள்', logout: 'வெளியேறு', search: 'தேடு', save: 'சேமி', cancel: 'ரத்து செய்',
+    delete: 'நீக்கு', edit: 'திருத்து', add: 'புதிதாக சேர்', loading: 'ஏற்றுகிறது...', noData: 'தரவு இல்லை',
+    actions: 'செயல்கள்', status: 'நிலை', date: 'தேதி', name: 'பெயர்', phone: 'தொலைபேசி',
+    email: 'மின்னஞ்சல்', active: 'செயலில்', inactive: 'செயலற்ற', pending: 'நிலுவை', completed: 'முடிந்தது',
+    total: 'மொத்தம்', today: 'இன்று', thisWeek: 'இந்த வாரம்', thisMonth: 'இந்த மாதம்',
+    export: 'ஏற்றுமதி', print: 'அச்சிடு', download: 'பதிவிறக்கம்', upload: 'பதிவேற்றம்',
+    yes: 'ஆம்', no: 'இல்லை', confirm: 'உறுதிப்படுத்து', back: 'பின்செல்', next: 'அடுத்து',
+    offline: 'நீங்கள் ஆஃப்லைனில் உள்ளீர்கள். இணைப்பு கிடைக்கும்போது மாற்றங்கள் ஒத்திசைக்கப்படும்.',
+  },
+  dashboard: {
+    title: 'டாஷ்போர்டு', welcome: 'வரவேற்கிறோம், {{name}}',
+    todayTests: 'இன்றைய பரிசோதனைகள்', pendingReports: 'நிலுவை அறிக்கைகள்',
+    revenue: 'வருவாய்', collections: 'மாதிரி சேகரிப்பு',
+    recentPatients: 'சமீபத்திய நோயாளிகள்', quickActions: 'விரைவு செயல்கள்',
+  },
+  patient: {
+    register: 'நோயாளி பதிவு', name: 'நோயாளி பெயர்', age: 'வயது',
+    gender: 'பாலினம்', male: 'ஆண்', female: 'பெண்', other: 'மற்றவை',
+    phone: 'கைபேசி எண்', address: 'முகவரி', city: 'நகரம்',
+    dob: 'பிறந்த தேதி', bloodGroup: 'இரத்த வகை',
+    history: 'நோயாளி வரலாறு', reports: 'பரிசோதனை அறிக்கைகள்',
+  },
+  lab: {
+    registerSample: 'மாதிரி பதிவு', barcode: 'பார்கோடு', accession: 'சேர்க்கை எண்',
+    sampleType: 'மாதிரி வகை', blood: 'இரத்தம்', urine: 'சிறுநீர்', serum: 'சீரம்', swab: 'ஸ்வாப்',
+    testName: 'பரிசோதனை பெயர்', result: 'முடிவு', normalRange: 'சாதாரண வரம்பு', unit: 'அலகு',
+    critical: 'முக்கிய மதிப்பு', pending: 'நிலுவை', completed: 'முடிந்தது', approved: 'அங்கீகரிக்கப்பட்டது',
+    reportReady: 'அறிக்கை தயார்', sendWhatsApp: 'வாட்ஸ்அப் வழியாக அனுப்பு',
+    collectSample: 'மாதிரி சேகரி', processSample: 'மாதிரி செயலாக்கம்',
+    enterResults: 'முடிவுகள் உள்ளீடு', approveReport: 'அறிக்கை அங்கீகரி',
+  },
+  billing: {
+    createInvoice: 'பில் உருவாக்கு', invoiceNumber: 'பில் எண்.',
+    amount: 'தொகை', paid: 'செலுத்தப்பட்டது', due: 'நிலுவை', overdue: 'தாமதமானது',
+    paymentMethod: 'கட்டண முறை', cash: 'பணம்', upi: 'யூபிஐ', card: 'கார்டு',
+    gst: 'ஜிஎஸ்டி', discount: 'தள்ளுபடி', total: 'மொத்த தொகை',
+    paymentLink: 'பேமெண்ட் லிங்க் அனுப்பு', receipt: 'ரசீது அச்சிடு',
+  },
+  whatsapp: {
+    sendReport: 'வாட்ஸ்அப் வழியாக அறிக்கை அனுப்பு', sendReminder: 'நினைவூட்டல் அனுப்பு',
+    chatWith: '{{name}} உடன் அரட்டை', template: 'செய்தி டெம்ப்ளேட்',
+    broadcast: 'ஒளிபரப்பு செய்தி', credits: 'வாட்ஸ்அப் கிரெடிட்கள்',
+  },
+  regulatory: {
+    title: 'ஒழுங்குமுறை வழிகாட்டுதல்', body: 'ஒழுங்குமுறை அமைப்பு',
+    requirement: 'இணக்கத் தேவை', citation: 'மேற்கோள்',
+  },
+};

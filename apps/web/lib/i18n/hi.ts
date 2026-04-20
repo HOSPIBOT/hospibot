@@ -1,0 +1,51 @@
+export default {
+  common: {
+    dashboard: 'डैशबोर्ड', patients: 'मरीज़', reports: 'रिपोर्ट', billing: 'बिलिंग',
+    settings: 'सेटिंग्स', logout: 'लॉगआउट', search: 'खोजें', save: 'सहेजें', cancel: 'रद्द करें',
+    delete: 'हटाएं', edit: 'संपादित करें', add: 'नया जोड़ें', loading: 'लोड हो रहा है...', noData: 'कोई डेटा नहीं मिला',
+    actions: 'कार्रवाई', status: 'स्थिति', date: 'तारीख़', name: 'नाम', phone: 'फ़ोन',
+    email: 'ईमेल', active: 'सक्रिय', inactive: 'निष्क्रिय', pending: 'लंबित', completed: 'पूर्ण',
+    total: 'कुल', today: 'आज', thisWeek: 'इस सप्ताह', thisMonth: 'इस महीने',
+    export: 'निर्यात', print: 'प्रिंट', download: 'डाउनलोड', upload: 'अपलोड',
+    yes: 'हां', no: 'नहीं', confirm: 'पुष्टि करें', back: 'वापस', next: 'अगला',
+    offline: 'आप ऑफ़लाइन हैं। कनेक्ट होने पर बदलाव सिंक होंगे।',
+  },
+  dashboard: {
+    title: 'डैशबोर्ड', welcome: 'स्वागत है, {{name}}',
+    todayTests: 'आज की जांच', pendingReports: 'लंबित रिपोर्ट',
+    revenue: 'राजस्व', collections: 'सैंपल संग्रह',
+    recentPatients: 'हाल के मरीज़', quickActions: 'त्वरित कार्रवाई',
+  },
+  patient: {
+    register: 'मरीज़ पंजीकरण', name: 'मरीज़ का नाम', age: 'आयु',
+    gender: 'लिंग', male: 'पुरुष', female: 'महिला', other: 'अन्य',
+    phone: 'मोबाइल नंबर', address: 'पता', city: 'शहर',
+    dob: 'जन्म तिथि', bloodGroup: 'रक्त समूह',
+    history: 'मरीज़ का इतिहास', reports: 'जांच रिपोर्ट',
+  },
+  lab: {
+    registerSample: 'सैंपल पंजीकरण', barcode: 'बारकोड', accession: 'एक्सेशन नंबर',
+    sampleType: 'सैंपल का प्रकार', blood: 'रक्त', urine: 'मूत्र', serum: 'सीरम', swab: 'स्वैब',
+    testName: 'जांच का नाम', result: 'परिणाम', normalRange: 'सामान्य सीमा', unit: 'इकाई',
+    critical: 'गंभीर मान', pending: 'लंबित', completed: 'पूर्ण', approved: 'स्वीकृत',
+    reportReady: 'रिपोर्ट तैयार', sendWhatsApp: 'व्हाट्सएप से भेजें',
+    collectSample: 'सैंपल लें', processSample: 'सैंपल प्रक्रिया',
+    enterResults: 'परिणाम दर्ज करें', approveReport: 'रिपोर्ट स्वीकृत करें',
+  },
+  billing: {
+    createInvoice: 'बिल बनाएं', invoiceNumber: 'बिल नं.',
+    amount: 'राशि', paid: 'भुगतान किया', due: 'बकाया', overdue: 'अतिदेय',
+    paymentMethod: 'भुगतान का तरीका', cash: 'नकद', upi: 'यूपीआई', card: 'कार्ड',
+    gst: 'जीएसटी', discount: 'छूट', total: 'कुल राशि',
+    paymentLink: 'पेमेंट लिंक भेजें', receipt: 'रसीद प्रिंट करें',
+  },
+  whatsapp: {
+    sendReport: 'व्हाट्सएप से रिपोर्ट भेजें', sendReminder: 'रिमाइंडर भेजें',
+    chatWith: '{{name}} से चैट करें', template: 'संदेश टेम्पलेट',
+    broadcast: 'प्रसारण संदेश', credits: 'व्हाट्सएप क्रेडिट',
+  },
+  regulatory: {
+    title: 'नियामक मार्गदर्शन', body: 'नियामक निकाय',
+    requirement: 'अनुपालन आवश्यकता', citation: 'उद्धरण',
+  },
+};
