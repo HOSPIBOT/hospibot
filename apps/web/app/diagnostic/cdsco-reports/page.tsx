@@ -1,21 +1,76 @@
 'use client';
-import React, { useMemo } from 'react';
-import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
-import { PageHeader, DataTable, StatusPill, useList, fmtDate, TEAL } from '../compliance/_components';
+import FeatureCrudPage from '../_shared/FeatureCrudPage';
 
-export default function Page() {
-  const gate = useFeatureGate('cdsco-reports');
-  if (gate.locked) return <FeatureLockedBlock gate={gate} />;
-  const { rows, total, loading, page, setPage } = useList('/diagnostic/cdsco-reports');
-  const columns = useMemo(() => [
-    { key: 'createdAt', label: 'Date', render: (r: any) => fmtDate(r.createdAt) },
-    { key: 'title', label: 'Title' },
-    { key: 'status', label: 'Status', render: (r: any) => <StatusPill status={r.status} map={{ active: { bg: '#ecfdf5', fg: '#059669', label: 'Active' }, draft: { bg: '#f1f5f9', fg: '#475569', label: 'Draft' }, completed: { bg: '#dbeafe', fg: '#1e40af', label: 'Completed' }, planned: { bg: '#fef3c7', fg: '#92400e', label: 'Planned' }, pending: { bg: '#fef3c7', fg: '#92400e', label: 'Pending' }, reported: { bg: '#ecfdf5', fg: '#059669', label: 'Reported' } }} /> },
-  ], []);
-  return (
-    <div style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
-      <PageHeader title="CDSCO Reports" subtitle="Controlled Substance Reporting · Drug Regulation Compliance" />
-      <DataTable columns={columns} rows={rows} loading={loading} total={total} page={page} onPageChange={setPage} emptyMessage="No records yet." />
-    </div>
-  );
-}
+const config = {
+  "slug": "cdsco-reports",
+  "title": "CDSCO Reports",
+  "subtitle": "IVD Classes A-D \u00b7 Adverse Events \u00b7 Kit Validation \u00b7 SUGAM",
+  "apiPath": "/diagnostic/cdsco-reports",
+  "regulations": [
+    {
+      "body": "CDSCO",
+      "citation": "Medical Devices Rules 2017",
+      "requirement": "IVD risk classes A-D. SUGAM portal. Adverse event reporting. Post-market surveillance."
+    }
+  ],
+  "columns": [
+    {
+      "key": "createdAt",
+      "label": "Date",
+      "fmt": "date"
+    },
+    {
+      "key": "reportType",
+      "label": "Type"
+    },
+    {
+      "key": "deviceName",
+      "label": "Device"
+    },
+    {
+      "key": "status",
+      "label": "Status",
+      "fmt": "status"
+    }
+  ],
+  "formFields": [
+    {
+      "key": "reportType",
+      "label": "Type",
+      "type": "select",
+      "required": true,
+      "options": [
+        "adverse-event",
+        "post-market-surveillance",
+        "kit-validation",
+        "license-renewal"
+      ]
+    },
+    {
+      "key": "deviceName",
+      "label": "Device Name",
+      "type": "text"
+    },
+    {
+      "key": "deviceClass",
+      "label": "Class",
+      "type": "select",
+      "options": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ]
+    },
+    {
+      "key": "notes",
+      "label": "Notes",
+      "type": "textarea",
+      "span": 2
+    }
+  ]
+};
+
+export default function Page() {{
+  return <FeatureCrudPage config={{config}} />;
+}}

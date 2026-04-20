@@ -1,21 +1,74 @@
 'use client';
-import React, { useMemo } from 'react';
-import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
-import { PageHeader, DataTable, StatusPill, useList, fmtDate, TEAL } from '../compliance/_components';
+import FeatureCrudPage from '../_shared/FeatureCrudPage';
 
-export default function Page() {
-  const gate = useFeatureGate('employer-portal');
-  if (gate.locked) return <FeatureLockedBlock gate={gate} />;
-  const { rows, total, loading, page, setPage } = useList('/diagnostic/employer-portal');
-  const columns = useMemo(() => [
-    { key: 'createdAt', label: 'Date', render: (r: any) => fmtDate(r.createdAt) },
-    { key: 'title', label: 'Title' },
-    { key: 'status', label: 'Status', render: (r: any) => <StatusPill status={r.status} map={{ active: { bg: '#ecfdf5', fg: '#059669', label: 'Active' }, draft: { bg: '#f1f5f9', fg: '#475569', label: 'Draft' }, completed: { bg: '#dbeafe', fg: '#1e40af', label: 'Completed' }, planned: { bg: '#fef3c7', fg: '#92400e', label: 'Planned' }, pending: { bg: '#fef3c7', fg: '#92400e', label: 'Pending' }, reported: { bg: '#ecfdf5', fg: '#059669', label: 'Reported' } }} /> },
-  ], []);
-  return (
-    <div style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
-      <PageHeader title="Employer Portal" subtitle="Corporate Client View · Employee Results · Population Insights" />
-      <DataTable columns={columns} rows={rows} loading={loading} total={total} page={page} onPageChange={setPage} emptyMessage="No records yet." />
-    </div>
-  );
-}
+const config = {
+  "slug": "employer-portal",
+  "title": "Employer Portal",
+  "subtitle": "Labour Code \u00b7 DPDPA Anonymization \u00b7 Forms 32/33",
+  "apiPath": "/diagnostic/employer-portal",
+  "regulations": [
+    {
+      "body": "MoLE / MeitY",
+      "citation": "Labour Code 2020 + DPDPA 2023",
+      "requirement": "Mandatory 40+ screening. Anonymized aggregate reporting. No individual PII to employer."
+    }
+  ],
+  "columns": [
+    {
+      "key": "createdAt",
+      "label": "Date",
+      "fmt": "date"
+    },
+    {
+      "key": "employerName",
+      "label": "Employer"
+    },
+    {
+      "key": "utilizationPct",
+      "label": "Utilization %"
+    },
+    {
+      "key": "status",
+      "label": "Status",
+      "fmt": "status"
+    }
+  ],
+  "formFields": [
+    {
+      "key": "employerName",
+      "label": "Employer Name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "industryType",
+      "label": "Industry",
+      "type": "text"
+    },
+    {
+      "key": "totalEmployees",
+      "label": "Total Employees",
+      "type": "number"
+    },
+    {
+      "key": "employeesAbove40",
+      "label": "Employees 40+",
+      "type": "number"
+    },
+    {
+      "key": "packageName",
+      "label": "Package",
+      "type": "text"
+    },
+    {
+      "key": "notes",
+      "label": "Notes",
+      "type": "textarea",
+      "span": 2
+    }
+  ]
+};
+
+export default function Page() {{
+  return <FeatureCrudPage config={{config}} />;
+}}

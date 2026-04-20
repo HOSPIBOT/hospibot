@@ -1,21 +1,93 @@
 'use client';
-import React, { useState, useMemo } from 'react';
-import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
-import { PageHeader, DataTable, StatusPill, useList, fmtDate, TEAL } from '../compliance/_components';
+import FeatureCrudPage from '../_shared/FeatureCrudPage';
 
-export default function Page() {
-  const gate = useFeatureGate('ob-growth-scan');
-  if (gate.locked) return <FeatureLockedBlock gate={gate} />;
-  const { rows, total, loading, page, setPage } = useList('/diagnostic/ob-growth-scan');
-  const columns = useMemo(() => [
-    { key: 'createdAt', label: 'Date', render: (r: any) => fmtDate(r.createdAt) },
-    { key: 'title', label: 'Title' },
-    { key: 'status', label: 'Status', render: (r: any) => <StatusPill status={r.status} map={{ active: { bg: '#ecfdf5', fg: '#059669', label: 'Active' }, draft: { bg: '#f1f5f9', fg: '#475569', label: 'Draft' }, completed: { bg: '#dbeafe', fg: '#1e40af', label: 'Completed' }, planned: { bg: '#fef3c7', fg: '#92400e', label: 'Planned' }, received: { bg: '#e0e7ff', fg: '#4338ca', label: 'Received' }, assigned: { bg: '#fef3c7', fg: '#92400e', label: 'Assigned' } }} /> },
-  ], []);
-  return (
-    <div style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
-      <PageHeader title="OB / Growth Scan — Obstetric Ultrasound" subtitle="Fetal Biometry · Growth Percentiles · AFI · PCPNDT Compliance" />
-      <DataTable columns={columns} rows={rows} loading={loading} total={total} page={page} onPageChange={setPage} emptyMessage="No records yet. This feature is ready for data entry." />
-    </div>
-  );
-}
+const config = {
+  "slug": "ob-growth-scan",
+  "title": "OB Growth Scan",
+  "subtitle": "Fetal Biometry \u00b7 BPD/HC/AC/FL \u00b7 EFW \u00b7 PC-PNDT Form F",
+  "apiPath": "/diagnostic/ob-growth-scan",
+  "regulations": [
+    {
+      "body": "MoHFW",
+      "citation": "PC-PNDT Act 1994/2003",
+      "requirement": "Form F mandatory for every obstetric USG. Fetal biometry: BPD, HC, AC, FL. EFW percentile. Doppler PI."
+    }
+  ],
+  "columns": [
+    {
+      "key": "scanDate",
+      "label": "Date",
+      "fmt": "date"
+    },
+    {
+      "key": "patientName",
+      "label": "Patient"
+    },
+    {
+      "key": "gestationalWeeks",
+      "label": "GA (wk)"
+    },
+    {
+      "key": "efw",
+      "label": "EFW (g)"
+    },
+    {
+      "key": "status",
+      "label": "Status",
+      "fmt": "status"
+    }
+  ],
+  "formFields": [
+    {
+      "key": "patientName",
+      "label": "Patient Name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "gestationalWeeks",
+      "label": "GA Weeks",
+      "type": "number"
+    },
+    {
+      "key": "bpd",
+      "label": "BPD (mm)",
+      "type": "number"
+    },
+    {
+      "key": "hc",
+      "label": "HC (mm)",
+      "type": "number"
+    },
+    {
+      "key": "ac",
+      "label": "AC (mm)",
+      "type": "number"
+    },
+    {
+      "key": "fl",
+      "label": "FL (mm)",
+      "type": "number"
+    },
+    {
+      "key": "efw",
+      "label": "EFW (g)",
+      "type": "number"
+    },
+    {
+      "key": "pndtFormFCompleted",
+      "label": "Form F Completed",
+      "type": "checkbox"
+    },
+    {
+      "key": "notes",
+      "label": "Notes",
+      "type": "textarea",
+      "span": 2
+    }
+  ]
+};
+
+export default function Page() {{
+  return <FeatureCrudPage config={{config}} />;
+}}

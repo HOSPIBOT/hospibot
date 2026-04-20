@@ -1,21 +1,86 @@
 'use client';
-import React, { useMemo } from 'react';
-import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
-import { PageHeader, DataTable, StatusPill, useList, fmtDate, TEAL } from '../compliance/_components';
+import FeatureCrudPage from '../_shared/FeatureCrudPage';
 
-export default function Page() {
-  const gate = useFeatureGate('ngs-workflow');
-  if (gate.locked) return <FeatureLockedBlock gate={gate} />;
-  const { rows, total, loading, page, setPage } = useList('/diagnostic/ngs-workflow');
-  const columns = useMemo(() => [
-    { key: 'createdAt', label: 'Date', render: (r: any) => fmtDate(r.createdAt) },
-    { key: 'title', label: 'Title' },
-    { key: 'status', label: 'Status', render: (r: any) => <StatusPill status={r.status} map={{ active: { bg: '#ecfdf5', fg: '#059669', label: 'Active' }, draft: { bg: '#f1f5f9', fg: '#475569', label: 'Draft' }, completed: { bg: '#dbeafe', fg: '#1e40af', label: 'Completed' }, planned: { bg: '#fef3c7', fg: '#92400e', label: 'Planned' }, pending: { bg: '#fef3c7', fg: '#92400e', label: 'Pending' }, reported: { bg: '#ecfdf5', fg: '#059669', label: 'Reported' } }} /> },
-  ], []);
-  return (
-    <div style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
-      <PageHeader title="NGS Workflow" subtitle="Sample QC · Library Prep · Run Tracking · Bioinformatics" />
-      <DataTable columns={columns} rows={rows} loading={loading} total={total} page={page} onPageChange={setPage} emptyMessage="No records yet." />
-    </div>
-  );
-}
+const config = {
+  "slug": "ngs-workflow",
+  "title": "NGS Workflow",
+  "subtitle": "Library Prep \u2192 Sequencing \u2192 Analysis \u00b7 Q30% \u00b7 Cluster Density",
+  "apiPath": "/diagnostic/ngs-workflow",
+  "regulations": [
+    {
+      "body": "CAP",
+      "citation": "NGS Work Group 18-Point Checklist",
+      "requirement": "Q30\u226580% pass. Cluster density, PF%, yield tracking. Pipeline version traceability."
+    }
+  ],
+  "columns": [
+    {
+      "key": "runDate",
+      "label": "Date",
+      "fmt": "date"
+    },
+    {
+      "key": "runId",
+      "label": "Run ID"
+    },
+    {
+      "key": "platform",
+      "label": "Platform"
+    },
+    {
+      "key": "runQuality",
+      "label": "Quality"
+    },
+    {
+      "key": "runStatus",
+      "label": "Status",
+      "fmt": "status"
+    }
+  ],
+  "formFields": [
+    {
+      "key": "runId",
+      "label": "Run ID",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "platform",
+      "label": "Platform",
+      "type": "select",
+      "required": true,
+      "options": [
+        "Illumina MiSeq",
+        "Illumina NextSeq",
+        "Illumina NovaSeq",
+        "Ion Torrent",
+        "Nanopore"
+      ]
+    },
+    {
+      "key": "panelName",
+      "label": "Panel",
+      "type": "text"
+    },
+    {
+      "key": "sampleCount",
+      "label": "Samples",
+      "type": "number"
+    },
+    {
+      "key": "q30Pct",
+      "label": "Q30 %",
+      "type": "number"
+    },
+    {
+      "key": "notes",
+      "label": "Notes",
+      "type": "textarea",
+      "span": 2
+    }
+  ]
+};
+
+export default function Page() {{
+  return <FeatureCrudPage config={{config}} />;
+}}

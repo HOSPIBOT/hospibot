@@ -1,21 +1,81 @@
 'use client';
-import React, { useMemo } from 'react';
-import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
-import { PageHeader, DataTable, StatusPill, useList, fmtDate, TEAL } from '../compliance/_components';
+import FeatureCrudPage from '../_shared/FeatureCrudPage';
 
-export default function Page() {
-  const gate = useFeatureGate('health-camps');
-  if (gate.locked) return <FeatureLockedBlock gate={gate} />;
-  const { rows, total, loading, page, setPage } = useList('/diagnostic/health-camps');
-  const columns = useMemo(() => [
-    { key: 'createdAt', label: 'Date', render: (r: any) => fmtDate(r.createdAt) },
-    { key: 'title', label: 'Title' },
-    { key: 'status', label: 'Status', render: (r: any) => <StatusPill status={r.status} map={{ active: { bg: '#ecfdf5', fg: '#059669', label: 'Active' }, draft: { bg: '#f1f5f9', fg: '#475569', label: 'Draft' }, completed: { bg: '#dbeafe', fg: '#1e40af', label: 'Completed' }, planned: { bg: '#fef3c7', fg: '#92400e', label: 'Planned' }, pending: { bg: '#fef3c7', fg: '#92400e', label: 'Pending' }, reported: { bg: '#ecfdf5', fg: '#059669', label: 'Reported' } }} /> },
-  ], []);
-  return (
-    <div style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
-      <PageHeader title="Health Camps" subtitle="Corporate Camps · Venue Planning · Test Menus · Staffing" />
-      <DataTable columns={columns} rows={rows} loading={loading} total={total} page={page} onPageChange={setPage} emptyMessage="No records yet." />
-    </div>
-  );
-}
+const config = {
+  "slug": "health-camps",
+  "title": "Health Camps",
+  "subtitle": "Venue \u00b7 Test Menu \u00b7 Staffing \u00b7 Registration",
+  "apiPath": "/diagnostic/health-camps",
+  "regulations": [
+    {
+      "body": "MoLE",
+      "citation": "Factories Act 1948, Forms 32/33",
+      "requirement": "On-site/off-site camp planning. Staffing roster. Registration vs completion tracking."
+    }
+  ],
+  "columns": [
+    {
+      "key": "campDate",
+      "label": "Date",
+      "fmt": "date"
+    },
+    {
+      "key": "campName",
+      "label": "Camp"
+    },
+    {
+      "key": "corporateClient",
+      "label": "Client"
+    },
+    {
+      "key": "status",
+      "label": "Status",
+      "fmt": "status"
+    }
+  ],
+  "formFields": [
+    {
+      "key": "campName",
+      "label": "Camp Name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "campDate",
+      "label": "Camp Date",
+      "type": "date",
+      "required": true
+    },
+    {
+      "key": "campType",
+      "label": "Type",
+      "type": "select",
+      "options": [
+        "corporate",
+        "community",
+        "government",
+        "school"
+      ]
+    },
+    {
+      "key": "venue",
+      "label": "Venue",
+      "type": "text"
+    },
+    {
+      "key": "expectedParticipants",
+      "label": "Expected Participants",
+      "type": "number"
+    },
+    {
+      "key": "notes",
+      "label": "Notes",
+      "type": "textarea",
+      "span": 2
+    }
+  ]
+};
+
+export default function Page() {{
+  return <FeatureCrudPage config={{config}} />;
+}}

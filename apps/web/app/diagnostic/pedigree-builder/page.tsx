@@ -1,21 +1,76 @@
 'use client';
-import React, { useMemo } from 'react';
-import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
-import { PageHeader, DataTable, StatusPill, useList, fmtDate, TEAL } from '../compliance/_components';
+import FeatureCrudPage from '../_shared/FeatureCrudPage';
 
-export default function Page() {
-  const gate = useFeatureGate('pedigree-builder');
-  if (gate.locked) return <FeatureLockedBlock gate={gate} />;
-  const { rows, total, loading, page, setPage } = useList('/diagnostic/pedigree-builder');
-  const columns = useMemo(() => [
-    { key: 'createdAt', label: 'Date', render: (r: any) => fmtDate(r.createdAt) },
-    { key: 'title', label: 'Title' },
-    { key: 'status', label: 'Status', render: (r: any) => <StatusPill status={r.status} map={{ active: { bg: '#ecfdf5', fg: '#059669', label: 'Active' }, draft: { bg: '#f1f5f9', fg: '#475569', label: 'Draft' }, completed: { bg: '#dbeafe', fg: '#1e40af', label: 'Completed' }, planned: { bg: '#fef3c7', fg: '#92400e', label: 'Planned' }, pending: { bg: '#fef3c7', fg: '#92400e', label: 'Pending' }, reported: { bg: '#ecfdf5', fg: '#059669', label: 'Reported' } }} /> },
-  ], []);
-  return (
-    <div style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
-      <PageHeader title="Pedigree Builder" subtitle="Family Tree · Standard Notation · Hereditary Disease Risk" />
-      <DataTable columns={columns} rows={rows} loading={loading} total={total} page={page} onPageChange={setPage} emptyMessage="No records yet." />
-    </div>
-  );
-}
+const config = {
+  "slug": "pedigree-builder",
+  "title": "Pedigree Builder",
+  "subtitle": "NHGRI Notation \u00b7 Inheritance \u00b7 Family Tree",
+  "apiPath": "/diagnostic/pedigree-builder",
+  "regulations": [
+    {
+      "body": "NHGRI",
+      "citation": "Standard Pedigree Notation",
+      "requirement": "NHGRI notation. Inheritance patterns: AD/AR/XL/Mito. Consanguinity tracking."
+    }
+  ],
+  "columns": [
+    {
+      "key": "createdAt",
+      "label": "Date",
+      "fmt": "date"
+    },
+    {
+      "key": "probandName",
+      "label": "Proband"
+    },
+    {
+      "key": "inheritancePattern",
+      "label": "Pattern"
+    },
+    {
+      "key": "status",
+      "label": "Status",
+      "fmt": "status"
+    }
+  ],
+  "formFields": [
+    {
+      "key": "probandName",
+      "label": "Proband Name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "condition",
+      "label": "Condition",
+      "type": "text"
+    },
+    {
+      "key": "inheritancePattern",
+      "label": "Inheritance",
+      "type": "select",
+      "options": [
+        "AD",
+        "AR",
+        "X-Linked",
+        "Mitochondrial",
+        "Multifactorial"
+      ]
+    },
+    {
+      "key": "generations",
+      "label": "Generations",
+      "type": "number"
+    },
+    {
+      "key": "notes",
+      "label": "Notes",
+      "type": "textarea",
+      "span": 2
+    }
+  ]
+};
+
+export default function Page() {{
+  return <FeatureCrudPage config={{config}} />;
+}}

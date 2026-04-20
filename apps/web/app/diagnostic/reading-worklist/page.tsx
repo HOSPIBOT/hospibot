@@ -1,21 +1,77 @@
 'use client';
-import React, { useMemo } from 'react';
-import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
-import { PageHeader, DataTable, StatusPill, useList, fmtDate, TEAL } from '../compliance/_components';
+import FeatureCrudPage from '../_shared/FeatureCrudPage';
 
-export default function Page() {
-  const gate = useFeatureGate('reading-worklist');
-  if (gate.locked) return <FeatureLockedBlock gate={gate} />;
-  const { rows, total, loading, page, setPage } = useList('/diagnostic/reading-worklist');
-  const columns = useMemo(() => [
-    { key: 'createdAt', label: 'Date', render: (r: any) => fmtDate(r.createdAt) },
-    { key: 'title', label: 'Title' },
-    { key: 'status', label: 'Status', render: (r: any) => <StatusPill status={r.status} map={{ active: { bg: '#ecfdf5', fg: '#059669', label: 'Active' }, draft: { bg: '#f1f5f9', fg: '#475569', label: 'Draft' }, completed: { bg: '#dbeafe', fg: '#1e40af', label: 'Completed' }, planned: { bg: '#fef3c7', fg: '#92400e', label: 'Planned' }, pending: { bg: '#fef3c7', fg: '#92400e', label: 'Pending' }, reported: { bg: '#ecfdf5', fg: '#059669', label: 'Reported' } }} /> },
-  ], []);
-  return (
-    <div style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
-      <PageHeader title="Reading Worklist" subtitle="Tele-Radiology Queue · Priority Flagging · SLA Timers" />
-      <DataTable columns={columns} rows={rows} loading={loading} total={total} page={page} onPageChange={setPage} emptyMessage="No records yet." />
-    </div>
-  );
-}
+const config = {
+  "slug": "reading-worklist",
+  "title": "Reading Worklist",
+  "subtitle": "Priority Queue \u00b7 Study Lifecycle \u00b7 Critical Finding Flag",
+  "apiPath": "/diagnostic/reading-worklist",
+  "regulations": [
+    {
+      "body": "NABL",
+      "citation": "ISO 15189:2022",
+      "requirement": "Priority-ordered queue. Study lifecycle tracking. Critical finding flag and communication protocol."
+    }
+  ],
+  "columns": [
+    {
+      "key": "createdAt",
+      "label": "Date",
+      "fmt": "date"
+    },
+    {
+      "key": "patientName",
+      "label": "Patient"
+    },
+    {
+      "key": "modality",
+      "label": "Modality"
+    },
+    {
+      "key": "status",
+      "label": "Status",
+      "fmt": "status"
+    }
+  ],
+  "formFields": [
+    {
+      "key": "patientName",
+      "label": "Patient Name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "modality",
+      "label": "Modality",
+      "type": "select",
+      "options": [
+        "X-Ray",
+        "CT",
+        "MRI",
+        "USG",
+        "Mammography"
+      ],
+      "required": true
+    },
+    {
+      "key": "priority",
+      "label": "Priority",
+      "type": "select",
+      "options": [
+        "STAT",
+        "Urgent",
+        "Routine"
+      ]
+    },
+    {
+      "key": "notes",
+      "label": "Notes",
+      "type": "textarea",
+      "span": 2
+    }
+  ]
+};
+
+export default function Page() {{
+  return <FeatureCrudPage config={{config}} />;
+}}

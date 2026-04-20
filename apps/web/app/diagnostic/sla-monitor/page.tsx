@@ -1,21 +1,70 @@
 'use client';
-import React, { useMemo } from 'react';
-import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
-import { PageHeader, DataTable, StatusPill, useList, fmtDate, TEAL } from '../compliance/_components';
+import FeatureCrudPage from '../_shared/FeatureCrudPage';
 
-export default function Page() {
-  const gate = useFeatureGate('sla-monitor');
-  if (gate.locked) return <FeatureLockedBlock gate={gate} />;
-  const { rows, total, loading, page, setPage } = useList('/diagnostic/sla-monitor');
-  const columns = useMemo(() => [
-    { key: 'createdAt', label: 'Date', render: (r: any) => fmtDate(r.createdAt) },
-    { key: 'title', label: 'Title' },
-    { key: 'status', label: 'Status', render: (r: any) => <StatusPill status={r.status} map={{ active: { bg: '#ecfdf5', fg: '#059669', label: 'Active' }, draft: { bg: '#f1f5f9', fg: '#475569', label: 'Draft' }, completed: { bg: '#dbeafe', fg: '#1e40af', label: 'Completed' }, planned: { bg: '#fef3c7', fg: '#92400e', label: 'Planned' }, pending: { bg: '#fef3c7', fg: '#92400e', label: 'Pending' }, reported: { bg: '#ecfdf5', fg: '#059669', label: 'Reported' } }} /> },
-  ], []);
-  return (
-    <div style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
-      <PageHeader title="SLA Monitor" subtitle="Live SLA Tracking · Breach Alerts · Monthly Reports" />
-      <DataTable columns={columns} rows={rows} loading={loading} total={total} page={page} onPageChange={setPage} emptyMessage="No records yet." />
-    </div>
-  );
-}
+const config = {
+  "slug": "sla-monitor",
+  "title": "SLA Monitor",
+  "subtitle": "STAT 30min \u00b7 Priority 3hr \u00b7 Routine 8hr \u00b7 Breach Detection",
+  "apiPath": "/diagnostic/sla-monitor",
+  "regulations": [
+    {
+      "body": "NABL",
+      "citation": "ISO 15189:2022 \u00a77.4",
+      "requirement": "Auto TAT breach detection. STAT: 30min, Priority: 3hr, Routine: 8hr. Compliance rate tracking."
+    }
+  ],
+  "columns": [
+    {
+      "key": "createdAt",
+      "label": "Date",
+      "fmt": "date"
+    },
+    {
+      "key": "studyType",
+      "label": "Study"
+    },
+    {
+      "key": "tatMinutes",
+      "label": "TAT (min)"
+    },
+    {
+      "key": "status",
+      "label": "Status",
+      "fmt": "status"
+    }
+  ],
+  "formFields": [
+    {
+      "key": "studyType",
+      "label": "Study Type",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "priority",
+      "label": "Priority",
+      "type": "select",
+      "options": [
+        "STAT",
+        "Priority",
+        "Routine"
+      ],
+      "required": true
+    },
+    {
+      "key": "tatMinutes",
+      "label": "TAT (minutes)",
+      "type": "number"
+    },
+    {
+      "key": "notes",
+      "label": "Notes",
+      "type": "textarea",
+      "span": 2
+    }
+  ]
+};
+
+export default function Page() {{
+  return <FeatureCrudPage config={{config}} />;
+}}

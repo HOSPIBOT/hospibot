@@ -1,21 +1,80 @@
 'use client';
-import React, { useState, useMemo } from 'react';
-import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
-import { PageHeader, DataTable, StatusPill, useList, fmtDate, TEAL } from '../compliance/_components';
+import FeatureCrudPage from '../_shared/FeatureCrudPage';
 
-export default function Page() {
-  const gate = useFeatureGate('field-agents');
-  if (gate.locked) return <FeatureLockedBlock gate={gate} />;
-  const { rows, total, loading, page, setPage } = useList('/diagnostic/field-agents');
-  const columns = useMemo(() => [
-    { key: 'createdAt', label: 'Date', render: (r: any) => fmtDate(r.createdAt) },
-    { key: 'title', label: 'Title' },
-    { key: 'status', label: 'Status', render: (r: any) => <StatusPill status={r.status} map={{ active: { bg: '#ecfdf5', fg: '#059669', label: 'Active' }, draft: { bg: '#f1f5f9', fg: '#475569', label: 'Draft' }, completed: { bg: '#dbeafe', fg: '#1e40af', label: 'Completed' }, planned: { bg: '#fef3c7', fg: '#92400e', label: 'Planned' }, received: { bg: '#e0e7ff', fg: '#4338ca', label: 'Received' }, assigned: { bg: '#fef3c7', fg: '#92400e', label: 'Assigned' } }} /> },
-  ], []);
-  return (
-    <div style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
-      <PageHeader title="Field Agents — Collection Staff" subtitle="Agent Tracking · GPS · Zone Assignment · Collection Counts" />
-      <DataTable columns={columns} rows={rows} loading={loading} total={total} page={page} onPageChange={setPage} emptyMessage="No records yet. This feature is ready for data entry." />
-    </div>
-  );
-}
+const config = {
+  "slug": "field-agents",
+  "title": "Field Agents",
+  "subtitle": "Phlebotomist Tracking \u00b7 GPS \u00b7 DMLT Cert \u00b7 Cold Box",
+  "apiPath": "/diagnostic/field-agents",
+  "regulations": [
+    {
+      "body": "TRAI",
+      "citation": "Phlebotomist ID Compliance",
+      "requirement": "DMLT certification. GPS tracking. Cold box assignment. Zone-based routing."
+    }
+  ],
+  "columns": [
+    {
+      "key": "createdAt",
+      "label": "Date",
+      "fmt": "date"
+    },
+    {
+      "key": "agentName",
+      "label": "Agent"
+    },
+    {
+      "key": "zone",
+      "label": "Zone"
+    },
+    {
+      "key": "status",
+      "label": "Status",
+      "fmt": "status"
+    }
+  ],
+  "formFields": [
+    {
+      "key": "agentName",
+      "label": "Agent Name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "agentPhone",
+      "label": "Phone",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "dmltCertNo",
+      "label": "DMLT Cert No",
+      "type": "text"
+    },
+    {
+      "key": "zone",
+      "label": "Zone",
+      "type": "text"
+    },
+    {
+      "key": "city",
+      "label": "City",
+      "type": "text"
+    },
+    {
+      "key": "coldBoxAssigned",
+      "label": "Cold Box",
+      "type": "checkbox"
+    },
+    {
+      "key": "notes",
+      "label": "Notes",
+      "type": "textarea",
+      "span": 2
+    }
+  ]
+};
+
+export default function Page() {{
+  return <FeatureCrudPage config={{config}} />;
+}}

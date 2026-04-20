@@ -1,21 +1,83 @@
 'use client';
-import React, { useMemo } from 'react';
-import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
-import { PageHeader, DataTable, StatusPill, useList, fmtDate, TEAL } from '../compliance/_components';
+import FeatureCrudPage from '../_shared/FeatureCrudPage';
 
-export default function Page() {
-  const gate = useFeatureGate('partner-labs');
-  if (gate.locked) return <FeatureLockedBlock gate={gate} />;
-  const { rows, total, loading, page, setPage } = useList('/diagnostic/partner-labs');
-  const columns = useMemo(() => [
-    { key: 'createdAt', label: 'Date', render: (r: any) => fmtDate(r.createdAt) },
-    { key: 'title', label: 'Title' },
-    { key: 'status', label: 'Status', render: (r: any) => <StatusPill status={r.status} map={{ active: { bg: '#ecfdf5', fg: '#059669', label: 'Active' }, draft: { bg: '#f1f5f9', fg: '#475569', label: 'Draft' }, completed: { bg: '#dbeafe', fg: '#1e40af', label: 'Completed' }, planned: { bg: '#fef3c7', fg: '#92400e', label: 'Planned' }, pending: { bg: '#fef3c7', fg: '#92400e', label: 'Pending' }, reported: { bg: '#ecfdf5', fg: '#059669', label: 'Reported' } }} /> },
-  ], []);
-  return (
-    <div style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
-      <PageHeader title="Partner Labs" subtitle="Lab Relationships · Rate Agreements · TAT · Sample Transit" />
-      <DataTable columns={columns} rows={rows} loading={loading} total={total} page={page} onPageChange={setPage} emptyMessage="No records yet." />
-    </div>
-  );
-}
+const config = {
+  "slug": "partner-labs",
+  "title": "Partner Labs",
+  "subtitle": "Referral Lab \u00b7 Rate Cards \u00b7 TAT SLA \u00b7 NABL Accreditation",
+  "apiPath": "/diagnostic/partner-labs",
+  "regulations": [
+    {
+      "body": "NABL",
+      "citation": "112A \u00a76.8",
+      "requirement": "Referral lab MUST be NABL-accredited. Rate card management. TAT SLA monitoring."
+    }
+  ],
+  "columns": [
+    {
+      "key": "createdAt",
+      "label": "Date",
+      "fmt": "date"
+    },
+    {
+      "key": "labName",
+      "label": "Lab"
+    },
+    {
+      "key": "partnerType",
+      "label": "Type"
+    },
+    {
+      "key": "nablAccredited",
+      "label": "NABL"
+    },
+    {
+      "key": "status",
+      "label": "Status",
+      "fmt": "status"
+    }
+  ],
+  "formFields": [
+    {
+      "key": "labName",
+      "label": "Lab Name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "partnerType",
+      "label": "Type",
+      "type": "select",
+      "options": [
+        "referral",
+        "outsource",
+        "reciprocal"
+      ]
+    },
+    {
+      "key": "nablAccredited",
+      "label": "NABL Accredited",
+      "type": "checkbox"
+    },
+    {
+      "key": "contactPerson",
+      "label": "Contact",
+      "type": "text"
+    },
+    {
+      "key": "routineTatHours",
+      "label": "Routine TAT (hrs)",
+      "type": "number"
+    },
+    {
+      "key": "notes",
+      "label": "Notes",
+      "type": "textarea",
+      "span": 2
+    }
+  ]
+};
+
+export default function Page() {{
+  return <FeatureCrudPage config={{config}} />;
+}}

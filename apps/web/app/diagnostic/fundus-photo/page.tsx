@@ -1,21 +1,91 @@
 'use client';
-import React, { useMemo } from 'react';
-import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
-import { PageHeader, DataTable, StatusPill, useList, fmtDate, TEAL } from '../compliance/_components';
+import FeatureCrudPage from '../_shared/FeatureCrudPage';
 
-export default function Page() {
-  const gate = useFeatureGate('fundus-photo');
-  if (gate.locked) return <FeatureLockedBlock gate={gate} />;
-  const { rows, total, loading, page, setPage } = useList('/diagnostic/fundus-photo');
-  const columns = useMemo(() => [
-    { key: 'createdAt', label: 'Date', render: (r: any) => fmtDate(r.createdAt) },
-    { key: 'title', label: 'Title' },
-    { key: 'status', label: 'Status', render: (r: any) => <StatusPill status={r.status} map={{ active: { bg: '#ecfdf5', fg: '#059669', label: 'Active' }, draft: { bg: '#f1f5f9', fg: '#475569', label: 'Draft' }, completed: { bg: '#dbeafe', fg: '#1e40af', label: 'Completed' }, planned: { bg: '#fef3c7', fg: '#92400e', label: 'Planned' }, pending: { bg: '#fef3c7', fg: '#92400e', label: 'Pending' }, reported: { bg: '#ecfdf5', fg: '#059669', label: 'Reported' } }} /> },
-  ], []);
-  return (
-    <div style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
-      <PageHeader title="Fundus Photography" subtitle="Retinal Imaging · FFA · ICG · DR/AMD Screening" />
-      <DataTable columns={columns} rows={rows} loading={loading} total={total} page={page} onPageChange={setPage} emptyMessage="No records yet." />
-    </div>
-  );
-}
+const config = {
+  "slug": "fundus-photo",
+  "title": "Fundus Photography",
+  "subtitle": "DR Grading \u00b7 ETDRS \u00b7 DME Detection \u00b7 Screening",
+  "apiPath": "/diagnostic/fundus-photo",
+  "regulations": [
+    {
+      "body": "RSSDI/ICO",
+      "citation": "DR Screening Guidelines",
+      "requirement": "DR grading: No DR/Mild-Mod-Severe NPDR/PDR. DME detection. ETDRS standard."
+    }
+  ],
+  "columns": [
+    {
+      "key": "photoDate",
+      "label": "Date",
+      "fmt": "date"
+    },
+    {
+      "key": "patientName",
+      "label": "Patient"
+    },
+    {
+      "key": "eye",
+      "label": "Eye"
+    },
+    {
+      "key": "drGrade",
+      "label": "DR Grade"
+    },
+    {
+      "key": "status",
+      "label": "Status",
+      "fmt": "status"
+    }
+  ],
+  "formFields": [
+    {
+      "key": "patientName",
+      "label": "Patient Name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "eye",
+      "label": "Eye",
+      "type": "select",
+      "required": true,
+      "options": [
+        "OD",
+        "OS",
+        "OU"
+      ]
+    },
+    {
+      "key": "drGrade",
+      "label": "DR Grade",
+      "type": "select",
+      "options": [
+        "No DR",
+        "Mild NPDR",
+        "Moderate NPDR",
+        "Severe NPDR",
+        "PDR"
+      ]
+    },
+    {
+      "key": "dmePresent",
+      "label": "DME Present",
+      "type": "checkbox"
+    },
+    {
+      "key": "mydriatic",
+      "label": "Mydriatic",
+      "type": "checkbox"
+    },
+    {
+      "key": "notes",
+      "label": "Notes",
+      "type": "textarea",
+      "span": 2
+    }
+  ]
+};
+
+export default function Page() {{
+  return <FeatureCrudPage config={{config}} />;
+}}

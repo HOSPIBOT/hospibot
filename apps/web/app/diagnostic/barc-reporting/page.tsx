@@ -1,21 +1,71 @@
 'use client';
-import React, { useMemo } from 'react';
-import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
-import { PageHeader, DataTable, StatusPill, useList, fmtDate, TEAL } from '../compliance/_components';
+import FeatureCrudPage from '../_shared/FeatureCrudPage';
 
-export default function Page() {
-  const gate = useFeatureGate('barc-reporting');
-  if (gate.locked) return <FeatureLockedBlock gate={gate} />;
-  const { rows, total, loading, page, setPage } = useList('/diagnostic/barc-reporting');
-  const columns = useMemo(() => [
-    { key: 'createdAt', label: 'Date', render: (r: any) => fmtDate(r.createdAt) },
-    { key: 'title', label: 'Title' },
-    { key: 'status', label: 'Status', render: (r: any) => <StatusPill status={r.status} map={{ active: { bg: '#ecfdf5', fg: '#059669', label: 'Active' }, draft: { bg: '#f1f5f9', fg: '#475569', label: 'Draft' }, completed: { bg: '#dbeafe', fg: '#1e40af', label: 'Completed' }, planned: { bg: '#fef3c7', fg: '#92400e', label: 'Planned' }, pending: { bg: '#fef3c7', fg: '#92400e', label: 'Pending' }, reported: { bg: '#ecfdf5', fg: '#059669', label: 'Reported' } }} /> },
-  ], []);
-  return (
-    <div style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
-      <PageHeader title="BARC Reporting" subtitle="Radioisotope Inventory · Waste Disposal · AERB Compliance" />
-      <DataTable columns={columns} rows={rows} loading={loading} total={total} page={page} onPageChange={setPage} emptyMessage="No records yet." />
-    </div>
-  );
-}
+const config = {
+  "slug": "barc-reporting",
+  "title": "BARC / AERB Reporting",
+  "subtitle": "Annual Returns \u00b7 Dose Monitoring \u00b7 Equipment QA \u00b7 eLORA",
+  "apiPath": "/diagnostic/barc-reporting",
+  "regulations": [
+    {
+      "body": "AERB",
+      "citation": "SC-3 Rev.2, AE(RP) Rules 2004",
+      "requirement": "Occupational dose: 20 mSv/yr avg 5yr. Personnel monitoring. Equipment QA every 2yr. eLORA portal."
+    }
+  ],
+  "columns": [
+    {
+      "key": "createdAt",
+      "label": "Date",
+      "fmt": "date"
+    },
+    {
+      "key": "reportType",
+      "label": "Type"
+    },
+    {
+      "key": "aerbLicenseNo",
+      "label": "License"
+    },
+    {
+      "key": "status",
+      "label": "Status",
+      "fmt": "status"
+    }
+  ],
+  "formFields": [
+    {
+      "key": "reportType",
+      "label": "Report Type",
+      "type": "select",
+      "required": true,
+      "options": [
+        "annual-return",
+        "excessive-exposure",
+        "equipment-qa",
+        "license-renewal",
+        "rso-report"
+      ]
+    },
+    {
+      "key": "aerbLicenseNo",
+      "label": "AERB License No",
+      "type": "text"
+    },
+    {
+      "key": "rsoName",
+      "label": "RSO Name",
+      "type": "text"
+    },
+    {
+      "key": "notes",
+      "label": "Notes",
+      "type": "textarea",
+      "span": 2
+    }
+  ]
+};
+
+export default function Page() {{
+  return <FeatureCrudPage config={{config}} />;
+}}

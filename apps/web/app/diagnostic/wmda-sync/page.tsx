@@ -1,21 +1,79 @@
 'use client';
-import React, { useMemo } from 'react';
-import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
-import { PageHeader, DataTable, StatusPill, useList, fmtDate, TEAL } from '../compliance/_components';
+import FeatureCrudPage from '../_shared/FeatureCrudPage';
 
-export default function Page() {
-  const gate = useFeatureGate('wmda-sync');
-  if (gate.locked) return <FeatureLockedBlock gate={gate} />;
-  const { rows, total, loading, page, setPage } = useList('/diagnostic/wmda-sync');
-  const columns = useMemo(() => [
-    { key: 'createdAt', label: 'Date', render: (r: any) => fmtDate(r.createdAt) },
-    { key: 'title', label: 'Title' },
-    { key: 'status', label: 'Status', render: (r: any) => <StatusPill status={r.status} map={{ active: { bg: '#ecfdf5', fg: '#059669', label: 'Active' }, draft: { bg: '#f1f5f9', fg: '#475569', label: 'Draft' }, completed: { bg: '#dbeafe', fg: '#1e40af', label: 'Completed' }, planned: { bg: '#fef3c7', fg: '#92400e', label: 'Planned' }, pending: { bg: '#fef3c7', fg: '#92400e', label: 'Pending' }, reported: { bg: '#ecfdf5', fg: '#059669', label: 'Reported' } }} /> },
-  ], []);
-  return (
-    <div style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
-      <PageHeader title="WMDA Sync" subtitle="Registry Synchronisation · Search Requests · Match Reports" />
-      <DataTable columns={columns} rows={rows} loading={loading} total={total} page={page} onPageChange={setPage} emptyMessage="No records yet." />
-    </div>
-  );
-}
+const config = {
+  "slug": "wmda-sync",
+  "title": "WMDA Sync",
+  "subtitle": "Donor Search \u00b7 HLA Matching \u00b7 Workup \u00b7 Transplant",
+  "apiPath": "/diagnostic/wmda-sync",
+  "regulations": [
+    {
+      "body": "WMDA",
+      "citation": "Donor Registry Standards",
+      "requirement": "HLA matching (A/B/C/DRB1/DQB1). Donor search \u2192 match \u2192 workup \u2192 collection \u2192 transplant."
+    }
+  ],
+  "columns": [
+    {
+      "key": "createdAt",
+      "label": "Date",
+      "fmt": "date"
+    },
+    {
+      "key": "patientName",
+      "label": "Patient"
+    },
+    {
+      "key": "searchStatus",
+      "label": "Search Status"
+    },
+    {
+      "key": "status",
+      "label": "Status",
+      "fmt": "status"
+    }
+  ],
+  "formFields": [
+    {
+      "key": "patientName",
+      "label": "Patient Name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "diagnosis",
+      "label": "Diagnosis",
+      "type": "text"
+    },
+    {
+      "key": "urgency",
+      "label": "Urgency",
+      "type": "select",
+      "options": [
+        "routine",
+        "urgent",
+        "emergency"
+      ]
+    },
+    {
+      "key": "hlaA",
+      "label": "HLA-A",
+      "type": "text"
+    },
+    {
+      "key": "hlaB",
+      "label": "HLA-B",
+      "type": "text"
+    },
+    {
+      "key": "notes",
+      "label": "Notes",
+      "type": "textarea",
+      "span": 2
+    }
+  ]
+};
+
+export default function Page() {{
+  return <FeatureCrudPage config={{config}} />;
+}}

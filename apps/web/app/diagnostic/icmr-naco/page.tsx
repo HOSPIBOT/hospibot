@@ -1,21 +1,77 @@
 'use client';
-import React, { useMemo } from 'react';
-import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
-import { PageHeader, DataTable, StatusPill, useList, fmtDate, TEAL } from '../compliance/_components';
+import FeatureCrudPage from '../_shared/FeatureCrudPage';
 
-export default function Page() {
-  const gate = useFeatureGate('icmr-naco');
-  if (gate.locked) return <FeatureLockedBlock gate={gate} />;
-  const { rows, total, loading, page, setPage } = useList('/diagnostic/icmr-naco');
-  const columns = useMemo(() => [
-    { key: 'createdAt', label: 'Date', render: (r: any) => fmtDate(r.createdAt) },
-    { key: 'title', label: 'Title' },
-    { key: 'status', label: 'Status', render: (r: any) => <StatusPill status={r.status} map={{ active: { bg: '#ecfdf5', fg: '#059669', label: 'Active' }, draft: { bg: '#f1f5f9', fg: '#475569', label: 'Draft' }, completed: { bg: '#dbeafe', fg: '#1e40af', label: 'Completed' }, planned: { bg: '#fef3c7', fg: '#92400e', label: 'Planned' }, pending: { bg: '#fef3c7', fg: '#92400e', label: 'Pending' }, reported: { bg: '#ecfdf5', fg: '#059669', label: 'Reported' } }} /> },
-  ], []);
-  return (
-    <div style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
-      <PageHeader title="ICMR / NACO Reports" subtitle="Molecular Surveillance · HIV Testing Reports · Auto-Generation" />
-      <DataTable columns={columns} rows={rows} loading={loading} total={total} page={page} onPageChange={setPage} emptyMessage="No records yet." />
-    </div>
-  );
-}
+const config = {
+  "slug": "icmr-naco",
+  "title": "ICMR / NACO Reports",
+  "subtitle": "HIV Testing \u00b7 Positivity Rate \u00b7 EQAS \u00b7 SACS Reporting",
+  "apiPath": "/diagnostic/icmr-naco",
+  "regulations": [
+    {
+      "body": "NACO",
+      "citation": "NACP Phase IV/V ICTC Guidelines",
+      "requirement": "HIV testing counts, auto positivity rate. Gender-disaggregated. EQAS panel tracking. SACS hierarchy."
+    }
+  ],
+  "columns": [
+    {
+      "key": "createdAt",
+      "label": "Date",
+      "fmt": "date"
+    },
+    {
+      "key": "reportType",
+      "label": "Type"
+    },
+    {
+      "key": "reportingPeriod",
+      "label": "Period"
+    },
+    {
+      "key": "status",
+      "label": "Status",
+      "fmt": "status"
+    }
+  ],
+  "formFields": [
+    {
+      "key": "reportType",
+      "label": "Report Type",
+      "type": "select",
+      "required": true,
+      "options": [
+        "sentinel-surveillance",
+        "viral-load",
+        "pptct",
+        "eqas",
+        "amr"
+      ]
+    },
+    {
+      "key": "reportingPeriod",
+      "label": "Reporting Period",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "totalTested",
+      "label": "Total Tested",
+      "type": "number"
+    },
+    {
+      "key": "totalPositive",
+      "label": "Total Positive",
+      "type": "number"
+    },
+    {
+      "key": "notes",
+      "label": "Notes",
+      "type": "textarea",
+      "span": 2
+    }
+  ]
+};
+
+export default function Page() {{
+  return <FeatureCrudPage config={{config}} />;
+}}

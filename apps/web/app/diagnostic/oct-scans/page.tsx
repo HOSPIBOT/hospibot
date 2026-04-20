@@ -1,21 +1,92 @@
 'use client';
-import React, { useMemo } from 'react';
-import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
-import { PageHeader, DataTable, StatusPill, useList, fmtDate, TEAL } from '../compliance/_components';
+import FeatureCrudPage from '../_shared/FeatureCrudPage';
 
-export default function Page() {
-  const gate = useFeatureGate('oct-scans');
-  if (gate.locked) return <FeatureLockedBlock gate={gate} />;
-  const { rows, total, loading, page, setPage } = useList('/diagnostic/oct-scans');
-  const columns = useMemo(() => [
-    { key: 'createdAt', label: 'Date', render: (r: any) => fmtDate(r.createdAt) },
-    { key: 'title', label: 'Title' },
-    { key: 'status', label: 'Status', render: (r: any) => <StatusPill status={r.status} map={{ active: { bg: '#ecfdf5', fg: '#059669', label: 'Active' }, draft: { bg: '#f1f5f9', fg: '#475569', label: 'Draft' }, completed: { bg: '#dbeafe', fg: '#1e40af', label: 'Completed' }, planned: { bg: '#fef3c7', fg: '#92400e', label: 'Planned' }, pending: { bg: '#fef3c7', fg: '#92400e', label: 'Pending' }, reported: { bg: '#ecfdf5', fg: '#059669', label: 'Reported' } }} /> },
-  ], []);
-  return (
-    <div style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
-      <PageHeader title="OCT Scans" subtitle="Retinal Layer Analysis · Macula · Glaucoma · Anterior Segment" />
-      <DataTable columns={columns} rows={rows} loading={loading} total={total} page={page} onPageChange={setPage} emptyMessage="No records yet." />
-    </div>
-  );
-}
+const config = {
+  "slug": "oct-scans",
+  "title": "OCT Scans",
+  "subtitle": "RNFL Thickness \u00b7 Macular Map \u00b7 Glaucoma/DME \u00b7 Signal \u22655",
+  "apiPath": "/diagnostic/oct-scans",
+  "regulations": [
+    {
+      "body": "Ophthalmology",
+      "citation": "ETDRS Grid, RNFL Standards",
+      "requirement": "Signal strength \u22655 for valid scan. RNFL thickness tracking. ETDRS 9-zone macular map."
+    }
+  ],
+  "columns": [
+    {
+      "key": "scanDate",
+      "label": "Date",
+      "fmt": "date"
+    },
+    {
+      "key": "patientName",
+      "label": "Patient"
+    },
+    {
+      "key": "eye",
+      "label": "Eye"
+    },
+    {
+      "key": "scanProtocol",
+      "label": "Protocol"
+    },
+    {
+      "key": "status",
+      "label": "Status",
+      "fmt": "status"
+    }
+  ],
+  "formFields": [
+    {
+      "key": "patientName",
+      "label": "Patient Name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "eye",
+      "label": "Eye",
+      "type": "select",
+      "required": true,
+      "options": [
+        "OD",
+        "OS",
+        "OU"
+      ]
+    },
+    {
+      "key": "scanProtocol",
+      "label": "Protocol",
+      "type": "select",
+      "options": [
+        "Macula",
+        "RNFL",
+        "ONH",
+        "GCC",
+        "Wide-Field"
+      ]
+    },
+    {
+      "key": "signalStrength",
+      "label": "Signal Strength",
+      "type": "number",
+      "placeholder": "\u22655 required"
+    },
+    {
+      "key": "rnflAvg",
+      "label": "RNFL Avg (\u00b5m)",
+      "type": "number"
+    },
+    {
+      "key": "notes",
+      "label": "Notes",
+      "type": "textarea",
+      "span": 2
+    }
+  ]
+};
+
+export default function Page() {{
+  return <FeatureCrudPage config={{config}} />;
+}}

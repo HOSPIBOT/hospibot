@@ -1,21 +1,93 @@
 'use client';
-import React, { useMemo } from 'react';
-import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
-import { PageHeader, DataTable, StatusPill, useList, fmtDate, TEAL } from '../compliance/_components';
+import FeatureCrudPage from '../_shared/FeatureCrudPage';
 
-export default function Page() {
-  const gate = useFeatureGate('perimetry');
-  if (gate.locked) return <FeatureLockedBlock gate={gate} />;
-  const { rows, total, loading, page, setPage } = useList('/diagnostic/perimetry');
-  const columns = useMemo(() => [
-    { key: 'createdAt', label: 'Date', render: (r: any) => fmtDate(r.createdAt) },
-    { key: 'title', label: 'Title' },
-    { key: 'status', label: 'Status', render: (r: any) => <StatusPill status={r.status} map={{ active: { bg: '#ecfdf5', fg: '#059669', label: 'Active' }, draft: { bg: '#f1f5f9', fg: '#475569', label: 'Draft' }, completed: { bg: '#dbeafe', fg: '#1e40af', label: 'Completed' }, planned: { bg: '#fef3c7', fg: '#92400e', label: 'Planned' }, pending: { bg: '#fef3c7', fg: '#92400e', label: 'Pending' }, reported: { bg: '#ecfdf5', fg: '#059669', label: 'Reported' } }} /> },
-  ], []);
-  return (
-    <div style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
-      <PageHeader title="Perimetry" subtitle="Visual Field Testing · Humphrey/Octopus · Glaucoma Progression" />
-      <DataTable columns={columns} rows={rows} loading={loading} total={total} page={page} onPageChange={setPage} emptyMessage="No records yet." />
-    </div>
-  );
-}
+const config = {
+  "slug": "perimetry",
+  "title": "Perimetry",
+  "subtitle": "Humphrey VF \u00b7 MD/PSD/VFI \u00b7 Glaucoma \u00b7 Reliability",
+  "apiPath": "/diagnostic/perimetry",
+  "regulations": [
+    {
+      "body": "Ophthalmology",
+      "citation": "Humphrey VF Standards",
+      "requirement": "Reliability: FL<20%, FP<15%, FN<33%. MD/PSD/VFI indices. GHT result."
+    }
+  ],
+  "columns": [
+    {
+      "key": "testDate",
+      "label": "Date",
+      "fmt": "date"
+    },
+    {
+      "key": "patientName",
+      "label": "Patient"
+    },
+    {
+      "key": "eye",
+      "label": "Eye"
+    },
+    {
+      "key": "testPattern",
+      "label": "Pattern"
+    },
+    {
+      "key": "status",
+      "label": "Status",
+      "fmt": "status"
+    }
+  ],
+  "formFields": [
+    {
+      "key": "patientName",
+      "label": "Patient Name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "eye",
+      "label": "Eye",
+      "type": "select",
+      "required": true,
+      "options": [
+        "OD",
+        "OS"
+      ]
+    },
+    {
+      "key": "testType",
+      "label": "Device",
+      "type": "select",
+      "options": [
+        "humphrey",
+        "goldmann",
+        "octopus"
+      ]
+    },
+    {
+      "key": "testPattern",
+      "label": "Pattern",
+      "type": "select",
+      "options": [
+        "24-2",
+        "30-2",
+        "10-2"
+      ]
+    },
+    {
+      "key": "meanDeviation",
+      "label": "MD (dB)",
+      "type": "number"
+    },
+    {
+      "key": "notes",
+      "label": "Notes",
+      "type": "textarea",
+      "span": 2
+    }
+  ]
+};
+
+export default function Page() {{
+  return <FeatureCrudPage config={{config}} />;
+}}

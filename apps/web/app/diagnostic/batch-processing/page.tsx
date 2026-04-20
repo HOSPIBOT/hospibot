@@ -1,21 +1,98 @@
 'use client';
-import React, { useMemo } from 'react';
-import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
-import { PageHeader, DataTable, StatusPill, useList, fmtDate, TEAL } from '../compliance/_components';
+import FeatureCrudPage from '../_shared/FeatureCrudPage';
 
-export default function Page() {
-  const gate = useFeatureGate('batch-processing');
-  if (gate.locked) return <FeatureLockedBlock gate={gate} />;
-  const { rows, total, loading, page, setPage } = useList('/diagnostic/batch-processing');
-  const columns = useMemo(() => [
-    { key: 'createdAt', label: 'Date', render: (r: any) => fmtDate(r.createdAt) },
-    { key: 'title', label: 'Title' },
-    { key: 'status', label: 'Status', render: (r: any) => <StatusPill status={r.status} map={{ active: { bg: '#ecfdf5', fg: '#059669', label: 'Active' }, draft: { bg: '#f1f5f9', fg: '#475569', label: 'Draft' }, completed: { bg: '#dbeafe', fg: '#1e40af', label: 'Completed' }, planned: { bg: '#fef3c7', fg: '#92400e', label: 'Planned' }, pending: { bg: '#fef3c7', fg: '#92400e', label: 'Pending' }, reported: { bg: '#ecfdf5', fg: '#059669', label: 'Reported' } }} /> },
-  ], []);
-  return (
-    <div style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
-      <PageHeader title="Batch Processing" subtitle="PCR Plates · NGS Runs · Multiplex Panel Processing" />
-      <DataTable columns={columns} rows={rows} loading={loading} total={total} page={page} onPageChange={setPage} emptyMessage="No records yet." />
-    </div>
-  );
-}
+const config = {
+  "slug": "batch-processing",
+  "title": "Batch Processing",
+  "subtitle": "PCR Plates \u00b7 NGS Runs \u00b7 NABL 2-Level QC",
+  "apiPath": "/diagnostic/batch-processing",
+  "regulations": [
+    {
+      "body": "NABL",
+      "citation": "112A / ISO 15189:2022 \u00a77.3.7",
+      "requirement": "Two levels of QC per batch mandatory. Ct value tracking. Reagent lot traceability."
+    }
+  ],
+  "columns": [
+    {
+      "key": "runDate",
+      "label": "Date",
+      "fmt": "date"
+    },
+    {
+      "key": "batchId",
+      "label": "Batch ID"
+    },
+    {
+      "key": "batchType",
+      "label": "Type"
+    },
+    {
+      "key": "qcPassed",
+      "label": "QC"
+    },
+    {
+      "key": "status",
+      "label": "Status",
+      "fmt": "status"
+    }
+  ],
+  "formFields": [
+    {
+      "key": "batchId",
+      "label": "Batch ID",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "batchType",
+      "label": "Batch Type",
+      "type": "select",
+      "required": true,
+      "options": [
+        "rt-pcr",
+        "conventional-pcr",
+        "ngs-library",
+        "multiplex"
+      ]
+    },
+    {
+      "key": "testName",
+      "label": "Test Name",
+      "type": "text"
+    },
+    {
+      "key": "sampleCount",
+      "label": "Sample Count",
+      "type": "number"
+    },
+    {
+      "key": "qcLevel1Result",
+      "label": "QC Level 1",
+      "type": "select",
+      "options": [
+        "pass",
+        "fail"
+      ]
+    },
+    {
+      "key": "qcLevel2Result",
+      "label": "QC Level 2",
+      "type": "select",
+      "options": [
+        "pass",
+        "fail"
+      ]
+    },
+    {
+      "key": "notes",
+      "label": "Notes",
+      "type": "textarea",
+      "span": 2
+    }
+  ]
+};
+
+export default function Page() {{
+  return <FeatureCrudPage config={{config}} />;
+}}

@@ -1,21 +1,81 @@
 'use client';
-import React, { useMemo } from 'react';
-import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
-import { PageHeader, DataTable, StatusPill, useList, fmtDate, TEAL } from '../compliance/_components';
+import FeatureCrudPage from '../_shared/FeatureCrudPage';
 
-export default function Page() {
-  const gate = useFeatureGate('opg-cbct');
-  if (gate.locked) return <FeatureLockedBlock gate={gate} />;
-  const { rows, total, loading, page, setPage } = useList('/diagnostic/opg-cbct');
-  const columns = useMemo(() => [
-    { key: 'createdAt', label: 'Date', render: (r: any) => fmtDate(r.createdAt) },
-    { key: 'title', label: 'Title' },
-    { key: 'status', label: 'Status', render: (r: any) => <StatusPill status={r.status} map={{ active: { bg: '#ecfdf5', fg: '#059669', label: 'Active' }, draft: { bg: '#f1f5f9', fg: '#475569', label: 'Draft' }, completed: { bg: '#dbeafe', fg: '#1e40af', label: 'Completed' }, planned: { bg: '#fef3c7', fg: '#92400e', label: 'Planned' }, pending: { bg: '#fef3c7', fg: '#92400e', label: 'Pending' }, reported: { bg: '#ecfdf5', fg: '#059669', label: 'Reported' } }} /> },
-  ], []);
-  return (
-    <div style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
-      <PageHeader title="OPG / CBCT" subtitle="Panoramic Imaging · Cone-Beam CT · Dental Report Templates" />
-      <DataTable columns={columns} rows={rows} loading={loading} total={total} page={page} onPageChange={setPage} emptyMessage="No records yet." />
-    </div>
-  );
-}
+const config = {
+  "slug": "opg-cbct",
+  "title": "OPG / CBCT",
+  "subtitle": "Dental Imaging \u00b7 Panoramic \u00b7 3D Cone Beam \u00b7 AERB Licensed",
+  "apiPath": "/diagnostic/opg-cbct",
+  "regulations": [
+    {
+      "body": "AERB",
+      "citation": "Dental Radiology Licensing",
+      "requirement": "AERB license mandatory. CBCT dose ~36\u00b5Sv. Pregnancy screening. Lead apron/thyroid shield."
+    }
+  ],
+  "columns": [
+    {
+      "key": "scanDate",
+      "label": "Date",
+      "fmt": "date"
+    },
+    {
+      "key": "patientName",
+      "label": "Patient"
+    },
+    {
+      "key": "scanType",
+      "label": "Type"
+    },
+    {
+      "key": "status",
+      "label": "Status",
+      "fmt": "status"
+    }
+  ],
+  "formFields": [
+    {
+      "key": "patientName",
+      "label": "Patient Name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "scanType",
+      "label": "Scan Type",
+      "type": "select",
+      "required": true,
+      "options": [
+        "opg",
+        "cbct",
+        "cephalogram",
+        "bitewing"
+      ]
+    },
+    {
+      "key": "referringDentist",
+      "label": "Referring Dentist",
+      "type": "text"
+    },
+    {
+      "key": "clinicalIndication",
+      "label": "Indication",
+      "type": "text"
+    },
+    {
+      "key": "pregnancyScreenDone",
+      "label": "Pregnancy Screen",
+      "type": "checkbox"
+    },
+    {
+      "key": "notes",
+      "label": "Notes",
+      "type": "textarea",
+      "span": 2
+    }
+  ]
+};
+
+export default function Page() {{
+  return <FeatureCrudPage config={{config}} />;
+}}

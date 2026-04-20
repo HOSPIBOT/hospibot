@@ -1,21 +1,84 @@
 'use client';
-import React, { useMemo } from 'react';
-import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
-import { PageHeader, DataTable, StatusPill, useList, fmtDate, TEAL } from '../compliance/_components';
+import FeatureCrudPage from '../_shared/FeatureCrudPage';
 
-export default function Page() {
-  const gate = useFeatureGate('dghs-reporting');
-  if (gate.locked) return <FeatureLockedBlock gate={gate} />;
-  const { rows, total, loading, page, setPage } = useList('/diagnostic/dghs-reporting');
-  const columns = useMemo(() => [
-    { key: 'createdAt', label: 'Date', render: (r: any) => fmtDate(r.createdAt) },
-    { key: 'title', label: 'Title' },
-    { key: 'status', label: 'Status', render: (r: any) => <StatusPill status={r.status} map={{ active: { bg: '#ecfdf5', fg: '#059669', label: 'Active' }, draft: { bg: '#f1f5f9', fg: '#475569', label: 'Draft' }, completed: { bg: '#dbeafe', fg: '#1e40af', label: 'Completed' }, planned: { bg: '#fef3c7', fg: '#92400e', label: 'Planned' }, pending: { bg: '#fef3c7', fg: '#92400e', label: 'Pending' }, reported: { bg: '#ecfdf5', fg: '#059669', label: 'Reported' } }} /> },
-  ], []);
-  return (
-    <div style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
-      <PageHeader title="DGHS Reporting" subtitle="Blood Bank Reporting · Director General of Health Services" />
-      <DataTable columns={columns} rows={rows} loading={loading} total={total} page={page} onPageChange={setPage} emptyMessage="No records yet." />
-    </div>
-  );
-}
+const config = {
+  "slug": "dghs-reporting",
+  "title": "DGHS Reporting",
+  "subtitle": "IDSP Forms S/P/L \u00b7 IHIP \u00b7 33+ Diseases \u00b7 AMR Surveillance",
+  "apiPath": "/diagnostic/dghs-reporting",
+  "regulations": [
+    {
+      "body": "DGHS/NCDC",
+      "citation": "IDSP/IHIP Reporting Guidelines",
+      "requirement": "Forms S (suspected), P (presumptive), L (lab confirmed). Weekly Mon-Sun. 33+ disease conditions."
+    }
+  ],
+  "columns": [
+    {
+      "key": "reportingWeekEnd",
+      "label": "Week End",
+      "fmt": "date"
+    },
+    {
+      "key": "reportForm",
+      "label": "Form"
+    },
+    {
+      "key": "diseaseName",
+      "label": "Disease"
+    },
+    {
+      "key": "casesReported",
+      "label": "Cases"
+    },
+    {
+      "key": "status",
+      "label": "Status",
+      "fmt": "status"
+    }
+  ],
+  "formFields": [
+    {
+      "key": "reportForm",
+      "label": "Form Type",
+      "type": "select",
+      "required": true,
+      "options": [
+        "S",
+        "P",
+        "L"
+      ]
+    },
+    {
+      "key": "diseaseName",
+      "label": "Disease",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "reportingWeekStart",
+      "label": "Week Start",
+      "type": "date"
+    },
+    {
+      "key": "reportingWeekEnd",
+      "label": "Week End",
+      "type": "date"
+    },
+    {
+      "key": "casesReported",
+      "label": "Cases",
+      "type": "number"
+    },
+    {
+      "key": "notes",
+      "label": "Notes",
+      "type": "textarea",
+      "span": 2
+    }
+  ]
+};
+
+export default function Page() {{
+  return <FeatureCrudPage config={{config}} />;
+}}

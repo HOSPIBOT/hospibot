@@ -1,21 +1,80 @@
 'use client';
-import React, { useMemo } from 'react';
-import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
-import { PageHeader, DataTable, StatusPill, useList, fmtDate, TEAL } from '../compliance/_components';
+import FeatureCrudPage from '../_shared/FeatureCrudPage';
 
-export default function Page() {
-  const gate = useFeatureGate('dtc-consumer');
-  if (gate.locked) return <FeatureLockedBlock gate={gate} />;
-  const { rows, total, loading, page, setPage } = useList('/diagnostic/dtc-consumer');
-  const columns = useMemo(() => [
-    { key: 'createdAt', label: 'Date', render: (r: any) => fmtDate(r.createdAt) },
-    { key: 'title', label: 'Title' },
-    { key: 'status', label: 'Status', render: (r: any) => <StatusPill status={r.status} map={{ active: { bg: '#ecfdf5', fg: '#059669', label: 'Active' }, draft: { bg: '#f1f5f9', fg: '#475569', label: 'Draft' }, completed: { bg: '#dbeafe', fg: '#1e40af', label: 'Completed' }, planned: { bg: '#fef3c7', fg: '#92400e', label: 'Planned' }, pending: { bg: '#fef3c7', fg: '#92400e', label: 'Pending' }, reported: { bg: '#ecfdf5', fg: '#059669', label: 'Reported' } }} /> },
-  ], []);
-  return (
-    <div style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
-      <PageHeader title="DTC Consumer Portal" subtitle="Ancestry · Traits · Pharmacogenomics · Health Risk Reports" />
-      <DataTable columns={columns} rows={rows} loading={loading} total={total} page={page} onPageChange={setPage} emptyMessage="No records yet." />
-    </div>
-  );
-}
+const config = {
+  "slug": "dtc-consumer",
+  "title": "DTC Consumer",
+  "subtitle": "Online Ordering \u00b7 Home Collection \u00b7 Digital Results \u00b7 DPDPA",
+  "apiPath": "/diagnostic/dtc-consumer",
+  "regulations": [
+    {
+      "body": "MeitY",
+      "citation": "DPDPA 2023",
+      "requirement": "Consumer data privacy. Consent management. Abnormal result follow-up. Digital report delivery."
+    }
+  ],
+  "columns": [
+    {
+      "key": "orderDate",
+      "label": "Date",
+      "fmt": "date"
+    },
+    {
+      "key": "consumerName",
+      "label": "Consumer"
+    },
+    {
+      "key": "packageName",
+      "label": "Package"
+    },
+    {
+      "key": "orderStatus",
+      "label": "Status",
+      "fmt": "status"
+    }
+  ],
+  "formFields": [
+    {
+      "key": "consumerName",
+      "label": "Consumer Name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "consumerPhone",
+      "label": "Phone",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "packageName",
+      "label": "Package",
+      "type": "text"
+    },
+    {
+      "key": "collectionType",
+      "label": "Collection",
+      "type": "select",
+      "options": [
+        "home-collection",
+        "walk-in",
+        "camp"
+      ]
+    },
+    {
+      "key": "consentGiven",
+      "label": "Consent Given",
+      "type": "checkbox"
+    },
+    {
+      "key": "notes",
+      "label": "Notes",
+      "type": "textarea",
+      "span": 2
+    }
+  ]
+};
+
+export default function Page() {{
+  return <FeatureCrudPage config={{config}} />;
+}}

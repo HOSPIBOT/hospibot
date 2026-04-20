@@ -1,21 +1,75 @@
 'use client';
-import React, { useMemo } from 'react';
-import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
-import { PageHeader, DataTable, StatusPill, useList, fmtDate, TEAL } from '../compliance/_components';
+import FeatureCrudPage from '../_shared/FeatureCrudPage';
 
-export default function Page() {
-  const gate = useFeatureGate('radiotracer-log');
-  if (gate.locked) return <FeatureLockedBlock gate={gate} />;
-  const { rows, total, loading, page, setPage } = useList('/diagnostic/radiotracer-log');
-  const columns = useMemo(() => [
-    { key: 'createdAt', label: 'Date', render: (r: any) => fmtDate(r.createdAt) },
-    { key: 'title', label: 'Title' },
-    { key: 'status', label: 'Status', render: (r: any) => <StatusPill status={r.status} map={{ active: { bg: '#ecfdf5', fg: '#059669', label: 'Active' }, draft: { bg: '#f1f5f9', fg: '#475569', label: 'Draft' }, completed: { bg: '#dbeafe', fg: '#1e40af', label: 'Completed' }, planned: { bg: '#fef3c7', fg: '#92400e', label: 'Planned' }, pending: { bg: '#fef3c7', fg: '#92400e', label: 'Pending' }, reported: { bg: '#ecfdf5', fg: '#059669', label: 'Reported' } }} /> },
-  ], []);
-  return (
-    <div style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
-      <PageHeader title="Radiotracer Log" subtitle="FDG Administration · Batch Tracking · Half-Life · Patient Dose" />
-      <DataTable columns={columns} rows={rows} loading={loading} total={total} page={page} onPageChange={setPage} emptyMessage="No records yet." />
-    </div>
-  );
-}
+const config = {
+  "slug": "radiotracer-log",
+  "title": "Radiotracer Log",
+  "subtitle": "FDG Administration \u00b7 Batch Tracking \u00b7 Half-Life \u00b7 AERB Dose Limits",
+  "apiPath": "/diagnostic/radiotracer-log",
+  "regulations": [
+    {
+      "body": "AERB",
+      "citation": "SC-2 Rev.2, AE(RP) Rules 2004",
+      "requirement": "Track radiotracer administration, batch numbers, patient dose (MBq), half-life decay. AERB dose limits enforced."
+    }
+  ],
+  "columns": [
+    {
+      "key": "runDate",
+      "label": "Date",
+      "fmt": "date"
+    },
+    {
+      "key": "batchId",
+      "label": "Batch ID"
+    },
+    {
+      "key": "testName",
+      "label": "Test"
+    },
+    {
+      "key": "status",
+      "label": "Status",
+      "fmt": "status"
+    }
+  ],
+  "formFields": [
+    {
+      "key": "batchId",
+      "label": "Batch ID",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "testName",
+      "label": "Test Name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "runDate",
+      "label": "Run Date",
+      "type": "date"
+    },
+    {
+      "key": "biosafetyLevel",
+      "label": "Biosafety Level",
+      "type": "select",
+      "options": [
+        "BSL-1",
+        "BSL-2",
+        "BSL-3"
+      ]
+    },
+    {
+      "key": "notes",
+      "label": "Notes",
+      "type": "textarea",
+      "span": 2
+    }
+  ]
+};
+
+export default function Page() {{
+  return <FeatureCrudPage config={{config}} />;
+}}

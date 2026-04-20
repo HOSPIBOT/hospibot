@@ -1,21 +1,95 @@
 'use client';
-import React, { useMemo } from 'react';
-import { useFeatureGate, FeatureLockedBlock } from '@/lib/feature-gate';
-import { PageHeader, DataTable, StatusPill, useList, fmtDate, TEAL } from '../compliance/_components';
+import FeatureCrudPage from '../_shared/FeatureCrudPage';
 
-export default function Page() {
-  const gate = useFeatureGate('kit-logistics');
-  if (gate.locked) return <FeatureLockedBlock gate={gate} />;
-  const { rows, total, loading, page, setPage } = useList('/diagnostic/kit-logistics');
-  const columns = useMemo(() => [
-    { key: 'createdAt', label: 'Date', render: (r: any) => fmtDate(r.createdAt) },
-    { key: 'title', label: 'Title' },
-    { key: 'status', label: 'Status', render: (r: any) => <StatusPill status={r.status} map={{ active: { bg: '#ecfdf5', fg: '#059669', label: 'Active' }, draft: { bg: '#f1f5f9', fg: '#475569', label: 'Draft' }, completed: { bg: '#dbeafe', fg: '#1e40af', label: 'Completed' }, planned: { bg: '#fef3c7', fg: '#92400e', label: 'Planned' }, pending: { bg: '#fef3c7', fg: '#92400e', label: 'Pending' }, reported: { bg: '#ecfdf5', fg: '#059669', label: 'Reported' } }} /> },
-  ], []);
-  return (
-    <div style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
-      <PageHeader title="Kit Logistics" subtitle="Saliva Kit Ordering · Shipping · Tracking · Return Logistics" />
-      <DataTable columns={columns} rows={rows} loading={loading} total={total} page={page} onPageChange={setPage} emptyMessage="No records yet." />
-    </div>
-  );
-}
+const config = {
+  "slug": "kit-logistics",
+  "title": "Kit Logistics",
+  "subtitle": "Reagent Inventory \u00b7 FEFO \u00b7 Cold Chain \u00b7 NABL \u00a76.6",
+  "apiPath": "/diagnostic/kit-logistics",
+  "regulations": [
+    {
+      "body": "NABL",
+      "citation": "112A \u00a76.6, ISO 15189:2022",
+      "requirement": "FEFO inventory. Lot tracking. CoA verification. Cold chain. Segregation: untested/accepted/expired/rejected."
+    }
+  ],
+  "columns": [
+    {
+      "key": "createdAt",
+      "label": "Date",
+      "fmt": "date"
+    },
+    {
+      "key": "itemName",
+      "label": "Item"
+    },
+    {
+      "key": "lotNumber",
+      "label": "Lot"
+    },
+    {
+      "key": "expiryAlert",
+      "label": "Expiry"
+    },
+    {
+      "key": "status",
+      "label": "Status",
+      "fmt": "status"
+    }
+  ],
+  "formFields": [
+    {
+      "key": "itemName",
+      "label": "Item Name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "category",
+      "label": "Category",
+      "type": "select",
+      "options": [
+        "reagent",
+        "consumable",
+        "calibrator",
+        "control",
+        "media"
+      ]
+    },
+    {
+      "key": "lotNumber",
+      "label": "Lot Number",
+      "type": "text"
+    },
+    {
+      "key": "manufacturer",
+      "label": "Manufacturer",
+      "type": "text"
+    },
+    {
+      "key": "expiryDate",
+      "label": "Expiry Date",
+      "type": "date"
+    },
+    {
+      "key": "quantityOnHand",
+      "label": "Qty On Hand",
+      "type": "number"
+    },
+    {
+      "key": "coldChainRequired",
+      "label": "Cold Chain",
+      "type": "checkbox"
+    },
+    {
+      "key": "notes",
+      "label": "Notes",
+      "type": "textarea",
+      "span": 2
+    }
+  ]
+};
+
+export default function Page() {{
+  return <FeatureCrudPage config={{config}} />;
+}}
