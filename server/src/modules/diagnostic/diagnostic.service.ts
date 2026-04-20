@@ -1434,8 +1434,6 @@ export class DiagnosticService {
     return { data, meta: { page: +page, limit: +limit, total } };
   }
 
-
-
   // ════════════════════════════════════════════════════════════════════════════
   // HEALTH PACKAGES
   // ════════════════════════════════════════════════════════════════════════════
@@ -1484,8 +1482,6 @@ export class DiagnosticService {
     });
     return packages.find((p: any) => p.id === packageId);
   }
-
-
 
   async seedDefaultAutomationRules(tenantId: string) {
     const DEFAULT_RULES = [
@@ -1811,7 +1807,6 @@ export class DiagnosticService {
       }
     } catch {}
   }
-}
 
   // ── Report Letterhead & Branding ──────────────────────────────────────────
 

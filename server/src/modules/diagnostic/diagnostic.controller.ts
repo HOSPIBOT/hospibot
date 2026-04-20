@@ -600,7 +600,6 @@ export class DiagnosticController {
   seedAutomationRules(@CurrentTenant() tenantId: string) {
     return this.svc.seedDefaultAutomationRules(tenantId);
   }
-}
 
   // ── Letterhead & Branding ─────────────────────────────────────────────────
 
