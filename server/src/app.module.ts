@@ -97,6 +97,11 @@ import { OpgCbctModule } from './modules/opg-cbct/opg-cbct.module';
 import { OctScansModule } from './modules/oct-scans/oct-scans.module';
 import { PerimetryModule } from './modules/perimetry/perimetry.module';
 import { FundusPhotoModule } from './modules/fundus-photo/fundus-photo.module';
+import { AllergenPanelsModule } from './modules/allergen-panels/allergen-panels.module';
+import { ImmunotherapyModule } from './modules/immunotherapy/immunotherapy.module';
+import { UrodynamicsModule } from './modules/urodynamics/urodynamics.module';
+import { WmdaSyncModule } from './modules/wmda-sync/wmda-sync.module';
+import { CdscoReportsModule } from './modules/cdsco-reports/cdsco-reports.module';
 
 @Module({
   imports: [
@@ -208,6 +213,11 @@ import { FundusPhotoModule } from './modules/fundus-photo/fundus-photo.module';
     OctScansModule,
     PerimetryModule,
     FundusPhotoModule,
+    AllergenPanelsModule,
+    ImmunotherapyModule,
+    UrodynamicsModule,
+    WmdaSyncModule,
+    CdscoReportsModule,
   ],
   controllers: [HealthController],
   providers: [StartupService, DbBootstrapService],
