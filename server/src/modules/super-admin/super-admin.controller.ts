@@ -205,12 +205,13 @@ export class SuperAdminController {
   @ApiOperation({ summary: 'Update gateway charges (Razorpay %, GST %, auto-disable days)' })
   updateGatewayCharges(@Body() dto: any, @Req() req: any) {
     return this.superAdminService.updateGatewayChargesConfig(dto, req.user?.id || 'admin');
+  }
 
-@Get('subscription-tracker')
-  @ApiOperation({ summary: 'Get subscription renewal tracker — due, overdue, expiring' })
+  @Get('subscription-tracker')
+  @ApiOperation({ summary: 'Get subscription renewal tracker' })
   getSubscriptionTracker() { return this.superAdminService.getSubscriptionTracker(); }
 
   @Post('auto-disable-overdue')
-  @ApiOperation({ summary: 'Auto-disable tenants overdue by more than configured days' })
+  @ApiOperation({ summary: 'Auto-disable overdue tenants' })
   autoDisable() { return this.superAdminService.autoDisableOverdueTenants(); }
 }
