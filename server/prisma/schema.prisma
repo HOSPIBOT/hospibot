@@ -3326,6 +3326,256 @@ model VariantRecord {
   @@map("variant_records")
 }
 
+
+// ==============================================
+// NGS RUN (CAP NGS Checklist, Illumina QC)
+// ==============================================
+
+model NgsRun {
+  id                    String    @id @default(uuid())
+  tenantId              String    @map("tenant_id")
+  runId                 String    @map("run_id")
+  platform              String
+  instrumentId          String?   @map("instrument_id")
+  instrumentName        String?   @map("instrument_name")
+  flowcellId            String?   @map("flowcell_id")
+  flowcellType          String?   @map("flowcell_type")
+  panelName             String?   @map("panel_name")
+  panelVersion          String?   @map("panel_version")
+  enrichmentMethod      String?   @map("enrichment_method")
+  sampleCount           Int?      @map("sample_count")
+  indexType             String?   @map("index_type")
+  libraryPrepKit        String?   @map("library_prep_kit")
+  libraryPrepDate       DateTime? @map("library_prep_date")
+  fragmentSizeBp        Int?      @map("fragment_size_bp")
+  libraryConcentration  Float?    @map("library_concentration")
+  libraryQcPassed       String?   @map("library_qc_passed")
+  poolingRatio          String?   @map("pooling_ratio")
+  runDate               DateTime  @map("run_date")
+  readLength            String?   @map("read_length")
+  readType              String?   @map("read_type")
+  clusterDensity        Float?    @map("cluster_density")
+  clustersPfPct         Float?    @map("clusters_pf_pct")
+  q30Pct                Float?    @map("q30_pct")
+  yieldGb               Float?    @map("yield_gb")
+  errorRate             Float?    @map("error_rate")
+  phasingPct            Float?    @map("phasing_pct")
+  prephasingPct         Float?    @map("prephasing_pct")
+  runQuality            String?   @map("run_quality")
+  pipelineName          String?   @map("pipeline_name")
+  pipelineVersion       String?   @map("pipeline_version")
+  referenceGenome       String?   @map("reference_genome")
+  avgCoverage           Float?    @map("avg_coverage")
+  pctTargetCovered20x   Float?    @map("pct_target_covered_20x")
+  totalVariantsCalled   Int?      @map("total_variants_called")
+  tiTvRatio             Float?    @map("ti_tv_ratio")
+  performedBy           String?   @map("performed_by")
+  reviewedBy            String?   @map("reviewed_by")
+  bioinformatician      String?
+  notes                 String?
+  runStatus             String    @default("library-prep") @map("run_status")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+  createdBy             String?   @map("created_by")
+  @@index([tenantId])
+  @@index([tenantId, runStatus])
+  @@map("ngs_runs")
+}
+
+// ==============================================
+// HEALTH RISK ASSESSMENT (Labour Code 2020, WHO)
+// ==============================================
+
+model HealthRiskAssessment {
+  id                      String    @id @default(uuid())
+  tenantId                String    @map("tenant_id")
+  patientId               String?   @map("patient_id")
+  patientName             String    @map("patient_name")
+  patientAge              Int?      @map("patient_age")
+  patientGender           String?   @map("patient_gender")
+  assessmentDate          DateTime  @map("assessment_date")
+  assessmentType          String    @default("comprehensive") @map("assessment_type")
+  employerId              String?   @map("employer_id")
+  employerName            String?   @map("employer_name")
+  heightCm                Float?    @map("height_cm")
+  weightKg                Float?    @map("weight_kg")
+  bmi                     Float?
+  bmiCategory             String?   @map("bmi_category")
+  waistCm                 Float?    @map("waist_cm")
+  systolicBp              Int?      @map("systolic_bp")
+  diastolicBp             Int?      @map("diastolic_bp")
+  restingHr               Int?      @map("resting_hr")
+  fastingGlucose          Float?    @map("fasting_glucose")
+  hba1c                   Float?
+  totalCholesterol        Float?    @map("total_cholesterol")
+  ldl                     Float?
+  hdl                     Float?
+  triglycerides           Float?
+  creatinine              Float?
+  smokingStatus           String?   @map("smoking_status")
+  alcoholFrequency        String?   @map("alcohol_frequency")
+  exerciseFrequency       String?   @map("exercise_frequency")
+  dietType                String?   @map("diet_type")
+  stressLevel             String?   @map("stress_level")
+  sleepHours              Float?    @map("sleep_hours")
+  familyHistoryDiabetes   Boolean   @default(false) @map("family_history_diabetes")
+  familyHistoryCardiac    Boolean   @default(false) @map("family_history_cardiac")
+  familyHistoryCancer     Boolean   @default(false) @map("family_history_cancer")
+  familyHistoryHypertension Boolean @default(false) @map("family_history_hypertension")
+  diabetesRisk            String?   @map("diabetes_risk")
+  cardiovascularRisk      String?   @map("cardiovascular_risk")
+  overallRiskScore        Float?    @map("overall_risk_score")
+  overallRiskLevel        String?   @map("overall_risk_level")
+  recommendations         Json?
+  referrals               Json?
+  followUpDate            DateTime? @map("follow_up_date")
+  assessedBy              String?   @map("assessed_by")
+  notes                   String?
+  status                  String    @default("completed")
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @updatedAt @map("updated_at")
+  createdBy               String?   @map("created_by")
+  @@index([tenantId])
+  @@index([tenantId, overallRiskLevel])
+  @@map("health_risk_assessments")
+}
+
+// ==============================================
+// CONSULT SCHEDULE (Post-Checkup Consultations)
+// ==============================================
+
+model ConsultSchedule {
+  id                  String    @id @default(uuid())
+  tenantId            String    @map("tenant_id")
+  patientId           String?   @map("patient_id")
+  patientName         String    @map("patient_name")
+  patientAge          Int?      @map("patient_age")
+  patientPhone        String?   @map("patient_phone")
+  consultType         String    @default("post-checkup") @map("consult_type")
+  consultDate         DateTime? @map("consult_date")
+  timeSlot            String?   @map("time_slot")
+  durationMin         Int       @default(15) @map("duration_min")
+  doctorName          String?   @map("doctor_name")
+  doctorSpecialty     String?   @map("doctor_specialty")
+  autoBooked          Boolean   @default(false) @map("auto_booked")
+  triggerReason       String?   @map("trigger_reason")
+  abnormalFindings    String?   @map("abnormal_findings")
+  healthCheckupId     String?   @map("health_checkup_id")
+  packageName         String?   @map("package_name")
+  chiefComplaint      String?   @map("chief_complaint")
+  consultationNotes   String?   @map("consultation_notes")
+  diagnosis           String?
+  prescriptionGiven   Boolean   @default(false) @map("prescription_given")
+  referralGiven       Boolean   @default(false) @map("referral_given")
+  referralTo          String?   @map("referral_to")
+  followUpAdvised     Boolean   @default(false) @map("follow_up_advised")
+  followUpDate        DateTime? @map("follow_up_date")
+  employerId          String?   @map("employer_id")
+  employerName        String?   @map("employer_name")
+  notes               String?
+  status              String    @default("scheduled")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  createdBy           String?   @map("created_by")
+  @@index([tenantId])
+  @@map("consult_schedules")
+}
+
+// ==============================================
+// HEALTH CAMP (Factories Act, Corporate Camps)
+// ==============================================
+
+model HealthCamp {
+  id                    String    @id @default(uuid())
+  tenantId              String    @map("tenant_id")
+  campName              String    @map("camp_name")
+  campType              String    @default("corporate") @map("camp_type")
+  campDate              DateTime  @map("camp_date")
+  campEndDate           DateTime? @map("camp_end_date")
+  venue                 String?
+  venueAddress          String?   @map("venue_address")
+  venueCity             String?   @map("venue_city")
+  onSite                Boolean   @default(true) @map("on_site")
+  corporateClient       String?   @map("corporate_client")
+  corporateContactPerson String?  @map("corporate_contact_person")
+  corporatePhone        String?   @map("corporate_phone")
+  contractId            String?   @map("contract_id")
+  testMenu              Json?     @map("test_menu")
+  packageName           String?   @map("package_name")
+  testCount             Int?      @map("test_count")
+  includesConsultation  Boolean   @default(false) @map("includes_consultation")
+  includesEcg           Boolean   @default(false) @map("includes_ecg")
+  includesXray          Boolean   @default(false) @map("includes_xray")
+  includesUsg           Boolean   @default(false) @map("includes_usg")
+  staffAssigned         Json?     @map("staff_assigned")
+  phlebotomistCount     Int?      @map("phlebotomist_count")
+  doctorCount           Int?      @map("doctor_count")
+  technicianCount       Int?      @map("technician_count")
+  coordinatorName       String?   @map("coordinator_name")
+  expectedParticipants  Int?      @map("expected_participants")
+  registeredCount       Int       @default(0) @map("registered_count")
+  completedCount        Int       @default(0) @map("completed_count")
+  noShowCount           Int       @default(0) @map("no_show_count")
+  equipmentList         Json?     @map("equipment_list")
+  coldChainRequired     Boolean   @default(false) @map("cold_chain_required")
+  perPersonRate         Float?    @map("per_person_rate")
+  totalBilledAmount     Float?    @map("total_billed_amount")
+  paymentStatus         String?   @map("payment_status")
+  notes                 String?
+  status                String    @default("planned")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+  createdBy             String?   @map("created_by")
+  @@index([tenantId])
+  @@map("health_camps")
+}
+
+// ==============================================
+// EMPLOYER PORTAL (Labour Code 2020, DPDPA 2023)
+// ==============================================
+
+model EmployerPortal {
+  id                      String    @id @default(uuid())
+  tenantId                String    @map("tenant_id")
+  employerName            String    @map("employer_name")
+  industryType            String?   @map("industry_type")
+  gstin                   String?
+  contactPerson           String?   @map("contact_person")
+  contactPhone            String?   @map("contact_phone")
+  contactEmail            String?   @map("contact_email")
+  address                 String?
+  city                    String?
+  state                   String?
+  contractId              String?   @map("contract_id")
+  contractStart           DateTime? @map("contract_start")
+  contractEnd             DateTime? @map("contract_end")
+  totalEmployees          Int?      @map("total_employees")
+  employeesAbove40        Int?      @map("employees_above_40")
+  screenedCount           Int       @default(0) @map("screened_count")
+  pendingCount            Int?      @map("pending_count")
+  utilizationPct          Float?    @map("utilization_pct")
+  packageName             String?   @map("package_name")
+  perEmployeeRate         Float?    @map("per_employee_rate")
+  labourCodeCompliant     Boolean   @default(false) @map("labour_code_compliant")
+  complianceCertIssued    Boolean   @default(false) @map("compliance_cert_issued")
+  complianceCertDate      DateTime? @map("compliance_cert_date")
+  factoriesActApplicable  Boolean   @default(false) @map("factories_act_applicable")
+  form32Submitted         Boolean   @default(false) @map("form32_submitted")
+  form33Submitted         Boolean   @default(false) @map("form33_submitted")
+  aggregateReport         Json?     @map("aggregate_report")
+  topRisks                Json?     @map("top_risks")
+  abnormalPct             Float?    @map("abnormal_pct")
+  portalLoginEnabled      Boolean   @default(false) @map("portal_login_enabled")
+  portalUsername           String?   @map("portal_username")
+  notes                   String?
+  status                  String    @default("active")
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @updatedAt @map("updated_at")
+  createdBy               String?   @map("created_by")
+  @@index([tenantId])
+  @@map("employer_portals")
+}
+
 // ==============================================
 // AUDIT LOG
 // ==============================================

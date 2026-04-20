@@ -82,6 +82,11 @@ import { IcmrNacoModule } from './modules/icmr-naco/icmr-naco.module';
 import { GeneticCounselingModule } from './modules/genetic-counseling/genetic-counseling.module';
 import { PedigreeBuilderModule } from './modules/pedigree-builder/pedigree-builder.module';
 import { VariantDatabaseModule } from './modules/variant-database/variant-database.module';
+import { NgsWorkflowModule } from './modules/ngs-workflow/ngs-workflow.module';
+import { HraModule } from './modules/hra/hra.module';
+import { ConsultScheduleModule } from './modules/consult-schedule/consult-schedule.module';
+import { HealthCampsModule } from './modules/health-camps/health-camps.module';
+import { EmployerPortalModule } from './modules/employer-portal/employer-portal.module';
 
 @Module({
   imports: [
@@ -178,6 +183,11 @@ import { VariantDatabaseModule } from './modules/variant-database/variant-databa
     GeneticCounselingModule,
     PedigreeBuilderModule,
     VariantDatabaseModule,
+    NgsWorkflowModule,
+    HraModule,
+    ConsultScheduleModule,
+    HealthCampsModule,
+    EmployerPortalModule,
   ],
   controllers: [HealthController],
   providers: [StartupService, DbBootstrapService],
