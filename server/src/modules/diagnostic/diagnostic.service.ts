@@ -1871,3 +1871,4 @@ export class DiagnosticService {
 
     return this.getLetterheadConfig(tenantId);
   }
+}

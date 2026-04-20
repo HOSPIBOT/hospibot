@@ -614,3 +614,4 @@ export class DiagnosticController {
   updateLetterhead(@CurrentTenant() tenantId: string, @Body() dto: any) {
     return this.svc.updateLetterheadConfig(tenantId, dto);
   }
+}
