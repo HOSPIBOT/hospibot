@@ -10,16 +10,17 @@ export class DataMigrationService {
     for (const row of rows) {
       try {
         if (!row.name && !row.testName) { skipped++; continue; }
-        await this.prisma.labTest.create({ data: {
-          tenantId, name: row.name || row.testName, code: row.code || row.testCode || null,
-          department: row.department || null, sampleType: row.sampleType || row.sample || null,
+        await this.prisma.testCatalog.create({ data: {
+          tenantId, name: row.name || row.testName, code: row.code || row.testCode || 'IMPORT',
+          category: row.category || row.department || 'General',
+          sampleType: row.sampleType || row.sample || 'Blood',
           price: row.price ? Number(row.price) * 100 : 0,
-          turnaroundTime: row.tat || row.turnaroundTime || null,
-          status: 'ACTIVE',
+          turnaroundHrs: row.tat ? Number(row.tat) : 24,
+          isActive: true,
         }});
         imported++;
       } catch (err: any) {
-        errors.push(`Row ${imported + skipped + 1}: ${err.message}`);
+        errors.push(`Row ${imported + skipped + 1}: ${err.message?.substring(0, 100)}`);
         skipped++;
       }
     }
@@ -38,13 +39,14 @@ export class DataMigrationService {
           tenantId, phone,
           firstName: row.firstName || row.name?.split(' ')[0] || 'Unknown',
           lastName: row.lastName || row.name?.split(' ').slice(1).join(' ') || '',
-          gender: row.gender || null, age: row.age ? Number(row.age) : null,
-          email: row.email || null, address: row.address || null,
-          city: row.city || null, pincode: row.pincode || null,
+          gender: row.gender === 'M' || row.gender === 'Male' ? 'MALE' : row.gender === 'F' || row.gender === 'Female' ? 'FEMALE' : undefined,
+          dateOfBirth: row.dob ? new Date(row.dob) : undefined,
+          email: row.email || undefined, address: row.address || undefined,
+          city: row.city || undefined, pincode: row.pincode || undefined,
         }});
         imported++;
       } catch (err: any) {
-        errors.push(`Row ${imported + skipped + 1}: ${err.message}`);
+        errors.push(`Row ${imported + skipped + 1}: ${err.message?.substring(0, 100)}`);
         skipped++;
       }
     }
@@ -56,17 +58,18 @@ export class DataMigrationService {
     for (const row of rows) {
       try {
         if (!row.name && !row.doctorName) { skipped++; continue; }
-        await this.prisma.referralDoctor.create({ data: {
-          tenantId, name: row.name || row.doctorName,
-          phone: row.phone || row.mobile || null,
-          specialization: row.specialization || row.specialty || null,
-          hospital: row.hospital || row.clinic || null,
-          commissionPct: row.commission ? Number(row.commission) : null,
-          status: 'ACTIVE',
+        const phone = (row.phone || row.mobile || '').replace(/\D/g, '').slice(-10);
+        if (!phone) { skipped++; continue; }
+        await this.prisma.doctorCRM.create({ data: {
+          tenantId, name: row.name || row.doctorName, mobile: phone,
+          specialty: row.specialization || row.specialty || undefined,
+          clinicName: row.hospital || row.clinic || undefined,
+          incentiveRate: row.commission ? Number(row.commission) * 100 : undefined,
+          isActive: true,
         }});
         imported++;
       } catch (err: any) {
-        errors.push(`Row ${imported + skipped + 1}: ${err.message}`);
+        errors.push(`Row ${imported + skipped + 1}: ${err.message?.substring(0, 100)}`);
         skipped++;
       }
     }
@@ -78,9 +81,9 @@ export class DataMigrationService {
     for (const row of rows) {
       try {
         if (!row.testName && !row.name) { skipped++; continue; }
-        const test = await this.prisma.labTest.findFirst({ where: { tenantId, name: { contains: row.testName || row.name, mode: 'insensitive' } } });
+        const test = await this.prisma.testCatalog.findFirst({ where: { tenantId, name: { contains: row.testName || row.name, mode: 'insensitive' } } });
         if (test) {
-          await this.prisma.labTest.update({ where: { id: test.id }, data: { price: row.price ? Number(row.price) * 100 : test.price } });
+          await this.prisma.testCatalog.update({ where: { id: test.id }, data: { price: row.price ? Number(row.price) * 100 : test.price } });
           imported++;
         } else { skipped++; }
       } catch { skipped++; }
