@@ -615,3 +615,4 @@ export class DiagnosticController {
     return this.svc.updateLetterheadConfig(tenantId, dto);
   }
 }
+}
