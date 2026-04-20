@@ -1812,3 +1812,67 @@ export class DiagnosticService {
     } catch {}
   }
 }
+
+  // ── Report Letterhead & Branding ──────────────────────────────────────────
+
+  async getLetterheadConfig(tenantId: string) {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { name: true, logoUrl: true, primaryColor: true, settings: true,
+        address: true, city: true, state: true, pincode: true, phone: true, email: true, website: true, gstNumber: true },
+    });
+    if (!tenant) return null;
+    const s = (tenant.settings as any) || {};
+    return {
+      facilityName: tenant.name,
+      logoUrl: tenant.logoUrl || null,
+      primaryColor: tenant.primaryColor || '0D7C66',
+      address: tenant.address, city: tenant.city, state: tenant.state, pincode: tenant.pincode,
+      phone: tenant.phone, email: tenant.email, website: tenant.website, gstNumber: tenant.gstNumber,
+      // Letterhead-specific settings (stored in settings JSON)
+      headerLine1: s.letterhead?.headerLine1 || tenant.name,
+      headerLine2: s.letterhead?.headerLine2 || '',
+      headerLine3: s.letterhead?.headerLine3 || '',
+      footerText: s.letterhead?.footerText || 'This is a computer-generated report. No signature required.',
+      signatureLabel: s.letterhead?.signatureLabel || 'Authorized Signatory',
+      signatureUrl: s.letterhead?.signatureUrl || null,
+      showLogo: s.letterhead?.showLogo !== false,
+      showQR: s.letterhead?.showQR !== false,
+      showGST: s.letterhead?.showGST !== false,
+      reportBrandColor: s.letterhead?.reportBrandColor || tenant.primaryColor || '0D7C66',
+      nablCertNo: s.letterhead?.nablCertNo || '',
+      nablScope: s.letterhead?.nablScope || '',
+      registrationNo: s.letterhead?.registrationNo || '',
+      aerbLicense: s.letterhead?.aerbLicense || '',
+    };
+  }
+
+  async updateLetterheadConfig(tenantId: string, dto: any) {
+    const tenant = await this.prisma.tenant.findUnique({ where: { id: tenantId }, select: { settings: true } });
+    const s = (tenant?.settings as any) || {};
+    
+    // Update top-level fields
+    const topLevel: any = {};
+    if (dto.logoUrl !== undefined) topLevel.logoUrl = dto.logoUrl;
+    if (dto.primaryColor !== undefined) topLevel.primaryColor = dto.primaryColor;
+    if (dto.address !== undefined) topLevel.address = dto.address;
+    if (dto.city !== undefined) topLevel.city = dto.city;
+    if (dto.state !== undefined) topLevel.state = dto.state;
+    if (dto.pincode !== undefined) topLevel.pincode = dto.pincode;
+    if (dto.phone !== undefined) topLevel.phone = dto.phone;
+    if (dto.email !== undefined) topLevel.email = dto.email;
+    if (dto.website !== undefined) topLevel.website = dto.website;
+
+    // Update letterhead settings in JSON
+    const letterhead = { ...(s.letterhead || {}) };
+    ['headerLine1','headerLine2','headerLine3','footerText','signatureLabel','signatureUrl',
+     'showLogo','showQR','showGST','reportBrandColor','nablCertNo','nablScope','registrationNo','aerbLicense'
+    ].forEach(k => { if (dto[k] !== undefined) letterhead[k] = dto[k]; });
+
+    await this.prisma.tenant.update({
+      where: { id: tenantId },
+      data: { ...topLevel, settings: { ...s, letterhead } as any },
+    });
+
+    return this.getLetterheadConfig(tenantId);
+  }

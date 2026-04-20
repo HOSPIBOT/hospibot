@@ -601,3 +601,17 @@ export class DiagnosticController {
     return this.svc.seedDefaultAutomationRules(tenantId);
   }
 }
+
+  // ── Letterhead & Branding ─────────────────────────────────────────────────
+
+  @Get('letterhead')
+  @ApiOperation({ summary: 'Get report letterhead configuration' })
+  getLetterhead(@CurrentTenant() tenantId: string) {
+    return this.svc.getLetterheadConfig(tenantId);
+  }
+
+  @Patch('letterhead')
+  @ApiOperation({ summary: 'Update report letterhead (logo, header, footer, colors, NABL cert)' })
+  updateLetterhead(@CurrentTenant() tenantId: string, @Body() dto: any) {
+    return this.svc.updateLetterheadConfig(tenantId, dto);
+  }
