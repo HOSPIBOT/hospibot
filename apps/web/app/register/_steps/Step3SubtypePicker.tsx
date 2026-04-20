@@ -1,82 +1,42 @@
 'use client';
 
-import * as Lucide from 'lucide-react';
-import SelectionCard from '../_components/SelectionCard';
-import { useDiagnosticSubtypes } from '../_hooks/useDiagnosticCatalog';
-import { Heading, LoadingSkeleton } from './Step2GroupPicker';
-import { TOKENS } from '../_lib/wizard-types';
+import { SubtypeCard } from '../_hooks/useDiagnosticCatalog';
 
 interface Props {
-  groupSlug: string | null;
-  groupName?: string;
-  value: string | null;
-  onChange: (subtypeSlug: string) => void;
+  groupName: string;
+  subtypes: SubtypeCard[];
+  selected: string | null;
+  onSelect: (slug: string) => void;
+  loading?: boolean;
 }
 
-/**
- * Step 3 — Subtype picker.
- *
- * Shows 2-8 cards depending on which group was chosen in step 2. Each card
- * carries the subtype's operational tagline (what they actually do all day)
- * plus a daily-volume hint so lab owners can self-identify quickly.
- */
-export default function Step3SubtypePicker({ groupSlug, groupName, value, onChange }: Props) {
-  const { subtypes, loading, error } = useDiagnosticSubtypes(groupSlug);
-
+export default function Step3SubtypePicker({ groupName, subtypes, selected, onSelect, loading }: Props) {
+  if (loading) return <div className="text-center text-sm text-gray-400 py-12">Loading subtypes...</div>;
   return (
     <div>
-      <Heading
-        title={groupName ? `Which ${groupName.toLowerCase()}?` : 'Pick your subtype'}
-        subtitle="Choose the option that most closely matches your day-to-day work. Don't worry if it's not a perfect fit — you can adjust later from settings."
-      />
-
-      {!groupSlug ? (
-        <EmptyState message="Go back and pick a category first." />
-      ) : loading ? (
-        <LoadingSkeleton count={5} />
-      ) : error ? (
-        <EmptyState message={`Couldn't load subtypes: ${error}`} />
-      ) : subtypes.length === 0 ? (
-        <EmptyState message="No subtypes available in this category yet. Try another category or contact support." />
-      ) : (
-        <div style={{ display: 'grid', gap: 12 }}>
-          {subtypes.map((st) => {
-            // Lookup Lucide icon by name — fallback to TestTube
-            const IconComponent = st.icon && (Lucide as any)[st.icon]
-              ? (Lucide as any)[st.icon]
-              : Lucide.TestTube;
-            return (
-              <SelectionCard
-                key={st.slug}
-                title={st.name}
-                subtitle={st.subtypeTagline ?? undefined}
-                icon={<IconComponent size={20} />}
-                selected={value === st.slug}
-                onClick={() => onChange(st.slug)}
-                meta={st.volumeHint ? (
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{
-                      width: 6, height: 6, borderRadius: '50%', background: TOKENS.primary,
-                    }} />
-                    Typical volume: {st.volumeHint}
-                  </span>
-                ) : undefined}
-              />
-            );
-          })}
-        </div>
-      )}
+      <h1 className="text-2xl font-semibold text-center text-gray-900 mb-1" style={{ fontFamily: "'Fraunces', serif" }}>
+        Select your specific lab type
+      </h1>
+      <p className="text-sm text-gray-500 text-center mb-6">{groupName} — {subtypes.length} subtypes available</p>
+      <div className="space-y-2">
+        {subtypes.map(s => (
+          <div key={s.slug} onClick={() => onSelect(s.slug)}
+            className={`flex items-center gap-3.5 p-3.5 rounded-xl border cursor-pointer transition-all duration-200
+              hover:border-[#0D7C66] hover:bg-[#E8F5F0]
+              ${selected === s.slug ? 'border-2 border-[#0D7C66] bg-[#E8F5F0] shadow-sm' : 'border-gray-200 bg-white'}`}>
+            <div className={`w-11 h-11 rounded-lg flex items-center justify-center text-lg flex-shrink-0 transition-colors
+              ${selected === s.slug ? 'bg-[#0D7C66] grayscale-0' : 'bg-[#E8F5F0]'}`}
+              style={selected === s.slug ? { filter: 'grayscale(0)' } : {}}>
+              {s.icon || '🏥'}
+            </div>
+            <div className="min-w-0">
+              <div className="font-medium text-sm text-gray-900">{s.name}</div>
+              <div className="text-xs text-gray-500 leading-snug mt-0.5">{s.subtypeTagline || ''}</div>
+              {s.volumeHint && <div className="text-[11px] font-medium text-[#0D7C66] mt-1">{s.volumeHint}</div>}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
-  );
-}
-
-function EmptyState({ message }: { message: string }) {
-  return (
-    <div style={{
-      padding: 32, textAlign: 'center',
-      background: '#fff', borderRadius: 12,
-      border: `1px dashed ${TOKENS.border}`,
-      color: TOKENS.textMuted, fontSize: 14,
-    }}>{message}</div>
   );
 }

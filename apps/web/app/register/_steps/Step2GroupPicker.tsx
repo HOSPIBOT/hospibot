@@ -1,100 +1,41 @@
 'use client';
 
-import {
-  Droplet, TestTube, ScanLine, Activity, ClipboardCheck, Sparkles, Network,
-  type LucideIcon,
-} from 'lucide-react';
-import SelectionCard from '../_components/SelectionCard';
-import { useDiagnosticGroups } from '../_hooks/useDiagnosticCatalog';
-import { TOKENS } from '../_lib/wizard-types';
+import { SubtypeGroup } from '../_hooks/useDiagnosticCatalog';
 
-/**
- * Icon name (from DB) → Lucide component.
- * Kept small & explicit — safer than dynamic imports by string.
- */
-const ICON_MAP: Record<string, LucideIcon> = {
-  Droplet, TestTube, ScanLine, Activity, ClipboardCheck, Sparkles, Network,
+const ICONS: Record<string, string> = {
+  collection: '🧪', pathology: '🔬', imaging: '📸', physiological: '💓',
+  packages: '📋', specialty: '⚡', 'hub-digital': '🌐',
 };
 
 interface Props {
-  value: string | null;
-  onChange: (groupSlug: string) => void;
+  groups: SubtypeGroup[] | null;
+  selected: string | null;
+  onSelect: (slug: string) => void;
 }
 
-export default function Step2GroupPicker({ value, onChange }: Props) {
-  const { groups, loading } = useDiagnosticGroups();
-
+export default function Step2GroupPicker({ groups, selected, onSelect }: Props) {
+  if (!groups) return <div className="text-center text-sm text-gray-400 py-12">Loading categories...</div>;
   return (
     <div>
-      <Heading
-        title="What kind of diagnostic operation are you?"
-        subtitle="Pick the category that best describes your primary service. You'll choose the specific subtype next."
-      />
-
-      {loading ? (
-        <LoadingSkeleton count={7} />
-      ) : (
-        <div style={{ display: 'grid', gap: 12 }}>
-          {groups?.map((g) => {
-            const Icon = ICON_MAP[g.icon] ?? TestTube;
-            return (
-              <SelectionCard
-                key={g.slug}
-                title={g.name}
-                subtitle={g.description}
-                icon={<Icon size={20} />}
-                selected={value === g.slug}
-                onClick={() => onChange(g.slug)}
-                meta={g.subtypeCount > 0
-                  ? `${g.subtypeCount} subtype${g.subtypeCount === 1 ? '' : 's'} available`
-                  : undefined}
-              />
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ── Shared bits used by both steps ─────────────────────────────────────── */
-
-export function Heading({ title, subtitle }: { title: string; subtitle?: string }) {
-  return (
-    <div style={{ marginBottom: 28 }}>
-      <h2 style={{
-        fontSize: 26, fontWeight: 800, color: TOKENS.text,
-        marginBottom: subtitle ? 8 : 0, letterSpacing: '-0.02em', lineHeight: 1.2,
-      }}>{title}</h2>
-      {subtitle && (
-        <p style={{ fontSize: 15, color: TOKENS.textMuted, lineHeight: 1.55, margin: 0 }}>
-          {subtitle}
-        </p>
-      )}
-    </div>
-  );
-}
-
-export function LoadingSkeleton({ count }: { count: number }) {
-  return (
-    <div style={{ display: 'grid', gap: 12 }}>
-      {Array.from({ length: count }).map((_, i) => (
-        <div
-          key={i}
-          style={{
-            height: 82, borderRadius: 14,
-            background: `linear-gradient(90deg, ${TOKENS.border}, ${TOKENS.surface}, ${TOKENS.border})`,
-            backgroundSize: '200% 100%',
-            animation: 'hospibotShimmer 1.4s ease-in-out infinite',
-          }}
-        />
-      ))}
-      <style jsx>{`
-        @keyframes hospibotShimmer {
-          0%   { background-position: 200% 0; }
-          100% { background-position: -200% 0; }
-        }
-      `}</style>
+      <h1 className="text-2xl font-semibold text-center text-gray-900 mb-1" style={{ fontFamily: "'Fraunces', serif" }}>
+        What type of diagnostic lab do you run?
+      </h1>
+      <p className="text-sm text-gray-500 text-center mb-6">Choose the category that best describes your facility</p>
+      <div className="grid grid-cols-2 gap-3">
+        {groups.map(g => (
+          <div key={g.slug} onClick={() => onSelect(g.slug)}
+            className={`relative p-4 rounded-xl border cursor-pointer transition-all duration-200
+              hover:border-[#0D7C66] hover:bg-[#E8F5F0]
+              ${selected === g.slug ? 'border-2 border-[#0D7C66] bg-[#E8F5F0] shadow-sm' : 'border-gray-200 bg-white'}`}>
+            <span className="absolute top-2.5 right-3 text-[11px] font-medium text-[#0D7C66] bg-[#E8F5F0] px-2 py-0.5 rounded-full">
+              {g.subtypeCount} types
+            </span>
+            <div className="text-xl mb-1.5">{ICONS[g.slug] || '🏥'}</div>
+            <div className="font-medium text-sm text-gray-900">{g.name}</div>
+            <div className="text-xs text-gray-500 mt-1 leading-relaxed">{g.description}</div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
