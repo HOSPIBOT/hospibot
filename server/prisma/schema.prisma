@@ -4771,6 +4771,79 @@ model GenomicsOrder {
   @@map("genomics_orders")
 }
 
+
+model AnalyzerConfig {
+  id                String    @id @default(uuid())
+  tenantId          String    @map("tenant_id")
+  name              String
+  manufacturer      String?
+  model             String?   @map("analyzer_model")
+  serialNumber      String?   @map("serial_number")
+  department        String?
+  protocol          String    @default("hl7")
+  hl7Version        String?   @map("hl7_version")
+  connectionType    String    @default("tcp") @map("connection_type")
+  host              String?
+  port              Int?
+  sendingApplication String?  @map("sending_application")
+  isActive          Boolean   @default(true) @map("is_active")
+  testMappings      Json?     @map("test_mappings")
+  notes             String?
+  lastMessageAt     DateTime? @map("last_message_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdBy         String?   @map("created_by")
+  @@index([tenantId])
+  @@map("analyzer_configs")
+}
+
+model AnalyzerMessage {
+  id                String    @id @default(uuid())
+  tenantId          String    @map("tenant_id")
+  protocol          String
+  direction         String    @default("inbound")
+  messageType       String?   @map("message_type")
+  triggerEvent      String?   @map("trigger_event")
+  sendingApplication String?  @map("sending_application")
+  messageControlId  String?   @map("message_control_id")
+  rawMessage        String    @map("raw_message")
+  patientId         String?   @map("patient_id")
+  patientName       String?   @map("patient_name")
+  accessionNumber   String?   @map("accession_number")
+  resultCount       Int       @default(0) @map("result_count")
+  matchedCount      Int       @default(0) @map("matched_count")
+  unmatchedCount    Int       @default(0) @map("unmatched_count")
+  parseErrors       String?   @map("parse_errors")
+  processedStatus   String    @default("received") @map("processed_status")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  @@index([tenantId])
+  @@index([tenantId, processedStatus])
+  @@map("analyzer_messages")
+}
+
+model AnalyzerResult {
+  id                  String    @id @default(uuid())
+  tenantId            String    @map("tenant_id")
+  analyzerMessageId   String    @map("analyzer_message_id")
+  observationId       String?   @map("observation_id")
+  observationName     String?   @map("observation_name")
+  value               String?
+  numericValue        Float?    @map("numeric_value")
+  units               String?
+  referenceRange      String?   @map("reference_range")
+  abnormalFlag        String?   @map("abnormal_flag")
+  resultStatus        String?   @map("result_status")
+  isCritical          Boolean   @default(false) @map("is_critical")
+  analyzerName        String?   @map("analyzer_name")
+  matchedTestId       String?   @map("matched_test_id")
+  approvedBy          String?   @map("approved_by")
+  approvedAt          DateTime? @map("approved_at")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  @@index([tenantId])
+  @@index([tenantId, analyzerMessageId])
+  @@map("analyzer_results")
+}
+
 // ==============================================
 // AUDIT LOG
 // ==============================================

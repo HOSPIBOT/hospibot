@@ -103,6 +103,7 @@ import { UrodynamicsModule } from './modules/urodynamics/urodynamics.module';
 import { WmdaSyncModule } from './modules/wmda-sync/wmda-sync.module';
 import { CdscoReportsModule } from './modules/cdsco-reports/cdsco-reports.module';
 import { KitLogisticsModule } from './modules/kit-logistics/kit-logistics.module';
+import { AnalyzerInterfaceModule } from './modules/analyzer-interface/analyzer-interface.module';
 import { DataMigrationModule } from './modules/data-migration/data-migration.module';
 import { DtcConsumerModule } from './modules/dtc-consumer/dtc-consumer.module';
 import { HistopathologyLabModule } from './modules/histopathology-lab/histopathology-lab.module';
@@ -236,6 +237,7 @@ import { DtcGenomicsModule } from './modules/dtc-genomics/dtc-genomics.module';
     KitLogisticsModule,
     DtcConsumerModule,
     DataMigrationModule,
+    AnalyzerInterfaceModule,
     HistopathologyLabModule,
     BloodBankModule,
     NuclearMedicineModule,
