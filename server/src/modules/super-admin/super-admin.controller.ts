@@ -213,4 +213,12 @@ export class SuperAdminController {
   @Post('auto-disable-overdue')
   @ApiOperation({ summary: 'Auto-disable overdue tenants' })
   autoDisable() { return this.superAdminService.autoDisableOverdueTenants(); }
+
+
+  @Patch('tenants/:id/override-tier')
+  @ApiOperation({ summary: 'Override tenant tier manually' })
+  overrideTier(@Param('id') tenantId: string, @Body() dto: any, @Req() req: any) {
+    return this.superAdminService.overrideTenantTier(tenantId, dto.tier, req.user?.id || 'admin');
+  }
+
 }

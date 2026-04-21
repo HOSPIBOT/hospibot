@@ -617,4 +617,30 @@ export class SuperAdminService {
     }
     return { disabled, checkedAt: new Date().toISOString() };
   }
+
+
+  /** Override a tenant's tier manually (super admin only) */
+  async overrideTenantTier(tenantId: string, newTier: string, adminId: string) {
+    const tenant = await this.prisma.tenant.findUnique({ where: { id: tenantId }, select: { settings: true, name: true } });
+    if (!tenant) throw new Error('Tenant not found');
+    
+    const s = (tenant.settings as any) || {};
+    const oldTier = s.labTier || 'unknown';
+    s.labTier = newTier;
+    s.tierOverrideBy = adminId;
+    s.tierOverrideAt = new Date().toISOString();
+    s.tierOverrideFrom = oldTier;
+    
+    // Map tier to plan enum
+    const planMap: Record<string, string> = { small: 'STARTER', medium: 'GROWTH', large: 'GROWTH', enterprise: 'ENTERPRISE' };
+    const plan = planMap[newTier] || 'STARTER';
+    
+    await this.prisma.tenant.update({
+      where: { id: tenantId },
+      data: { plan: plan as any, settings: s as any },
+    });
+    
+    return { success: true, tenantId, tenantName: tenant.name, oldTier, newTier, plan };
+  }
+
 }

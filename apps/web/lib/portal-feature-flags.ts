@@ -684,6 +684,193 @@ export const DIAG_SUBTYPE_NAV: Record<string, SubtypeNavConfig> = {
       { href: 'counseling', label: 'Genetic Counseling',  iconKey: 'Users' },
     ],
   },
+
+  'pickup-point': {
+    labelOverrides: { 'lab-orders': 'Handover Log' },
+    hideItems: ['qc','results','catalog','dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling','inventory','equipment','crm/doctors','crm/corporates','automation','rate-cards','tpa','analytics','staff','packages','compliance'],
+  },
+  'histopathology-lab': {
+    labelOverrides: { 'lab-orders': 'Specimen Orders', 'results': 'Histopathology Reports' },
+    hideItems: ['collection','dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab'],
+    extraItems: [
+      { href: 'histopathology-lab', label: 'Grossing & Slides', iconKey: 'FlaskConical' },
+      { href: 'ihc', label: 'IHC Panels', iconKey: 'FlaskConical' },
+      { href: 'frozen-section', label: 'Frozen Section', iconKey: 'Clock' },
+      { href: 'slide-scanning', label: 'Digital Slides', iconKey: 'Activity' },
+    ],
+  },
+  'micro-lab': {
+    labelOverrides: { 'lab-orders': 'Culture Orders', 'results': 'Sensitivity Reports' },
+    hideItems: ['dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling'],
+    extraItems: [
+      { href: 'culture', label: 'Culture Tracking', iconKey: 'FlaskConical' },
+      { href: 'antibiogram', label: 'Antibiogram', iconKey: 'Shield' },
+      { href: 'icmr-naco', label: 'ICMR AMR Reports', iconKey: 'FileText' },
+    ],
+  },
+  'blood-bank': {
+    labelOverrides: { 'lab-orders': 'Blood Requests', 'patients': 'Donors & Recipients' },
+    hideItems: ['dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling','catalog','qc'],
+    extraItems: [
+      { href: 'blood-bank', label: 'Blood Bank', iconKey: 'Heart' },
+      { href: 'donors', label: 'Donor Management', iconKey: 'Users' },
+      { href: 'crossmatch', label: 'Cross-Match', iconKey: 'Shield' },
+      { href: 'icmr-naco', label: 'NACO Reporting', iconKey: 'FileText' },
+    ],
+  },
+  'nuclear-medicine-center': {
+    labelOverrides: { 'lab-orders': 'Study Orders', 'results': 'Nuclear Med Reports' },
+    hideItems: ['collection','qc','tmt-holter','cath-lab','genetic-counseling','pndt-register'],
+    extraItems: [
+      { href: 'nuclear-medicine', label: 'Nuclear Medicine', iconKey: 'Activity' },
+      { href: 'radiotracer-log', label: 'Isotope Log', iconKey: 'FlaskConical' },
+      { href: 'rso-dashboard', label: 'RSO Dashboard', iconKey: 'Shield' },
+      { href: 'barc-reporting', label: 'BARC Reports', iconKey: 'FileText' },
+    ],
+  },
+  'mammography-center': {
+    labelOverrides: { 'lab-orders': 'Mammography Orders', 'results': 'Mammography Reports' },
+    hideItems: ['collection','qc','tmt-holter','cath-lab','genetic-counseling','radiotracer','pndt-register'],
+    extraItems: [
+      { href: 'bi-rads', label: 'BI-RADS Reporting', iconKey: 'Shield' },
+      { href: 'compliance/mammo', label: 'Female Radiographer', iconKey: 'UserCheck' },
+      { href: 'compliance/aerb', label: 'AERB Dose Log', iconKey: 'AlertTriangle' },
+    ],
+  },
+  'dexa-center': {
+    labelOverrides: { 'lab-orders': 'DEXA Orders', 'results': 'BMD Reports' },
+    hideItems: ['collection','qc','tmt-holter','cath-lab','genetic-counseling','radiotracer','pndt-register','inventory'],
+    extraItems: [
+      { href: 'frax', label: 'FRAX Assessment', iconKey: 'Activity' },
+    ],
+  },
+  'dental-radiology-center': {
+    labelOverrides: { 'lab-orders': 'Scan Orders', 'results': 'Dental Reports' },
+    hideItems: ['collection','qc','tmt-holter','cath-lab','genetic-counseling','radiotracer','pndt-register'],
+    extraItems: [
+      { href: 'opg-cbct', label: 'OPG / CBCT', iconKey: 'Activity' },
+      { href: 'compliance/aerb', label: 'AERB Dose Log', iconKey: 'AlertTriangle' },
+    ],
+  },
+  'ophthalmic-center': {
+    labelOverrides: { 'lab-orders': 'Study Orders', 'results': 'Ophthalmic Reports' },
+    hideItems: ['collection','qc','tmt-holter','cath-lab','genetic-counseling','radiotracer','pndt-register','inventory'],
+    extraItems: [
+      { href: 'oct-scans', label: 'OCT Scans', iconKey: 'Activity' },
+      { href: 'perimetry', label: 'Visual Fields', iconKey: 'Activity' },
+      { href: 'fundus-photo', label: 'Fundus Photo', iconKey: 'Activity' },
+    ],
+  },
+  'pft-center': {
+    labelOverrides: { 'lab-orders': 'PFT Orders', 'results': 'PFT Reports' },
+    hideItems: ['collection','dicom-viewer','pndt-register','radiotracer','cath-lab','genetic-counseling','inventory'],
+    extraItems: [
+      { href: 'spirometry', label: 'Spirometry', iconKey: 'Activity' },
+    ],
+  },
+  'neurophysiology-center': {
+    labelOverrides: { 'lab-orders': 'Study Orders', 'results': 'Neuro Reports' },
+    hideItems: ['collection','dicom-viewer','pndt-register','radiotracer','cath-lab','genetic-counseling','inventory'],
+    extraItems: [
+      { href: 'waveforms', label: 'Waveforms', iconKey: 'Activity' },
+    ],
+  },
+  'allergy-center': {
+    labelOverrides: { 'lab-orders': 'Test Orders', 'results': 'Allergy Reports' },
+    hideItems: ['collection','dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling'],
+    extraItems: [
+      { href: 'allergen-panels', label: 'Allergen Panels', iconKey: 'FlaskConical' },
+      { href: 'immunotherapy', label: 'Immunotherapy', iconKey: 'Shield' },
+    ],
+  },
+  'sleep-lab': {
+    labelOverrides: { 'lab-orders': 'PSG Orders', 'results': 'Sleep Reports' },
+    hideItems: ['collection','dicom-viewer','pndt-register','radiotracer','cath-lab','genetic-counseling','inventory','catalog'],
+    extraItems: [
+      { href: 'psg', label: 'Sleep Studies', iconKey: 'Activity' },
+      { href: 'cpap-titration', label: 'CPAP Titration', iconKey: 'Activity' },
+    ],
+  },
+  'audiology-center': {
+    labelOverrides: { 'lab-orders': 'Test Orders', 'results': 'Audiology Reports' },
+    hideItems: ['collection','dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling','inventory'],
+    extraItems: [
+      { href: 'audiometry', label: 'Audiometry', iconKey: 'Activity' },
+      { href: 'bera', label: 'BERA / OAE', iconKey: 'Activity' },
+    ],
+  },
+  'urodynamics-center': {
+    labelOverrides: { 'lab-orders': 'Study Orders', 'results': 'Urodynamics Reports' },
+    hideItems: ['collection','dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling','inventory','catalog'],
+    extraItems: [
+      { href: 'urodynamics', label: 'Urodynamics', iconKey: 'Activity' },
+    ],
+  },
+  'endoscopy-center': {
+    labelOverrides: { 'lab-orders': 'Procedure Orders', 'results': 'Endoscopy Reports' },
+    hideItems: ['collection','dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling'],
+    extraItems: [
+      { href: 'endoscopy-center', label: 'Endoscopy', iconKey: 'Activity' },
+      { href: 'video-capture', label: 'Video Capture', iconKey: 'Video' },
+      { href: 'sedation-log', label: 'Sedation Log', iconKey: 'Shield' },
+    ],
+  },
+  'ivf-embryology': {
+    labelOverrides: { 'lab-orders': 'IVF Orders', 'results': 'Embryology Reports' },
+    hideItems: ['collection','dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','qc','inventory'],
+    extraItems: [
+      { href: 'cycles', label: 'IVF Cycles', iconKey: 'Heart' },
+      { href: 'ivf-embryology-lab', label: 'Embryology Lab', iconKey: 'FlaskConical' },
+      { href: 'cryopreservation', label: 'Cryopreservation', iconKey: 'Shield' },
+      { href: 'art-act', label: 'ART Act Compliance', iconKey: 'ShieldCheck' },
+    ],
+  },
+  'stem-cell-registry': {
+    labelOverrides: { 'lab-orders': 'HLA Orders', 'results': 'HLA Reports' },
+    hideItems: ['collection','dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling','qc','inventory'],
+    extraItems: [
+      { href: 'hla-typing', label: 'HLA Typing', iconKey: 'FlaskConical' },
+      { href: 'stem-cell-hla-lab', label: 'Stem Cell Lab', iconKey: 'FlaskConical' },
+      { href: 'wmda-sync', label: 'WMDA/DATRI Sync', iconKey: 'Globe' },
+    ],
+  },
+  'forensic-toxicology': {
+    labelOverrides: { 'lab-orders': 'Case Orders', 'results': 'Toxicology Reports' },
+    hideItems: ['collection','dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling','qc'],
+    extraItems: [
+      { href: 'chain-of-custody', label: 'Chain of Custody', iconKey: 'Shield' },
+      { href: 'gc-ms', label: 'GC-MS / LC-MS', iconKey: 'FlaskConical' },
+      { href: 'forensic-toxicology-lab', label: 'Toxicology Lab', iconKey: 'FlaskConical' },
+    ],
+  },
+  'cancer-screening': {
+    labelOverrides: { 'lab-orders': 'Screening Orders', 'packages': 'Screening Panels' },
+    hideItems: ['dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling','qc'],
+    extraItems: [
+      { href: 'tumor-markers', label: 'Tumor Markers', iconKey: 'FlaskConical' },
+      { href: 'ai-scoring', label: 'AI Risk Scoring', iconKey: 'Star' },
+    ],
+  },
+  'tele-radiology': {
+    labelOverrides: { 'lab-orders': 'Reading Queue' },
+    hideItems: ['collection','qc','inventory','tmt-holter','cath-lab','genetic-counseling','radiotracer','pndt-register','packages'],
+    extraItems: [
+      { href: 'reading-worklist', label: 'Reading Worklist', iconKey: 'ClipboardList' },
+      { href: 'radiologist-panel', label: 'Radiologist Panel', iconKey: 'Users' },
+      { href: 'dicom-viewer', label: 'DICOM Viewer', iconKey: 'Activity' },
+      { href: 'sla-monitor', label: 'SLA Monitor', iconKey: 'Clock' },
+      { href: 'client-centers', label: 'Client Centers', iconKey: 'Building2' },
+    ],
+  },
+  'dtc-genomics': {
+    labelOverrides: { 'lab-orders': 'Kit Orders', 'results': 'Genomics Reports' },
+    hideItems: ['collection','dicom-viewer','pndt-register','radiotracer','tmt-holter','cath-lab','genetic-counseling','qc','inventory'],
+    extraItems: [
+      { href: 'kit-logistics', label: 'Kit Logistics', iconKey: 'Truck' },
+      { href: 'dtc-consumer', label: 'Consumer Portal', iconKey: 'Globe' },
+      { href: 'dtc-genomics', label: 'Genomics Lab', iconKey: 'FlaskConical' },
+    ],
+  },
 };
 
 /**

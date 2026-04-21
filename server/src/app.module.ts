@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { DatabaseModule } from './database/database.module';
@@ -13,6 +13,9 @@ import { NotificationModule } from './modules/notification/notification.module';
 import { CrmModule } from './modules/crm/crm.module';
 import { AutomationModule } from './modules/automation/automation.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { APP_GUARD } from '@nestjs/core';
+import { SimpleThrottleGuard } from './common/guards/throttle.guard';
+import { RequestLoggerMiddleware } from './common/middleware/request-logger.middleware' from './common/guards/throttle.guard';
 import { HealthController } from './health.controller';
 import { StartupService } from './startup.service';
 import { DbBootstrapService } from './db-bootstrap.service';
@@ -254,6 +257,11 @@ import { DtcGenomicsModule } from './modules/dtc-genomics/dtc-genomics.module';
     DtcGenomicsModule,
   ],
   controllers: [HealthController],
-  providers: [StartupService, DbBootstrapService],
+  providers: [
+    { provide: APP_GUARD, useClass: SimpleThrottleGuard },StartupService, DbBootstrapService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RequestLoggerMiddleware).forRoutes('*');
+  }
+}
