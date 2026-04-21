@@ -174,8 +174,8 @@ function HomePage({ setPage }: { setPage: (p: string) => void }) {
               { icon: "🤖", title: "AI clinical tools", desc: "Dictate prescriptions in English, Hindi, Telugu, Tamil. Drug interaction alerts, ABHA Health ID, Universal Patient Vault.", color: "#F0FDF4" },
             ].map((f, i) => (
               <FadeIn key={i} delay={i * 0.08}>
-                <div style={{ background: "#fff", border: "1px solid #E8ECF0", borderRadius: 16, padding: 28, transition: "all 0.3s", cursor: "default", height: "100%" }}
-                  onMouseEnter={(e: any) => { e.currentTarget.style.borderColor = TEAL; e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = `0 12px 40px ${TEAL}10`; }}
+                <div style={{ background: "#fff", border: "1px solid #E2E8F0", borderRadius: 16, padding: 28, transition: "all 0.3s", cursor: "default", height: "100%", boxShadow: "0 4px 16px rgba(0,0,0,0.06)" }}
+                  onMouseEnter={(e: any) => { e.currentTarget.style.borderColor = TEAL; e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 12px 40px rgba(13,124,102,0.15)"; }}
                   onMouseLeave={(e: any) => { e.currentTarget.style.borderColor = "#E8ECF0"; e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}>
                   <div style={{ width: 48, height: 48, borderRadius: 12, background: f.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, marginBottom: 16 }}>{f.icon}</div>
                   <h3 style={{ fontSize: 17, fontWeight: 700, color: NAVY, marginBottom: 8 }}>{f.title}</h3>
@@ -225,7 +225,7 @@ function HomePage({ setPage }: { setPage: (p: string) => void }) {
               { q: "Managing 12 branches was a nightmare before HospiBot. Now I see real-time analytics across all locations from one dashboard.", n: "Vikram Reddy", r: "HealthFirst Lab Network" },
             ].map((t, i) => (
               <FadeIn key={i} delay={i * 0.1}>
-                <div style={{ background: "#F8FAFB", border: "1px solid #E8ECF0", borderRadius: 16, padding: 28 }}>
+                <div style={{ background: "#fff", border: "1px solid #E2E8F0", borderRadius: 16, padding: 28, boxShadow: "0 4px 16px rgba(0,0,0,0.06)" }}>
                   <div style={{ fontSize: 12, marginBottom: 14 }}>⭐⭐⭐⭐⭐</div>
                   <p style={{ fontSize: 14, color: "#334155", lineHeight: 1.7, fontStyle: "italic", margin: "0 0 20px" }}>&ldquo;{t.q}&rdquo;</p>
                   <div style={{ borderTop: "1px solid #E8ECF0", paddingTop: 16 }}>
@@ -296,7 +296,7 @@ function FeaturesPage() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
               {cat.items.map((f, fi) => (
                 <FadeIn key={fi} delay={fi * 0.08}>
-                  <div style={{ background: "#F8FAFB", border: "1px solid #E8ECF0", borderRadius: 14, padding: 24, transition: "all 0.2s" }}
+                  <div style={{ background: "#fff", border: "1px solid #E2E8F0", borderRadius: 14, padding: 24, transition: "all 0.3s", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}
                     onMouseEnter={(e: any) => e.currentTarget.style.borderColor = TEAL}
                     onMouseLeave={(e: any) => e.currentTarget.style.borderColor = "#E8ECF0"}>
                     <h3 style={{ fontSize: 16, fontWeight: 700, color: NAVY, marginBottom: 8 }}>{f.t}</h3>
@@ -333,8 +333,8 @@ function SolutionsPage({ setPage }: { setPage: (p: string) => void }) {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20 }}>
           {portals.map((p, i) => (
             <FadeIn key={i} delay={i * 0.06}>
-              <a href={`/portals/${p.slug}`} style={{ background: "#fff", border: "1px solid #E8ECF0", borderRadius: 16, padding: 28, display: "flex", gap: 20, transition: "all 0.3s", cursor: "pointer", textDecoration: "none", color: "inherit" }}
-                onMouseEnter={(e: any) => { e.currentTarget.style.borderColor = TEAL; e.currentTarget.style.boxShadow = `0 8px 32px ${TEAL}10`; }}
+              <a href={`/portals/${p.slug}`} style={{ background: "#fff", border: "1px solid #E2E8F0", borderRadius: 16, padding: 28, display: "flex", gap: 20, transition: "all 0.3s", cursor: "pointer", textDecoration: "none", color: "inherit", boxShadow: "0 4px 16px rgba(0,0,0,0.06)" }}
+                onMouseEnter={(e: any) => { e.currentTarget.style.borderColor = TEAL; e.currentTarget.style.boxShadow = "0 12px 36px rgba(13,124,102,0.15)"; }}
                 onMouseLeave={(e: any) => { e.currentTarget.style.borderColor = "#E8ECF0"; e.currentTarget.style.boxShadow = "none"; }}>
                 <div style={{ width: 56, height: 56, borderRadius: 14, background: p.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, flexShrink: 0 }}>{p.icon}</div>
                 <div>
@@ -406,7 +406,7 @@ function PricingPage() {
             const featured = p.badge === "Most popular";
             return (
               <FadeIn key={`${portalTab}-${i}`} delay={i * 0.08}>
-                <div style={{ background: "#fff", borderRadius: 20, border: featured ? `2px solid ${TEAL}` : "1px solid #E8ECF0", overflow: "hidden", position: "relative", transform: featured ? "scale(1.04)" : "none", boxShadow: featured ? `0 16px 48px ${TEAL}15` : "0 2px 12px rgba(0,0,0,0.04)", transition: "all 0.3s" }}>
+                <div style={{ background: "#fff", borderRadius: 20, border: featured ? `2px solid ${TEAL}` : "1px solid #E8ECF0", overflow: "hidden", position: "relative", transform: featured ? "scale(1.04)" : "none", boxShadow: featured ? `0 16px 48px ${TEAL}15` : "0 4px 20px rgba(0,0,0,0.08)", transition: "all 0.3s" }}>
                   {p.badge && <div style={{ background: p.badge === "Most popular" ? TEAL : NAVY, color: "#fff", textAlign: "center", padding: "6px 0", fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase" }}>{p.badge}</div>}
                   <div style={{ padding: "28px 24px" }}>
                     <h3 style={{ fontSize: 20, fontWeight: 800, color: NAVY, marginBottom: 4 }}>{p.name}</h3>
@@ -508,7 +508,7 @@ function ContactPage() {
           </div>
         </FadeIn>
         <FadeIn delay={0.15}>
-          <div style={{ background: "#fff", borderRadius: 20, border: "1px solid #E8ECF0", padding: 36, boxShadow: "0 8px 32px rgba(0,0,0,0.04)" }}>
+          <div style={{ background: "#fff", borderRadius: 20, border: "1px solid #E2E8F0", padding: 36, boxShadow: "0 8px 32px rgba(0,0,0,0.1)" }}>
             <div style={{ display: "flex", gap: 8, marginBottom: 28 }}>
               {[1, 2, 3].map(s => <div key={s} style={{ flex: 1, height: 3, borderRadius: 3, background: step >= s ? TEAL : "#E8ECF0", transition: "all 0.3s" }} />)}
             </div>

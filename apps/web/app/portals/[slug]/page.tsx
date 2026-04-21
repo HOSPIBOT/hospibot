@@ -50,7 +50,7 @@ export default function PortalPage({ params }: { params: { slug: string } }) {
           </div>
           <div style={{ display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:20 }}>
             {stats.map(s => (
-              <div key={s.label} style={{ background:'rgba(255,255,255,0.1)',borderRadius:16,padding:'20px 18px',border:'1px solid rgba(255,255,255,0.15)',backdropFilter:'blur(8px)' }}>
+              <div key={s.label} style={{ background:'rgba(255,255,255,0.12)',borderRadius:16,padding:'20px 18px',border:'1px solid rgba(255,255,255,0.2)',backdropFilter:'blur(12px)',boxShadow:'0 4px 24px rgba(0,0,0,0.15)' }}>
                 <div style={{ fontSize:'clamp(22px,3vw,34px)',fontWeight:900,color:'#fff',lineHeight:1 }}>{s.value}</div>
                 <div style={{ fontSize:13,color:'rgba(255,255,255,0.65)',marginTop:6,fontWeight:500 }}>{s.label}</div>
               </div>
@@ -74,7 +74,7 @@ export default function PortalPage({ params }: { params: { slug: string } }) {
           </div>
           <div style={{ display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(260px,1fr))',gap:20 }}>
             {features.map(f => (
-              <div key={f.title} style={{ background:'#fff',borderRadius:18,padding:'24px 22px',border:`1px solid ${light}`,boxShadow:'0 2px 12px rgba(0,0,0,0.04)',position:'relative',overflow:'hidden' }}>
+              <div key={f.title} style={{ background:'#fff',borderRadius:18,padding:'24px 22px',border:`1.5px solid ${light}`,boxShadow:'0 4px 20px rgba(0,0,0,0.08)',position:'relative',overflow:'hidden' }}>
                 <div style={{ width:46,height:46,borderRadius:13,background:light,display:'flex',alignItems:'center',justifyContent:'center',fontSize:22,marginBottom:14 }}>{f.icon}</div>
                 <h3 style={{ fontSize:15.5,fontWeight:700,color:'#0F172A',marginBottom:8,lineHeight:1.35 }}>{f.title}</h3>
                 <p style={{ fontSize:13.5,color:'#64748B',lineHeight:1.65 }}>{f.desc}</p>
@@ -97,7 +97,7 @@ export default function PortalPage({ params }: { params: { slug: string } }) {
           </div>
           <div style={{ display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))',gap:20 }}>
             {workflow.map((w, i) => (
-              <div key={w.step} style={{ background:'rgba(255,255,255,0.06)',borderRadius:18,padding:'24px 20px',border:'1px solid rgba(255,255,255,0.1)',backdropFilter:'blur(16px)',position:'relative',overflow:'hidden' }}>
+              <div key={w.step} style={{ background:'rgba(255,255,255,0.08)',borderRadius:18,padding:'24px 20px',border:'1px solid rgba(255,255,255,0.15)',backdropFilter:'blur(16px)',boxShadow:'0 4px 20px rgba(0,0,0,0.2)',position:'relative',overflow:'hidden' }}>
                 <div style={{ fontSize:11,fontWeight:800,color:'rgba(255,255,255,0.5)',letterSpacing:'0.1em',marginBottom:10 }}>STEP {w.step}</div>
                 <div style={{ width:40,height:40,borderRadius:12,background:'rgba(255,255,255,0.15)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,marginBottom:12 }}>
                   {wfIcons[i]}
@@ -124,7 +124,7 @@ export default function PortalPage({ params }: { params: { slug: string } }) {
               </p>
               <div style={{ display:'flex',flexDirection:'column' as const,gap:16 }}>
                 {benefits.map(b => (
-                  <div key={b.title} style={{ display:'flex',gap:14,alignItems:'flex-start' }}>
+                  <div key={b.title} style={{ display:'flex',gap:14,alignItems:'flex-start',background:'#fff',borderRadius:14,padding:'16px 18px',border:'1px solid #E8ECF0',boxShadow:'0 2px 10px rgba(0,0,0,0.04)' }}>
                     <div style={{ width:42,height:42,borderRadius:12,background:light,display:'flex',alignItems:'center',justifyContent:'center',fontSize:19,flexShrink:0 }}>{b.icon}</div>
                     <div>
                       <div style={{ fontSize:14.5,fontWeight:700,color:'#0F172A',marginBottom:3 }}>{b.title}</div>
@@ -137,7 +137,7 @@ export default function PortalPage({ params }: { params: { slug: string } }) {
             <div style={{ display:'flex',flexDirection:'column' as const,gap:14 }}>
               <div style={{ fontSize:13,fontWeight:700,color:color,textTransform:'uppercase' as const,letterSpacing:'0.08em',marginBottom:4 }}>Best suited for</div>
               {usecases.map(u => (
-                <div key={u.title} style={{ background:'#fff',borderRadius:16,padding:'18px 20px',border:`1.5px solid ${light}`,boxShadow:'0 2px 8px rgba(0,0,0,0.04)' }}>
+                <div key={u.title} style={{ background:'#fff',borderRadius:16,padding:'18px 20px',border:`1.5px solid ${light}`,boxShadow:'0 4px 16px rgba(0,0,0,0.08)' }}>
                   <div style={{ fontSize:14.5,fontWeight:700,color:'#0F172A',marginBottom:5 }}>{u.title}</div>
                   <div style={{ fontSize:13.5,color:'#64748B',lineHeight:1.55 }}>{u.desc}</div>
                 </div>

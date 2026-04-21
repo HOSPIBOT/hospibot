@@ -76,7 +76,7 @@ export default function PortalDetailPage({ data }: { data: PortalPageData }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
             {data.audience.map((a, i) => (
               <FadeIn key={i} delay={i * 0.06}>
-                <div style={{ border: '1px solid #E8ECF0', borderRadius: 14, padding: 24, transition: 'all 0.3s', height: '100%' }}
+                <div style={{ border: '1px solid #E2E8F0', borderRadius: 14, padding: 24, transition: 'all 0.3s', height: '100%', boxShadow: '0 4px 16px rgba(0,0,0,0.06)', background: '#fff' }}
                   onMouseEnter={(e: any) => { e.currentTarget.style.borderColor = c; e.currentTarget.style.transform = 'translateY(-3px)'; }}
                   onMouseLeave={(e: any) => { e.currentTarget.style.borderColor = '#E8ECF0'; e.currentTarget.style.transform = 'none'; }}>
                   <span style={{ fontSize: 28, display: 'block', marginBottom: 12 }}>{a.icon}</span>
@@ -99,9 +99,9 @@ export default function PortalDetailPage({ data }: { data: PortalPageData }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
             {data.features.map((f, i) => (
               <FadeIn key={i} delay={i * 0.06}>
-                <div style={{ background: '#fff', border: '1px solid #E8ECF0', borderRadius: 14, padding: 24, display: 'flex', gap: 16, transition: 'all 0.2s' }}
-                  onMouseEnter={(e: any) => e.currentTarget.style.borderColor = c}
-                  onMouseLeave={(e: any) => e.currentTarget.style.borderColor = '#E8ECF0'}>
+                <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: 14, padding: 24, display: 'flex', gap: 16, transition: 'all 0.3s', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}
+                  onMouseEnter={(e: any) => { e.currentTarget.style.borderColor = c; e.currentTarget.style.boxShadow = '0 8px 28px rgba(0,0,0,0.12)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                  onMouseLeave={(e: any) => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.06)'; e.currentTarget.style.transform = 'none'; }}>
                   <div style={{ width: 48, height: 48, borderRadius: 12, background: `${c}10`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>{f.icon}</div>
                   <div>
                     <h3 style={{ fontSize: 15, fontWeight: 700, color: NAVY, marginBottom: 6 }}>{f.title}</h3>
@@ -144,7 +144,7 @@ export default function PortalDetailPage({ data }: { data: PortalPageData }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
             {data.growth.map((g, i) => (
               <FadeIn key={i} delay={i * 0.08}>
-                <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: 24 }}>
+                <div style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 14, padding: 24, boxShadow: '0 4px 20px rgba(0,0,0,0.2)' }}>
                   <span style={{ fontSize: 28, display: 'block', marginBottom: 12 }}>{g.icon}</span>
                   <h3 style={{ fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 8 }}>{g.title}</h3>
                   <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, margin: 0 }}>{g.desc}</p>
@@ -165,9 +165,9 @@ export default function PortalDetailPage({ data }: { data: PortalPageData }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
             {data.subtypes.map((s, i) => (
               <FadeIn key={i} delay={i * 0.04}>
-                <div style={{ background: '#fff', border: '1px solid #E8ECF0', borderRadius: 12, padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 12, transition: 'all 0.2s' }}
-                  onMouseEnter={(e: any) => e.currentTarget.style.borderColor = c}
-                  onMouseLeave={(e: any) => e.currentTarget.style.borderColor = '#E8ECF0'}>
+                <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: 12, padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 12, transition: 'all 0.3s', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}
+                  onMouseEnter={(e: any) => { e.currentTarget.style.borderColor = c; e.currentTarget.style.boxShadow = '0 8px 28px rgba(0,0,0,0.12)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                  onMouseLeave={(e: any) => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.06)'; e.currentTarget.style.transform = 'none'; }}>
                   <span style={{ fontSize: 22 }}>{s.icon}</span>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 700, color: NAVY }}>{s.name}</div>
@@ -204,7 +204,7 @@ export default function PortalDetailPage({ data }: { data: PortalPageData }) {
               const price = annual ? p.annual : p.price;
               return (
                 <FadeIn key={i} delay={i * 0.08}>
-                  <div style={{ background: '#fff', borderRadius: 18, border: feat ? `2px solid ${c}` : '1px solid #E8ECF0', overflow: 'hidden', transform: feat ? 'scale(1.03)' : 'none', boxShadow: feat ? `0 12px 40px ${c}12` : '0 2px 8px rgba(0,0,0,0.03)' }}>
+                  <div style={{ background: '#fff', borderRadius: 18, border: feat ? `2px solid ${c}` : '1px solid #E8ECF0', overflow: 'hidden', transform: feat ? 'scale(1.03)' : 'none', boxShadow: feat ? `0 16px 48px ${c}20` : '0 4px 20px rgba(0,0,0,0.08)' }}>
                     {p.badge && <div style={{ background: feat ? c : NAVY, color: '#fff', textAlign: 'center', padding: '5px 0', fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase' }}>{p.badge}</div>}
                     <div style={{ padding: '24px 22px' }}>
                       <h3 style={{ fontSize: 18, fontWeight: 800, color: NAVY, marginBottom: 4 }}>{p.name}</h3>
