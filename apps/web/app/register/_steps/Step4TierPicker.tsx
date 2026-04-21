@@ -260,7 +260,7 @@ export default function Step4TierPicker({ familySlug, subtypeSlug, value, billin
       )}
 
       {/* Plans Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
+      <div className="grid grid-cols-4 gap-4">
         {PLANS.map(plan => {
           const isSelected = value === plan.key;
           const isPop = plan.badge === 'Most popular';
@@ -281,20 +281,20 @@ export default function Step4TierPicker({ familySlug, subtypeSlug, value, billin
               )}
 
               {/* Header */}
-              <div className="px-3 pt-3">
-                <h3 className="text-[15px] font-bold text-gray-900">{plan.name}</h3>
+              <div className="px-4 pt-4">
+                <h3 className="text-base font-bold text-gray-900">{plan.name}</h3>
                 <p className="text-[11px] text-gray-500 mt-0.5 leading-snug">{plan.tagline}</p>
               </div>
 
               {/* Price */}
-              <div className="px-3 pt-2.5">
+              <div className="px-4 pt-3">
                 {price ? (
                   <div className="flex items-baseline gap-1">
-                    <span className="text-[26px] font-bold text-[#0D7C66]">₹{price.toLocaleString('en-IN')}</span>
+                    <span className="text-3xl font-bold text-[#0D7C66]">₹{price.toLocaleString('en-IN')}</span>
                     <span className="text-[11px] text-gray-400">/month</span>
                   </div>
                 ) : (
-                  <span className="text-[20px] font-bold text-slate-800">Custom pricing</span>
+                  <span className="text-2xl font-bold text-slate-800">Custom pricing</span>
                 )}
                 {billingCycle === 'annual' && price && (
                   <p className="text-[10px] text-emerald-600 font-semibold mt-0.5">
@@ -304,7 +304,7 @@ export default function Step4TierPicker({ familySlug, subtypeSlug, value, billin
               </div>
 
               {/* CTA */}
-              <div className="px-3 pt-2.5">
+              <div className="px-4 pt-3">
                 <button className={`w-full py-2 rounded-lg text-[12px] font-semibold transition-all border ${
                   isSelected
                     ? 'bg-[#0D7C66] text-white border-[#0D7C66]'
@@ -315,7 +315,7 @@ export default function Step4TierPicker({ familySlug, subtypeSlug, value, billin
               </div>
 
               {/* Capacity Pills */}
-              <div className="px-3 pt-2.5 flex flex-wrap gap-1">
+              <div className="px-4 pt-3 flex flex-wrap gap-1">
                 {caps.map((c, i) => (
                   <span key={i} className="text-[9px] font-medium px-2 py-0.5 rounded-full bg-gray-50 text-gray-500 border border-gray-100">
                     {c}
@@ -324,10 +324,10 @@ export default function Step4TierPicker({ familySlug, subtypeSlug, value, billin
               </div>
 
               {/* Divider */}
-              <div className="h-px bg-gray-100 mx-3 mt-2.5" />
+              <div className="h-px bg-gray-100 mx-4 mt-3" />
 
               {/* Feature Categories */}
-              <div className="px-3 pt-1.5 pb-3">
+              <div className="px-4 pt-2 pb-3">
                 {Object.entries(plan.features).map(([category, feats]) => {
                   const catKey = `${plan.key}-${category}`;
                   const isOpen = expandedCats[catKey] !== false;

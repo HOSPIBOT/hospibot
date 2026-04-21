@@ -13,6 +13,7 @@ interface Props {
   nextDisabled?: boolean;
   hideBack?: boolean;
   hideNext?: boolean;
+  wide?: boolean;  // widen content area to ~1200px (for pricing cards)
   footerExtra?: ReactNode;  // custom content slotted into the footer (e.g. a "Save & Resume" link)
 }
 
@@ -30,7 +31,7 @@ interface Props {
  */
 export default function WizardShell({
   step, children, onBack, onNext, nextLabel = 'Continue',
-  nextDisabled, hideBack, hideNext, footerExtra,
+  nextDisabled, hideBack, hideNext, wide, footerExtra,
 }: Props) {
   const pct = Math.round((step / TOTAL_STEPS) * 100);
   const stepLabel = STEP_LABELS[step];
@@ -92,7 +93,7 @@ export default function WizardShell({
         display: 'flex',
         justifyContent: 'center',
       }}>
-        <div style={{ width: '100%', maxWidth: 720 }}>
+        <div style={{ width: '100%', maxWidth: wide ? 1200 : 720 }}>
           {children}
         </div>
       </main>

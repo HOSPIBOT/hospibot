@@ -164,6 +164,7 @@ export default function RegisterPage() {
       onBack={step > 1 && step < 7 ? handleBack : undefined}
       onNext={step < 7 ? handleNext : undefined}
       nextDisabled={nextDisabled}
+      wide={step === 4}
       nextLabel={
         step === 1 ? "Let's begin" :
         step === 6 ? (submitting ? 'Creating…' : 'Create my portal') :
