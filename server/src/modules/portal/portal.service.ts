@@ -280,4 +280,18 @@ export class PortalService {
       throw new NotFoundException('Registration draft not found or expired');
     }
   }
+
+
+  async getFeatureGates(subtypeSlug: string, tierKey: string) {
+    try {
+      const gates = await this.prisma.featureGate.findMany({
+        where: { subtypeSlug, tierKey, isEnabled: true },
+        select: { featureKey: true, isEnabled: true, notes: true },
+      });
+      return gates;
+    } catch {
+      return [];
+    }
+  }
+
 }

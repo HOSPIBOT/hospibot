@@ -178,4 +178,22 @@ export class PortalController {
   updateAssets(@Body() body: any, @CurrentUser() user: any) {
     return this.portalService.updatePlatformAssets(body, user.id);
   }
+
+
+  @Get('feature-gates')
+  @ApiOperation({ summary: 'Get feature gates for a subtype + tier combination' })
+  async getFeatureGates(
+    @Query('subtype') subtypeSlug: string,
+    @Query('tier') tierKey: string,
+  ) {
+    // Try DB first, fall back to hardcoded
+    try {
+      const gates = await this.portalService.getFeatureGates(subtypeSlug, tierKey);
+      if (gates && gates.length > 0) return gates;
+    } catch {}
+
+    // Fallback: return from hardcoded config
+    return { subtypeSlug, tierKey, source: 'hardcoded', message: 'Feature gates not yet seeded in DB. Using hardcoded defaults.' };
+  }
+
 }

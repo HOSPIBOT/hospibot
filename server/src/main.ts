@@ -53,6 +53,7 @@ async function bootstrap() {
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
+    // Swagger available at /api/docs
     SwaggerModule.setup('docs', app, document);
   }
 
