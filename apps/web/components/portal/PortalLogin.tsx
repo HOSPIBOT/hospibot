@@ -70,12 +70,12 @@ export default function PortalLogin({ portalSlug, features }: PortalLoginProps) 
       }
 
       // ── Security Rule 2: User must belong to this portal family ──
-      // If tenant has a portalFamily set, it must match this portal's slug
-      const tenantPortalSlug = tenant?.portalFamily?.slug;
+      // Check portalFamilySlug (derived from FK, settings, or tenant type on backend)
+      const tenantPortalSlug = tenant?.portalFamilySlug || tenant?.portalFamily?.slug || null;
       if (tenantPortalSlug && tenantPortalSlug !== portalSlug) {
         toast.error(
           `This account belongs to the ${PORTAL_LABELS[tenantPortalSlug] || tenantPortalSlug} portal. ` +
-          `Please sign in at the correct portal.`
+          `Please sign in at /${tenantPortalSlug}/login instead.`
         );
         setLoading(false);
         return;
