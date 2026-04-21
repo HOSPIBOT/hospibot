@@ -28,83 +28,6 @@ function FadeIn({ children, delay = 0, className = "" }: { children: React.React
   );
 }
 
-function Nav({ page, setPage }: { page: string; setPage: (p: string) => void }) {
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  useEffect(() => {
-    const h = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", h);
-    return () => window.removeEventListener("scroll", h);
-  }, []);
-  return (
-    <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, background: scrolled ? "rgba(10,22,40,0.95)" : "transparent", backdropFilter: scrolled ? "blur(20px)" : "none", transition: "all 0.4s", borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "none" }}>
-      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 40px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 72 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }} onClick={() => setPage("Home")}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: `linear-gradient(135deg, ${TEAL}, #14B88C)`, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 16 }}>H</div>
-          <span style={{ color: "#fff", fontSize: 20, fontWeight: 700, letterSpacing: -0.5 }}>Hospi<span style={{ color: TEAL }}>Bot</span></span>
-        </div>
-        <button onClick={() => setMobileOpen(!mobileOpen)} className="mobile-nav-btn" style={{ display: "none", background: "none", border: "none", color: "#fff", fontSize: 24, cursor: "pointer" }}>☰</button>
-        <div className="nav-links" style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          {pages.map(p => {
-            if (p === "Solutions") {
-              return (
-                <div key={p} style={{ position: "relative" }}
-                  onMouseEnter={(e: any) => { const dd = e.currentTarget.querySelector('.portal-dd') as HTMLElement; if (dd) dd.style.display = 'block'; }}
-                  onMouseLeave={(e: any) => { const dd = e.currentTarget.querySelector('.portal-dd') as HTMLElement; if (dd) dd.style.display = 'none'; }}>
-                  <button onClick={() => { setPage(p); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                    style={{ background: "none", border: "none", color: page === p ? "#fff" : "rgba(255,255,255,0.6)", fontSize: 14, fontWeight: page === p ? 600 : 400, cursor: "pointer", padding: "8px 16px", borderRadius: 8, transition: "all 0.2s", position: "relative" }}>
-                    Portals ▾
-                    {page === p && <div style={{ position: "absolute", bottom: 2, left: "50%", transform: "translateX(-50%)", width: 20, height: 2, background: TEAL, borderRadius: 2 }} />}
-                  </button>
-                  <div className="portal-dd" style={{ display: "none", position: "absolute", top: "100%", left: "50%", transform: "translateX(-50%)", paddingTop: 8, zIndex: 200 }}>
-                    <div style={{ background: "rgba(10,22,40,0.98)", backdropFilter: "blur(20px)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 14, padding: "8px 6px", minWidth: 240, boxShadow: "0 16px 48px rgba(0,0,0,0.4)" }}>
-                      {[
-                        { slug: "clinical", icon: "🏥", name: "Clinical Portal", sub: "75 subtypes" },
-                        { slug: "diagnostic", icon: "🔬", name: "Diagnostic Portal", sub: "34 subtypes" },
-                        { slug: "pharmacy", icon: "💊", name: "Pharmacy Portal", sub: "14 subtypes" },
-                        { slug: "homecare", icon: "🏠", name: "Home Care Portal", sub: "12 subtypes" },
-                        { slug: "equipment", icon: "🔧", name: "Equipment Portal", sub: "10 subtypes" },
-                        { slug: "wellness", icon: "🧘", name: "Wellness Portal", sub: "11 subtypes" },
-                        { slug: "services", icon: "🛎️", name: "Services Portal", sub: "8 subtypes" },
-                      ].map(portal => (
-                        <a key={portal.slug} href={`/portals/${portal.slug}`}
-                          style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 10, textDecoration: "none", transition: "background 0.15s", color: "#fff" }}
-                          onMouseEnter={(e: any) => e.currentTarget.style.background = "rgba(255,255,255,0.06)"}
-                          onMouseLeave={(e: any) => e.currentTarget.style.background = "transparent"}>
-                          <span style={{ fontSize: 20 }}>{portal.icon}</span>
-                          <div>
-                            <div style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>{portal.name}</div>
-                            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>{portal.sub}</div>
-                          </div>
-                        </a>
-                      ))}
-                      <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", margin: "4px 0" }} />
-                      <button onClick={() => { setPage("Solutions"); window.scrollTo({ top: 0, behavior: "smooth" }); const dd = document.querySelector('.portal-dd') as HTMLElement; if (dd) dd.style.display = 'none'; }}
-                        style={{ display: "block", width: "100%", padding: "10px 14px", borderRadius: 10, border: "none", background: "transparent", color: TEAL, fontSize: 13, fontWeight: 600, cursor: "pointer", textAlign: "left" }}>
-                        View all portals →
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            }
-            return (
-              <button key={p} onClick={() => { setPage(p); setMobileOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                style={{ background: "none", border: "none", color: page === p ? "#fff" : "rgba(255,255,255,0.6)", fontSize: 14, fontWeight: page === p ? 600 : 400, cursor: "pointer", padding: "8px 16px", borderRadius: 8, transition: "all 0.2s", position: "relative" }}>
-                {p}
-                {page === p && <div style={{ position: "absolute", bottom: 2, left: "50%", transform: "translateX(-50%)", width: 20, height: 2, background: TEAL, borderRadius: 2 }} />}
-              </button>
-            );
-          })}
-        </div>
-        <div className="nav-cta" style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={() => window.location.href = '/diagnostic/login'} style={{ background: "none", border: "1px solid rgba(255,255,255,0.2)", color: "#fff", padding: "9px 20px", borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: "pointer", transition: "all 0.2s" }}>Login</button>
-          <button onClick={() => window.location.href = '/register'} style={{ background: `linear-gradient(135deg, ${TEAL}, #14B88C)`, border: "none", color: "#fff", padding: "9px 24px", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "all 0.2s", boxShadow: `0 4px 20px ${TEAL}40` }}>Get free demo</button>
-        </div>
-      </div>
-    </nav>
-  );
-}
 
 function StatPill({ value, label }: { value: string; label: string }) {
   return (
@@ -174,7 +97,7 @@ function DashboardMockup() {
 function HomePage({ setPage }: { setPage: (p: string) => void }) {
   return (
     <>
-      <section style={{ background: `linear-gradient(165deg, ${NAVY} 0%, #0F2847 50%, #0A3040 100%)`, padding: "140px 40px 80px", position: "relative", overflow: "hidden" }}>
+      <section style={{ background: `linear-gradient(165deg, ${NAVY} 0%, #0F2847 50%, #0A3040 100%)`, padding: "40px 40px 80px", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, background: "radial-gradient(ellipse at 30% 20%, rgba(13,124,102,0.12) 0%, transparent 60%)" }} />
         <div style={{ position: "absolute", top: "10%", right: "5%", width: 500, height: 500, borderRadius: "50%", background: `radial-gradient(circle, ${TEAL}08, transparent)` }} />
         <div style={{ maxWidth: 1280, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "center", position: "relative" }}>
@@ -622,50 +545,17 @@ function ContactPage() {
   );
 }
 
-function Footer({ setPage }: { setPage: (p: string) => void }) {
-  return (
-    <footer style={{ background: NAVY, padding: "60px 40px 30px" }}>
-      <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr", gap: 40, marginBottom: 48 }}>
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-              <div style={{ width: 32, height: 32, borderRadius: 8, background: `linear-gradient(135deg, ${TEAL}, #14B88C)`, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 14 }}>H</div>
-              <span style={{ color: "#fff", fontSize: 18, fontWeight: 700 }}>HospiBot</span>
-            </div>
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", lineHeight: 1.7, maxWidth: 280 }}>WhatsApp-first healthcare operating system. Unifying patient engagement, operations, and revenue for every provider.</p>
-          </div>
-          {[{ title: "Product", links: ["Features", "Solutions", "Pricing", "Contact"] }, { title: "Portals", links: ["Clinical", "Diagnostic", "Pharmacy", "Home Care"] }, { title: "Company", links: ["About", "Blog", "Careers", "Contact"] }, { title: "Legal", links: ["Privacy Policy", "Terms of Service", "HIPAA", "DPDPA"] }].map((col, i) => (
-            <div key={i}>
-              <h4 style={{ color: "#fff", fontSize: 13, fontWeight: 600, marginBottom: 16, textTransform: "uppercase", letterSpacing: 1 }}>{col.title}</h4>
-              {col.links.map(l => <div key={l} onClick={() => { if (pages.includes(l)) { setPage(l); window.scrollTo({ top: 0, behavior: "smooth" }); } }} style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginBottom: 10, cursor: "pointer" }}>{l}</div>)}
-            </div>
-          ))}
-        </div>
-        <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 24, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <p style={{ fontSize: 12, color: "rgba(255,255,255,0.3)" }}>© 2026 HospiBot. All rights reserved. Made in Hyderabad, India.</p>
-          <div style={{ display: "flex", gap: 8 }}>
-            {["HIPAA", "DPDPA", "ISO 27001"].map(b => <span key={b} style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", padding: "4px 10px", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 6 }}>{b}</span>)}
-          </div>
-        </div>
-      </div>
-    </footer>
-  );
-}
 
 export default function MarketingHome() {
   const [page, setPage] = useState("Home");
   return (
     <div style={{ fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif", color: NAVY, overflowX: "hidden" }}>
-      {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-      <Nav page={page} setPage={setPage} />
       {page === "Home" && <HomePage setPage={setPage} />}
       {page === "Features" && <FeaturesPage />}
       {page === "Solutions" && <SolutionsPage setPage={setPage} />}
       {page === "Pricing" && <PricingPage />}
       {page === "About" && <AboutPage />}
       {page === "Contact" && <ContactPage />}
-      <Footer setPage={setPage} />
     </div>
   );
 }

@@ -28,29 +28,11 @@ export default function PortalDetailPage({ data }: { data: PortalPageData }) {
 
   return (
     <div style={{ fontFamily: "'DM Sans', -apple-system, sans-serif", color: NAVY }}>
-      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-      {/* NAVBAR */}
-      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, background: 'rgba(10,22,40,0.97)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 64 }}>
-          <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-            <div style={{ width: 32, height: 32, borderRadius: 8, background: `linear-gradient(135deg, #0D7C66, #14B88C)`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 800, fontSize: 14 }}>H</div>
-            <span style={{ color: '#fff', fontSize: 18, fontWeight: 700 }}>Hospi<span style={{ color: '#0D7C66' }}>Bot</span></span>
-          </a>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            {['Features', 'Pricing', 'Subtypes'].map(s => (
-              <a key={s} href={`#${s.toLowerCase()}`} style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 500, textDecoration: 'none', padding: '6px 14px', borderRadius: 6, transition: 'color 0.2s' }}>{s}</a>
-            ))}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <a href={data.loginPath} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', padding: '8px 18px', borderRadius: 8, fontSize: 13, fontWeight: 500, textDecoration: 'none' }}>Login</a>
-            <a href={data.registerPath} style={{ background: `linear-gradient(135deg, ${c}, ${c}DD)`, border: 'none', color: '#fff', padding: '8px 22px', borderRadius: 8, fontSize: 13, fontWeight: 600, textDecoration: 'none', boxShadow: `0 4px 16px ${c}40` }}>Register free</a>
-          </div>
-        </div>
-      </nav>
+
 
       {/* HERO */}
-      <section style={{ background: `linear-gradient(165deg, ${NAVY} 0%, #0F2847 60%, ${c}15 100%)`, padding: '120px 40px 80px', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ background: `linear-gradient(165deg, ${NAVY} 0%, #0F2847 60%, ${c}15 100%)`, padding: '40px 40px 80px', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: '20%', right: '10%', width: 400, height: 400, borderRadius: '50%', background: `radial-gradient(circle, ${c}12, transparent)` }} />
         <div style={{ maxWidth: 1280, margin: '0 auto', position: 'relative' }}>
           <FadeIn>
@@ -266,19 +248,7 @@ export default function PortalDetailPage({ data }: { data: PortalPageData }) {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer style={{ background: NAVY, padding: '40px 40px 24px' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 28, height: 28, borderRadius: 6, background: 'linear-gradient(135deg, #0D7C66, #14B88C)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 800, fontSize: 12 }}>H</div>
-            <span style={{ color: '#fff', fontSize: 16, fontWeight: 700 }}>HospiBot</span>
-          </div>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>© 2026 HospiBot. All rights reserved.</p>
-          <div style={{ display: 'flex', gap: 6 }}>
-            {['HIPAA', 'DPDPA', 'ISO 27001'].map(b => <span key={b} style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', padding: '3px 8px', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 4 }}>{b}</span>)}
-          </div>
-        </div>
-      </footer>
+
     </div>
   );
 }

@@ -4,19 +4,19 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const PORTAL_LINKS = [
-  { label:'Clinical Portal',   href:'/clinical/login',   emoji:'🩺' },
-  { label:'Diagnostic Portal', href:'/diagnostic/login', emoji:'🔬' },
-  { label:'Pharmacy Portal',   href:'/pharmacy/login',   emoji:'💊' },
-  { label:'Home Care Portal',  href:'/homecare/login',   emoji:'🏠' },
-  { label:'Equipment Portal',  href:'/equipment/login',  emoji:'⚙️'  },
-  { label:'Wellness Portal',   href:'/wellness/login',   emoji:'💆' },
-  { label:'Services Portal',   href:'/services/login',   emoji:'🤝' },
+  { label:'Clinical Portal',   href:'/portals/clinical',   emoji:'🩺' },
+  { label:'Diagnostic Portal', href:'/portals/diagnostic', emoji:'🔬' },
+  { label:'Pharmacy Portal',   href:'/portals/pharmacy',   emoji:'💊' },
+  { label:'Home Care Portal',  href:'/portals/homecare',   emoji:'🏠' },
+  { label:'Equipment Portal',  href:'/portals/equipment',  emoji:'⚙️'  },
+  { label:'Wellness Portal',   href:'/portals/wellness',   emoji:'💆' },
+  { label:'Services Portal',   href:'/portals/services',   emoji:'🤝' },
 ];
 
 export default function GlobalFooter() {
   const pathname = usePathname();
   // Don't show on homepage (iframe) or portal internal pages
-  if (pathname === '/') return null;
+  // Show on all public pages including homepage
   const portalRoutes = ['clinical','diagnostic','pharmacy','homecare','equipment','wellness','services','super-admin'];
   const isPortalPage = portalRoutes.some(p => pathname?.startsWith(`/${p}/`) && !pathname?.endsWith('/login'));
   if (isPortalPage) return null;

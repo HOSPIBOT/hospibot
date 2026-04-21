@@ -14,13 +14,13 @@ const NAV_LINKS = [
 ];
 
 const PORTALS = [
-  { label: 'Clinical Portal',   href: '/clinical/login',   emoji: '🩺' },
-  { label: 'Diagnostic Portal', href: '/diagnostic/login', emoji: '🔬' },
-  { label: 'Pharmacy Portal',   href: '/pharmacy/login',   emoji: '💊' },
-  { label: 'Home Care Portal',  href: '/homecare/login',   emoji: '🏠' },
-  { label: 'Equipment Portal',  href: '/equipment/login',  emoji: '⚙️'  },
-  { label: 'Wellness Portal',   href: '/wellness/login',   emoji: '💆' },
-  { label: 'Services Portal',   href: '/services/login',   emoji: '🤝' },
+  { label: 'Clinical Portal',   href: '/portals/clinical',   emoji: '🩺', sub: '75 subtypes' },
+  { label: 'Diagnostic Portal', href: '/portals/diagnostic', emoji: '🔬', sub: '34 subtypes' },
+  { label: 'Pharmacy Portal',   href: '/portals/pharmacy',   emoji: '💊', sub: '14 subtypes' },
+  { label: 'Home Care Portal',  href: '/portals/homecare',   emoji: '🏠', sub: '12 subtypes' },
+  { label: 'Equipment Portal',  href: '/portals/equipment',  emoji: '🔧', sub: '10 subtypes' },
+  { label: 'Wellness Portal',   href: '/portals/wellness',   emoji: '🧘', sub: '11 subtypes' },
+  { label: 'Services Portal',   href: '/portals/services',   emoji: '🛎️', sub: '8 subtypes' },
 ];
 
 export default function GlobalHeader() {
@@ -51,7 +51,7 @@ export default function GlobalHeader() {
   const isPublic = !currentPortal && !pathname?.startsWith('/super-admin');
 
   // Don't show on homepage (iframe) or portal dashboard pages
-  if (pathname === '/' || (currentPortal && !pathname?.endsWith('/login'))) return null;
+  if (currentPortal && !pathname?.endsWith('/login')) return null;
 
   return (
     <>
