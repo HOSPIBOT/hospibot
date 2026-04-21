@@ -43,7 +43,7 @@ export default function TextField({
         position: 'relative',
         display: 'flex', alignItems: 'stretch',
         border: `1.5px solid ${error ? TOKENS.danger : TOKENS.border}`,
-        borderRadius: 10,
+        borderRadius: 12,
         background: '#fff',
         transition: 'border-color 160ms, box-shadow 160ms',
         overflow: 'hidden',
