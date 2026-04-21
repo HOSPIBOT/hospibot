@@ -44,14 +44,58 @@ function Nav({ page, setPage }: { page: string; setPage: (p: string) => void }) 
           <span style={{ color: "#fff", fontSize: 20, fontWeight: 700, letterSpacing: -0.5 }}>Hospi<span style={{ color: TEAL }}>Bot</span></span>
         </div>
         <button onClick={() => setMobileOpen(!mobileOpen)} className="mobile-nav-btn" style={{ display: "none", background: "none", border: "none", color: "#fff", fontSize: 24, cursor: "pointer" }}>☰</button>
-        <div className="nav-links" style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {pages.map(p => (
-            <button key={p} onClick={() => { setPage(p); setMobileOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-              style={{ background: "none", border: "none", color: page === p ? "#fff" : "rgba(255,255,255,0.6)", fontSize: 14, fontWeight: page === p ? 600 : 400, cursor: "pointer", padding: "8px 16px", borderRadius: 8, transition: "all 0.2s", position: "relative" }}>
-              {p}
-              {page === p && <div style={{ position: "absolute", bottom: 2, left: "50%", transform: "translateX(-50%)", width: 20, height: 2, background: TEAL, borderRadius: 2 }} />}
-            </button>
-          ))}
+        <div className="nav-links" style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          {pages.map(p => {
+            if (p === "Solutions") {
+              return (
+                <div key={p} style={{ position: "relative" }}
+                  onMouseEnter={(e: any) => { const dd = e.currentTarget.querySelector('.portal-dd') as HTMLElement; if (dd) dd.style.display = 'block'; }}
+                  onMouseLeave={(e: any) => { const dd = e.currentTarget.querySelector('.portal-dd') as HTMLElement; if (dd) dd.style.display = 'none'; }}>
+                  <button onClick={() => { setPage(p); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                    style={{ background: "none", border: "none", color: page === p ? "#fff" : "rgba(255,255,255,0.6)", fontSize: 14, fontWeight: page === p ? 600 : 400, cursor: "pointer", padding: "8px 16px", borderRadius: 8, transition: "all 0.2s", position: "relative" }}>
+                    Portals ▾
+                    {page === p && <div style={{ position: "absolute", bottom: 2, left: "50%", transform: "translateX(-50%)", width: 20, height: 2, background: TEAL, borderRadius: 2 }} />}
+                  </button>
+                  <div className="portal-dd" style={{ display: "none", position: "absolute", top: "100%", left: "50%", transform: "translateX(-50%)", paddingTop: 8, zIndex: 200 }}>
+                    <div style={{ background: "rgba(10,22,40,0.98)", backdropFilter: "blur(20px)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 14, padding: "8px 6px", minWidth: 240, boxShadow: "0 16px 48px rgba(0,0,0,0.4)" }}>
+                      {[
+                        { slug: "clinical", icon: "🏥", name: "Clinical Portal", sub: "75 subtypes" },
+                        { slug: "diagnostic", icon: "🔬", name: "Diagnostic Portal", sub: "34 subtypes" },
+                        { slug: "pharmacy", icon: "💊", name: "Pharmacy Portal", sub: "14 subtypes" },
+                        { slug: "homecare", icon: "🏠", name: "Home Care Portal", sub: "12 subtypes" },
+                        { slug: "equipment", icon: "🔧", name: "Equipment Portal", sub: "10 subtypes" },
+                        { slug: "wellness", icon: "🧘", name: "Wellness Portal", sub: "11 subtypes" },
+                        { slug: "services", icon: "🛎️", name: "Services Portal", sub: "8 subtypes" },
+                      ].map(portal => (
+                        <a key={portal.slug} href={`/portals/${portal.slug}`}
+                          style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 10, textDecoration: "none", transition: "background 0.15s", color: "#fff" }}
+                          onMouseEnter={(e: any) => e.currentTarget.style.background = "rgba(255,255,255,0.06)"}
+                          onMouseLeave={(e: any) => e.currentTarget.style.background = "transparent"}>
+                          <span style={{ fontSize: 20 }}>{portal.icon}</span>
+                          <div>
+                            <div style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>{portal.name}</div>
+                            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>{portal.sub}</div>
+                          </div>
+                        </a>
+                      ))}
+                      <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", margin: "4px 0" }} />
+                      <button onClick={() => { setPage("Solutions"); window.scrollTo({ top: 0, behavior: "smooth" }); const dd = document.querySelector('.portal-dd') as HTMLElement; if (dd) dd.style.display = 'none'; }}
+                        style={{ display: "block", width: "100%", padding: "10px 14px", borderRadius: 10, border: "none", background: "transparent", color: TEAL, fontSize: 13, fontWeight: 600, cursor: "pointer", textAlign: "left" }}>
+                        View all portals →
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+            return (
+              <button key={p} onClick={() => { setPage(p); setMobileOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                style={{ background: "none", border: "none", color: page === p ? "#fff" : "rgba(255,255,255,0.6)", fontSize: 14, fontWeight: page === p ? 600 : 400, cursor: "pointer", padding: "8px 16px", borderRadius: 8, transition: "all 0.2s", position: "relative" }}>
+                {p}
+                {page === p && <div style={{ position: "absolute", bottom: 2, left: "50%", transform: "translateX(-50%)", width: 20, height: 2, background: TEAL, borderRadius: 2 }} />}
+              </button>
+            );
+          })}
         </div>
         <div className="nav-cta" style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <button onClick={() => window.location.href = '/diagnostic/login'} style={{ background: "none", border: "1px solid rgba(255,255,255,0.2)", color: "#fff", padding: "9px 20px", borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: "pointer", transition: "all 0.2s" }}>Login</button>
@@ -347,13 +391,13 @@ function FeaturesPage() {
 
 function SolutionsPage({ setPage }: { setPage: (p: string) => void }) {
   const portals = [
-    { icon: "🏥", name: "Clinical portal", sub: "75 subtypes", desc: "Solo doctors to 500-bed hospital chains. Specialists, surgeons, AYUSH, rehab, mental health centers.", color: "#E8F5F0" },
-    { icon: "🔬", name: "Diagnostic portal", sub: "34 subtypes", desc: "Pathology, radiology, PCR, genetics, ultrasound, PET scan, blood bank, health checkup, home collection.", color: "#EEF2FF" },
-    { icon: "💊", name: "Pharmacy portal", sub: "14 subtypes", desc: "Retail chemists, hospital pharmacy, online pharmacy, AYUSH, oncology, cold chain, wholesale.", color: "#FEF3E2" },
-    { icon: "🏠", name: "Home care portal", sub: "12 subtypes", desc: "Home nursing, physiotherapy, elder care, ICU at home, ambulance, patient transport.", color: "#F5F3FF" },
-    { icon: "🔧", name: "Equipment portal", sub: "10 subtypes", desc: "Medical device suppliers, surgical instruments, imaging equipment, dental, lab consumables.", color: "#FFF1F2" },
-    { icon: "🧘", name: "Wellness portal", sub: "11 subtypes", desc: "Fitness, yoga, nutrition, spa, meditation, naturopathy, holistic health centers.", color: "#F0FDF4" },
-    { icon: "🛎️", name: "Services portal", sub: "8 subtypes", desc: "Medical tourism, health tech staffing, ambulance, consulting, accreditation services.", color: "#FEF9E7" },
+    { icon: "🏥", name: "Clinical portal", sub: "75 subtypes", desc: "Solo doctors to 500-bed hospital chains. Specialists, surgeons, AYUSH, rehab, mental health centers.", color: "#E8F5F0", slug: "clinical" },
+    { icon: "🔬", name: "Diagnostic portal", sub: "34 subtypes", desc: "Pathology, radiology, PCR, genetics, ultrasound, PET scan, blood bank, health checkup, home collection.", color: "#EEF2FF", slug: "diagnostic" },
+    { icon: "💊", name: "Pharmacy portal", sub: "14 subtypes", desc: "Retail chemists, hospital pharmacy, online pharmacy, AYUSH, oncology, cold chain, wholesale.", color: "#FEF3E2", slug: "pharmacy" },
+    { icon: "🏠", name: "Home care portal", sub: "12 subtypes", desc: "Home nursing, physiotherapy, elder care, ICU at home, ambulance, patient transport.", color: "#F5F3FF", slug: "homecare" },
+    { icon: "🔧", name: "Equipment portal", sub: "10 subtypes", desc: "Medical device suppliers, surgical instruments, imaging equipment, dental, lab consumables.", color: "#FFF1F2", slug: "equipment" },
+    { icon: "🧘", name: "Wellness portal", sub: "11 subtypes", desc: "Fitness, yoga, nutrition, spa, meditation, naturopathy, holistic health centers.", color: "#F0FDF4", slug: "wellness" },
+    { icon: "🛎️", name: "Services portal", sub: "8 subtypes", desc: "Medical tourism, health tech staffing, ambulance, consulting, accreditation services.", color: "#FEF9E7", slug: "services" },
   ];
   return (
     <section style={{ padding: "140px 40px 80px", background: "#fff" }}>
@@ -366,7 +410,7 @@ function SolutionsPage({ setPage }: { setPage: (p: string) => void }) {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20 }}>
           {portals.map((p, i) => (
             <FadeIn key={i} delay={i * 0.06}>
-              <div style={{ background: "#fff", border: "1px solid #E8ECF0", borderRadius: 16, padding: 28, display: "flex", gap: 20, transition: "all 0.3s", cursor: "pointer" }}
+              <a href={`/portals/${p.slug}`} style={{ background: "#fff", border: "1px solid #E8ECF0", borderRadius: 16, padding: 28, display: "flex", gap: 20, transition: "all 0.3s", cursor: "pointer", textDecoration: "none", color: "inherit" }}
                 onMouseEnter={(e: any) => { e.currentTarget.style.borderColor = TEAL; e.currentTarget.style.boxShadow = `0 8px 32px ${TEAL}10`; }}
                 onMouseLeave={(e: any) => { e.currentTarget.style.borderColor = "#E8ECF0"; e.currentTarget.style.boxShadow = "none"; }}>
                 <div style={{ width: 56, height: 56, borderRadius: 14, background: p.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, flexShrink: 0 }}>{p.icon}</div>
@@ -377,7 +421,7 @@ function SolutionsPage({ setPage }: { setPage: (p: string) => void }) {
                   </div>
                   <p style={{ fontSize: 14, color: "#64748B", lineHeight: 1.6, margin: 0 }}>{p.desc}</p>
                 </div>
-              </div>
+              </a>
             </FadeIn>
           ))}
         </div>
