@@ -39,7 +39,7 @@ export function useDiagnosticGroups() {
     let cancelled = false;
     (async () => {
       try {
-        const res = await axios.get(`${API_URL}/portal/families/diagnostic/groups`);
+        const res = await axios.get(`${API_URL}/portal/families/diagnostic/groups`, { timeout: 3000 });
         const data = Array.isArray(res.data) ? res.data : [];
         if (!cancelled) setGroups(data.length > 0 ? data : HARDCODED_FALLBACK);
       } catch (e: any) {
@@ -72,7 +72,7 @@ export function useDiagnosticSubtypes(groupSlug: string | null) {
     setError(null);
     (async () => {
       try {
-        const res = await axios.get(`${API_URL}/portal/families/diagnostic/groups/${groupSlug}/subtypes`);
+        const res = await axios.get(`${API_URL}/portal/families/diagnostic/groups/${groupSlug}/subtypes`, { timeout: 3000 });
         const data = Array.isArray(res.data) ? res.data : [];
         if (!cancelled) {
           setSubtypes(data.length > 0 ? data : (SUBTYPE_FALLBACK[groupSlug] ?? []));
