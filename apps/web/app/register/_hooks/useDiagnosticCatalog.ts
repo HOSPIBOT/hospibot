@@ -32,7 +32,7 @@ export interface SubtypeCard {
  * still works — the UI never dead-ends on a transient backend state.
  */
 export function useDiagnosticGroups() {
-  const [groups, setGroups] = useState<SubtypeGroup[] | null>(null);
+  const [groups, setGroups] = useState<SubtypeGroup[] | null>(HARDCODED_FALLBACK);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -52,7 +52,7 @@ export function useDiagnosticGroups() {
     return () => { cancelled = true; };
   }, []);
 
-  return { groups, loading: groups === null, error };
+  return { groups, loading: false, error };
 }
 
 /**
