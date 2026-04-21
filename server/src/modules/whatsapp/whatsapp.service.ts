@@ -480,7 +480,7 @@ export class WhatsappService {
     });
 
     return { messageId: message.id, waMessageId, conversationId: conversation.id };
-  }
+
 }
 
   // ── Diagnostic-Specific WhatsApp Templates ────────────────────────────────
