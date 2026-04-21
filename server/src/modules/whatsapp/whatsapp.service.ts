@@ -482,3 +482,74 @@ export class WhatsappService {
     return { messageId: message.id, waMessageId, conversationId: conversation.id };
   }
 }
+
+  // ── Diagnostic-Specific WhatsApp Templates ────────────────────────────────
+
+  getTemplateForEvent(event: string, data: any): { body: string; buttons?: string[] } | null {
+    const templates: Record<string, (d: any) => { body: string; buttons?: string[] }> = {
+      // ── Report Ready ──
+      report_ready: (d) => ({
+        body: `Hi ${d.patientName},\n\nYour *${d.testName}* report from *${d.labName}* is ready.\n\nReport ID: ${d.reportId}\nDate: ${d.date}\n\nYou can download your report using the link below. For any questions, please contact us.`,
+        buttons: ['Download Report', 'Book Follow-up'],
+      }),
+      // ── Critical Value Alert ──
+      critical_alert: (d) => ({
+        body: `URGENT - Critical Value Alert\n\nDr. ${d.doctorName},\n\nPatient: ${d.patientName}\nTest: ${d.testName}\nResult: ${d.value} ${d.unit} (Ref: ${d.refRange})\n\nPlease review immediately. This value requires clinical attention.`,
+        buttons: ['Acknowledge', 'Call Lab'],
+      }),
+      // ── Appointment Reminder ──
+      appointment_reminder: (d) => ({
+        body: `Reminder: ${d.patientName}, you have a *${d.testName}* appointment at *${d.labName}*.\n\nDate: ${d.date}\nTime: ${d.time}\nAddress: ${d.address}\n\nPlease bring a valid ID and arrive 15 minutes early.`,
+        buttons: ['Confirm', 'Reschedule'],
+      }),
+      // ── Sample Collected ──
+      sample_collected: (d) => ({
+        body: `Hi ${d.patientName},\n\nYour sample has been collected successfully.\n\nSample ID: ${d.sampleId}\nTests: ${d.tests}\nExpected Report: ${d.eta}\n\nWe'll notify you when your report is ready.`,
+      }),
+      // ── Home Collection Slot ──
+      home_collection_booking: (d) => ({
+        body: `Hi ${d.patientName},\n\nYour home sample collection is confirmed.\n\nDate: ${d.date}\nSlot: ${d.slot}\nAgent: ${d.agentName}\nTests: ${d.tests}\n\nOur phlebotomist will call you 30 min before arrival.`,
+        buttons: ['Track Agent', 'Reschedule'],
+      }),
+      // ── Invoice / Bill ──
+      invoice_generated: (d) => ({
+        body: `Hi ${d.patientName},\n\nInvoice from *${d.labName}*:\n\nInvoice #: ${d.invoiceNo}\nAmount: ₹${d.amount}\nGST: ₹${d.gst}\nTotal: ₹${d.total}\n\nPay securely using the link below.`,
+        buttons: ['Pay Now', 'Download Invoice'],
+      }),
+      // ── TPA Approval ──
+      tpa_approved: (d) => ({
+        body: `Good news ${d.patientName}!\n\nYour insurance pre-authorization has been *approved*.\n\nInsurer: ${d.insurerName}\nApproval #: ${d.approvalNo}\nApproved Amount: ₹${d.approvedAmount}\n\nYou can proceed with your tests.`,
+      }),
+      // ── Package Booking ──
+      package_booked: (d) => ({
+        body: `Hi ${d.patientName},\n\nYour *${d.packageName}* health checkup is booked.\n\nDate: ${d.date}\nTime: ${d.time}\nTests: ${d.testCount} tests included\nFasting: ${d.fasting ? 'Required (10-12 hrs)' : 'Not required'}\n\nPlease arrive 15 minutes early.`,
+        buttons: ['View Package', 'Reschedule'],
+      }),
+      // ── PC-PNDT Form F (USG) ──
+      pndt_form_f: (d) => ({
+        body: `Dear ${d.doctorName},\n\nPC-PNDT Form F has been generated for patient ${d.patientName}.\n\nForm ID: ${d.formId}\nScan Type: ${d.scanType}\nDate: ${d.date}\n\nPlease verify and sign before report release.`,
+      }),
+      // ── QC Failure Alert ──
+      qc_failure: (d) => ({
+        body: `QC ALERT - ${d.labName}\n\nWestgard rule violation detected:\n\nAnalyzer: ${d.analyzerName}\nTest: ${d.testName}\nRule: ${d.rule}\nValue: ${d.value}\n\nPlease investigate before processing patient samples.`,
+      }),
+      // ── Referral Doctor Update ──
+      referral_update: (d) => ({
+        body: `Dr. ${d.doctorName},\n\nUpdate on your referred patient:\n\nPatient: ${d.patientName}\nTest: ${d.testName}\nStatus: ${d.status}\n\n${d.status === 'Ready' ? 'Report is ready for your review.' : `Expected by: ${d.eta}`}`,
+        buttons: ['View Report'],
+      }),
+      // ── Subscription Renewal ──
+      subscription_renewal: (d) => ({
+        body: `Hi ${d.adminName},\n\nYour *${d.planName}* subscription for *${d.labName}* is due for renewal.\n\nRenewal Date: ${d.renewalDate}\nAmount: ₹${d.amount}/month + GST\n\nRenew now to avoid service interruption.`,
+        buttons: ['Renew Now'],
+      }),
+      // ── Low Wallet Balance ──
+      low_balance: (d) => ({
+        body: `Alert: ${d.labName}\n\nYour ${d.walletType} balance is running low.\n\nCurrent Balance: ${d.balance} credits\nEstimated Days Left: ${d.daysLeft}\n\nRecharge now to avoid service disruption.`,
+        buttons: ['Recharge Now'],
+      }),
+    };
+
+    const tmpl = templates[event];
+    return tmpl ? tmpl(data) : null;
+  }
