@@ -553,3 +553,4 @@ export class WhatsappService {
     const tmpl = templates[event];
     return tmpl ? tmpl(data) : null;
   }
+}
