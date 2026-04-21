@@ -73,8 +73,8 @@ export default function GlobalHeader() {
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9000,
         height: 64,
         background: scrolled
-          ? 'rgba(0,0,0,0.94)'
-          : 'rgba(0,0,0,0.72)',
+          ? 'rgba(10,22,40,0.98)'
+          : 'rgba(10,22,40,0.92)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         borderBottom: '1px solid rgba(255,255,255,0.08)',
@@ -105,7 +105,7 @@ export default function GlobalHeader() {
               All Portals <ChevronDown size={14} style={{ transform: portalsOpen ? 'rotate(180deg)' : 'none', transition:'transform 0.2s' }}/>
             </button>
             {portalsOpen && (
-              <div className="gh-dropdown" style={{ position:'absolute', top:'calc(100% + 8px)', left:'50%', transform:'translateX(-50%)', background:'rgba(10,18,32,0.97)', backdropFilter:'blur(20px)', borderRadius:14, border:'1px solid rgba(255,255,255,0.1)', padding:8, minWidth:220, boxShadow:'0 20px 60px rgba(0,0,0,0.5)' }}
+              <div className="gh-dropdown" style={{ position:'absolute', top:'calc(100% + 8px)', left:'50%', transform:'translateX(-50%)', background:'rgba(10,22,40,0.98)', backdropFilter:'blur(20px)', borderRadius:14, border:'1px solid rgba(255,255,255,0.1)', padding:8, minWidth:220, boxShadow:'0 20px 60px rgba(0,0,0,0.5)' }}
                 onMouseLeave={() => setPortalsOpen(false)}>
                 {PORTALS.map(p => (
                   <Link key={p.href} href={p.href} className="gh-portal-item"
@@ -141,7 +141,7 @@ export default function GlobalHeader() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="gh-mobile" style={{ position:'fixed', top:64, left:0, right:0, zIndex:8999, background:'rgba(6,13,24,0.97)', backdropFilter:'blur(20px)', borderBottom:'1px solid rgba(255,255,255,0.08)', padding:'16px clamp(16px,4vw,48px) 24px', fontFamily:"'Poppins',sans-serif" }}>
+        <div className="gh-mobile" style={{ position:'fixed', top:64, left:0, right:0, zIndex:8999, background:'rgba(10,22,40,0.98)', backdropFilter:'blur(20px)', borderBottom:'1px solid rgba(255,255,255,0.08)', padding:'16px clamp(16px,4vw,48px) 24px', fontFamily:"'Poppins',sans-serif" }}>
           {NAV_LINKS.map(link => (
             <Link key={link.href} href={link.href} style={{ display:'block', padding:'10px 0', fontSize:15, fontWeight:500, color:'rgba(255,255,255,0.75)', textDecoration:'none', borderBottom:'1px solid rgba(255,255,255,0.05)' }}>{link.label}</Link>
           ))}

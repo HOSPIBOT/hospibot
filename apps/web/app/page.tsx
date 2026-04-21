@@ -157,7 +157,7 @@ function HomePage({ setPage }: { setPage: (p: string) => void }) {
         </div>
       </section>
 
-      <section style={{ padding: "100px 40px", background: "#fff" }}>
+      <section style={{ padding: "100px 40px", background: "#F6F8FA" }}>
         <div style={{ maxWidth: 1280, margin: "0 auto" }}>
           <FadeIn>
             <p style={{ fontSize: 13, color: TEAL, fontWeight: 600, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12, textAlign: "center" }}>Core platform</p>
@@ -174,7 +174,7 @@ function HomePage({ setPage }: { setPage: (p: string) => void }) {
               { icon: "🤖", title: "AI clinical tools", desc: "Dictate prescriptions in English, Hindi, Telugu, Tamil. Drug interaction alerts, ABHA Health ID, Universal Patient Vault.", color: "#F0FDF4" },
             ].map((f, i) => (
               <FadeIn key={i} delay={i * 0.08}>
-                <div style={{ background: "#fff", border: "1px solid #E2E8F0", borderRadius: 16, padding: 28, transition: "all 0.3s", cursor: "default", height: "100%", boxShadow: "0 4px 16px rgba(0,0,0,0.06)" }}
+                <div style={{ background: "#fff", border: "1px solid #E2E8F0", borderRadius: 16, padding: 28, transition: "all 0.3s", cursor: "default", height: "100%", boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}
                   onMouseEnter={(e: any) => { e.currentTarget.style.borderColor = TEAL; e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 12px 40px rgba(13,124,102,0.15)"; }}
                   onMouseLeave={(e: any) => { e.currentTarget.style.borderColor = "#E8ECF0"; e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}>
                   <div style={{ width: 48, height: 48, borderRadius: 12, background: f.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, marginBottom: 16 }}>{f.icon}</div>
@@ -212,7 +212,7 @@ function HomePage({ setPage }: { setPage: (p: string) => void }) {
         </div>
       </section>
 
-      <section style={{ padding: "100px 40px", background: "#fff" }}>
+      <section style={{ padding: "100px 40px", background: "#F6F8FA" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto" }}>
           <FadeIn>
             <p style={{ fontSize: 13, color: TEAL, fontWeight: 600, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12, textAlign: "center" }}>Testimonials</p>
@@ -225,7 +225,7 @@ function HomePage({ setPage }: { setPage: (p: string) => void }) {
               { q: "Managing 12 branches was a nightmare before HospiBot. Now I see real-time analytics across all locations from one dashboard.", n: "Vikram Reddy", r: "HealthFirst Lab Network" },
             ].map((t, i) => (
               <FadeIn key={i} delay={i * 0.1}>
-                <div style={{ background: "#fff", border: "1px solid #E2E8F0", borderRadius: 16, padding: 28, boxShadow: "0 4px 16px rgba(0,0,0,0.06)" }}>
+                <div style={{ background: "#fff", border: "1px solid #E2E8F0", borderRadius: 16, padding: 28, boxShadow: "0 6px 24px rgba(0,0,0,0.09)" }}>
                   <div style={{ fontSize: 12, marginBottom: 14 }}>⭐⭐⭐⭐⭐</div>
                   <p style={{ fontSize: 14, color: "#334155", lineHeight: 1.7, fontStyle: "italic", margin: "0 0 20px" }}>&ldquo;{t.q}&rdquo;</p>
                   <div style={{ borderTop: "1px solid #E8ECF0", paddingTop: 16 }}>
@@ -283,7 +283,7 @@ function FeaturesPage() {
     ]},
   ];
   return (
-    <section style={{ padding: "140px 40px 80px", background: "#fff" }}>
+    <section style={{ padding: "80px 40px 80px", background: "#F6F8FA" }}>
       <div style={{ maxWidth: 1280, margin: "0 auto" }}>
         <FadeIn>
           <p style={{ fontSize: 13, color: TEAL, fontWeight: 600, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12 }}>Product</p>
@@ -296,7 +296,7 @@ function FeaturesPage() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
               {cat.items.map((f, fi) => (
                 <FadeIn key={fi} delay={fi * 0.08}>
-                  <div style={{ background: "#fff", border: "1px solid #E2E8F0", borderRadius: 14, padding: 24, transition: "all 0.3s", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}
+                  <div style={{ background: "#fff", border: "1px solid #E2E8F0", borderRadius: 14, padding: 24, transition: "all 0.3s", boxShadow: "0 4px 20px rgba(0,0,0,0.08)" }}
                     onMouseEnter={(e: any) => e.currentTarget.style.borderColor = TEAL}
                     onMouseLeave={(e: any) => e.currentTarget.style.borderColor = "#E8ECF0"}>
                     <h3 style={{ fontSize: 16, fontWeight: 700, color: NAVY, marginBottom: 8 }}>{f.t}</h3>
@@ -323,7 +323,7 @@ function SolutionsPage({ setPage }: { setPage: (p: string) => void }) {
     { icon: "🛎️", name: "Services portal", sub: "8 subtypes", desc: "Medical tourism, health tech staffing, ambulance, consulting, accreditation services.", color: "#FEF9E7", slug: "services" },
   ];
   return (
-    <section style={{ padding: "140px 40px 80px", background: "#fff" }}>
+    <section style={{ padding: "80px 40px 80px", background: "#F6F8FA" }}>
       <div style={{ maxWidth: 1280, margin: "0 auto" }}>
         <FadeIn>
           <p style={{ fontSize: 13, color: TEAL, fontWeight: 600, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12 }}>Solutions</p>
@@ -333,7 +333,7 @@ function SolutionsPage({ setPage }: { setPage: (p: string) => void }) {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20 }}>
           {portals.map((p, i) => (
             <FadeIn key={i} delay={i * 0.06}>
-              <a href={`/portals/${p.slug}`} style={{ background: "#fff", border: "1px solid #E2E8F0", borderRadius: 16, padding: 28, display: "flex", gap: 20, transition: "all 0.3s", cursor: "pointer", textDecoration: "none", color: "inherit", boxShadow: "0 4px 16px rgba(0,0,0,0.06)" }}
+              <a href={`/portals/${p.slug}`} style={{ background: "#fff", border: "1px solid #E2E8F0", borderRadius: 16, padding: 28, display: "flex", gap: 20, transition: "all 0.3s", cursor: "pointer", textDecoration: "none", color: "inherit", boxShadow: "0 6px 24px rgba(0,0,0,0.09)" }}
                 onMouseEnter={(e: any) => { e.currentTarget.style.borderColor = TEAL; e.currentTarget.style.boxShadow = "0 12px 36px rgba(13,124,102,0.15)"; }}
                 onMouseLeave={(e: any) => { e.currentTarget.style.borderColor = "#E8ECF0"; e.currentTarget.style.boxShadow = "none"; }}>
                 <div style={{ width: 56, height: 56, borderRadius: 14, background: p.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, flexShrink: 0 }}>{p.icon}</div>
@@ -381,7 +381,7 @@ function PricingPage() {
   };
   const plans = pricing[portalTab] || pricing.clinical;
   return (
-    <section style={{ padding: "140px 40px 80px", background: "#F8FAFB" }}>
+    <section style={{ padding: "80px 40px 80px", background: "#F0F2F5" }}>
       <div style={{ maxWidth: 1280, margin: "0 auto" }}>
         <FadeIn>
           <p style={{ fontSize: 13, color: TEAL, fontWeight: 600, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12, textAlign: "center" }}>Pricing</p>
@@ -441,7 +441,7 @@ function PricingPage() {
 
 function AboutPage() {
   return (
-    <section style={{ padding: "140px 40px 80px", background: "#fff" }}>
+    <section style={{ padding: "80px 40px 80px", background: "#F6F8FA" }}>
       <div style={{ maxWidth: 1000, margin: "0 auto" }}>
         <FadeIn>
           <p style={{ fontSize: 13, color: TEAL, fontWeight: 600, textTransform: "uppercase", letterSpacing: 2, marginBottom: 12 }}>About us</p>
@@ -471,7 +471,7 @@ function AboutPage() {
               { icon: "📊", t: "No visibility across branches", d: "Real-time dashboard shows revenue, TAT, and operations across all locations. One screen, complete visibility." },
               { icon: "📋", t: "Regulatory compliance burden", d: "Built-in PC-PNDT, AERB, NACO, BMW compliance. Hard-blocks prevent violations. Auto-generate government reports." },
             ].map((p, i) => (
-              <div key={i} style={{ background: "#F8FAFB", border: "1px solid #E8ECF0", borderRadius: 14, padding: 24 }}>
+              <div key={i} style={{ background: "#fff", border: "1px solid #E2E8F0", borderRadius: 14, padding: 24, boxShadow: "0 4px 20px rgba(0,0,0,0.07)" }}>
                 <div style={{ fontSize: 24, marginBottom: 12 }}>{p.icon}</div>
                 <h3 style={{ fontSize: 16, fontWeight: 700, color: NAVY, marginBottom: 8 }}>{p.t}</h3>
                 <p style={{ fontSize: 14, color: "#64748B", lineHeight: 1.65, margin: 0 }}>{p.d}</p>
@@ -489,7 +489,7 @@ function ContactPage() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", org: "", type: "", size: "" });
   const inputStyle = { width: "100%", padding: "10px 14px", borderRadius: 10, border: "1px solid #E8ECF0", fontSize: 14, outline: "none", boxSizing: "border-box" as const, transition: "border 0.2s" };
   return (
-    <section style={{ padding: "140px 40px 80px", background: "#F8FAFB" }}>
+    <section style={{ padding: "80px 40px 80px", background: "#F0F2F5" }}>
       <div style={{ maxWidth: 1000, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60 }}>
         <FadeIn>
           <div>

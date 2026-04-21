@@ -60,8 +60,8 @@ export default function PortalPage({ params }: { params: { slug: string } }) {
       </section>
 
       {/* FEATURES */}
-      <section style={{ padding:'80px clamp(20px,5vw,80px)',background:'#fff',position:'relative',overflow:'hidden' }}>
-        <div style={{ position:'absolute',inset:0,backgroundImage:`radial-gradient(${color}18 1.5px,transparent 1.5px)`,backgroundSize:'28px 28px',pointerEvents:'none' }}/>
+      <section style={{ padding:'80px clamp(20px,5vw,80px)',background:'#F4F6F8',position:'relative',overflow:'hidden' }}>
+        <div style={{ position:'absolute',inset:0,backgroundImage:`radial-gradient(${color}12 1.5px,transparent 1.5px)`,backgroundSize:'28px 28px',pointerEvents:'none' }}/>
         <div style={{ position:'absolute',top:0,right:0,width:300,height:300,background:`radial-gradient(circle at top right,${light},transparent 70%)`,pointerEvents:'none' }}/>
         <div style={{ position:'absolute',bottom:0,left:0,width:250,height:250,background:`radial-gradient(circle at bottom left,${light},transparent 70%)`,pointerEvents:'none' }}/>
         <div style={{ maxWidth:1100,margin:'0 auto',position:'relative' }}>
@@ -74,7 +74,7 @@ export default function PortalPage({ params }: { params: { slug: string } }) {
           </div>
           <div style={{ display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(260px,1fr))',gap:20 }}>
             {features.map(f => (
-              <div key={f.title} style={{ background:'#fff',borderRadius:18,padding:'24px 22px',border:`1.5px solid ${light}`,boxShadow:'0 4px 20px rgba(0,0,0,0.08)',position:'relative',overflow:'hidden' }}>
+              <div key={f.title} style={{ background:'#fff',borderRadius:18,padding:'24px 22px',border:`1.5px solid ${light}`,boxShadow:'0 6px 28px rgba(0,0,0,0.1)',position:'relative',overflow:'hidden' }}>
                 <div style={{ width:46,height:46,borderRadius:13,background:light,display:'flex',alignItems:'center',justifyContent:'center',fontSize:22,marginBottom:14 }}>{f.icon}</div>
                 <h3 style={{ fontSize:15.5,fontWeight:700,color:'#0F172A',marginBottom:8,lineHeight:1.35 }}>{f.title}</h3>
                 <p style={{ fontSize:13.5,color:'#64748B',lineHeight:1.65 }}>{f.desc}</p>
@@ -111,7 +111,7 @@ export default function PortalPage({ params }: { params: { slug: string } }) {
       </section>
 
       {/* BENEFITS + USE CASES */}
-      <section style={{ padding:'80px clamp(20px,5vw,80px)',background:'#F8FAFC',position:'relative',overflow:'hidden' }}>
+      <section style={{ padding:'80px clamp(20px,5vw,80px)',background:'#EEF1F5',position:'relative',overflow:'hidden' }}>
         <div style={{ position:'absolute',inset:0,backgroundImage:`repeating-linear-gradient(135deg,transparent,transparent 40px,${color}06 40px,${color}06 41px)`,pointerEvents:'none' }}/>
         <div style={{ position:'absolute',right:0,top:'20%',width:400,height:400,background:`radial-gradient(circle,${light} 0%,transparent 70%)`,pointerEvents:'none' }}/>
         <div style={{ maxWidth:1100,margin:'0 auto',position:'relative' }}>
@@ -137,7 +137,7 @@ export default function PortalPage({ params }: { params: { slug: string } }) {
             <div style={{ display:'flex',flexDirection:'column' as const,gap:14 }}>
               <div style={{ fontSize:13,fontWeight:700,color:color,textTransform:'uppercase' as const,letterSpacing:'0.08em',marginBottom:4 }}>Best suited for</div>
               {usecases.map(u => (
-                <div key={u.title} style={{ background:'#fff',borderRadius:16,padding:'18px 20px',border:`1.5px solid ${light}`,boxShadow:'0 4px 16px rgba(0,0,0,0.08)' }}>
+                <div key={u.title} style={{ background:'#fff',borderRadius:16,padding:'18px 20px',border:`1.5px solid ${light}`,boxShadow:'0 6px 24px rgba(0,0,0,0.1)' }}>
                   <div style={{ fontSize:14.5,fontWeight:700,color:'#0F172A',marginBottom:5 }}>{u.title}</div>
                   <div style={{ fontSize:13.5,color:'#64748B',lineHeight:1.55 }}>{u.desc}</div>
                 </div>

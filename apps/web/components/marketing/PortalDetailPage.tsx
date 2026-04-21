@@ -67,7 +67,7 @@ export default function PortalDetailPage({ data }: { data: PortalPageData }) {
       </section>
 
       {/* WHO IS THIS FOR */}
-      <section style={{ padding: '80px 40px', background: '#fff' }}>
+      <section style={{ padding: '80px 40px', background: '#F4F6F8' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <FadeIn>
             <p style={{ fontSize: 13, color: c, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 10 }}>Who is this for</p>
@@ -90,7 +90,7 @@ export default function PortalDetailPage({ data }: { data: PortalPageData }) {
       </section>
 
       {/* FEATURES */}
-      <section id="features" style={{ padding: '80px 40px', background: '#F8FAFB' }}>
+      <section id="features" style={{ padding: '80px 40px', background: '#EEF1F5' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <FadeIn>
             <p style={{ fontSize: 13, color: c, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 10 }}>Features</p>
@@ -115,7 +115,7 @@ export default function PortalDetailPage({ data }: { data: PortalPageData }) {
       </section>
 
       {/* BENEFITS */}
-      <section style={{ padding: '80px 40px', background: '#fff' }}>
+      <section style={{ padding: '80px 40px', background: '#F4F6F8' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <FadeIn>
             <p style={{ fontSize: 13, color: c, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 10 }}>Benefits</p>
@@ -156,7 +156,7 @@ export default function PortalDetailPage({ data }: { data: PortalPageData }) {
       </section>
 
       {/* SUBTYPES */}
-      <section id="subtypes" style={{ padding: '80px 40px', background: '#F8FAFB' }}>
+      <section id="subtypes" style={{ padding: '80px 40px', background: '#EEF1F5' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <FadeIn>
             <p style={{ fontSize: 13, color: c, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 10 }}>Subtypes</p>
@@ -181,7 +181,7 @@ export default function PortalDetailPage({ data }: { data: PortalPageData }) {
       </section>
 
       {/* PRICING */}
-      <section id="pricing" style={{ padding: '80px 40px', background: '#fff' }}>
+      <section id="pricing" style={{ padding: '80px 40px', background: '#F4F6F8' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <FadeIn>
             <p style={{ fontSize: 13, color: c, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 10, textAlign: 'center' }}>Pricing</p>
