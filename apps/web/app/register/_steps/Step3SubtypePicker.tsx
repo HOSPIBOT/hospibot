@@ -1,6 +1,7 @@
 'use client';
 
 import { useDiagnosticSubtypes } from '../_hooks/useDiagnosticCatalog';
+import { toEmoji } from '../_lib/icon-map';
 
 interface Props { groupSlug: string | null; groupName?: string; value: string | null; onChange: (slug: string) => void; }
 
@@ -25,8 +26,8 @@ export default function Step3SubtypePicker({ groupSlug, groupName, value, onChan
             }}
             onMouseEnter={(e: any) => { if (value !== s.slug) { e.currentTarget.style.borderColor = '#0D7C66'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(13,124,102,0.12)'; e.currentTarget.style.transform = 'translateY(-3px)'; } }}
             onMouseLeave={(e: any) => { if (value !== s.slug) { e.currentTarget.style.borderColor = '#D1D9E0'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.06)'; e.currentTarget.style.transform = 'none'; } }}>
-            <div style={{ width: 44, height: 44, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, marginBottom: 8, background: value === s.slug ? '#0D7C66' : '#E8F5F0', color: value === s.slug ? '#fff' : '#1E293B' }}>
-              {s.icon || '🏥'}
+            <div style={{ width: 48, height: 48, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, marginBottom: 8, background: value === s.slug ? '#0D7C66' : '#E8F5F0' }}>
+              {toEmoji(s.icon)}
             </div>
             <div style={{ fontSize: 12, fontWeight: 700, color: '#1E293B', lineHeight: 1.3 }}>{s.name}</div>
             {s.volumeHint && <div style={{ fontSize: 10, color: '#0D7C66', marginTop: 4, fontWeight: 600 }}>{s.volumeHint}</div>}

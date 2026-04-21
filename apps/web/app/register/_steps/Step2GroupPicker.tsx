@@ -1,11 +1,7 @@
 'use client';
 
 import { useDiagnosticGroups } from '../_hooks/useDiagnosticCatalog';
-
-const ICONS: Record<string, string> = {
-  collection: '🧪', pathology: '🔬', imaging: '📸', physiological: '💓',
-  packages: '📋', specialty: '⚡', 'hub-digital': '🌐',
-};
+import { toEmoji } from '../_lib/icon-map';
 
 interface Props { value: string | null; onChange: (slug: string) => void; }
 
@@ -30,7 +26,7 @@ export default function Step2GroupPicker({ value, onChange }: Props) {
             }}
             onMouseEnter={(e: any) => { if (value !== g.slug) { e.currentTarget.style.borderColor = '#0D7C66'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(13,124,102,0.12)'; e.currentTarget.style.transform = 'translateY(-3px)'; } }}
             onMouseLeave={(e: any) => { if (value !== g.slug) { e.currentTarget.style.borderColor = '#D1D9E0'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.06)'; e.currentTarget.style.transform = 'none'; } }}>
-            <div style={{ fontSize: 32, marginBottom: 10 }}>{ICONS[g.slug] || '🏥'}</div>
+            <div style={{ fontSize: 36, marginBottom: 10 }}>{toEmoji(g.icon)}</div>
             <div style={{ fontSize: 14, fontWeight: 700, color: '#1E293B', marginBottom: 4 }}>{g.name}</div>
             <div style={{ fontSize: 11, color: '#64748B', lineHeight: 1.4, marginBottom: 8 }}>{g.description}</div>
             <span style={{ fontSize: 10, fontWeight: 700, color: '#0D7C66', background: '#E8F5F0', padding: '3px 10px', borderRadius: 100 }}>
