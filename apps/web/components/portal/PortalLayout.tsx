@@ -8,6 +8,7 @@ import { useAuthStore } from '@/lib/store';
 import { cn } from '@/lib/utils';
 import { FALLBACK_THEMES, getPlatformAssets, type PortalTheme, type PlatformAssets } from '@/lib/portal/portal-types';
 import { getSubtypeNavConfig, isFeatureEnabled, type FeatureGate } from '@/lib/portal-feature-flags';
+import { getNavForSubtype } from '@/lib/subtype-nav-config';
 import {
   LayoutDashboard, MessageSquare, Calendar, Users, CreditCard,
   Stethoscope, BarChart3, Zap, Settings, LogOut, Bell, Search,
@@ -260,53 +261,78 @@ export default function PortalLayout({ children, portalSlug }: PortalLayoutProps
   // Base nav for the portal family
   let navItems = NAV_BY_PORTAL[portalSlug] || NAV_BY_PORTAL.clinical;
 
-  // For diagnostic portal: apply subtype-specific filtering + tier-based feature gates
+  // For diagnostic portal: use whitelist-based nav per subtype + tier
   if (portalSlug === 'diagnostic' && tenant) {
     const subtype = tenant.subtypeSlug || tenant.subType?.slug;
     const tier = tenant.labTier as 'small' | 'medium' | 'large' | 'enterprise' | undefined;
-    const subtypeConfig = getSubtypeNavConfig(subtype);
 
-    // Apply label overrides
-    if (subtypeConfig.labelOverrides) {
-      navItems = navItems.map(item => {
-        const override = subtypeConfig.labelOverrides?.[item.href];
-        return override ? { ...item, label: override } : item;
-      });
-    }
+    // Get the whitelist of nav items for this subtype + tier
+    const whitelistNav = getNavForSubtype(subtype || null, tier || null);
 
-    // Hide items that don't apply to this subtype
-    if (subtypeConfig.hideItems?.length) {
-      const hideSet = new Set(subtypeConfig.hideItems);
-      navItems = navItems.filter(item => {
-        // Match exact href or flag
-        if (hideSet.has(item.href)) return false;
-        if (item.flag && hideSet.has(item.flag)) return false;
-        return true;
-      });
-    }
-
-    // Add subtype-specific extra items
-    if (subtypeConfig.extraItems?.length) {
+    if (whitelistNav.length > 0) {
+      // Icon mapping for sidebar items
       const iconMap: Record<string, any> = {
-        Truck, Shield, Users, Activity, Heart, UserCheck, FlaskConical,
-        AlertTriangle, FileText, ClipboardList, Globe, Building2,
-        Briefcase, TrendingUp, Stethoscope, Clock,
+        'dashboard': LayoutDashboard, 'patients': Users, 'lab-orders': FlaskConical,
+        'lab-orders/worklist': ClipboardList, 'collection': Home, 'catalog': ClipboardList,
+        'results': Activity, 'qc': Shield, 'inventory': Package, 'crm/doctors': Stethoscope,
+        'crm/corporates': Building2, 'automation': Zap, 'whatsapp': MessageSquare,
+        'billing': IndianRupee, 'rate-cards': IndianRupee, 'tpa': Shield,
+        'analytics': BarChart3, 'staff': UserCheck, 'packages': Package,
+        'compliance': ShieldCheck, 'equipment': Shield, 'settings': Settings,
+        'dispatch': Truck, 'field-agents': UserCheck, 'route-planning': Truck,
+        'cold-chain': Shield, 'hub-spoke': Layers2, 'franchise-labs': Building2,
+        'dicom-viewer': Activity, 'reading-worklist': ClipboardList,
+        'radiologist-panel': Users, 'pndt-register': Shield,
+        'compliance/form-f': ShieldCheck, 'compliance/pregnancy': Shield,
+        'compliance/aerb': AlertTriangle, 'compliance/mammo': UserCheck,
+        'ob-growth-scan': Heart, 'sonologist-panel': Users,
+        'radiotracer-log': FlaskConical, 'rso-dashboard': Shield,
+        'barc-reporting': FileText, 'nuclear-medicine': Activity,
+        'bi-rads': Shield, 'frax': Activity, 'opg-cbct': Activity,
+        'dental-radiology': Activity, 'oct-scans': Activity,
+        'perimetry': Activity, 'fundus-photo': Activity,
+        'ophthalmic-diagnostics': Activity, 'tmt-stress': Activity,
+        'holter-allocation': Clock, 'abpm-reports': Activity,
+        'cath-lab-schedule': Heart, 'spirometry': Activity,
+        'waveforms': Activity, 'allergen-panels': FlaskConical,
+        'immunotherapy': Shield, 'psg': Activity, 'cpap-titration': Activity,
+        'audiometry': Activity, 'bera': Activity,
+        'audiology-center': Activity, 'urodynamics': Activity,
+        'endoscopy-center': Activity, 'video-capture': Activity,
+        'sedation-log': Shield, 'employer-portal': Building2,
+        'health-camps': Briefcase, 'population-health': TrendingUp,
+        'consult-schedule': Stethoscope, 'hra': Activity,
+        'cycles': Heart, 'ivf-embryology-lab': FlaskConical,
+        'cryopreservation': Shield, 'casa': Activity, 'art-act': ShieldCheck,
+        'hla-typing': FlaskConical, 'stem-cell-hla-lab': FlaskConical,
+        'wmda-sync': Globe, 'chain-of-custody': Shield,
+        'gc-ms': FlaskConical, 'forensic-toxicology-lab': FlaskConical,
+        'tumor-markers': FlaskConical, 'ai-scoring': Star,
+        'partner-labs': Building2, 'client-centers': Building2,
+        'sla-monitor': Clock, 'kit-logistics': Truck,
+        'dtc-consumer': Globe, 'dtc-genomics': FlaskConical,
+        'analyzer-interface': Activity, 'batch-processing': FlaskConical,
+        'ngs-workflow': FlaskConical, 'biosafety': Shield,
+        'gov-reporting': FileText, 'icmr-naco': FileText,
+        'dghs-reporting': FileText, 'cdsco-reports': FileText,
+        'genetic-counseling': Users, 'pedigree-builder': Users,
+        'variant-database': FlaskConical, 'culture': FlaskConical,
+        'antibiogram': Shield, 'blood-bank': Heart,
+        'donors': Users, 'crossmatch': Shield,
+        'histopathology-lab': FlaskConical, 'ihc': FlaskConical,
+        'frozen-section': Clock, 'slide-scanning': Activity,
       };
-      const extras = subtypeConfig.extraItems.map(e => ({
-        href: e.href, label: e.label, icon: iconMap[e.iconKey] || Activity, always: true,
-      }));
-      navItems = [...navItems, ...extras];
-    }
 
-    // Apply tier-based gating to locked items (show with lock icon rather than hide)
-    if (tier) {
-      navItems = navItems.filter(item => {
-        // Keep always-on items
-        if (item.always && !['multi-branch','franchise','api-marketplace','gov-reporting','hl7-astm','qc-westgard','eqa-pt','ai-reading','pacs-integration','biobank','theranostics','tele-radiology-routing','hospital-hl7','dedicated-manager','white-label','revenue-sharing'].some(k => item.href.includes(k))) {
-          return true;
-        }
-        // For featured items with flags, check if tier allows
-        return isFeatureEnabled(item.flag || item.href, subtype, tier);
+      // Build nav from whitelist
+      navItems = whitelistNav.map(navItem => {
+        const href = navItem.path.replace('/diagnostic/', '');
+        return {
+          href,
+          label: navItem.label || href.split('/').pop()?.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) || href,
+          icon: iconMap[href] || Activity,
+          always: true,
+          badge: href === 'whatsapp',
+        };
       });
     }
   }
