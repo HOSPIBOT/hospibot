@@ -15,7 +15,7 @@ import { AutomationModule } from './modules/automation/automation.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { APP_GUARD } from '@nestjs/core';
 import { SimpleThrottleGuard } from './common/guards/throttle.guard';
-import { RequestLoggerMiddleware } from './common/middleware/request-logger.middleware' from './common/guards/throttle.guard';
+import { RequestLoggerMiddleware } from './common/middleware/request-logger.middleware';
 import { HealthController } from './health.controller';
 import { StartupService } from './startup.service';
 import { DbBootstrapService } from './db-bootstrap.service';

@@ -45,8 +45,8 @@ export class ComplianceGuard implements CanActivate {
     // ─── 1. PC-PNDT Form F (Ultrasound Centers) ──────────────────────────
     if (subtypeSlug === 'ultrasound-center') {
       if (orderId) {
-        const order = await this.prisma.labOrder.findUnique({ where: { id: orderId }, select: { settings: true } }).catch(() => null);
-        const s = (order?.settings as any) || {};
+        const order = await this.prisma.labOrder.findUnique({ where: { id: orderId } }).catch(() => null);
+        const s = (order as any) || {};
         if (!s.formFCompleted) {
           violations.push('PC-PNDT Form F must be completed before releasing USG report. [Pre-Conception and Pre-Natal Diagnostic Techniques Act, 1994]');
         }
@@ -56,8 +56,8 @@ export class ComplianceGuard implements CanActivate {
     // ─── 2. AERB Radiation Dose Log (Radiology / PET / Nuclear / Mammo) ───
     if (['radiology-center', 'pet-scan-center', 'nuclear-medicine-center', 'mammography-center', 'dental-radiology-center'].includes(subtypeSlug)) {
       if (orderId) {
-        const order = await this.prisma.labOrder.findUnique({ where: { id: orderId }, select: { settings: true } }).catch(() => null);
-        const s = (order?.settings as any) || {};
+        const order = await this.prisma.labOrder.findUnique({ where: { id: orderId } }).catch(() => null);
+        const s = (order as any) || {};
         if (!s.aerbDoseLogged) {
           violations.push('AERB radiation dose must be logged before releasing report. [Atomic Energy Regulatory Board, AERB Safety Code AERB/RF-MED/SC-2]');
         }
@@ -67,8 +67,8 @@ export class ComplianceGuard implements CanActivate {
     // ─── 3. Female Radiographer (Mammography) ─────────────────────────────
     if (subtypeSlug === 'mammography-center') {
       if (orderId) {
-        const order = await this.prisma.labOrder.findUnique({ where: { id: orderId }, select: { settings: true } }).catch(() => null);
-        const s = (order?.settings as any) || {};
+        const order = await this.prisma.labOrder.findUnique({ where: { id: orderId } }).catch(() => null);
+        const s = (order as any) || {};
         if (!s.femaleRadiographerConfirmed) {
           violations.push('Mammography scan must confirm female radiographer performed the study. [AERB + NBHE Guidelines]');
         }
