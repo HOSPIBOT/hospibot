@@ -5,6 +5,7 @@ import {
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { TenantGuard } from '../../common/guards/tenant.guard';
+import { ComplianceGuard } from '../../common/guards/compliance.guard';
 import { TierGuard } from '../../common/guards/tier.guard';
 import { RequireFeature } from '../../common/decorators/tier.decorator';
 import { CurrentTenant } from '../../common/decorators/current-user.decorator';

@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
@@ -40,6 +41,7 @@ async function bootstrap() {
   );
 
   // API versioning
+  app.useGlobalFilters(new GlobalExceptionFilter());
   app.setGlobalPrefix(process.env.API_PREFIX || 'api/v1');
 
   // Swagger API documentation
