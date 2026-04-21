@@ -236,6 +236,26 @@ export class AuthService {
     // Strip settings from the response (internal) but keep derived values
     const { settings: _s, ...tenantRest } = (user.tenant as any) ?? {};
 
+    // Derive subtypeSlug: prefer FK relation, fallback to settings JSON
+    const subtypeSlug = user.tenant?.subType?.slug
+      ?? tenantSettings.subtypeSlug
+      ?? null;
+
+    // Derive portalFamily: prefer FK relation, fallback to settings JSON or type mapping
+    const portalFamilyFromSettings = tenantSettings.portalFamily ?? null;
+    const typeToPortalMap: Record<string, string> = {
+      HOSPITAL: 'clinical', CLINIC: 'clinical', DOCTOR: 'clinical',
+      DIAGNOSTIC_CENTER: 'diagnostic',
+      PHARMACY: 'pharmacy',
+      HOME_HEALTHCARE: 'homecare',
+      EQUIPMENT_VENDOR: 'equipment',
+      IVF_CENTER: 'clinical',
+    };
+    const derivedPortalFamily = user.tenant?.portalFamily?.slug
+      ?? portalFamilyFromSettings
+      ?? (user.tenant?.type ? typeToPortalMap[user.tenant.type] : null)
+      ?? null;
+
     return {
       user: {
         id: user.id,
@@ -247,8 +267,9 @@ export class AuthService {
       },
       tenant: {
         ...tenantRest,
-        subtypeSlug: user.tenant?.subType?.slug ?? null,
+        subtypeSlug,
         labTier,
+        portalFamilySlug: derivedPortalFamily,
         featureFlags: (user.tenant?.subType?.featureFlags ?? {}) as Record<string, boolean>,
       },
       ...tokens,

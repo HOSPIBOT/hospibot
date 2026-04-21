@@ -66,7 +66,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       PHARMACY:'pharmacy', HOME_HEALTHCARE:'homecare',
       EQUIPMENT_VENDOR:'equipment',
     };
-    const portalSlug = tenant?.portalFamily?.slug
+    const portalSlug = tenant?.portalFamilySlug
+      ?? tenant?.portalFamily?.slug
       ?? (tenant?.type ? TYPE_TO_SLUG[tenant.type] : null)
       ?? 'clinical';
 
