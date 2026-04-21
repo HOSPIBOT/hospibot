@@ -101,35 +101,71 @@ export default function PortalLogin({ portalSlug, features }: PortalLoginProps) 
 
   return (
     <div className="min-h-screen flex">
-      {/* Left panel */}
+      {/* Left panel — hero */}
       <div
-        className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 relative overflow-hidden"
-        style={{ background: `linear-gradient(145deg, ${theme.loginBg} 0%, ${theme.loginGradient} 100%)` }}
+        className="hidden lg:flex lg:w-1/2 flex-col justify-between relative overflow-hidden"
+        style={{ background: `linear-gradient(160deg, ${theme.loginBg} 0%, ${theme.loginGradient} 50%, ${theme.loginBg}DD 100%)` }}
       >
-        {/* Decorative circles */}
-        <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full opacity-10" style={{ background: '#fff' }} />
-        <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full opacity-10" style={{ background: '#fff' }} />
+        {/* Decorative elements */}
+        <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full opacity-[0.07]" style={{ background: '#fff' }} />
+        <div className="absolute -bottom-20 -left-20 w-72 h-72 rounded-full opacity-[0.05]" style={{ background: '#fff' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full opacity-[0.06]"
+          style={{ background: `radial-gradient(circle, ${theme.accentColor}, transparent 70%)` }} />
+        <div className="absolute inset-0 opacity-[0.03]"
+          style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
-        <div className="relative">
-          <Image src={assets?.logoUrl || '/hospibot-logo.png'} alt={assets?.logoAlt || 'HospiBot'}
-            width={160} height={54} className="object-contain mb-8" />
-          <h2 className="text-3xl font-bold text-white mb-2">{label}</h2>
-          <p className="text-white/70 text-base mb-10">{assets?.tagline || 'Connect 24*7...'}</p>
+        <div className="relative p-12 flex-1 flex flex-col justify-center">
+          {/* Logo */}
+          <div className="flex items-center gap-3 mb-12">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+              style={{ background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.1)' }}>
+              <span className="text-white font-extrabold text-lg">H</span>
+            </div>
+            <span className="text-white text-xl font-bold tracking-tight">HospiBot</span>
+          </div>
+
+          {/* Portal name badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6 self-start"
+            style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.15)' }}>
+            <div className="w-2 h-2 rounded-full" style={{ background: theme.accentColor }} />
+            <span className="text-white/90 text-xs font-semibold tracking-wide">{label.toUpperCase()}</span>
+          </div>
+
+          <h2 className="text-4xl font-extrabold text-white mb-4 leading-tight tracking-tight">
+            Welcome to your<br />{label.replace(' Portal', '')} dashboard
+          </h2>
+          <p className="text-white/50 text-base mb-10 max-w-sm leading-relaxed">
+            {assets?.tagline || 'Manage your practice, engage patients, and grow revenue — all from one platform.'}
+          </p>
 
           <ul className="space-y-4">
             {bullets.map((item, i) => (
-              <li key={i} className="flex items-center gap-3 text-white/90 text-sm">
-                <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
-                  style={{ background: theme.accentColor }}>
-                  <ArrowRight className="w-3 h-3 text-white" />
+              <li key={i} className="flex items-center gap-3.5 text-white/85 text-sm">
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
+                  style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path d="M2.5 6l2.5 2.5 4.5-4.5" stroke={theme.accentColor} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
                 </div>
-                {item}
+                <span className="font-medium">{item}</span>
               </li>
             ))}
           </ul>
+
+          {/* Stats row */}
+          <div className="flex gap-8 mt-12 pt-8" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            {[{ v: '98%', l: 'WA open rate' }, { v: '60%', l: 'Less no-shows' }, { v: '<7 days', l: 'Go live' }].map((s, i) => (
+              <div key={i}>
+                <div className="text-white text-xl font-extrabold">{s.v}</div>
+                <div className="text-white/35 text-xs mt-0.5">{s.l}</div>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <p className="relative text-white/40 text-xs">© {new Date().getFullYear()} HospiBot. All rights reserved.</p>
+        <div className="relative px-12 pb-6">
+          <p className="text-white/25 text-xs">© {new Date().getFullYear()} HospiBot. HIPAA & DPDPA compliant.</p>
+        </div>
       </div>
 
       {/* Right panel */}
@@ -141,22 +177,23 @@ export default function PortalLogin({ portalSlug, features }: PortalLoginProps) 
           </div>
 
           {/* Portal badge */}
-          <span className="inline-block text-xs font-bold px-3 py-1 rounded-full mb-6"
-            style={{ background: theme.primaryLight, color: theme.primaryColor }}>
-            {label}
-          </span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg mb-6"
+            style={{ background: theme.primaryLight, border: `1px solid ${theme.primaryColor}20` }}>
+            <div className="w-2 h-2 rounded-full" style={{ background: theme.primaryColor }} />
+            <span className="text-xs font-bold" style={{ color: theme.primaryColor }}>{label}</span>
+          </div>
 
-          <h2 className="text-2xl font-bold text-slate-900 mb-1">Welcome back</h2>
+          <h2 className="text-2xl font-extrabold text-slate-900 mb-1 tracking-tight">Welcome back</h2>
           <p className="text-slate-500 text-sm mb-8">Sign in to your {label.replace(' Portal', '')} dashboard</p>
 
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Email address</label>
               <input type="email" required
-                className="w-full px-4 py-3 text-sm rounded-xl border border-slate-200 bg-slate-50 outline-none transition-all placeholder:text-slate-400"
+                className="w-full px-4 py-3.5 text-sm rounded-xl border border-slate-200 bg-slate-50/50 outline-none transition-all placeholder:text-slate-400"
                 style={{ '--tw-ring-color': theme.primaryColor } as any}
-                onFocus={e => e.target.style.borderColor = theme.primaryColor}
-                onBlur={e => e.target.style.borderColor = '#E2E8F0'}
+                onFocus={e => { e.target.style.borderColor = theme.primaryColor; e.target.style.boxShadow = `0 0 0 3px ${theme.primaryColor}15`; e.target.style.background = '#fff'; }}
+                onBlur={e => { e.target.style.borderColor = '#E2E8F0'; e.target.style.boxShadow = 'none'; e.target.style.background = ''; }}
                 placeholder="admin@yourfacility.com"
                 value={form.email}
                 onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
@@ -167,9 +204,9 @@ export default function PortalLogin({ portalSlug, features }: PortalLoginProps) 
               <div className="relative">
                 <input
                   type={showPass ? 'text' : 'password'} required
-                  className="w-full px-4 py-3 pr-10 text-sm rounded-xl border border-slate-200 bg-slate-50 outline-none transition-all placeholder:text-slate-400"
-                  onFocus={e => e.target.style.borderColor = theme.primaryColor}
-                  onBlur={e => e.target.style.borderColor = '#E2E8F0'}
+                  className="w-full px-4 py-3.5 pr-10 text-sm rounded-xl border border-slate-200 bg-slate-50/50 outline-none transition-all placeholder:text-slate-400"
+                  onFocus={e => { e.target.style.borderColor = theme.primaryColor; e.target.style.boxShadow = `0 0 0 3px ${theme.primaryColor}15`; e.target.style.background = '#fff'; }}
+                  onBlur={e => { e.target.style.borderColor = '#E2E8F0'; e.target.style.boxShadow = 'none'; e.target.style.background = ''; }}
                   placeholder="Enter your password"
                   value={form.password}
                   onChange={e => setForm(f => ({ ...f, password: e.target.value }))} />
@@ -198,7 +235,7 @@ export default function PortalLogin({ portalSlug, features }: PortalLoginProps) 
           <div className="mt-8 pt-6 border-t border-slate-100 text-center space-y-3">
             <p className="text-sm text-slate-500">
               Not on HospiBot yet?{' '}
-              <a href={`/register/${portalSlug}`} className="font-semibold hover:underline" style={{ color: theme.primaryColor }}>
+              <a href={`/register?portal=${portalSlug}`} className="font-semibold hover:underline" style={{ color: theme.primaryColor }}>
                 Register your facility
               </a>
             </p>

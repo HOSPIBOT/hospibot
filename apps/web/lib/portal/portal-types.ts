@@ -52,13 +52,13 @@ export interface RegistrationContext {
 
 // ── Fallback themes (used when DB is not yet seeded) ──────────────────────────
 export const FALLBACK_THEMES: Record<string, PortalTheme> = {
-  clinical:   { primaryColor: '#0D7C66', primaryDark: '#0A5E4F', primaryLight: '#E8F5F0', accentColor: '#F59E0B', sidebarBg: '#063A31', loginBg: '#0D7C66', loginGradient: '#0A5E4F' },
+  clinical:   { primaryColor: '#0D7C66', primaryDark: '#065F46', primaryLight: '#ECFDF5', accentColor: '#F59E0B', sidebarBg: '#063A31', loginBg: '#0D7C66', loginGradient: '#065F46' },
   diagnostic: { primaryColor: '#1E3A5F', primaryDark: '#152A47', primaryLight: '#EFF6FF', accentColor: '#06B6D4', sidebarBg: '#0F1E33', loginBg: '#1E3A5F', loginGradient: '#152A47' },
-  pharmacy:   { primaryColor: '#166534', primaryDark: '#14532D', primaryLight: '#F0FDF4', accentColor: '#84CC16', sidebarBg: '#0D3B20', loginBg: '#166534', loginGradient: '#14532D' },
-  homecare:   { primaryColor: '#6B21A8', primaryDark: '#581C87', primaryLight: '#FAF5FF', accentColor: '#FB923C', sidebarBg: '#3B0764', loginBg: '#6B21A8', loginGradient: '#581C87' },
-  equipment:  { primaryColor: '#1E40AF', primaryDark: '#1E3A8A', primaryLight: '#EFF6FF', accentColor: '#94A3B8', sidebarBg: '#0F172A', loginBg: '#1E40AF', loginGradient: '#1E3A8A' },
-  wellness:   { primaryColor: '#E11D48', primaryDark: '#BE123C', primaryLight: '#FFF1F2', accentColor: '#EAB308', sidebarBg: '#881337', loginBg: '#E11D48', loginGradient: '#BE123C' },
-  services:   { primaryColor: '#334155', primaryDark: '#1E293B', primaryLight: '#F8FAFC', accentColor: '#14B8A6', sidebarBg: '#0F172A', loginBg: '#334155', loginGradient: '#1E293B' },
+  pharmacy:   { primaryColor: '#15803D', primaryDark: '#14532D', primaryLight: '#F0FDF4', accentColor: '#84CC16', sidebarBg: '#0D3B20', loginBg: '#15803D', loginGradient: '#14532D' },
+  homecare:   { primaryColor: '#B45309', primaryDark: '#92400E', primaryLight: '#FFFBEB', accentColor: '#FB923C', sidebarBg: '#78350F', loginBg: '#B45309', loginGradient: '#92400E' },
+  equipment:  { primaryColor: '#6D28D9', primaryDark: '#5B21B6', primaryLight: '#F5F3FF', accentColor: '#94A3B8', sidebarBg: '#4C1D95', loginBg: '#6D28D9', loginGradient: '#5B21B6' },
+  wellness:   { primaryColor: '#BE185D', primaryDark: '#9D174D', primaryLight: '#FFF1F2', accentColor: '#EAB308', sidebarBg: '#881337', loginBg: '#BE185D', loginGradient: '#9D174D' },
+  services:   { primaryColor: '#0369A1', primaryDark: '#0C4A6E', primaryLight: '#F0F9FF', accentColor: '#14B8A6', sidebarBg: '#0C4A6E', loginBg: '#0369A1', loginGradient: '#0C4A6E' },
 };
 
 export const PORTAL_LABELS: Record<string, string> = {
