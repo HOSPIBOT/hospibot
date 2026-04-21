@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { User, Mail, Phone, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
 import TextField from '../_components/TextField';
-import { Heading } from './Step2GroupPicker';
+import { Heading } from '../_components/Heading';
 import { TOKENS, WizardState } from '../_lib/wizard-types';
 
 interface Props {

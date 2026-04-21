@@ -1,6 +1,6 @@
 'use client';
 
-import { SubtypeGroup } from '../_hooks/useDiagnosticCatalog';
+import { useDiagnosticGroups, SubtypeGroup } from '../_hooks/useDiagnosticCatalog';
 
 const ICONS: Record<string, string> = {
   collection: '🧪', pathology: '🔬', imaging: '📸', physiological: '💓',
@@ -8,25 +8,29 @@ const ICONS: Record<string, string> = {
 };
 
 interface Props {
-  groups: SubtypeGroup[] | null;
-  selected: string | null;
-  onSelect: (slug: string) => void;
+  value: string | null;
+  onChange: (slug: string) => void;
 }
 
-export default function Step2GroupPicker({ groups, selected, onSelect }: Props) {
-  if (!groups) return <div className="text-center text-sm text-gray-400 py-12">Loading categories...</div>;
+export default function Step2GroupPicker({ value, onChange }: Props) {
+  const { groups } = useDiagnosticGroups();
+
+  if (!groups || groups.length === 0) {
+    return <div className="text-center text-sm text-gray-400 py-12">Loading categories...</div>;
+  }
+
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-center text-gray-900 mb-1" style={{ fontFamily: "'Fraunces', serif" }}>
+      <h1 className="text-2xl font-semibold text-center text-gray-900 mb-1">
         What type of diagnostic lab do you run?
       </h1>
       <p className="text-sm text-gray-500 text-center mb-6">Choose the category that best describes your facility</p>
       <div className="grid grid-cols-2 gap-3">
         {groups.map(g => (
-          <div key={g.slug} onClick={() => onSelect(g.slug)}
+          <div key={g.slug} onClick={() => onChange(g.slug)}
             className={`relative p-4 rounded-xl border cursor-pointer transition-all duration-200
               hover:border-[#0D7C66] hover:bg-[#E8F5F0]
-              ${selected === g.slug ? 'border-2 border-[#0D7C66] bg-[#E8F5F0] shadow-sm' : 'border-gray-200 bg-white'}`}>
+              ${value === g.slug ? 'border-2 border-[#0D7C66] bg-[#E8F5F0] shadow-sm' : 'border-gray-200 bg-white'}`}>
             <span className="absolute top-2.5 right-3 text-[11px] font-medium text-[#0D7C66] bg-[#E8F5F0] px-2 py-0.5 rounded-full">
               {g.subtypeCount} types
             </span>

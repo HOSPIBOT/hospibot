@@ -2,7 +2,7 @@
 
 import { Building2, Phone, Mail, MapPin } from 'lucide-react';
 import TextField from '../_components/TextField';
-import { Heading } from './Step2GroupPicker';
+import { Heading } from '../_components/Heading';
 import { TOKENS, WizardState } from '../_lib/wizard-types';
 import { DIAGNOSTIC_TIERS, type LabTier } from '@/lib/diagnostic-tiers';
 

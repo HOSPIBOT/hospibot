@@ -36,7 +36,7 @@ export interface TierFromApi {
  * API is unreachable so the wizard keeps working during deploys.
  */
 export function useResolvedTiers(params: { familySlug?: string; subtypeSlug?: string | null }) {
-  const [tiers, setTiers] = useState<TierFromApi[] | null>(null);
+  const [tiers, setTiers] = useState<TierFromApi[] | null>(HARDCODED_TIERS);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -46,7 +46,7 @@ export function useResolvedTiers(params: { familySlug?: string; subtypeSlug?: st
         const q = new URLSearchParams();
         if (params.familySlug) q.set('family', params.familySlug);
         if (params.subtypeSlug) q.set('subtype', params.subtypeSlug);
-        const res = await axios.get(`${API_URL}/portal/tier-configs?${q.toString()}`);
+        const res = await axios.get(`${API_URL}/portal/tier-configs?${q.toString()}`, { timeout: 3000 });
         const data = Array.isArray(res.data) ? res.data : [];
         if (!cancelled) setTiers(data.length > 0 ? data : HARDCODED_TIERS);
       } catch (e: any) {
@@ -59,7 +59,7 @@ export function useResolvedTiers(params: { familySlug?: string; subtypeSlug?: st
     return () => { cancelled = true; };
   }, [params.familySlug, params.subtypeSlug]);
 
-  return { tiers, loading: tiers === null, error };
+  return { tiers, loading: false, error };
 }
 
 /**
